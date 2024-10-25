@@ -1,0 +1,205 @@
+<section class="p-3">
+    <h1>Quản lý Thông báo</h1>
+    <div class="row">
+        <div class="col-12">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                Thêm Thông báo
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>ID</th>
+                    <th>Mã</th>
+                    <th>Nội dung</th>
+                    <th>Ngày gửi</th>
+                    <th>Ngày đọc</th>
+                    <th>Trạng Thái</th>
+                    <th>Tên khách hàng</th>
+                    <th>Email khách hàng</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody id="data">
+                <tr ng-repeat="thongBao in listThongBao">
+                    <td>{{$index+1}}</td>
+                    <td>{{ thongBao.id }}</td>
+                    <td>{{ thongBao.ma }}</td>
+                    <td>{{ thongBao.noiDung }}</td>
+                    <td>{{ thongBao.ngayGui }}</td>
+                    <td>{{ thongBao.ngayDoc }}</td>
+                    <td>
+                        {{ thongBao.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động' }}
+                    </td>
+                    <td>{{ thongBao.tenKH }}</td>
+                    <td>{{ thongBao.emailKH }}</td>
+                    <td class="actions">
+                        <button class="btn btn-success" ng-click="viewDetail(thongBao)" data-bs-toggle="modal"
+                                data-bs-target="#DetailForm"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-primary" ng-click="openUpdateModal(thongBao)" data-bs-toggle="modal"
+                                data-bs-target="#UpdateForm"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-danger" ng-click="delete(thongBao.id)"><i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="text-center text-muted" ng-if="listNhanVien.length === 0">{{ emptyMessage }}</p>
+            <ul class="pagination justify-content-center">
+                <li class="page-item" ng-class="{disabled: currentPage == 0}">
+                    <a class="page-link" href="" ng-click="prevPage()">«</a>
+                </li>
+                <li class="page-item" ng-repeat="n in range(totalPages) track by $index"
+                    ng-class="{active: n == currentPage}">
+                    <a class="page-link" href="" ng-click="setPage(n)">{{n + 1}}</a>
+                </li>
+                <li class="page-item" ng-class="{disabled: currentPage == totalPages - 1}">
+                    <a class="page-link" href="" ng-click="nextPage()">»</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!--add thông báo-->
+
+
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Thêm Thông báo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="#!/thongbao" id="myForm" ng-submit="addThongBao()">
+                    <div class="inputField">
+                        <div>
+                            <label>Nội dung:</label>
+                            <input type="text" ng-model="noiDung" id="noiDung">
+                        </div>
+                        <!--                        <div>-->
+                        <!--                            <label >Ngày gửi:</label>-->
+                        <!--                            <input type="date" ng-model="ngayGui" id="ngayGui" >-->
+                        <!--                        </div>-->
+                        <!--                        <div>-->
+                        <!--                            <label >Ngày đọc:</label>-->
+                        <!--                            <input type="date" ng-model="ngayDoc" id="ngayDoc" >-->
+                        <!--                        </div>-->
+                        <div>
+                            <label for="trangThai">Trạng thái:</label>
+                            <select ng-model="trangThai" id="trangThai" class="short-select" required>
+                                <option value="" disabled selected>Chọn Trạng Thái</option>
+                                <option value="1">Hoạt động</option>
+                                <option value="0">Ngưng hoạt động</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Khách hàng:</label>
+                            <select ng-model="idKH" class="short-select" required>
+                                <option value="" disabled selected>Chọn Loại Voucher</option>
+                                <option ng-repeat="kh in listKH" value="{{kh.id}}">{{kh.ten}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="myForm" class="btn btn-primary submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="updateForm" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Cập Nhật Thông báo</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="#" id="updateThongBao" ng-submit="updateThongBao()">
+                    <div class="inputField">
+                        <div>
+                            <label>Nội dung:</label>
+                            <input type="text" ng-model="selectedThongBao.noiDung">
+                        </div>
+                        <!--                        <div>-->
+                        <!--                            <label >Ngày gửi:</label>-->
+                        <!--                            <input type="date" ng-model="selectedThongBao.ngayGui">-->
+                        <!--                        </div>-->
+                        <!--                        <div>-->
+                        <!--                            <label >Ngày đọc:</label>-->
+                        <!--                            <input type="date"  ng-model="selectedThongBao.ngayDoc">-->
+                        <!--                        </div>-->
+                        <div>
+                            <label for="trangThai">Trạng thái:</label>
+                            <input type="text" ng-model="selectedThongBao.trangThai">
+                        </div>
+                        <div>
+                            <label>ID Khách hàng:</label>
+                            <input type="text" ng-model="selectedThongBao.idKH">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" form="updateThongBao" class="btn btn-primary">Cập Nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Thông báo -->
+<div class="modal fade" id="readData">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Profile detail</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form action="#" id="myForm1">
+                    <div class="inputField">
+                        <div>
+                            <label>Nội dung:</label>
+                            <input type="text" ng-model="selectedThongBao.noiDung" readonly>
+                        </div>
+                        <div>
+                            <label>Ngày gửi:</label>
+                            <input type="date" ng-model="selectedThongBao.ngayGui" readonly>
+                        </div>
+                        <div>
+                            <label>Ngày đọc:</label>
+                            <input type="date" ng-model="selectedThongBao.ngayDoc" readonly>
+                        </div>
+                        <div>
+                            <label>Tên khách hàng:</label>
+                            <input type="text" ng-model="selectedThongBao.tenKH" readonly>
+                        </div>
+                        <div>
+                            <label>Email khách hàng:</label>
+                            <input type="text" ng-model="selectedThongBao.emailKH" readonly>
+                        </div>
+                        <div>
+                            <label for="trangThai">Trạng thái:</label>
+                            <input type="text" ng-model="selectedThongBao.trangThai" readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

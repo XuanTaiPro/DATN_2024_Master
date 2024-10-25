@@ -1,0 +1,174 @@
+<section class="p-3">
+    <h1>Quản lý thông tin giao hàng</h1>
+    <div class="row">
+        <div class="col-12">
+            <button class="btn btn-primary newUser" data-bs-toggle="modal" data-bs-target="#ttghForm">Create Thông tin giao hàng<i
+                    class="bi bi-people"></i></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12" >
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>ID</th>
+                    <th>SDT người nhận</th>
+                    <th>Tên người nhận</th>
+                    <th>Địa chỉ người nhận</th>
+                    <th>Trạng Thái</th>
+                    <th>Tên khách hàng</th>
+                    <th>Email khách hàng</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody id="data">
+                <tr ng-repeat="ttgh in listTtgh">
+                    <td>{{$index+1}}</td>
+                    <td>{{ ttgh.id }}</td>
+                    <td>{{ ttgh.sdtNguoiNhan }}</td>
+                    <td>{{ ttgh.tenNguoiNhan }}</td>
+                    <td>{{ ttgh.dcNguoiNhan }}</td>
+                    <td>{{ ttgh.trangThai }}</td>
+                    <td>{{ ttgh.tenKH }}</td>
+                    <td>{{ ttgh.emailKH }}</td>
+                    <td>
+                        <button class="btn btn-success" data-bs-target="#readData" ng-click="openDetailModal(ttgh)"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-primary" ng-click="openUpdateModal(ttgh)"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-danger" ng-click="deleteTtgh(ttgh.id)"><i class="bi bi-trash"></i></button>
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!--add TTGH-->
+
+<div class="modal fade" id="ttghForm" >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Fill the Form</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="#" id="myForm" ng-submit="addTtgh()">
+                    <div class="inputField">
+                        <div>
+                            <label >SDT người nhận:</label>
+                            <input type="text" ng-model="sdtNguoiNhan">
+                        </div>
+                        <div>
+                            <label >Tên người nhận:</label>
+                            <input type="text" ng-model="tenNguoiNhan">
+                        </div>
+                        <div>
+                            <label >Địa chỉ người nhận:</label>
+                            <input type="text" ng-model="dcNguoiNhan">
+                        </div>
+                        <div>
+                            <label>Trạng thái:</label>
+                            <input type="text" ng-model="trangThai" id="trangThai" >
+                        </div>
+                        <div>
+                            <label >ID Khách hàng:</label>
+                            <input type="text" ng-model="idKH">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="myForm" class="btn btn-primary submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="updateForm" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Cập Nhật Thông Tin Giao Hàng</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="#" id="updateTtgh" ng-submit="updateTtgh()">
+                    <div class="inputField">
+                        <div>
+                            <label >SDT người nhận:</label>
+                            <input type="text" ng-model="selectedTtgh.sdtNguoiNhan">
+                        </div>
+                        <div>
+                            <label >Tên người nhận:</label>
+                            <input type="text" ng-model="selectedTtgh.tenNguoiNhan">
+                        </div>
+                        <div>
+                            <label >Địa chỉ người nhận:</label>
+                            <input type="text" ng-model="selectedTtgh.dcNguoiNhan">
+                        </div>
+                        <div>
+                            <label>Trạng thái:</label>
+                            <input type="text" ng-model="selectedTtgh.trangThai">
+                        </div>
+                        <div>
+                            <label >ID Khách hàng:</label>
+                            <input type="text" ng-model="selectedTtgh.idKH">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" form="updateTtgh" class="btn btn-primary">Cập Nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Loại Voucher -->
+<div class="modal fade" id="readData">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Profile detail</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form action="#" id="myForm1">
+                    <div class="inputField">
+                        <div>
+                            <label >SDT người nhận:</label>
+                            <input type="text" ng-model="selectedTtgh.sdtNguoiNhan" readonly>
+                        </div>
+                        <div>
+                            <label >Tên người nhận:</label>
+                            <input type="text" ng-model="selectedTtgh.tenNguoiNhan" readonly>
+                        </div>
+                        <div>
+                            <label >Địa chỉ người nhận:</label>
+                            <input type="text" ng-model="selectedTtgh.dcNguoiNhan" readonly>
+                        </div>
+                        <div>
+                            <label>Trạng thái:</label>
+                            <input type="text" ng-model="selectedTtgh.trangThai" readonly>
+                        </div>
+                        <div>
+                            <label >Tên Khách hàng:</label>
+                            <input type="text" ng-model="selectedTtgh.tenKH" readonly>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

@@ -1,0 +1,145 @@
+<section class="p-3">
+    <h1>Quản lý loại voucher</h1>
+    <div class="row">
+        <div class="col-12">
+            <button class="btn btn-primary newUser" data-bs-toggle="modal" data-bs-target="#lvcForm">Create voucher<i
+                    class="bi bi-people"></i></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12" >
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>ID</th>
+                    <th>Mã</th>
+                    <th>Tên</th>
+                    <th>Trạng Thái</th>
+                    <th>Mô tả</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody id="data">
+                <tr ng-repeat="loaiVoucher in listLoaiVoucher">
+                    <td>{{$index+1}}</td>
+                    <td>{{ loaiVoucher.id }}</td>
+                    <td>{{ loaiVoucher.ma }}</td>
+                    <td>{{ loaiVoucher.ten }}</td>
+                    <td>{{ loaiVoucher.trangThai }}</td>
+                    <td>{{ loaiVoucher.moTa }}</td>
+                    <td>
+                        <button class="btn btn-success" data-bs-target="#readData" ng-click="openDetailModal(loaiVoucher)"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-primary" ng-click="openUpdateModal(loaiVoucher)"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-danger" ng-click="deleteLoaiVoucher(loaiVoucher.id)"><i class="bi bi-trash"></i></button>
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!--add loại voucher-->
+
+<div class="modal fade" id="lvcForm" >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Fill the Form</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="#" id="myForm" ng-submit="addLoaiVoucher()">
+                    <div class="inputField">
+                        <div>
+                            <label >Tên Loại Voucher:</label>
+                            <input type="text" ng-model="ten" id="ten" >
+                        </div>
+                        <div>
+                            <label for="trangThai">Trạng thái:</label>
+                            <input type="text" ng-model="trangThai" id="trangThai" >
+                        </div>
+                        <div>
+                            <label >Mô tả:</label>
+                            <input type="text" ng-model="moTa" id="moTa" >
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="myForm" class="btn btn-primary submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="updateForm" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Cập Nhật Loại Voucher</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="#" id="updateLoaiVoucher" ng-submit="updateLoaiVoucher()">
+                    <div class="inputField">
+                        <div>
+                            <label >Tên Voucher:</label>
+                            <input type="text" ng-model="selectedLoaiVoucher.ten" >
+                        </div>
+                        <div>
+                            <label >Trạng thái:</label>
+                            <input type="text" ng-model="selectedLoaiVoucher.trangThai">
+                        </div>
+                        <div>
+                            <label >Mô tả:</label>
+                            <input type="text" ng-model="selectedLoaiVoucher.moTa" >
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" form="updateLoaiVoucher" class="btn btn-primary">Cập Nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Loại Voucher -->
+<div class="modal fade" id="readData">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Profile detail</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form action="#" id="myForm1">
+                    <div class="inputField">
+                        <div>
+                            <label>Tên Voucher:</label>
+                            <input type="text" id="Showten" ng-model="selectedLoaiVoucher.ten"  readonly>
+                        </div>
+                        <div>
+                            <label>Trạng thái:</label>
+                            <input type="text" id="ShowtrangThai" ng-model="selectedLoaiVoucher.trangThai"   readonly>
+                        </div>
+                        <div>
+                            <label>Mô tả:</label>
+                            <input type="text" id="ShowMoTa" ng-model="selectedLoaiVoucher.moTa"  readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
