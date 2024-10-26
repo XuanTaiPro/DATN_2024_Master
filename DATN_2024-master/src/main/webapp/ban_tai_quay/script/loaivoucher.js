@@ -2,34 +2,70 @@ window.loaivoucherCtrl = function ($scope, $http) {
     const url = "http://localhost:8080/loaivoucher";
 
     $scope.listLoaiVoucher = [];
+    $scope.currentPage = 0;
+    $scope.totalPages = 1;
+    $scope.emptyMessage = "";
 
-    $http.get(url).then(function (response) {
-        $scope.listLoaiVoucher = response.data;
-        console.log("Lấy dữ liệu thành công");
-    }).catch((error) => {
-        console.error('Lỗi:', error);
-    });
+    $scope.loadPage = function (page) {
+        $http.get('http://localhost:8080/loaivoucher/page?page=' + page)
+            .then(function (response) {
+                $scope.listLoaiVoucher = response.data.loaiVouchers;
+                $scope.currentPage = response.data.currentPage;
+                $scope.totalPages = response.data.totalPages;
 
-    // Mở modal
-    $scope.openModal = function () {
-        var modalElement = new bootstrap.Modal(document.getElementById('lvcForm'), {
-            keyboard: false
-        });
-        modalElement.show();
+                // Kiểm tra nếu danh sách trống và hiển thị thông báo
+                if ($scope.listLoaiVoucher.length === 0) {
+                    $scope.emptyMessage = response.data.message || "Danh sách trống!";
+                } else {
+                    $scope.emptyMessage = ""; // Reset lại thông báo nếu có dữ liệu
+                }
+            })
+            .catch(function (error) {
+                console.error('Lỗi:', error);
+            });
     };
-    $scope.openDetailModal = function (loaiVoucher) {
-        $scope.selectedLoaiVoucher = angular.copy(loaiVoucher);
-        var modalElement = new bootstrap.Modal(document.getElementById('readData'), {
-            keyboard: false
-        });
-        modalElement.show(); // Hiển thị modal
+
+
+    $scope.range = function (n) {
+        return new Array(n);
     };
-    $scope.openUpdateModal = function (loaiVoucher) {
+
+    $scope.setPage = function (page) {
+        if (page >= 0 && page < $scope.totalPages) {
+            $scope.loadPage(page);
+        }
+    };
+
+    $scope.prevPage = function () {
+        if ($scope.currentPage > 0) {
+            $scope.setPage($scope.currentPage - 1);
+        }
+    };
+
+    $scope.nextPage = function () {
+        if ($scope.currentPage < $scope.totalPages - 1) {
+            $scope.setPage($scope.currentPage + 1);
+        }
+    };
+    $scope.range = function (n) {
+        var arr = [];
+        for (var i = 0; i < n; i++) {
+            arr.push(i);
+        }
+        return arr;
+    };
+
+    // Load initial page
+    $scope.loadPage(0);
+
+    $scope.viewDetail = function (loaiVoucher) {
         $scope.selectedLoaiVoucher = angular.copy(loaiVoucher);
-        var modalElement = new bootstrap.Modal(document.getElementById('updateForm'), {
-            keyboard: false
-        });
-        modalElement.show();
+        $scope.selectedLoaiVoucher.trangThai = loaiVoucher.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động';
+    }
+    $scope.openUpdateModal = function(loaiVoucher) {
+        $scope.selectedLoaiVoucher = angular.copy(loaiVoucher);
+        $scope.selectedLoaiVoucher.trangThai = loaiVoucher.trangThai.toString();
+        console.log("Trạng thái hiện tại:", $scope.selectedLoaiVoucher.trangThai);// Sao chép dữ liệu nhân viên cần cập nhật
     };
 
 
@@ -39,62 +75,55 @@ window.loaivoucherCtrl = function ($scope, $http) {
             trangThai: $scope.trangThai,
             moTa: $scope.moTa,
         };
-        $http.post(url + '/add', newLoaiVoucher)
+        console.log("Dữ liệu mới:", newLoaiVoucher);
+        $http.post('http://localhost:8080/loaivoucher/add', newLoaiVoucher)
             .then(function (response) {
-                $scope.listLoaiVoucher.push(response.data);
-                alert('Thêm thành công!!')
-                resetForm();
-            }).catch((error) => {
-            $scope.errorMessage = "Thêm thất bại";
-        });
-        // Reset form
-        resetForm();
-        var modalElement = new bootstrap.Modal(document.getElementById('lvcForm'));
-        modalElement.hide();
-
-    };
-    $scope.updateLoaiVoucher = function () {
-        console.log("Cập nhật voucher:", $scope.selectedLoaiVoucher);  // Kiểm tra dữ liệu trước khi gửi
-        $http.put(url + '/update/' + $scope.selectedLoaiVoucher.id, $scope.selectedLoaiVoucher)
-            .then(function (response) {
-                console.log("Cập nhật thành công", response.data);
-                const index = $scope.listLoaiVoucher.findIndex(lvc => lvc.id === response.data.id);
-                if (index !== -1) {
-                    $scope.listLoaiVoucher[index] = response.data;
-                }
-                alert('Cập nhật thành công!!');
-                resetUpdateForm();
+                $('#productModal').modal('hide');
+                setTimeout(function () {
+                    location.reload();
+                }, 500);
             })
-            .catch(function () {
+            .catch(function (error) {
+                $scope.errorMessage = "Thêm thất bại";
             });
-        var modalElement = new bootstrap.Modal(document.getElementById('updateForm'));
-        modalElement.hide();
+        resetForm();
+
+    };
+
+    $scope.updateLoaiVoucher = function () {
+        console.log("Cập nhật Loại Voucher:", $scope.selectedLoaiVoucher);  // Kiểm tra dữ liệu trước khi gửi
+        $http.put('http://localhost:8080/loaivoucher/update/' + $scope.selectedLoaiVoucher.id, $scope.selectedLoaiVoucher)
+            .then(function (response) {
+                location.reload()
+            })
+            .catch(function (error) {
+
+            });
     };
 
 
-
-// Xóa nhân viên
-    $scope.deleteLoaiVoucher = function (id) {
-        console.log("Xóa");
-        if (confirm('Bạn có chắc chắn muốn xóa loại voucher này?')) {
-            $http.delete(url + '/delete/' + id)
+    $scope.delete = function (id) {
+        if (confirm('Bạn có chắc chắn muốn xóa?')) {
+            $http.delete('http://localhost:8080/loaivoucher/delete/' + id)
                 .then(function (response) {
-                    // Tìm chỉ số của nhân viên đã xóa
+                    // Kiểm tra phản hồi server
+                    console.log(response.data);
+                    location.reload()
                     const index = $scope.listLoaiVoucher.findIndex(lvc => lvc.id === id);
                     if (index !== -1) {
-                        $scope.listLoaiVoucher.splice(index, 1);  // Xóa nhân viên khỏi danh sách
+                        $scope.listLoaiVoucher.splice(index, 1);
                     }
-                    alert('Xóa thành công!!');
+                    alert(response.data.message || 'Xóa thành công!!');  // Sử dụng thông điệp từ server
                 })
                 .catch(function (error) {
-                    console.error("Lỗi khi xóa nhân viên:", error);
-                    alert("Xóa thất bại. Vui lòng thử lại sau.");  // Hiển thị thông báo lỗi
+                    console.error("Lỗi khi xóa :", error);
+                    alert("Xóa thất bại. Vui lòng thử lại sau.");
                 });
         }
     };
 
 
-    // Reset form
+//     // Reset form
     // Reset form
     function resetForm() {
         $scope.ten = "";

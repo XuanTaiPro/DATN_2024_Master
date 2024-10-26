@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -16,9 +18,9 @@ public class ThongTinGiaoHangResponse {
 
     private String dcNguoiNhan;
 
-    private String ngayTao;
+    private LocalDateTime ngayTao;
 
-    private String ngaySua;
+    private LocalDateTime ngaySua;
 
     private Integer trangThai;
 

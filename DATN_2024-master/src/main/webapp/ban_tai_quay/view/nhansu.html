@@ -92,19 +92,20 @@
                     <div class="inputField">
                         <div>
                             <label for="ten">Họ và tên:</label>
-                            <input type="text" ng-model="ten" id="ten" required>
+                            <input type="text" ng-model="ten" id="ten" >
+                            <span class="text-danger" ng-if="errorMessages.ten">{{ errorMessages.ten }}</span>
                         </div>
                         <div>
                             <label for="email">Email:</label>
-                            <input type="email" ng-model="email" id="email" required>
+                            <input type="email" ng-model="email" id="email" >
                         </div>
                         <div>
                             <label for="passw">PassWord:</label>
-                            <input type="text" ng-model="passw" id="passw" required>
+                            <input type="text" ng-model="passw" id="passw" >
                         </div>
                         <div>
                             <label for="gioiTinh">Giới tính:</label>
-                            <select ng-model="gioiTinh" id="gioiTinh" class="short-select" required>
+                            <select ng-model="gioiTinh" id="gioiTinh" class="short-select" >
                                 <option value="" disabled selected>Chọn Giới Tính</option>
                                 <option value="Nam">Nam</option>
                                 <option value="Nữ">Nữ</option>
@@ -116,7 +117,7 @@
                         </div>
                         <div>
                             <label for="trangThai">Trạng thái:</label>
-                            <select ng-model="trangThai" id="trangThai" class="short-select" required>
+                            <select ng-model="trangThai" id="trangThai" class="short-select" >
                                 <option value="" disabled selected>Chọn Trạng Thái</option>
                                 <option value="1">Hoạt động</option>
                                 <option value="0">Ngưng hoạt động</option>
@@ -125,7 +126,7 @@
 
                         <div>
                             <label>Quyền:</label>
-                            <select ng-model="idQuyen" class="short-select" required>
+                            <select ng-model="idQuyen" class="short-select" >
                                 <option value="" disabled selected>Chọn quyền</option>
                                 <option ng-repeat="quyen in listQuyen" value="{{quyen.id}}">{{quyen.ten}}</option>
                             </select>

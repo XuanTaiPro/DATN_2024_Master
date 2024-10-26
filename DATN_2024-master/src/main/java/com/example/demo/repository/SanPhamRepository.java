@@ -20,4 +20,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham,String> {
     SanPham getByNameAndId(@Param("ten") String ten, @Param("id") String id);
     @Query("SELECT sp FROM SanPham sp WHERE sp.danhMuc.id=:idDanhMuc")
     List<SanPham> getByIdDanhMuc(@Param("idDanhMuc") String idDanhMuc, Sort sort);
+
+    @Query("SELECT sp FROM SanPham sp WHERE sp.giamGia.id=:id")
+    List<SanPham>findByGiamGiaId(@Param("id")String id);
 }

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -15,9 +17,9 @@ public class LoaiVoucherResponse {
 
     private String ten;
 
-    private String ngayTao;
+    private LocalDateTime ngayTao;
 
-    private String ngaySua;
+    private LocalDateTime ngaySua;
 
     private Integer trangThai;
 

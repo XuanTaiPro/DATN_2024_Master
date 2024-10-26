@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -23,10 +25,10 @@ public class LoaiVoucherRequest {
     private String ten;
 
 //    @NotBlank(message = "Ngày tạo không được để trống")
-    private String ngayTao;
+    private LocalDateTime ngayTao;
 
 //    @NotBlank(message = "Ngày sửa không được để trống")
-    private String ngaySua;
+    private LocalDateTime ngaySua;
 
     @NotNull(message = "Trạng thái không được để trống")
     private Integer trangThai;
@@ -35,6 +37,6 @@ public class LoaiVoucherRequest {
     private String moTa;
 
     public LoaiVoucher toEntity(){
-        return new LoaiVoucher(id,ma,ngayTao,ngayTao,ngaySua,trangThai,moTa);
+        return new LoaiVoucher(id,ma,ten,null,null,trangThai,moTa);
     }
 }

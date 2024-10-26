@@ -177,7 +177,6 @@ public class GiamGiaController {
             }
         }
 
-        // Kiểm tra định dạng ngày
         if (!isValidDateFormat(giamGia.getNgayBatDau()) || !isValidDateFormat(giamGia.getNgayKetThuc())) {
             return ResponseEntity.badRequest().body("Ngày phải có định dạng yyyy-MM-dd HH:mm:ss!");
         }
@@ -220,24 +219,33 @@ public class GiamGiaController {
         giamGiaUpdate.setNgayKetThuc(giamGia.getNgayKetThuc());
         giamGiaUpdate.setGiaGiam(giamGia.getGiaGiam());
         giamGiaUpdate.setTrangThai(giamGia.getTrangThai());
+        giamGiaUpdate.setMoTa(giamGia.getMoTa());
 
-        // Cập nhật sản phẩm liên kết
+        giamGiaRepository.save(giamGiaUpdate);
+        // Hủy liên kết giảm giá của các sản phẩm hiện tại
+        List<SanPham> existingSanPhams = sanPhamRepository.findByGiamGiaId(id);
+        for (SanPham sanPham : existingSanPhams) {
+            sanPham.setGiamGia(null);
+        }
+        sanPhamRepository.saveAll(existingSanPhams);
+
         List<SanPham> sanPhams = new ArrayList<>();
         for (String productId : selectedProducts) {
             SanPham sanPham = sanPhamRepository.findById(productId).orElse(null);
             if (sanPham == null) {
+                System.out.println("ProductID: "+productId);
                 return ResponseEntity.badRequest().body("Sản phẩm với ID: " + productId + " không tồn tại!");
             }
-            sanPham.setGiamGia(giamGiaUpdate);
+            if (sanPham!=null){
+                sanPham.setGiamGia(giamGiaUpdate);
+            }
             sanPhams.add(sanPham);
         }
         sanPhamRepository.saveAll(sanPhams);
 
         // Lưu cập nhật cho GiamGia
-        giamGiaRepository.save(giamGiaUpdate);
         return ResponseEntity.ok("Cập nhật thành công!");
     }
-
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody Map<String, String> body) {
         String id = body.get("id");

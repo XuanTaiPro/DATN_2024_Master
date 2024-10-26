@@ -14,12 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @CrossOrigin("*")
 @RestController
@@ -36,6 +38,14 @@ public class KhachHangController {
     public List<KhachHang> findAll() {
         return khRepo.findAll();
     }
+
+    @GetMapping("getId")
+    public List<String> findKhachHangByTen(@RequestParam String ten) {
+        List<KhachHang> khachHangList = (List<KhachHang>) khRepo.getKhachHangByTen(ten);
+        return khachHangList.stream().map(KhachHang::getId).collect(Collectors.toList());
+    }
+
+
 
     @GetMapping("findAllNotPW")
     public ResponseEntity<?> findAllNotPW() {
@@ -80,7 +90,7 @@ public class KhachHangController {
     public ResponseEntity<?> detail(@PathVariable String id) {
         if (khRepo.findById(id).isPresent()) {
             return ResponseEntity.ok().body(khRepo.findById(id).stream().map(KhachHang::toResponse));
-        }else {
+        } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id để hiển thị");
         }
     }

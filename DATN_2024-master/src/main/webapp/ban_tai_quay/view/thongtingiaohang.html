@@ -2,12 +2,13 @@
     <h1>Quản lý thông tin giao hàng</h1>
     <div class="row">
         <div class="col-12">
-            <button class="btn btn-primary newUser" data-bs-toggle="modal" data-bs-target="#ttghForm">Create Thông tin giao hàng<i
-                    class="bi bi-people"></i></button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                Thêm Thông tin giao hàng
+            </button>
         </div>
     </div>
     <div class="row">
-        <div class="col-12" >
+        <div class="col-12">
             <table class="table table-hover">
                 <thead>
                 <tr>
@@ -29,58 +30,81 @@
                     <td>{{ ttgh.sdtNguoiNhan }}</td>
                     <td>{{ ttgh.tenNguoiNhan }}</td>
                     <td>{{ ttgh.dcNguoiNhan }}</td>
-                    <td>{{ ttgh.trangThai }}</td>
+                    <td>
+                        {{ ttgh.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động' }}
+                    </td>
                     <td>{{ ttgh.tenKH }}</td>
                     <td>{{ ttgh.emailKH }}</td>
-                    <td>
-                        <button class="btn btn-success" data-bs-target="#readData" ng-click="openDetailModal(ttgh)"><i class="bi bi-eye"></i></button>
-                        <button class="btn btn-primary" ng-click="openUpdateModal(ttgh)"><i class="bi bi-pencil-square"></i></button>
-                        <button class="btn btn-danger" ng-click="deleteTtgh(ttgh.id)"><i class="bi bi-trash"></i></button>
-
+                    <td class="actions">
+                        <button class="btn btn-success" ng-click="viewDetail(ttgh)" data-bs-toggle="modal"
+                                data-bs-target="#DetailForm"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-primary" ng-click="openUpdateModal(ttgh)" data-bs-toggle="modal"
+                                data-bs-target="#UpdateForm"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-danger" ng-click="delete(ttgh.id)"><i class="bi bi-trash"></i>
+                        </button>
                     </td>
                 </tr>
                 </tbody>
             </table>
+            <p class="text-center text-muted" ng-if="listTtgh.length === 0">{{ emptyMessage }}</p>
+            <ul class="pagination justify-content-center">
+                <li class="page-item" ng-class="{disabled: currentPage == 0}">
+                    <a class="page-link" href="" ng-click="prevPage()">«</a>
+                </li>
+                <li class="page-item" ng-repeat="n in range(totalPages) track by $index"
+                    ng-class="{active: n == currentPage}">
+                    <a class="page-link" href="" ng-click="setPage(n)">{{n + 1}}</a>
+                </li>
+                <li class="page-item" ng-class="{disabled: currentPage == totalPages - 1}">
+                    <a class="page-link" href="" ng-click="nextPage()">»</a>
+                </li>
+            </ul>
         </div>
     </div>
 </section>
 
 <!--add TTGH-->
 
-<div class="modal fade" id="ttghForm" >
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Fill the Form</h4>
+                <h5 class="modal-title" id="productModalLabel">Thêm Thông tin giao hàng</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="#" id="myForm" ng-submit="addTtgh()">
+                <form action="#!/thongtingiaohang" id="myForm" ng-submit="addTtgh()">
                     <div class="inputField">
                         <div>
-                            <label >SDT người nhận:</label>
+                            <label>SDT người nhận:</label>
                             <input type="text" ng-model="sdtNguoiNhan">
                         </div>
                         <div>
-                            <label >Tên người nhận:</label>
+                            <label>Tên người nhận:</label>
                             <input type="text" ng-model="tenNguoiNhan">
                         </div>
                         <div>
-                            <label >Địa chỉ người nhận:</label>
+                            <label>Địa chỉ người nhận:</label>
                             <input type="text" ng-model="dcNguoiNhan">
                         </div>
                         <div>
-                            <label>Trạng thái:</label>
-                            <input type="text" ng-model="trangThai" id="trangThai" >
+                            <label for="trangThai">Trạng thái:</label>
+                            <select ng-model="trangThai" id="trangThai" class="short-select" required>
+                                <option value="" disabled selected>Chọn Trạng Thái</option>
+                                <option value="1">Hoạt động</option>
+                                <option value="0">Ngưng hoạt động</option>
+                            </select>
                         </div>
                         <div>
-                            <label >ID Khách hàng:</label>
-                            <input type="text" ng-model="idKH">
+                            <label>Khách hàng:</label>
+                            <select ng-model="idKH" class="short-select" required>
+                                <option value="" disabled selected>Chọn Khách hàng</option>
+                                <option ng-repeat="kh in listKH" value="{{kh.id}}">{{kh.ten}}</option>
+                            </select>
                         </div>
                     </div>
                 </form>
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" form="myForm" class="btn btn-primary submit">Submit</button>
@@ -90,70 +114,74 @@
 </div>
 
 
-<div class="modal fade" id="updateForm" tabindex="-1">
+<div class="modal fade" id="UpdateForm" tabindex="-1" aria-labelledby="userFormLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Cập Nhật Thông Tin Giao Hàng</h4>
+                <h5 class="modal-title">Cập Nhật Thông tin giao hàng</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="#" id="updateTtgh" ng-submit="updateTtgh()">
+                <form action="#!/thongtingiaohang" id="updateTtgh" ng-submit="updateTtgh()">
                     <div class="inputField">
                         <div>
-                            <label >SDT người nhận:</label>
+                            <label>SDT người nhận:</label>
                             <input type="text" ng-model="selectedTtgh.sdtNguoiNhan">
                         </div>
                         <div>
-                            <label >Tên người nhận:</label>
+                            <label>Tên người nhận:</label>
                             <input type="text" ng-model="selectedTtgh.tenNguoiNhan">
                         </div>
                         <div>
-                            <label >Địa chỉ người nhận:</label>
+                            <label>Địa chỉ người nhận:</label>
                             <input type="text" ng-model="selectedTtgh.dcNguoiNhan">
                         </div>
                         <div>
-                            <label>Trạng thái:</label>
-                            <input type="text" ng-model="selectedTtgh.trangThai">
+                            <label for="trangThaiUpdate">Trạng thái:</label>
+                            <select ng-model="selectedTtgh.trangThai" id="trangThaiUpdate" class="short-select"
+                                    required>
+                                <option value="" disabled>Chọn Trạng Thái</option>
+                                <option value="1">Hoạt động</option>
+                                <option value="0">Ngưng hoạt động</option>
+                            </select>
                         </div>
                         <div>
-                            <label >ID Khách hàng:</label>
-                            <input type="text" ng-model="selectedTtgh.idKH">
+                            <label>Khách hàng:</label>
+                            <select ng-model="idKH" class="short-select" required>
+                                <option value="" disabled selected>Chọn Khách hàng</option>
+                                <option ng-repeat="kh in listKH" value="{{kh.id}}">{{kh.ten}}</option>
+                            </select>
                         </div>
                     </div>
                 </form>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="submit" form="updateTtgh" class="btn btn-primary">Cập Nhật</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" form="updateTtgh" class="btn btn-primary">Cập Nhật</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Detail Loại Voucher -->
-<div class="modal fade" id="readData">
+<div class="modal fade" id="DetailForm" tabindex="-1" aria-labelledby="userFormLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Profile detail</h4>
+                <h5 class="modal-title">Thông Tin giao hàng</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
             <div class="modal-body">
                 <form action="#" id="myForm1">
                     <div class="inputField">
                         <div>
-                            <label >SDT người nhận:</label>
+                            <label>SDT người nhận:</label>
                             <input type="text" ng-model="selectedTtgh.sdtNguoiNhan" readonly>
                         </div>
                         <div>
-                            <label >Tên người nhận:</label>
+                            <label>Tên người nhận:</label>
                             <input type="text" ng-model="selectedTtgh.tenNguoiNhan" readonly>
                         </div>
                         <div>
-                            <label >Địa chỉ người nhận:</label>
+                            <label>Địa chỉ người nhận:</label>
                             <input type="text" ng-model="selectedTtgh.dcNguoiNhan" readonly>
                         </div>
                         <div>
@@ -161,14 +189,200 @@
                             <input type="text" ng-model="selectedTtgh.trangThai" readonly>
                         </div>
                         <div>
-                            <label >Tên Khách hàng:</label>
+                            <label>Tên Khách hàng:</label>
                             <input type="text" ng-model="selectedTtgh.tenKH" readonly>
                         </div>
-
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-</div>
+<style>
+    /* Phần chung */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+    }
+
+    section.p-3 {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Nút Thêm Nhân Viên */
+    button.btn-primary {
+        background-color: #007bff;
+        border: none;
+        font-weight: bold;
+        padding: 8px 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    button.btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Bảng quản lý nhân viên */
+    .table-hover {
+        margin-top: 20px;
+    }
+
+    .table th {
+        font-weight: bold;
+        color: #555;
+        background-color: #f9f9f9;
+        text-align: center;
+    }
+
+    .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table img {
+        border-radius: 4px;
+    }
+
+    /* Nút thao tác */
+    .table .btn {
+        margin: 0 4px;
+        padding: 6px 10px;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+    }
+
+    .btn:hover {
+        opacity: 0.85;
+    }
+
+    .table .actions {
+        display: flex;
+        gap: 5px; /* Khoảng cách giữa các nút */
+    }
+
+    .actions .btn {
+        white-space: nowrap; /* Tránh ngắt dòng nút */
+    }
+
+
+    /* Pagination */
+    .pagination {
+        margin-top: 15px;
+    }
+
+    .page-link {
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    .page-link:hover {
+        color: #0056b3;
+    }
+
+    /* Modal thêm và cập nhật nhân viên */
+    .modal-content {
+        border-radius: 8px;
+    }
+
+    .modal-header {
+        background-color: #007bff;
+        color: #fff;
+        border-bottom: none;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .modal-title {
+        font-weight: bold;
+    }
+
+    .modal-footer .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+    }
+
+    .modal-footer .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+    /* Phần upload ảnh */
+    .imgholder {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        margin-bottom: 15px;
+    }
+
+    .imgholder img {
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .upload {
+        color: #007bff;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .upload:hover {
+        color: #0056b3;
+    }
+
+    /* Input và Select */
+    .inputField {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .inputField label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .inputField input,
+    .inputField select {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+    }
+
+    .short-select {
+        width: 100%;
+        max-width: 370px;
+    }
+
+
+</style>

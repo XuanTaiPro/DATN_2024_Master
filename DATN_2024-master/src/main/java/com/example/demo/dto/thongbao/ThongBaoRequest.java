@@ -46,7 +46,7 @@ public class ThongBaoRequest {
         if (this.id == null || this.id.isEmpty()) {
             this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         }
-        return new ThongBao(id,ma,noiDung,ngayGui,ngayDoc,trangThai,null);
+        return new ThongBao(id,ma,noiDung,null,null,trangThai,null);
     }
 
 }

@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,10 +28,10 @@ public class LoaiVoucher {
     private String ten;
 
     @Column(name = "NGAYTAO")
-    private String ngayTao;
+    private LocalDateTime ngayTao;
 
     @Column(name = "NGAYSUA")
-    private String ngaySua;
+    private LocalDateTime ngaySua;
 
     @Column(name = "TRANGTHAI")
     private Integer trangThai;

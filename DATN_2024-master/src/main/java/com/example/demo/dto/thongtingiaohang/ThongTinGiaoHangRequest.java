@@ -2,14 +2,12 @@ package com.example.demo.dto.thongtingiaohang;
 
 import com.example.demo.entity.KhachHang;
 import com.example.demo.entity.ThongTinGiaoHang;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -29,10 +27,10 @@ public class ThongTinGiaoHangRequest {
     private String dcNguoiNhan;
 
 //    @NotBlank(message = "Ngày tạo Không được để trống")
-    private String ngayTao;
+    private LocalDateTime ngayTao;
 
 //    @NotBlank(message = "Ngày sửa Không được để trống")
-    private String ngaySua;
+    private LocalDateTime ngaySua;
 
     @NotNull(message = "trạng thái Không được để trống")
     private Integer trangThai;
@@ -45,6 +43,6 @@ public class ThongTinGiaoHangRequest {
         if (this.id == null || this.id.isEmpty()) {
             this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         }
-        return new ThongTinGiaoHang(id,sdtNguoiNhan,tenNguoiNhan,dcNguoiNhan,ngayTao,ngaySua,trangThai,null);
+        return new ThongTinGiaoHang(id,sdtNguoiNhan,tenNguoiNhan,dcNguoiNhan,null,null,trangThai,null);
     }
 }

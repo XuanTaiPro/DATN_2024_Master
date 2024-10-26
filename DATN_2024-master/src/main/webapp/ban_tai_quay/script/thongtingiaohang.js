@@ -2,34 +2,104 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
     const url = "http://localhost:8080/thongtingiaohang";
 
     $scope.listTtgh = [];
+    $scope.currentPage = 0;
+    $scope.totalPages = 1;
+    $scope.emptyMessage = "";
 
-    $http.get(url).then(function (response) {
-        $scope.listTtgh = response.data;
-        console.log("Lấy dữ liệu thành công");
-    }).catch((error) => {
-        console.error('Lỗi:', error);
-    });
+    $scope.loadPage = function (page) {
+        $http.get('http://localhost:8080/thongtingiaohang/page?page=' + page)
+            .then(function (response) {
+                $scope.listTtgh = response.data.thongTinGiaoHangs;
+                $scope.currentPage = response.data.currentPage;
+                $scope.totalPages = response.data.totalPages;
 
-    // Mở modal
-    $scope.openModal = function () {
-        var modalElement = new bootstrap.Modal(document.getElementById('ttghForm'), {
-            keyboard: false
-        });
-        modalElement.show();
+                // Kiểm tra nếu danh sách trống và hiển thị thông báo
+                if ($scope.listTtgh.length === 0) {
+                    $scope.emptyMessage = response.data.message || "Danh sách trống!";
+                } else {
+                    $scope.emptyMessage = ""; // Reset lại thông báo nếu có dữ liệu
+                }
+            })
+            .catch(function (error) {
+                console.error('Lỗi:', error);
+            });
     };
-    $scope.openDetailModal = function (ttgh) {
-        $scope.selectedTtgh = angular.copy(ttgh);
-        var modalElement = new bootstrap.Modal(document.getElementById('readData'), {
-            keyboard: false
-        });
-        modalElement.show(); // Hiển thị modal
+
+
+    $scope.range = function (n) {
+        return new Array(n);
     };
-    $scope.openUpdateModal = function (ttgh) {
-        $scope.selectedTtgh = angular.copy(ttgh);
-        var modalElement = new bootstrap.Modal(document.getElementById('updateForm'), {
-            keyboard: false
+
+    $scope.setPage = function (page) {
+        if (page >= 0 && page < $scope.totalPages) {
+            $scope.loadPage(page);
+        }
+    };
+
+    $scope.prevPage = function () {
+        if ($scope.currentPage > 0) {
+            $scope.setPage($scope.currentPage - 1);
+        }
+    };
+
+    $scope.nextPage = function () {
+        if ($scope.currentPage < $scope.totalPages - 1) {
+            $scope.setPage($scope.currentPage + 1);
+        }
+    };
+    $scope.range = function (n) {
+        var arr = [];
+        for (var i = 0; i < n; i++) {
+            arr.push(i);
+        }
+        return arr;
+    };
+
+    // Load initial page
+    $scope.loadPage(0);
+
+    $scope.listKH = [];
+    $http.get("http://localhost:8080/khachhang")
+        .then(function (response) {
+            $scope.listKH = response.data;
+            console.log("Lấy danh sách khách hàng thành công", $scope.listKH);
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi lấy danh sách LVC:", error);
         });
-        modalElement.show();
+
+
+    $scope.viewDetail = function (ttgh) {
+        $scope.selectedTtgh = angular.copy(ttgh);
+        $scope.selectedTtgh.trangThai = ttgh.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động';
+    }
+
+    $scope.openUpdateModal = function (thongTinGiaoHang) {
+        $scope.selectedTtgh = angular.copy(thongTinGiaoHang);
+        $scope.selectedKhachHang = $scope.selectedTtgh.tenKH;
+        $scope.idKH = null;
+        console.log($scope.selectedKhachHang);
+
+        fetch('http://localhost:8080/khachhang/getId?ten=' + $scope.selectedKhachHang)
+            .then(function (response) {
+                return response.json();  // Chuyển đổi sang JSON vì API trả về danh sách
+            })
+            .then(function (data) {
+                if (data.length > 0) {
+                    $scope.$apply(function () {
+                        $scope.idKH = data[0];  // Chọn ID đầu tiên trong danh sách
+                        console.log($scope.idKH);
+                    });
+                } else {
+                    console.warn("Không tìm thấy khách hàng nào với tên:", $scope.selectedKhachHang);
+                }
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi gọi API:", error);
+            });
+
+        $scope.selectedTtgh.trangThai = thongTinGiaoHang.trangThai.toString();
+        console.log("Trạng thái hiện tại:", $scope.selectedTtgh.trangThai);
     };
 
 
@@ -43,60 +113,51 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
             idKH: $scope.idKH,
         };
         console.log("Dữ liệu voucher mới:", newTtgh);
-
-        $http.post(url + '/add', newTtgh)
+        $http.post('http://localhost:8080/thongtingiaohang/add', newTtgh)
             .then(function (response) {
-                $scope.listTtgh.push(response.data);
-                alert('Thêm thành công!!')
-                resetForm();
-            }).catch((error) => {
-            $scope.errorMessage = "Thêm thất bại";
-        });
-        // Reset form
-        resetForm();
-        var modalElement = new bootstrap.Modal(document.getElementById('ttghForm'));
-        modalElement.hide();
-
-    };
-    $scope.updateTtgh = function () {
-        console.log("Cập nhật TTGH:", $scope.selectedTtgh);  // Kiểm tra dữ liệu trước khi gửi
-        $http.put(url + '/update/' + $scope.selectedTtgh.id, $scope.selectedTtgh)
-            .then(function (response) {
-                console.log("Cập nhật thành công", response.data);
-                // Cập nhật danh sách nhân viên sau khi update thành công
-                const index = $scope.listTtgh.findIndex(ttgh => ttgh.id === response.data.id);
-                if (index !== -1) {
-                    $scope.listTtgh[index] = response.data;
-                }
-                alert('Cập nhật thành công!!');
-                resetUpdateForm();
+                // Đóng modal
+                $('#productModal').modal('hide');
+                setTimeout(function () {
+                    location.reload();
+                }, 500);
             })
             .catch(function (error) {
-                console.error("Lỗi khi cập nhật:", error);
-                alert("Cập nhật thất bại. Vui lòng thử lại sau.");
+                $scope.errorMessage = "Thêm thất bại";
             });
-        var modalElement = new bootstrap.Modal(document.getElementById('updateForm'));
-        modalElement.hide();
+        resetForm();
     };
 
 
+    $scope.updateTtgh = function () {
+        if (!$scope.idKH) {
+            alert("Vui lòng chọn khách hàng");
+            return;
+        }
+        $scope.selectedTtgh.idKH = $scope.idKH;
+        $http.put('http://localhost:8080/thongtingiaohang/update/' + $scope.selectedTtgh.id, $scope.selectedTtgh)
+            .then(function (response) {
+                location.reload()
+            })
+            .catch(function () {
+            });
+    };
 
-// Xóa nhân viên
-    $scope.deleteTtgh = function (id) {
+    $scope.delete = function (id) {
         console.log("Xóa");
-        if (confirm('Bạn có chắc chắn muốn xóa TTgh này?')) {
-            $http.delete(url + '/delete/' + id)
+        if (confirm('Bạn có chắc chắn muốn xóa ?')) {
+            $http.delete('http://localhost:8080/thongtingiaohang/delete/' + id)
                 .then(function (response) {
-                    // Tìm chỉ số của nhân viên đã xóa
+                    console.log(response.data);
+                    location.reload()
                     const index = $scope.listTtgh.findIndex(ttgh => ttgh.id === id);
                     if (index !== -1) {
-                        $scope.listTtgh.splice(index, 1);  // Xóa nhân viên khỏi danh sách
+                        $scope.listTtgh.splice(index, 1);
                     }
-                    alert('Xóa thành công!!');
+                    alert(response.data.message || 'Xóa thành công!!');  // Sử dụng thông điệp từ server
                 })
                 .catch(function (error) {
-                    console.error("Lỗi khi xóa nhân viên:", error);
-                    alert("Xóa thất bại. Vui lòng thử lại sau.");  // Hiển thị thông báo lỗi
+                    console.error("Lỗi khi xóa :", error);
+                    alert("Xóa thất bại. Vui lòng thử lại sau.");
                 });
         }
     };

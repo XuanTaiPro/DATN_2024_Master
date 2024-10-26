@@ -121,6 +121,7 @@ window.nhansuCtrl= function($scope, $http) {
         console.log("Trạng thái hiện tại:", $scope.selectedNhanVien.trangThai);
     };
 
+    $scope.errorMessages = {};
     $scope.addNhanVien = function () {
         if (!$scope.gioiTinh) {
             $scope.gioiTinh = "Nam";
@@ -147,12 +148,15 @@ window.nhansuCtrl= function($scope, $http) {
                 setTimeout(function() {
                     location.reload();
                 }, 500);
+                resetForm();
             })
             .catch(function (error) {
-                $scope.errorMessage = "Thêm thất bại";
+                if (error.status === 400) {
+                    $scope.errorMessages = error.data;
+                } else {
+                    $scope.errorMessage = "Thêm thất bại";
+                }
             });
-
-        resetForm();
     };
 
 
