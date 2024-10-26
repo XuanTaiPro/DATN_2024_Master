@@ -4,6 +4,7 @@ window.loaivoucherCtrl = function ($scope, $http) {
     $scope.listLoaiVoucher = [];
     $scope.currentPage = 0;
     $scope.totalPages = 1;
+    $scope.pageSize = 3;
     $scope.emptyMessage = "";
 
     $scope.loadPage = function (page) {
@@ -26,6 +27,9 @@ window.loaivoucherCtrl = function ($scope, $http) {
     };
 
 
+    $scope.getSTT = function(index) {
+        return index + 1 + ($scope.currentPage * $scope.pageSize);
+    };
     $scope.range = function (n) {
         return new Array(n);
     };

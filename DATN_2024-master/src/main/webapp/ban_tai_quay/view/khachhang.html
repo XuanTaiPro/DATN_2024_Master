@@ -31,7 +31,7 @@
                 </thead>
                 <tbody id="data">
                 <tr ng-repeat="khachHang in listKhachHang">
-                    <td>{{$index+1}}</td>
+                    <td>{{ getSTT($index) }}</td>
                     <td>{{ khachHang.id }}</td>
                     <td>{{ khachHang.ma }}</td>
                     <td>{{ khachHang.ten }}</td>
@@ -238,6 +238,10 @@
     </div>
 </div>
 <style>
+    .table thead th {
+        background-color: #007bff; /* Nền màu xanh dương cho tiêu đề bảng */
+        color: white; /* Màu chữ trắng cho tiêu đề */
+    }
     body {
         font-family: Arial, sans-serif;
         background-color: #f5f5f5;

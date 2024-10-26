@@ -28,7 +28,7 @@
                 </thead>
                 <tbody id="data">
                 <tr ng-repeat="nhanVien in listNhanVien">
-                    <td>{{$index+1}}</td>
+                    <td>{{ getSTT($index) }}</td>
                     <td><img ng-src="{{ nhanVien.img }}" alt="Ảnh nhân viên" width="50" height="50"></td>
                     <td>{{ nhanVien.id }}</td>
                     <td>{{ nhanVien.ma }}</td>
@@ -270,6 +270,11 @@
 
 
 <style>
+
+    .table thead th {
+        background-color: #007bff; /* Nền màu xanh dương cho tiêu đề bảng */
+        color: white; /* Màu chữ trắng cho tiêu đề */
+    }
     /* Phần chung */
     body {
         font-family: Arial, sans-serif;
