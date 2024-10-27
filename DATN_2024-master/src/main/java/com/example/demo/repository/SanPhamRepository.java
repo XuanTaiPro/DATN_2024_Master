@@ -28,7 +28,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
     @Query("SELECT sp FROM SanPham sp WHERE sp.giamGia.id=:id")
     List<SanPham> findByGiamGiaId(@Param("id") String id);
 
-    @Query("SELECT new com.example.demo.respone.SanPhamOnlineResponse(p.id, p.tenSP, MIN(CAST(pd.gia AS float))) " +
+    @Query("SELECT new com.example.demo.dto.sanpham.SanPhamOnlineResponse(p.id, p.tenSP, MIN(CAST(pd.gia AS float))) " +
             "FROM SanPham p JOIN p.listCTSP pd " +
             "GROUP BY p.id, p.tenSP")
     List<SanPhamOnlineResponse> findAllWithDetails();
