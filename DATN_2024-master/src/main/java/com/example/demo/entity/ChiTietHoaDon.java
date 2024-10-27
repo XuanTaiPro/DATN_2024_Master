@@ -64,6 +64,7 @@ public class ChiTietHoaDon {
             this.maCTHD = "HD" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
         }
     }
+
     public ChiTietHoaDonRep toResponse() {
 
         return new ChiTietHoaDonRep(
@@ -76,8 +77,8 @@ public class ChiTietHoaDon {
                 ngayTao,
                 ngaySua,
                 ghiChu,
-                chiTietSanPham != null ? chiTietSanPham.getGia() : null,
                 chiTietSanPham != null ? chiTietSanPham.getSanPham().getTenSP() : null,
+                chiTietSanPham != null ? chiTietSanPham.getGia() : null,
                 hoaDon != null ? hoaDon.getId() : null
         );
     }

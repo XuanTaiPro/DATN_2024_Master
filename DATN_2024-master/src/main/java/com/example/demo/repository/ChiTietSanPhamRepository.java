@@ -30,6 +30,5 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             @Param("ngaySanXuat") LocalDateTime ngaySanXuat,
             @Param("hsd") LocalDateTime hsd,
             @Param("gia") String gia);
-
-    List<ChiTietSanPham> findByIdIn(List<String> ids);
+    
 }
