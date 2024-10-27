@@ -1,0 +1,276 @@
+<h1 class="text-center mb-4">Thanh toán</h1>
+<div class="container mt-5">
+    <div class="payment-container">
+        <table class="table table-hover" style="border-collapse: separate; border-spacing: 0 10px">
+            <tbody style="text-align: center">
+            <tr ng-repeat="cthd in listCTHD"
+                style="background: #fff; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
+                <td>${cthd.ctSanPham.sanPham.ten}</td>
+                <td>${cthd.ctSanPham.sanPham.ten}</td>
+                <td>${cthd.ctSanPham.sanPham.ten}</td>
+                <td>${cthd.ctSanPham.sanPham.ten}</td>
+                <td>${cthd.ctSanPham.sanPham.ten}</td>
+                <td>${cthd.ctSanPham.sanPham.ten}</td>
+                <td>Tổng: ${cthd.soLuong*cthd.donGia} VND</td>
+            </tr>
+            </tbody>
+        </table>
+        <div style="display: flex">
+            <label>Thành tiền: </label>
+            <p id="totalAmount">${tongtien} VNĐ</p>
+        </div>
+        <div class="bordered-form">
+            <form>
+                <div class="form-group mt-3">
+                    <label for="customerName">Tên khách hàng:</label>
+                    <input type="text" class="form-control" id="customerName" name="customerName"
+                           oninput="checkInput()">
+                </div>
+
+                <div class="form-group mt-3">
+                    <label for="customerPhone">Số điện thoại:</label>
+                    <input type="text" class="form-control" id="customerPhone" name="customerPhone"
+                           oninput="checkInput()">
+                </div>
+                <button type="button" class="btn btn-primary mt-3" onclick="openCustomerTable()">Chọn khách hàng
+                </button>
+            </form>
+        </div>
+
+        <div class="form-group mt-3">
+            <label>Hình thức thanh toán:</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="cash" value="cash"
+                       onchange="checkInput()">
+                <label class="form-check-label" for="cash">Tiền mặt</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer"
+                       value="bankTransfer" onchange="checkInput()">
+                <label class="form-check-label" for="bankTransfer">Chuyển khoản</label>
+            </div>
+        </div>
+
+        <div id="qrCode">
+            <label>Quét QR để thanh toán</label>
+            <img src="https://media-cdn-v2.laodong.vn/storage/newsportal/2021/6/15/920631/4128Nh_2021-06-15_Lu.jpeg"
+                 alt="QR Code" class="img-fluid">
+        </div>
+
+        <div class="bordered-form" id="money" style="display: none">
+            <form action="processPayment" method="post" class="mt-4">
+                <div class="form-group mt-3">
+                    <label for="amountPaid">Tiền khách đưa:</label>
+                    <input oninput="calculateChange()" type="number" class="form-control" id="amountPaid"
+                           name="amountPaid">
+                    <div id="error-message" style="color: red; display: none;">Vui lòng nhập một số dương hợp lệ.</div>
+                </div>
+                <span style="color: red">${ttienbug}</span>
+                <div class="form-group mt-3" style="display: flex">
+                    <label>Tiền thừa:</label>
+                    <p id="changeAmount">0 VNĐ</p>
+                </div>
+            </form>
+        </div>
+
+        <button class="btn btn-success mt-3" onclick="submitThanhtoan()" id="xacnhan">Xác nhận</button>
+
+        <div id="customerTable" class="table-responsive customer-table">
+            <table class="table table-hover">
+                <thead class="thead-light">
+                <tr>
+                    <th>Mã khách hàng</th>
+                    <th>Tên khách hàng</th>
+                    <th>SDT</th>
+                    <th>Chọn</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td id="maKhach">${kh.ma}</td>
+                    <td>${kh.ten}</td>
+                    <td>${kh.sdt}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary"
+                                onclick="selectCustomer('${kh.ten}', '${kh.sdt}')">Chọn
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="overlay" class="overlay" onclick="closeForm()"></div>
+</body>
+<script>
+    function openCustomerTable() {
+        document.getElementById("customerTable").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+    }
+
+    let sdt;
+
+    function selectCustomer(name, phone) {
+        document.getElementById("customerName").value = name;
+        sdt = phone;
+        document.getElementById("customerPhone").value = phone;
+        document.getElementById("customerTable").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+        checkInput();
+    }
+
+    function closeForm() {
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("qrCode").style.display = "none";
+        // document.getElementById("customerTable").style.display = "none";
+        // document.getElementById("amountPaid").value = parseInt(document.getElementById('totalAmount').innerText.replace(/[^0-9]/g, ''), 10);;
+        calculateChange();
+    }
+
+    document.getElementById("bankTransfer").addEventListener("change", function () {
+        document.getElementById("qrCode").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("money").style.display = "none";
+    });
+
+    document.getElementById("cash").addEventListener("change", function () {
+        document.getElementById("money").style.display = "block";
+    });
+
+    document.getElementById("amountPaid").addEventListener("input", function () {
+        var totalAmount = parseFloat(document.getElementById("totalAmount").innerText.replace(' VNĐ', '').replace(',', ''));
+        var amountPaidInput = document.getElementById("amountPaid");
+        var amountPaid = parseFloat(amountPaidInput.value);
+        var errorMessage = document.getElementById("error-message");
+
+        // Validate input: check for non-negative numbers only
+        if (isNaN(amountPaid) || amountPaid < 0) {
+            amountPaidInput.value = "";
+            errorMessage.style.display = "block";
+        } else {
+            errorMessage.style.display = "none";
+            var change = amountPaid - totalAmount;
+            document.getElementById("change").innerText = change.toLocaleString() + ' VNĐ';
+        }
+        document.getElementById("amountPaid").addEventListener("input", validateAndCalculateChange);
+    });
+
+    function checkInput() {
+        const customerName = document.getElementById('customerName').value.trim();
+        const customerPhone = document.getElementById('customerPhone').value.trim();
+        const paymentMethodSelected = document.querySelector('input[name="paymentMethod"]:checked') !== null;
+
+
+        if (customerName !== '' || customerPhone !== '') {
+            if (paymentMethodSelected)
+                document.getElementById('xacnhan').style.display = 'block';
+        } else {
+        }
+        document.getElementById('xacnhan').style.display = 'none';
+
+
+    }
+
+    document.addEventListener('DOMContentLoaded', checkInput);
+
+    function submitThanhtoan() {
+
+        window.location.href = "http://localhost:8080/banhang/thanhtoan/xacnhan/" + sdt;
+        sdt = null;
+    }
+
+    function calculateChange() {
+        // Lấy giá trị từ các phần tử HTML
+        const totalAmountText = document.getElementById('totalAmount').innerText;
+        const totalAmount = parseInt(totalAmountText.replace(/[^0-9]/g, ''), 10);
+
+        const amountPaidText = document.getElementById('amountPaid').value;
+        const amountPaid = parseInt(amountPaidText.replace(/[^0-9]/g, ''), 10);
+
+        // Tính tiền thừa
+        const changeAmount = amountPaid - totalAmount;
+
+        if (changeAmount < 0 && amountPaid !== null) {
+            document.getElementById('xacnhan').style.display = 'none';
+        } else {
+            document.getElementById('xacnhan').style.display = 'block';
+        }
+        // Cập nhật tiền thừa
+        document.getElementById('changeAmount').innerText = (isNaN(changeAmount) || changeAmount < 0 ? 0 : changeAmount) + ' VNĐ';
+
+    }
+
+</script>
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Màu đen với opacity 0.5 */
+        z-index: 9999; /* Đặt z-index cao hơn để overlay hiển thị trên tất cả các phần tử khác */
+    }
+
+    .payment-container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group label {
+        font-weight: bold;
+    }
+
+    .form-control:disabled, .form-control[readonly] {
+        background-color: #e9ecef;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .customer-table {
+        display: none;
+        position: fixed;
+        width: 630px;
+        height: 660px;
+        top: 50%;
+        left: 50%; /* Đặt vị trí ngang ở giữa */
+        transform: translate(-50%, -50%); /* Đưa form vào trung tâm */
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        z-index: 10000;
+    }
+
+    #qrCode {
+        display: none;
+        position: fixed;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 350px;
+        height: 350px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 10000;
+    }
+
+    .bordered-form {
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+</style>
+</html>

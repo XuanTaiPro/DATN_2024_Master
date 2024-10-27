@@ -22,6 +22,10 @@ app.config(function ($routeProvider) {
             templateUrl: 'view/khachhang.html',
             controller: khachhangCtrl
         })
+        .when('/thanhtoan', {
+            templateUrl: 'view/thanhtoan.html',
+            controller: thanhtoanCtrl
+        })
         .when('/thongke', {
             templateUrl: 'view/thongke.html',
             controller: thongkeCtrl
@@ -42,9 +46,9 @@ app.config(function ($routeProvider) {
             templateUrl: 'view/thongtingiaohang.html',
             controller: thongtingiaohangCtrl
         })
-        // .otherwise({
-        //     redirectTo: '/sanpham',
-        // })
+        .otherwise({
+            redirectTo: '/sanpham',
+        })
 })
 
 app.controller('myCtrl', function ($scope, $http) { })
