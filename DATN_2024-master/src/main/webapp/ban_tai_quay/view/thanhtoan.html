@@ -1,19 +1,17 @@
 <h1 class="text-center mb-4">Thanh toán</h1>
 <div class="container mt-5">
     <div class="payment-container">
-        <table class="table table-hover" style="border-collapse: separate; border-spacing: 0 10px">
+        <table class="table table-hover">
             <thead>
-                <tr>
-                    <td>Tên Sản Phẩm</td>
-                    <td>Đơn giá</td>
-                    <td>Số lượng</td>
-                    <td>Tổng tiền</td>
-                </tr>
+            <tr>
+                <td>Tên Sản Phẩm</td>
+                <td>Đơn giá</td>
+                <td>Số lượng</td>
+                <td>Tổng tiền</td>
+            </tr>
             </thead>
-            <tbody style="text-align: center">
-
-            <tr ng-repeat="cthd in listCTHD"
-                style="background: #fff; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
+            <tbody>
+            <tr ng-repeat="cthd in listCTHD">
                 <td>{{cthd.tenSP}}</td>
                 <td>{{cthd.giaBan}}</td>
                 <td>{{cthd.soLuong}}</td>
@@ -30,15 +28,16 @@
                 <div class="form-group mt-3">
                     <label for="customerName">Tên khách hàng:</label>
                     <input type="text" class="form-control" id="customerName" name="customerName"
-                           oninput="checkInput()">
+                           ng-model="selectedCustomerName">
                 </div>
-
                 <div class="form-group mt-3">
                     <label for="customerPhone">Số điện thoại:</label>
                     <input type="text" class="form-control" id="customerPhone" name="customerPhone"
-                           oninput="checkInput()">
+                           ng-model="selectedCustomerPhone">
                 </div>
-                <button type="button" class="btn btn-primary mt-3" onclick="openCustomerTable()">Chọn khách hàng
+                <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal"
+                        data-bs-target="#customerModal">
+                    Chọn khách hàng
                 </button>
             </form>
         </div>
@@ -47,168 +46,210 @@
             <label>Hình thức thanh toán:</label><br>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="paymentMethod" id="cash" value="cash"
-                       onchange="checkInput()">
+                       data-bs-toggle="modal" data-bs-target="#cashModal">
                 <label class="form-check-label" for="cash">Tiền mặt</label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer"
-                       value="bankTransfer" onchange="checkInput()">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer" value="bankTransfer"
+                       data-bs-toggle="modal" data-bs-target="#bankTransferModal">
                 <label class="form-check-label" for="bankTransfer">Chuyển khoản</label>
             </div>
         </div>
 
-        <div id="qrCode">
-            <label>Quét QR để thanh toán</label>
-            <img src="https://media-cdn-v2.laodong.vn/storage/newsportal/2021/6/15/920631/4128Nh_2021-06-15_Lu.jpeg"
-                 alt="QR Code" class="img-fluid">
+
+        <div class="modal fade" id="bankTransferModal" tabindex="-1" aria-labelledby="bankTransferModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="bankTransferModalLabel">Chuyển khoản</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <label>Quét QR để thanh toán</label>
+                        <img src="https://media-cdn-v2.laodong.vn/storage/newsportal/2021/6/15/920631/4128Nh_2021-06-15_Lu.jpeg"
+                             alt="QR Code" class="img-fluid">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="bordered-form" id="money" style="display: none">
-            <form action="processPayment" method="post" class="mt-4">
-                <div class="form-group mt-3">
-                    <label for="amountPaid">Tiền khách đưa:</label>
-                    <input oninput="calculateChange()" type="number" class="form-control" id="amountPaid"
-                           name="amountPaid">
-                    <div id="error-message" style="color: red; display: none;">Vui lòng nhập một số dương hợp lệ.</div>
+
+        <div class="modal fade" id="cashModal" tabindex="-1" aria-labelledby="cashModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cashModalLabel">Thanh toán tiền mặt</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="processPayment" method="post">
+                            <div class="form-group mt-3">
+                                <label for="amountPaid">Tiền khách đưa:</label>
+                                <input type="text" class="form-control" id="amountPaid" ng-model="amountPaid"
+                                       ng-change="calculateChange()">
+                                <div id="error-message" style="color: red;" ng-show="showError">Số tiền cần thanh toán
+                                    không đủ.
+                                </div>
+                            </div>
+                            <div class="form-group mt-3" style="display: flex">
+                                <label>Tiền thừa:</label>
+                                <p id="changeAmount">{{changeAmount}} VNĐ</p>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#confirmModal" ng-click="showConfirmation()">Xác nhận
+                        </button>
+                    </div>
                 </div>
-                <span style="color: red">${ttienbug}</span>
-                <div class="form-group mt-3" style="display: flex">
-                    <label>Tiền thừa:</label>
-                    <p id="changeAmount">0 VNĐ</p>
+            </div>
+        </div>
+
+        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">Xác nhận chi tiết thanh toán</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td><strong>Tên khách hàng:</strong></td>
+                                <td>{{selectedCustomerName}}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tiền khách đưa:</strong></td>
+                                <td>{{amountPaid}} VNĐ</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tổng tiền:</strong></td>
+                                <td>{{tongTien}} VNĐ</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tiền thừa:</strong></td>
+                                <td>{{changeAmount}} VNĐ</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-success" ng-click="completePayment()">Hoàn tất thanh toán</button>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
 
         <button class="btn btn-success mt-3" onclick="submitThanhtoan()" id="xacnhan">Xác nhận</button>
 
-        <div id="customerTable" class="table-responsive customer-table">
-            <table class="table table-hover">
-                <thead class="thead-light">
-                <tr>
-                    <th>Mã khách hàng</th>
-                    <th>Tên khách hàng</th>
-                    <th>SDT</th>
-                    <th>Chọn</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td id="maKhach">${kh.ma}</td>
-                    <td>${kh.ten}</td>
-                    <td>${kh.sdt}</td>
-                    <td>
-                        <button type="button" class="btn btn-primary"
-                                onclick="selectCustomer('${kh.ten}', '${kh.sdt}')">Chọn
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="customerModalLabel">Chọn khách hàng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th>Tên</th>
+                                    <th>Email</th>
+                                    <th>Giới Tính</th>
+                                    <th>SDT</th>
+                                    <th>Chọn</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="khachHang in listKhachHang">
+                                    <td>{{ khachHang.ten }}</td>
+                                    <td>{{ khachHang.email }}</td>
+                                    <td>{{ khachHang.gioiTinh }}</td>
+                                    <td>{{ khachHang.sdt }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary"
+                                                ng-click="selectCustomer(khachHang.ten, khachHang.sdt)"
+                                                data-bs-dismiss="modal">
+                                            Chọn
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 <div id="overlay" class="overlay" onclick="closeForm()"></div>
 
-<script>
-    function openCustomerTable() {
-        document.getElementById("customerTable").style.display = "block";
-        document.getElementById("overlay").style.display = "block";
-    }
-
-    let sdt;
-
-    function selectCustomer(name, phone) {
-        document.getElementById("customerName").value = name;
-        sdt = phone;
-        document.getElementById("customerPhone").value = phone;
-        document.getElementById("customerTable").style.display = "none";
-        document.getElementById("overlay").style.display = "none";
-        checkInput();
-    }
-
-    function closeForm() {
-        document.getElementById("overlay").style.display = "none";
-        document.getElementById("qrCode").style.display = "none";
-        // document.getElementById("customerTable").style.display = "none";
-        // document.getElementById("amountPaid").value = parseInt(document.getElementById('totalAmount').innerText.replace(/[^0-9]/g, ''), 10);;
-        calculateChange();
-    }
-
-    document.getElementById("bankTransfer").addEventListener("change", function () {
-        document.getElementById("qrCode").style.display = "block";
-        document.getElementById("overlay").style.display = "block";
-        document.getElementById("money").style.display = "none";
-    });
-
-    document.getElementById("cash").addEventListener("change", function () {
-        document.getElementById("money").style.display = "block";
-    });
-
-    document.getElementById("amountPaid").addEventListener("input", function () {
-        var totalAmount = parseFloat(document.getElementById("totalAmount").innerText.replace(' VNĐ', '').replace(',', ''));
-        var amountPaidInput = document.getElementById("amountPaid");
-        var amountPaid = parseFloat(amountPaidInput.value);
-        var errorMessage = document.getElementById("error-message");
-
-        // Validate input: check for non-negative numbers only
-        if (isNaN(amountPaid) || amountPaid < 0) {
-            amountPaidInput.value = "";
-            errorMessage.style.display = "block";
-        } else {
-            errorMessage.style.display = "none";
-            var change = amountPaid - totalAmount;
-            document.getElementById("change").innerText = change.toLocaleString() + ' VNĐ';
-        }
-        document.getElementById("amountPaid").addEventListener("input", validateAndCalculateChange);
-    });
-
-    function checkInput() {
-        const customerName = document.getElementById('customerName').value.trim();
-        const customerPhone = document.getElementById('customerPhone').value.trim();
-        const paymentMethodSelected = document.querySelector('input[name="paymentMethod"]:checked') !== null;
-
-
-        if (customerName !== '' || customerPhone !== '') {
-            if (paymentMethodSelected)
-                document.getElementById('xacnhan').style.display = 'block';
-        } else {
-        }
-        document.getElementById('xacnhan').style.display = 'none';
-
-
-    }
-
-    document.addEventListener('DOMContentLoaded', checkInput);
-
-    function submitThanhtoan() {
-
-        window.location.href = "http://localhost:8080/banhang/thanhtoan/xacnhan/" + sdt;
-        sdt = null;
-    }
-
-    function calculateChange() {
-        // Lấy giá trị từ các phần tử HTML
-        const totalAmountText = document.getElementById('totalAmount').innerText;
-        const totalAmount = parseInt(totalAmountText.replace(/[^0-9]/g, ''), 10);
-
-        const amountPaidText = document.getElementById('amountPaid').value;
-        const amountPaid = parseInt(amountPaidText.replace(/[^0-9]/g, ''), 10);
-
-        // Tính tiền thừa
-        const changeAmount = amountPaid - totalAmount;
-
-        if (changeAmount < 0 && amountPaid !== null) {
-            document.getElementById('xacnhan').style.display = 'none';
-        } else {
-            document.getElementById('xacnhan').style.display = 'block';
-        }
-        // Cập nhật tiền thừa
-        document.getElementById('changeAmount').innerText = (isNaN(changeAmount) || changeAmount < 0 ? 0 : changeAmount) + ' VNĐ';
-
-    }
-
-</script>
 <style>
+
+    /* Thiết lập kiểu cho bảng */
+    .table {
+        width: 100%;
+        margin: 20px 0;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        font-family: Arial, sans-serif;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Kiểu cho header */
+    .table thead {
+        background-color: #007bff; /* Màu nền cho header */
+        color: white; /* Màu chữ cho header */
+    }
+
+    .table thead tr {
+        height: 50px; /* Chiều cao cho các ô trong header */
+    }
+
+    .table thead td {
+        font-weight: bold; /* Đậm chữ cho các ô trong header */
+        text-align: center; /* Canh giữa chữ trong header */
+        border-radius: 10px 10px 0 0; /* Bo góc cho header */
+        padding: 10px; /* Khoảng cách trong các ô header */
+    }
+
+    /* Kiểu cho body */
+    .table tbody {
+        background-color: #fff; /* Màu nền cho body */
+    }
+
+    .table tbody tr {
+        border: 1px solid #ddd; /* Đường viền cho các hàng */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng cho hàng */
+        border-radius: 10px; /* Bo góc cho các hàng */
+    }
+
+    .table tbody td {
+        padding: 15px; /* Khoảng cách trong các ô body */
+        text-align: center; /* Canh giữa chữ trong body */
+        color: #333; /* Màu chữ cho body */
+    }
+
+    /* Thay đổi màu nền khi hover */
+    .table tbody tr:hover {
+        background-color: #f1f1f1; /* Màu nền khi hover */
+        transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+    }
+
     body {
         background-color: #f8f9fa;
     }

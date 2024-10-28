@@ -1,8 +1,27 @@
 window.thanhtoanCtrl= function($scope, $http) {
 
     $scope.listCTHD = [];
-    $scope.listCTSP = [];
+    $scope.listKhachHang = [];
+    $scope.selectedCustomerName = "";
+    $scope.selectedCustomerPhone = "";
+    $scope.amountPaid = 0;
+    $scope.changeAmount = 0;
+    $scope.showError = false;
+    $scope.tongTien = 0;
 
+
+
+    $http.get('http://localhost:8080/khachhang').then(function (response) {
+        $scope.listKhachHang = response.data;
+        console.log("Lấy dữ liệu thành công");
+    }).catch((error) => {
+        console.error('Lỗi:', error);
+    });
+
+    $scope.selectCustomer = function(ten, sdt) {
+        $scope.selectedCustomerName = ten;
+        $scope.selectedCustomerPhone = sdt;
+    };
 
     $http.get('http://localhost:8080/chitiethoadon/getCTHD?idHD=1C5331D3')
         .then(function(response) {
@@ -18,5 +37,42 @@ window.thanhtoanCtrl= function($scope, $http) {
         .catch(function(error) {
             console.error("Lỗi:", error);
         });
+
+
+    $scope.calculateChange = function() {
+        const totalAmount = $scope.tongTien; // Tổng tiền cần thanh toán
+        const amountPaid = parseFloat($scope.amountPaid) || 0; // Lấy số tiền khách đưa
+
+        $scope.changeAmount = amountPaid - totalAmount;
+        if ($scope.changeAmount < 0) {
+            $scope.showError = true;
+        } else {
+            $scope.showError = false;
+        }
+    };
+
+    $scope.showConfirmation = function() {
+        if ($scope.amountPaid < $scope.tongTien) {
+            $scope.showError = true;
+            alert("Số tiền cần thanh toán không đủ. Vui lòng kiểm tra lại.");
+        } else {
+            $scope.showError = false; // Ẩn thông báo lỗi
+            new bootstrap.Modal(document.getElementById('confirmModal')).show();
+        }
+    };
+
+// Hoàn tất thanh toán
+    $scope.completePayment = function() {
+        if ($scope.amountPaid < $scope.tongTien) {
+            alert("Không thể hoàn tất thanh toán vì số tiền không đủ.");
+            return;
+        }
+        console.log("Thanh toán hoàn tất cho khách hàng:", $scope.selectedCustomerName);
+        alert("Thanh toán thành công!");
+        new bootstrap.Modal(document.getElementById('confirmModal')).hide();
+        location.reload();
+
+    };
+
 
 }
