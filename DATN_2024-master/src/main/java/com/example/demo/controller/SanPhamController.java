@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -52,8 +53,9 @@ public class SanPhamController {
     }
 
     @GetMapping("/getSanPham-online")
-    public Map<String, Object> getAllProductsWithMinPrice() {
-        List<SanPhamOnlineResponse> products = sanPhamRepository.findAllWithDetails();
+    public Map<String, Object> getAllProductsWithMinPrice(@RequestParam(defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page, 8);
+        List<SanPhamOnlineResponse> products = sanPhamRepository.findAllWithDetails(pageable);
 
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("data", products);

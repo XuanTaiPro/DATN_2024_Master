@@ -2,6 +2,8 @@ package com.example.demo.repository;
 
 import com.example.demo.dto.sanpham.SanPhamOnlineResponse;
 import com.example.demo.entity.SanPham;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,5 +33,5 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
     @Query("SELECT new com.example.demo.dto.sanpham.SanPhamOnlineResponse(p.id, p.tenSP, MIN(CAST(pd.gia AS float))) " +
             "FROM SanPham p JOIN p.listCTSP pd " +
             "GROUP BY p.id, p.tenSP")
-    List<SanPhamOnlineResponse> findAllWithDetails();
+    List<SanPhamOnlineResponse> findAllWithDetails(Pageable pageable);
 }
