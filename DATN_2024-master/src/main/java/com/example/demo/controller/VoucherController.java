@@ -5,10 +5,8 @@ import com.example.demo.dto.thongbao.ThongBaoRequest;
 import com.example.demo.dto.thongbao.ThongBaoResponse;
 import com.example.demo.dto.voucher.VoucherRequest;
 import com.example.demo.dto.voucher.VoucherResponse;
-import com.example.demo.entity.KhachHang;
-import com.example.demo.entity.NhanVien;
-import com.example.demo.entity.ThongBao;
-import com.example.demo.entity.Voucher;
+import com.example.demo.entity.*;
+import com.example.demo.repository.ChiTietVoucherRepository;
 import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.repository.LoaiVoucherRepository;
 import com.example.demo.repository.VoucherRepository;
@@ -34,6 +32,12 @@ public class VoucherController {
 
     @Autowired
     private LoaiVoucherRepository lvcRepo;
+
+    @Autowired
+    private KhachHangRepository khRepo;
+
+    @Autowired
+    private ChiTietVoucherRepository ctvcRepo;
 
     @Autowired
     private GenerateCodeAll generateCodeAll;
@@ -93,6 +97,21 @@ public class VoucherController {
         voucher.setLoaiVoucher(lvcRepo.getById(voucherRequest.getIdLoaiVC()));
         voucher.setNgayTao(LocalDateTime.now());
         vcRepo.save(voucher);
+
+        if (voucherRequest.getIdKH() != null && !voucherRequest.getIdKH().isEmpty()) {
+            for (String customerId : voucherRequest.getIdKH()) {
+                Optional<KhachHang> khachHang = khRepo.findById(customerId);
+                if (khachHang.isPresent()) {
+                    ChiTietVoucher chiTietVoucher = new ChiTietVoucher();
+                    chiTietVoucher.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+                    chiTietVoucher.setKhachHang(khachHang.get());
+                    chiTietVoucher.setVoucher(voucher);
+                    ctvcRepo.save(chiTietVoucher); // Lưu chi tiết voucher cho từng khách hàng
+                } else {
+                    return ResponseEntity.badRequest().body("Khách hàng với ID " + customerId + " không tồn tại");
+                }
+            }
+        }
         return ResponseEntity.ok("thêm thành công");
     }
 

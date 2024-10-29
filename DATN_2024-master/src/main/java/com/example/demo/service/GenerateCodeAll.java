@@ -64,6 +64,14 @@ public class GenerateCodeAll {
         return ma;
     }
 
+    public String generateMaChiTietVoucher() {
+        String ma;
+        do {
+            ma = generateMa("CTVC-", 5);
+        } while (vcRepo.existsByMa(ma));
+        return ma;
+    }
+
     public String generateMaGHCT() {
         String ma;
         do {

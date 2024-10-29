@@ -2,6 +2,7 @@ window.voucherCtrl = function ($scope, $http) {
     const url = "http://localhost:8080/voucher";
 
     $scope.listVoucher = [];
+    $scope.listKhachHang = [];
     $scope.currentPage = 0;
     $scope.totalPages = 1;
     $scope.pageSize = 3;
@@ -79,6 +80,58 @@ window.voucherCtrl = function ($scope, $http) {
             console.error("Lỗi khi lấy danh sách LVC:", error);
         });
 
+    $http.get('http://localhost:8080/khachhang').then(function (response) {
+        $scope.listKhachHang = response.data;
+        console.log("Lấy dữ liệu thành công");
+    }).catch((error) => {
+        console.error('Lỗi:', error);
+    });
+
+    $scope.selectedCustomers = [];
+    $scope.selectAll = false;
+
+// Hàm toggle cho từng khách hàng
+    $scope.toggleCustomerSelection = function(khachHang) {
+        if (khachHang.selected) {
+            $scope.selectedCustomers.push(khachHang);
+        } else {
+            const index = $scope.selectedCustomers.indexOf(khachHang);
+            if (index > -1) {
+                $scope.selectedCustomers.splice(index, 1);
+            }
+        }
+
+        // Cập nhật trạng thái của selectAll
+        $scope.selectAll = $scope.listKhachHang.length > 0 && $scope.selectedCustomers.length === $scope.listKhachHang.length;
+    };
+
+// Hàm chọn tất cả hoặc bỏ chọn tất cả
+    $scope.toggleAllCheckboxes = function() {
+        $scope.selectAll = !$scope.selectAll; // Đảo ngược trạng thái của selectAll
+        $scope.selectedCustomers = []; // Reset danh sách selectedCustomers
+
+        angular.forEach($scope.listKhachHang, function(khachHang) {
+            khachHang.selected = $scope.selectAll; // Đặt trạng thái selected cho từng khách hàng
+            if ($scope.selectAll) {
+                $scope.selectedCustomers.push(khachHang); // Nếu chọn tất cả, thêm vào danh sách
+            }
+        });
+    };
+
+
+
+
+    $scope.openCustomerModal = function() {
+        $('#customerModal').modal('show');
+    };
+
+    $scope.confirmSelection = function() {
+        // Đóng modal "Chọn khách hàng" sau khi xác nhận
+        $('#customerModal').modal('hide');
+        // Giữ modal "Thêm Voucher" mở
+        $('#productModal').modal('show');
+    };
+
 
     $scope.viewDetail = function (voucher) {
         $scope.selectedVoucher = angular.copy(voucher);
@@ -104,6 +157,16 @@ window.voucherCtrl = function ($scope, $http) {
         console.log("Trạng thái hiện tại:", $scope.selectedVoucher.trangThai);
     };
 
+    $scope.toggleCustomerSelection = function (khachHang) {
+        if (khachHang.selected) {
+            $scope.selectedCustomers.push(khachHang);
+        } else {
+            const index = $scope.selectedCustomers.indexOf(khachHang);
+            if (index > -1) {
+                $scope.selectedCustomers.splice(index, 1);
+            }
+        }
+    };
 
     $scope.addVoucher = function (e) {
         const newVoucher = {
@@ -115,7 +178,8 @@ window.voucherCtrl = function ($scope, $http) {
             ngayKetThuc: $scope.ngayKetThuc,
             soLuong: $scope.soLuong,
             idLoaiVC: $scope.idLoaiVC,
-            trangThai: $scope.trangThai
+            trangThai: $scope.trangThai,
+            idKH: $scope.selectedCustomers.map(c => c.id)
         };
 
         console.log("Dữ liệu mới:", newVoucher);
@@ -182,6 +246,8 @@ window.voucherCtrl = function ($scope, $http) {
         $scope.soLuong = "";
         $scope.idLoaiVC = "";
         $scope.trangThai = "";
+        $scope.selectedCustomerNames = ""; // Xóa tên khách hàng đã chọn
+        $scope.selectedCustomers = [];
     }
 
 };

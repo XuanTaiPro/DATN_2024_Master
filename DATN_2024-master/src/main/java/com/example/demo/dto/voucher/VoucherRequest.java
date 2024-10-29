@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -57,6 +58,8 @@ public class VoucherRequest {
 
     @NotNull(message = "idLoaiVC Không được để trống")
     private String idLoaiVC;
+
+    private List<String> idKH;
 
     public Voucher toEntity() {
         if (this.id == null || this.id.isEmpty()) {

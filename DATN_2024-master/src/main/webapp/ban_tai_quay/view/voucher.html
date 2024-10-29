@@ -119,6 +119,18 @@
                             </select>
                         </div>
                         <div>
+                            <button type="button" class="btn btn-primary" ng-click="openCustomerModal()">
+                                Chọn khách hàng
+                            </button>
+                        </div>
+                        <div class="container-inline">
+                            <label>Khách hàng:</label>
+                            <select ng-model="selectedCustomer" class="short-select">
+                                <option value="" disabled selected>Khách hàng đã chọn</option>
+                                <option ng-repeat="customer in selectedCustomers" value="{{customer.id}}">{{customer.ten}}</option>
+                            </select>
+                        </div>
+                        <div>
                             <label for="trangThai">Trạng thái:</label>
                             <select ng-model="trangThai" id="trangThai" class="short-select" required>
                                 <option value="" disabled selected>Chọn Trạng Thái</option>
@@ -136,6 +148,50 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerModalLabel">Chọn khách hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="thead-light">
+                        <tr>
+                            <th>
+                                <input type="checkbox" ng-model="selectAll" ng-click="toggleAllCheckboxes()">
+                            </th>
+                            <th>Tên</th>
+                            <th>Email</th>
+                            <th>Giới Tính</th>
+                            <th>SDT</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="khachHang in listKhachHang">
+                            <td>
+                                <input type="checkbox" ng-model="khachHang.selected" ng-change="toggleCustomerSelection(khachHang)">
+                            </td>
+                            <td>{{ khachHang.ten }}</td>
+                            <td>{{ khachHang.email }}</td>
+                            <td>{{ khachHang.gioiTinh }}</td>
+                            <td>{{ khachHang.sdt }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" ng-click="confirmSelection()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <div class="modal fade" id="UpdateForm" tabindex="-1" aria-labelledby="userFormLabel" aria-hidden="true">
@@ -259,10 +315,12 @@
 </div>
 </div>
 <style>
+
     .table thead th {
-        background-color: #007bff; /* Nền màu xanh dương cho tiêu đề bảng */
+        background-color: rgb(75, 170, 255); /* Nền màu xanh dương cho tiêu đề bảng */
         color: white; /* Màu chữ trắng cho tiêu đề */
     }
+
     /* Phần chung */
     body {
         font-family: Arial, sans-serif;
@@ -341,6 +399,7 @@
     .btn:hover {
         opacity: 0.85;
     }
+
     .table .actions {
         display: flex;
         gap: 5px; /* Khoảng cách giữa các nút */
@@ -446,6 +505,5 @@
         width: 100%;
         max-width: 370px;
     }
-
 
 </style>
