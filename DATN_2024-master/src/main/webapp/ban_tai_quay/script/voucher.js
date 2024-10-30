@@ -249,6 +249,5 @@ window.voucherCtrl = function ($scope, $http) {
         $scope.selectedCustomerNames = ""; // Xóa tên khách hàng đã chọn
         $scope.selectedCustomers = [];
     }
-
 };
 

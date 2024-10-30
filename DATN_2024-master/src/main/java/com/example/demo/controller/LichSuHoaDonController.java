@@ -30,6 +30,7 @@ public class LichSuHoaDonController {
 
     @Autowired
     private HoaDonRepo hoaDonRepo;
+
     @Autowired
     private NhanVienRepository nhanVienRepo;
 

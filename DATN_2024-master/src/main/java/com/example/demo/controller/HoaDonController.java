@@ -109,9 +109,6 @@ public class HoaDonController {
 
     }
 
-
-
-
     @GetMapping("/listNV")
     public List<NhanVienResponse> getAllNhanVien() {
         NhanVien nhanVien=new NhanVien();
@@ -185,7 +182,6 @@ public class HoaDonController {
                     return ResponseEntity.badRequest().body(null);
                 }
             }
-
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(req.getMaHD());
             hoaDon.setMaVoucher(req.getMaVoucher());

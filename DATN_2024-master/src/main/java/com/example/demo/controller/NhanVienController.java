@@ -92,6 +92,7 @@ public class NhanVienController {
         nvRepo.save(nhanVien);
         return ResponseEntity.ok("thêm thành công");
     }
+
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody NhanVienRequest nhanVienRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -131,7 +132,6 @@ public class NhanVienController {
         }
     }
 
-
     @GetMapping("search-filter")
     public ResponseEntity<?> searchAndFilterNhanVien(
             @RequestParam String ten,
@@ -148,6 +148,5 @@ public class NhanVienController {
         }
         return ResponseEntity.ok(list);
     }
-
 
 }

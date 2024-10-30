@@ -45,8 +45,6 @@ public class KhachHangController {
         return khachHangList.stream().map(KhachHang::getId).collect(Collectors.toList());
     }
 
-
-
     @GetMapping("findAllNotPW")
     public ResponseEntity<?> findAllNotPW() {
         List<KhachHangResponse> list = new ArrayList<>();
@@ -160,11 +158,9 @@ public class KhachHangController {
     public ResponseEntity<?> searchVoucher(@RequestParam String ten) {
         List<KhachHangResponse> list = new ArrayList<>();
         khRepo.findByTenContainingIgnoreCase(ten).forEach(voucher -> list.add(voucher.toResponse()));
-
         if (list.isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy voucher với tên: " + ten);
         }
-
         return ResponseEntity.ok(list);
     }
 }

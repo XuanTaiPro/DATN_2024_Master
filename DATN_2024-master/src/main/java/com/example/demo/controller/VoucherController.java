@@ -5,6 +5,7 @@ import com.example.demo.dto.thongbao.ThongBaoRequest;
 import com.example.demo.dto.thongbao.ThongBaoResponse;
 import com.example.demo.dto.voucher.VoucherRequest;
 import com.example.demo.dto.voucher.VoucherResponse;
+import com.example.demo.dto.voucher.VoucherThanhToan;
 import com.example.demo.entity.*;
 import com.example.demo.repository.ChiTietVoucherRepository;
 import com.example.demo.repository.KhachHangRepository;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @CrossOrigin("*")
 @RestController
@@ -49,6 +51,25 @@ public class VoucherController {
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping("/VCkhachHang/{idKH}")
+    public ResponseEntity<List<VoucherThanhToan>> getVoucherByKhachHang(@PathVariable String idKH) {
+        List<ChiTietVoucher> chiTietVouchers = ctvcRepo.findByKhachHang_Id(idKH);
+        System.out.println("ChiTietVouchers: " + chiTietVouchers);
+        // Chuyển đổi danh sách ChiTietVoucher sang danh sách VoucherThanhToan, kiểm tra null cho mỗi voucher
+        List<VoucherThanhToan> vouchers = chiTietVouchers.stream()
+                .filter(ctv -> ctv.getVoucher() != null) // Bỏ qua các ChiTietVoucher không có Voucher
+                .map(ctv -> new VoucherThanhToan(
+                        ctv.getVoucher().getTen(),
+                        ctv.getVoucher().getGiamGia(),
+                        ctv.getVoucher().getGiamMin(),
+                        ctv.getVoucher().getGiamMax(),
+                        ctv.getVoucher().getNgayKetThuc(),
+                        ctv.getVoucher().getSoLuong()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(vouchers);
+    }
     @GetMapping("page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
@@ -93,6 +114,7 @@ public class VoucherController {
 //        if (vcRepo.existsByMa(voucherRequest.getMa())) {
 //            return ResponseEntity.badRequest().body("mã đã tồn tại");
 //        }
+
         Voucher voucher = voucherRequest.toEntity();
         voucher.setLoaiVoucher(lvcRepo.getById(voucherRequest.getIdLoaiVC()));
         voucher.setNgayTao(LocalDateTime.now());

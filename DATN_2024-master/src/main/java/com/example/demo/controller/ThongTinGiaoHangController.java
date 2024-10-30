@@ -145,7 +145,6 @@ public class ThongTinGiaoHangController {
         if (list.isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy thông tin giao hàng cần tìm kiếm.");
         }
-
         return ResponseEntity.ok(list);
     }
 }

@@ -129,6 +129,7 @@ public class ThongBaoController {
         }
     }
 
+
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
         Map<String, String> response = new HashMap<>();  // Khởi tạo Map để trả về JSON hợp lệ

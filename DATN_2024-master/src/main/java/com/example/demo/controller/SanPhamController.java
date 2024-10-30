@@ -188,6 +188,7 @@ public class SanPhamController {
         if (sanPhamRequest.getIdGiamGia() != null) {
             existingSanPham.setGiamGia(giamGiaRepository.getById(sanPhamRequest.getIdGiamGia().trim()));
         }
+
         sanPhamRepository.save(existingSanPham);
         return ResponseEntity.ok("Cập nhật sản phẩm thành công!");
     }

@@ -28,6 +28,7 @@ public class ThuongHieuController {
         return ResponseEntity.ok(thuongHieuRepository.findAll().stream()
                 .map(ThuongHieu::toResponse).collect(Collectors.toList()));
     }
+
     @PostMapping("/detail")
     public ResponseEntity<?> detail(@RequestBody Map<String, String> body) {
         String id = body.get("id");
@@ -101,7 +102,6 @@ public class ThuongHieuController {
         thuongHieuRepository.save(thuongHieuUpdate);
         return ResponseEntity.ok("Cập nhật thương hiệu thành công!");
     }
-
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody Map<String, String> body) {

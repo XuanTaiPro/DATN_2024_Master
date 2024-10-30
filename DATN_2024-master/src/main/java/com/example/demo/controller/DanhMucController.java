@@ -64,6 +64,7 @@ public class DanhMucController {
         }
         return ResponseEntity.ok(danhMuc);
     }
+
     @PostMapping("/add")
     public ResponseEntity<?> add(@Valid @RequestBody DanhMuc danhMuc) {
         danhMuc.setNgayTao(LocalDateTime.now());

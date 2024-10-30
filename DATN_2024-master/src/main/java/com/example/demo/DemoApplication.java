@@ -2,6 +2,9 @@ package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -10,4 +13,15 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
+//    @Bean
+//    public WebMvcConfigurer corsConfigurer() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                registry.addMapping("/**")
+//                        .allowedOrigins("http://localhost:63342") // Thay đổi URL này theo URL của front-end nếu cần
+//                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+//            }
+//        };
+//    }
 }

@@ -19,10 +19,7 @@
             </tr>
             </tbody>
         </table>
-        <div style="display: flex">
-            <label>Thành tiền: </label>
-            <p id="totalAmount">{{tongTien}} VNĐ</p>
-        </div>
+
         <div class="bordered-form">
             <form>
                 <div class="form-group mt-3">
@@ -40,6 +37,40 @@
                     Chọn khách hàng
                 </button>
             </form>
+        </div>
+
+        <div class="amount-container">
+            <label>Thành tiền: </label>
+            <p id="totalAmount">{{tongTien}} VNĐ</p>
+        </div>
+        <div class="voucher-list mt-4" ng-if="vouchers && vouchers.length > 0">
+            <h5>Voucher của khách hàng</h5>
+            <table class="table table-hover">
+                <thead class="thead-light">
+                <tr>
+                    <th>Tên Voucher</th>
+                    <th>Giá giảm</th>
+                    <th>Giảm tối thiểu</th>
+                    <th>Giảm tối đa</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Số lượng</th>
+                    <th>Chọn</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="voucher in vouchers">
+                    <td>{{ voucher.ten }}</td>
+                    <td>{{ voucher.giamGia }}</td>
+                    <td>{{ voucher.giamMin }}</td>
+                    <td>{{ voucher.giamMax }}</td>
+                    <td>{{ voucher.ngayKetThuc | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ voucher.soLuong }}</td>
+                    <td>
+                        <button class="btn btn-primary" ng-click="applyVoucher(voucher)">Áp dụng</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
 
         <div class="form-group mt-3">
@@ -76,7 +107,6 @@
                 </div>
             </div>
         </div>
-
 
         <div class="modal fade" id="cashModal" tabindex="-1" aria-labelledby="cashModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -142,7 +172,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="button" class="btn btn-success" ng-click="completePayment()">Hoàn tất thanh toán</button>
+                        <button type="button" class="btn btn-success" ng-click="completePayment()">Hoàn tất thanh toán
+                        </button>
                     </div>
                 </div>
             </div>
@@ -178,7 +209,7 @@
                                     <td>{{ khachHang.sdt }}</td>
                                     <td>
                                         <button type="button" class="btn btn-primary"
-                                                ng-click="selectCustomer(khachHang.ten, khachHang.sdt)"
+                                                ng-click="selectCustomer(khachHang.ten, khachHang.sdt, khachHang.id)"
                                                 data-bs-dismiss="modal">
                                             Chọn
                                         </button>
@@ -199,6 +230,86 @@
 <div id="overlay" class="overlay" onclick="closeForm()"></div>
 
 <style>
+    /*thành tiền*/
+    .amount-container {
+        display: flex; /* Đặt các phần tử con nằm trên cùng một hàng */
+        align-items: center; /* Căn giữa dọc */
+        margin-top: 20px; /* Khoảng cách phía trên */
+        padding: 10px; /* Khoảng cách bên trong */
+        background-color: #a0e376; /* Màu nền nổi bật */
+        border-radius: 8px; /* Bo tròn các góc */
+        color: white; /* Màu chữ */
+        font-weight: bold; /* Đậm chữ */
+        font-size: 1.2em; /* Kích thước chữ lớn hơn */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ cho phần */
+    }
+
+    .amount-container label {
+        margin-right: 10px; /* Khoảng cách giữa label và giá tiền */
+    }
+
+    .amount-container p {
+        margin: 0; /* Loại bỏ khoảng cách mặc định */
+    }
+
+    /*voucher khách hàng*/
+    .voucher-list {
+        background-color: #f9f9f9; /* Màu nền nhẹ cho danh sách voucher */
+        padding: 20px; /* Thêm khoảng đệm cho nội dung */
+        border-radius: 8px; /* Bo tròn các góc */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Thêm bóng cho phần */
+    }
+
+    .voucher-list h5 {
+        margin-bottom: 20px; /* Khoảng cách giữa tiêu đề và bảng */
+        font-weight: bold; /* Đậm tiêu đề */
+        color: #333; /* Màu chữ tiêu đề */
+    }
+
+    .table {
+        width: 100%; /* Đảm bảo bảng chiếm toàn bộ chiều rộng */
+        border-collapse: collapse; /* Loại bỏ khoảng trống giữa các ô */
+    }
+
+    .table th,
+    .table td {
+        text-align: left; /* Căn trái cho nội dung */
+        padding: 12px; /* Khoảng cách bên trong ô */
+        border-bottom: 1px solid #dee2e6; /* Đường viền dưới cho mỗi ô */
+    }
+
+    .table th {
+        background-color: #007bff; /* Màu nền cho tiêu đề bảng */
+        color: white; /* Màu chữ tiêu đề */
+        font-weight: bold; /* Đậm chữ tiêu đề */
+    }
+
+    .table tr:hover {
+        background-color: #f1f1f1; /* Hiệu ứng hover cho hàng */
+    }
+
+    .btn-primary {
+        background-color: #007bff; /* Màu nền cho nút */
+        border: none; /* Bỏ viền */
+        padding: 8px 12px; /* Khoảng cách bên trong nút */
+        border-radius: 4px; /* Bo tròn các góc của nút */
+        color: white; /* Màu chữ nút */
+        cursor: pointer; /* Con trỏ khi hover qua nút */
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3; /* Hiệu ứng hover cho nút */
+    }
+
+    /* Đảm bảo các cột có chiều rộng đều nhau */
+    .table th, .table td {
+        width: calc(100% / 7); /* Chia đều chiều rộng cho các cột */
+    }
+
+    .table td:last-child {
+        width: auto; /* Để nút "Áp dụng" không bị bó hẹp */
+        text-align: center; /* Căn giữa cho nút "Áp dụng" */
+    }
 
     /* Thiết lập kiểu cho bảng */
     .table {

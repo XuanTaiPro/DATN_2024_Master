@@ -4,6 +4,7 @@ window.thanhtoanCtrl= function($scope, $http) {
     $scope.listKhachHang = [];
     $scope.selectedCustomerName = "";
     $scope.selectedCustomerPhone = "";
+    $scope.selectedCustomerId = "";
     $scope.amountPaid = 0;
     $scope.changeAmount = 0;
     $scope.showError = false;
@@ -18,9 +19,23 @@ window.thanhtoanCtrl= function($scope, $http) {
         console.error('Lỗi:', error);
     });
 
-    $scope.selectCustomer = function(ten, sdt) {
+    $scope.selectCustomer = function(ten, sdt,id) {
         $scope.selectedCustomerName = ten;
         $scope.selectedCustomerPhone = sdt;
+        $scope.selectedCustomerId = id; // Lưu ID khách hàng
+        // Gọi API để lấy voucher của khách hàng
+        $scope.getVouchersByCustomer(id);
+    };
+
+    $scope.getVouchersByCustomer = function(id) {
+        $http.get(`http://localhost:8080/voucher/VCkhachHang/${id}`)
+            .then(function(response) {
+                $scope.vouchers = response.data;
+                console.log("Lấy danh sách voucher thành công", $scope.vouchers);
+            })
+            .catch(function(error) {
+                console.error("Lỗi khi lấy voucher:", error);
+            });
     };
 
     $http.get('http://localhost:8080/chitiethoadon/getCTHD?idHD=1C5331D3')
