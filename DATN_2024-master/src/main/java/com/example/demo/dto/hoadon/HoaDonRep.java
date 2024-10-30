@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,6 +29,3 @@ public class HoaDonRep {
     private String email;
     private String tenNV;
 }
-
-
-
