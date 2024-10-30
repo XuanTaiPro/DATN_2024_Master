@@ -1,5 +1,6 @@
 package com.example.demo.dto.hoadon;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,7 +43,11 @@ public class HoaDonReq {
 
     private String phiVanChuyen;
 
-    private String thongTinGiaoHang;
+    private String tenNguoiNhan;
+
+    private String sdtNguoiNhan;
+
+    private String diaChiNguoiNhan;
 
     @NotBlank(message = "Vui lòng nhập vào ID khách hàng")
     private String idKH;

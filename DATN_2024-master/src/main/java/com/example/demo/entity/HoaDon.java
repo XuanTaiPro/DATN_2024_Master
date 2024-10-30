@@ -49,8 +49,14 @@ public class HoaDon {
     @Column(name = "PHIVANCHUYEN")
     private String phiVanChuyen;
 
-    @Column(name = "THONGTINGIAOHANG")
-    private String thongTinGiaoHang;
+    @Column(name = "TENNGUOINHAN")
+    private String tenNguoiNhan;
+
+    @Column(name = "SDTNGUOINHAN")
+    private String sdtNguoiNhan;
+
+    @Column(name = "DIACHINGUOINHAN")
+    private String diaChiNguoiNhan;
 
     @ManyToOne
     @JoinColumn(name = "IDNV")
@@ -86,7 +92,9 @@ public class HoaDon {
                 trangThai,
                 loaiHD,
                 phiVanChuyen,
-                thongTinGiaoHang,
+                tenNguoiNhan,
+                sdtNguoiNhan,
+                diaChiNguoiNhan,
                 khachHang != null ? khachHang.getTen() : null,
                 khachHang != null ? khachHang.getSdt() : null,
                 khachHang != null ? khachHang.getEmail() : null,

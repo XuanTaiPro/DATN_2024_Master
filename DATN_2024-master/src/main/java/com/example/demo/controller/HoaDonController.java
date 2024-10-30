@@ -5,22 +5,24 @@ import com.example.demo.dto.hoadon.HoaDonRep;
 import com.example.demo.dto.hoadon.HoaDonReq;
 import com.example.demo.dto.khachhang.KhachHangResponse;
 import com.example.demo.dto.nhanvien.NhanVienResponse;
-import com.example.demo.entity.ChiTietHoaDon;
-import com.example.demo.entity.HoaDon;
-import com.example.demo.entity.KhachHang;
-import com.example.demo.entity.NhanVien;
+import com.example.demo.entity.*;
 import com.example.demo.repository.ChiTietHoaDonRepo;
 import com.example.demo.repository.HoaDonRepo;
 import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.repository.NhanVienRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,13 +43,28 @@ public class HoaDonController {
     @Autowired
     private ChiTietHoaDonRepo chiTietHoaDonRepo;
 
+    @GetMapping("/page")
+    public ResponseEntity<?> page(@RequestParam(name = "page", defaultValue = "0") Integer page,
+                                  @RequestParam(name = "trangThai", required = false) Integer trangThai,
+                                  @RequestParam(name = "searchText", required = false) String tenKH,
+                                  @RequestParam(name = "loaiHD", required = false) Integer loaiHD,
+                                  @RequestParam(name = "nhanVien", required = false) String nhanVien) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "ngayTao"));
+        Page<HoaDon> hoaDonPage = hoaDonRepo.findHDByFilters(trangThai, tenKH, loaiHD, nhanVien, pageRequest);
+        Map<String, Object> response = new HashMap<>();
+        response.put("hoaDons", hoaDonPage.getContent().stream().map(HoaDon::toResponse).collect(Collectors.toList()));
+        response.put("totalPages", hoaDonPage.getTotalPages());
+        response.put("totalElements", hoaDonPage.getTotalElements());
+
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/add")
     public ResponseEntity<?> createHoaDon(@RequestBody HoaDonReq req) {
         // Kiểm tra ID nhân viên
         if (req.getIdNV() == null || req.getIdNV().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("ID nhân viên không được để trống.");
         }
-
         // Tạo mới hóa đơn
         HoaDon hoaDon = new HoaDon();
 
@@ -62,7 +79,6 @@ public class HoaDonController {
         hoaDon.setNgayNhanHang(null); // Không gán giá trị cho ngayNhanHang
         hoaDon.setThanhTien(null);
         hoaDon.setPhiVanChuyen("30000");
-        hoaDon.setThongTinGiaoHang("Vận chuyển nhanh");
 
         // Xử lý khách hàng
         if (req.getIdKH() != null && !req.getIdKH().trim().isEmpty()) {
@@ -93,7 +109,6 @@ public class HoaDonController {
         System.out.println("Mã voucher: " + hoaDon.getMaVoucher());
         System.out.println("Thành tiền: " + hoaDon.getThanhTien());
         System.out.println("Phí vận chuyển: " + hoaDon.getPhiVanChuyen());
-        System.out.println("Thông tin giao hàng: " + hoaDon.getThongTinGiaoHang());
         System.out.println("Trạng thái: " + hoaDon.getTrangThai());
 
         // Lưu hóa đơn
@@ -108,7 +123,19 @@ public class HoaDonController {
         }
 
     }
+    @PutMapping("/xacNhanHD")
+    public ResponseEntity<String> xacNhanHD(@RequestParam(name = "idHD") String idHD) {
+        Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(idHD);
 
+        if (hoaDonOptional.isPresent()) {
+            HoaDon hoaDonExisting = hoaDonOptional.get();
+            hoaDonExisting.setTrangThai(2);
+            hoaDonRepo.save(hoaDonExisting);
+            return ResponseEntity.ok("Xác nhận hóa đơn thành công.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
+        }
+    }
     @GetMapping("/listNV")
     public List<NhanVienResponse> getAllNhanVien() {
         NhanVien nhanVien=new NhanVien();
@@ -130,7 +157,15 @@ public class HoaDonController {
         return ResponseEntity.ok(responseList);
     }
 
-
+    @GetMapping("/detail")
+    public ResponseEntity<?> detailHoaDon(@RequestParam(name = "idHD") String idHD) {
+        Optional<HoaDon> hoaDon = hoaDonRepo.findById(idHD);
+        if (hoaDon != null) {
+            return ResponseEntity.ok(hoaDon.get().toResponse());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
     // Read by ID
     @GetMapping("/detail/{idHD}")
     public ResponseEntity<HoaDonRep> getHoaDonById(@PathVariable String idHD) {
@@ -155,8 +190,6 @@ public class HoaDonController {
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Update
-    // Update
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateHoaDon(@PathVariable String id, @Validated @RequestBody HoaDonReq req) {
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(id);
@@ -182,6 +215,7 @@ public class HoaDonController {
                     return ResponseEntity.badRequest().body(null);
                 }
             }
+
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(req.getMaHD());
             hoaDon.setMaVoucher(req.getMaVoucher());
@@ -191,7 +225,9 @@ public class HoaDonController {
             hoaDon.setTrangThai(req.getTrangThai());
             hoaDon.setLoaiHD(req.getLoaiHD());
             hoaDon.setPhiVanChuyen(req.getPhiVanChuyen());
-            hoaDon.setThongTinGiaoHang(req.getThongTinGiaoHang());
+            hoaDon.setTenNguoiNhan(req.getTenNguoiNhan());
+            hoaDon.setSdtNguoiNhan(req.getSdtNguoiNhan());
+            hoaDon.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
             hoaDon.setNgaySua(LocalDateTime.now());
 
             try {

@@ -23,9 +23,14 @@ public class HoaDonRep {
     private int trangThai;
     private int loaiHD;
     private String phiVanChuyen;
-    private String thongTinGiaoHang;
+    private String tenNguoiNhan;
+    private String sdtNguoiNhan;
+    private String diaChiNguoiNhan;
     private String tenKH;
     private String sdt;
     private String email;
     private String tenNV;
 }
+
+
+
