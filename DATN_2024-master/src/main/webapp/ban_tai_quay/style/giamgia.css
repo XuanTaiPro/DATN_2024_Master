@@ -1,0 +1,4 @@
+.scrollable-list {
+    max-height: 200px; /* Đặt chiều cao tối đa cho danh sách */
+    overflow-y: auto; /* Thêm thanh cuộn dọc khi cần */
+}

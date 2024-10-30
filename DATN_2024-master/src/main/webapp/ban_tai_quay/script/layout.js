@@ -4,15 +4,23 @@ app.config(function ($routeProvider) {
     $routeProvider
         .when('/sanpham', {
             templateUrl: 'view/sanpham.html',
-            controller: sanphamCtrl
+            controller: sanPhamCtrl
         })
         .when('/giamgia', {
             templateUrl: 'view/giamgia.html',
-            controller: giamgiaCtrl
+            controller: giamGiaCtrl
         })
         .when('/banhang', {
             templateUrl: 'view/banhang.html',
             controller: banhangCtrl
+        })
+        .when('/chitietsanpham/:idSP', {
+            templateUrl: 'view/chitietsanpham.html',
+            controller: chiTietSanPhamCtrl
+        })
+        .when('/hoadon', {
+            templateUrl: 'view/hoadon.html',
+            controller: hoaDonCtrl
         })
         .when('/nhansu', {
             templateUrl: 'view/nhansu.html',
