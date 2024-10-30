@@ -1,7 +1,5 @@
 package com.example.demo.dto.khachhang;
 
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

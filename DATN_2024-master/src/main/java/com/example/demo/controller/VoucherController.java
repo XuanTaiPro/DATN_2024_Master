@@ -1,8 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.nhanvien.NhanVienResponse;
-import com.example.demo.dto.thongbao.ThongBaoRequest;
-import com.example.demo.dto.thongbao.ThongBaoResponse;
 import com.example.demo.dto.voucher.VoucherRequest;
 import com.example.demo.dto.voucher.VoucherResponse;
 import com.example.demo.dto.voucher.VoucherThanhToan;
@@ -55,7 +52,8 @@ public class VoucherController {
     public ResponseEntity<List<VoucherThanhToan>> getVoucherByKhachHang(@PathVariable String idKH) {
         List<ChiTietVoucher> chiTietVouchers = ctvcRepo.findByKhachHang_Id(idKH);
         System.out.println("ChiTietVouchers: " + chiTietVouchers);
-        // Chuyển đổi danh sách ChiTietVoucher sang danh sách VoucherThanhToan, kiểm tra null cho mỗi voucher
+        // Chuyển đổi danh sách ChiTietVoucher sang danh sách VoucherThanhToan, kiểm tra
+        // null cho mỗi voucher
         List<VoucherThanhToan> vouchers = chiTietVouchers.stream()
                 .filter(ctv -> ctv.getVoucher() != null) // Bỏ qua các ChiTietVoucher không có Voucher
                 .map(ctv -> new VoucherThanhToan(
@@ -64,12 +62,12 @@ public class VoucherController {
                         ctv.getVoucher().getGiamMin(),
                         ctv.getVoucher().getGiamMax(),
                         ctv.getVoucher().getNgayKetThuc(),
-                        ctv.getVoucher().getSoLuong()
-                ))
+                        ctv.getVoucher().getSoLuong()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(vouchers);
     }
+
     @GetMapping("page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
@@ -108,12 +106,13 @@ public class VoucherController {
         if (voucherRequest.getId() == null || voucherRequest.getId().isEmpty()) {
             voucherRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
-        if (voucherRequest.getMa() == null || voucherRequest.getMa().isEmpty()) {//nếu mã chưa đc điền thì tự động thêm mã
+        if (voucherRequest.getMa() == null || voucherRequest.getMa().isEmpty()) {// nếu mã chưa đc điền thì tự động thêm
+                                                                                 // mã
             voucherRequest.setMa(generateCodeAll.generateMaVoucher());
         }
-//        if (vcRepo.existsByMa(voucherRequest.getMa())) {
-//            return ResponseEntity.badRequest().body("mã đã tồn tại");
-//        }
+        // if (vcRepo.existsByMa(voucherRequest.getMa())) {
+        // return ResponseEntity.badRequest().body("mã đã tồn tại");
+        // }
 
         Voucher voucher = voucherRequest.toEntity();
         voucher.setLoaiVoucher(lvcRepo.getById(voucherRequest.getIdLoaiVC()));
@@ -138,21 +137,22 @@ public class VoucherController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody VoucherRequest voucherRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody VoucherRequest voucherRequest,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
-//        if (vcRepo.findById(id).isPresent()) {
-//            Voucher voucher = voucherRequest.toEntity();
-//            voucher.setId(id);
-//            voucher.setLoaiVoucher(lvcRepo.getById(voucherRequest.getIdLoaiVC()));
-//            vcRepo.save(voucher);
-//            return ResponseEntity.ok("Update thành công ");
-//        } else {
-//            return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
-//        }
+        // if (vcRepo.findById(id).isPresent()) {
+        // Voucher voucher = voucherRequest.toEntity();
+        // voucher.setId(id);
+        // voucher.setLoaiVoucher(lvcRepo.getById(voucherRequest.getIdLoaiVC()));
+        // vcRepo.save(voucher);
+        // return ResponseEntity.ok("Update thành công ");
+        // } else {
+        // return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
+        // }
         Optional<Voucher> optionalVoucher = vcRepo.findById(id);
         if (optionalVoucher.isPresent()) {
 
@@ -162,8 +162,8 @@ public class VoucherController {
             voucherUpdate.setMa(optionalVoucher.get().getMa());
             voucherUpdate.setNgaySua(LocalDateTime.now());
             voucherUpdate.setNgayTao(optionalVoucher.get().getNgayTao());
-            Voucher savedVoucher = vcRepo.save(voucherUpdate);  // Lưu thay đổi và lấy đối tượng đã lưu
-            return ResponseEntity.ok(savedVoucher);  // Trả về đối tượng đã cập nhật
+            Voucher savedVoucher = vcRepo.save(voucherUpdate); // Lưu thay đổi và lấy đối tượng đã lưu
+            return ResponseEntity.ok(savedVoucher); // Trả về đối tượng đã cập nhật
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
         }
@@ -171,17 +171,16 @@ public class VoucherController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
-        Map<String, String> response = new HashMap<>();  // Khởi tạo Map để trả về JSON hợp lệ
+        Map<String, String> response = new HashMap<>(); // Khởi tạo Map để trả về JSON hợp lệ
         if (vcRepo.findById(id).isPresent()) {
             vcRepo.deleteById(id);
             response.put("message", "Xóa thành công");
-            return ResponseEntity.ok(response);  // Trả về phản hồi JSON
+            return ResponseEntity.ok(response); // Trả về phản hồi JSON
         } else {
             response.put("message", "Không tìm thấy id cần xóa");
-            return ResponseEntity.badRequest().body(response);  // Trả về phản hồi JSON khi lỗi
+            return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON khi lỗi
         }
     }
-
 
     @GetMapping("search")
     public ResponseEntity<?> searchVoucher(@RequestParam String ten) {
