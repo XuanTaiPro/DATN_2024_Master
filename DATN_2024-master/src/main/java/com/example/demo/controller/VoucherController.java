@@ -17,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -59,17 +61,43 @@ public class VoucherController {
         List<VoucherThanhToan> vouchers = chiTietVouchers.stream()
                 .filter(ctv -> ctv.getVoucher() != null) // Bỏ qua các ChiTietVoucher không có Voucher
                 .map(ctv -> new VoucherThanhToan(
+                        ctv.getVoucher().getId(),
                         ctv.getVoucher().getTen(),
                         ctv.getVoucher().getGiamGia(),
                         ctv.getVoucher().getGiamMin(),
                         ctv.getVoucher().getGiamMax(),
                         ctv.getVoucher().getNgayKetThuc(),
-                        ctv.getVoucher().getSoLuong()
+                        ctv.getVoucher().getSoLuong(),
+                        ctv.getVoucher().getTrangThai()
+
                 ))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(vouchers);
     }
+
+    @PostMapping("/apply")
+    public ResponseEntity<?> applyVoucher(@RequestBody Map<String, String> data) {
+        String voucherId = data.get("id");
+        if (voucherId == null || voucherId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID của voucher không được bỏ trống.");
+        }
+
+        Voucher voucher = vcRepo.findById(voucherId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Voucher không tồn tại"));
+
+        if (voucher.getSoLuong() > 0) {
+            voucher.setSoLuong(voucher.getSoLuong() - 1);
+            if (voucher.getSoLuong() == 0) {
+                voucher.setTrangThai(0);
+            }
+            vcRepo.save(voucher);
+            return ResponseEntity.ok("Voucher đã được áp dụng thành công.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Voucher này đã hết số lượng.");
+        }
+    }
+
     @GetMapping("page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,

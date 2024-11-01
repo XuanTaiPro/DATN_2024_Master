@@ -18,4 +18,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, String> {
     List<Voucher> filterVouchers(@Param("giamMin") String giamMin,
                                  @Param("giamMax") String giamMax,
                                  @Param("ngayKetThuc") String ngayKetThuc);
+
+    List<Voucher> findByTrangThaiAndSoLuongGreaterThan(Integer trangThai, int soLuong);
 }

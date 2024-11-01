@@ -41,32 +41,39 @@
 
         <div class="amount-container">
             <label>Thành tiền: </label>
-            <p id="totalAmount">{{tongTien}} VNĐ</p>
+            <p id="totalAmount">{{tongTien | number:0}} VNĐ</p>
         </div>
         <div class="voucher-list mt-4" ng-if="vouchers && vouchers.length > 0">
             <h5>Voucher của khách hàng</h5>
             <table class="table table-hover">
                 <thead class="thead-light">
                 <tr>
+                    <th>ID Voucher</th>
                     <th>Tên Voucher</th>
                     <th>Giá giảm</th>
-                    <th>Giảm tối thiểu</th>
+                    <th>Đơn tối thiểu</th>
                     <th>Giảm tối đa</th>
                     <th>Ngày kết thúc</th>
                     <th>Số lượng</th>
+                    <th>Trạng thái</th>
                     <th>Chọn</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="voucher in vouchers">
+                    <td>{{ voucher.id }}</td>
                     <td>{{ voucher.ten }}</td>
                     <td>{{ voucher.giamGia }}</td>
                     <td>{{ voucher.giamMin }}</td>
                     <td>{{ voucher.giamMax }}</td>
                     <td>{{ voucher.ngayKetThuc | date:'dd/MM/yyyy' }}</td>
                     <td>{{ voucher.soLuong }}</td>
+                    <td>{{ voucher.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động' }}</td>
                     <td>
-                        <button class="btn btn-primary" ng-click="applyVoucher(voucher)">Áp dụng</button>
+                        <button class="btn btn-primary" ng-click="applyVoucher(voucher)"
+                                ng-disabled="voucher.trangThai === 0 || voucher.soLuong === 0">
+                            Áp dụng
+                        </button>
                     </td>
                 </tr>
                 </tbody>
