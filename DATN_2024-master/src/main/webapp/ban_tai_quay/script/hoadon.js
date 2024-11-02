@@ -89,18 +89,34 @@ window.hoaDonCtrl = function ($scope, $http) {
             });
     };
     $scope.detailHoaDon = function (id) {
-        // Gửi yêu cầu tới server để lấy thông tin chi tiết của hóa đơn theo id
         $http.get('http://localhost:8083/hoadon/detail', { params: { idHD: id } })
             .then(function (response) {
-                // Lưu thông tin chi tiết vào scope để hiển thị
-                $scope.hoaDonDetail = response.data;
-                // Hiển thị modal chi tiết
-                $('#readData').modal('show');
+                console.log("Full response data:", response.data); // Log toàn bộ dữ liệu phản hồi
+                // Lưu hoaDonRep và chiTietHoaDons vào scope
+                if (response.data) {
+                    $scope.hoaDonDetail = response.data.hoaDonRep; // Lưu thông tin hóa đơn
+                    $scope.chiTietHoaDons = response.data.chiTietHoaDons; // Lưu danh sách chi tiết hóa đơn
+
+                    console.log("hoaDonDetail:", $scope.hoaDonDetail);
+                    console.log("Chi tiết hóa đơn:", $scope.chiTietHoaDons);
+                }
+
+                $('#readData').modal('show'); // Hiển thị modal
             })
             .catch(function (error) {
                 console.error('Error fetching invoice details:', error);
                 alert('Không thể lấy thông tin chi tiết của hóa đơn.');
             });
     };
+    $scope.getTotalAmount = function(items) {
+        let total = 0;
+        if (items) {
+            items.forEach(item => {
+                total += Number(item.tongTien); // Cộng dồn tổng tiền
+            });
+        }
+        return total; // Trả về tổng tiền
+    };
+
     $scope.getHoaDonsByTrangThai(null, 0);
 };

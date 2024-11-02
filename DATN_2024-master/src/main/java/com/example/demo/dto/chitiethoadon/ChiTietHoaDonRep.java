@@ -22,4 +22,5 @@ public class ChiTietHoaDonRep {
     private String tenSP;
     private String gia;
     private String idHD;
+    private String linkAnh;
 }

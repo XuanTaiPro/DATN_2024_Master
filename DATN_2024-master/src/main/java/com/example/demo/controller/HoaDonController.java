@@ -160,12 +160,22 @@ public class HoaDonController {
     @GetMapping("/detail")
     public ResponseEntity<?> detailHoaDon(@RequestParam(name = "idHD") String idHD) {
         Optional<HoaDon> hoaDon = hoaDonRepo.findById(idHD);
-        if (hoaDon != null) {
-            return ResponseEntity.ok(hoaDon.get().toResponse());
+        if (hoaDon.isPresent()) {
+            HoaDonRep hoaDonRep = hoaDon.get().toResponse(); // Populate DTO
+            List<ChiTietHoaDonRep> chiTietResponses = hoaDon.get().getChiTietHoaDons().stream()
+                    .map(ChiTietHoaDon::toResponse)
+                    .collect(Collectors.toList());
+            Map<String, Object> response = new HashMap<>();
+            response.put("hoaDonRep", hoaDonRep);
+            response.put("chiTietHoaDons", chiTietResponses);
+
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
         }
     }
+
+
     // Read by ID
     @GetMapping("/detail/{idHD}")
     public ResponseEntity<HoaDonRep> getHoaDonById(@PathVariable String idHD) {

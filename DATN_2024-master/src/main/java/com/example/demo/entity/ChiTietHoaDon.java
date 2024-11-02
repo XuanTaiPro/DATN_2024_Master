@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import com.example.demo.dto.chitiethoadon.ChiTietHoaDonRep;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -48,10 +49,12 @@ public class ChiTietHoaDon {
 
     @ManyToOne
     @JoinColumn(name = "IDHOADON")
+    @JsonBackReference
     private HoaDon hoaDon;
 
     @ManyToOne
     @JoinColumn(name = "IDCTSP")
+    @JsonBackReference
     private ChiTietSanPham chiTietSanPham;
 
     @PrePersist
@@ -79,7 +82,8 @@ public class ChiTietHoaDon {
                 ghiChu,
                 chiTietSanPham != null ? chiTietSanPham.getSanPham().getTenSP() : null,
                 chiTietSanPham != null ? chiTietSanPham.getGia() : null,
-                hoaDon != null ? hoaDon.getId() : null
+                hoaDon != null ? hoaDon.getId() : null,
+                chiTietSanPham.getAnhCTSP().get(0).getLink()
         );
     }
 

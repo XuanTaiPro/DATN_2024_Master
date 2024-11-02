@@ -1,6 +1,9 @@
 package com.example.demo.entity;
 
 import com.example.demo.dto.hoadon.HoaDonRep;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -60,10 +63,12 @@ public class HoaDon {
 
     @ManyToOne
     @JoinColumn(name = "IDNV")
+    @JsonBackReference
     private NhanVien nhanVien;
 
     @ManyToOne
     @JoinColumn(name = "IDKH")
+    @JsonBackReference
     private KhachHang khachHang;
 
     @PrePersist
@@ -76,8 +81,10 @@ public class HoaDon {
             this.maHD = "HD" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
         }
     }
-    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
-    private List<ChiTietHoaDon> chiTietHoaDons; // Quan hệ với ChiTietHoaDon
+
+    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<ChiTietHoaDon> chiTietHoaDons;
 
     public HoaDonRep toResponse() {
         return new HoaDonRep(
@@ -98,7 +105,8 @@ public class HoaDon {
                 khachHang != null ? khachHang.getTen() : null,
                 khachHang != null ? khachHang.getSdt() : null,
                 khachHang != null ? khachHang.getEmail() : null,
-                nhanVien != null ? nhanVien.getTen() : null
+                nhanVien != null ? nhanVien.getTen() : null,
+                chiTietHoaDons
         );
     }
 
