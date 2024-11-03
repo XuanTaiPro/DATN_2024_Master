@@ -136,6 +136,18 @@ public class HoaDonController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
         }
     }
+    @PutMapping("/huyHD")
+    public ResponseEntity<String> huyHD(@RequestParam(name = "idHD") String idHD) {
+        Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(idHD);
+        if (hoaDonOptional.isPresent()) {
+            HoaDon hoaDonExisting = hoaDonOptional.get();
+            hoaDonExisting.setTrangThai(4);
+            hoaDonRepo.save(hoaDonExisting);
+            return ResponseEntity.ok("Hủy hóa đơn thành công.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
+        }
+    }
     @GetMapping("/listNV")
     public List<NhanVienResponse> getAllNhanVien() {
         NhanVien nhanVien=new NhanVien();

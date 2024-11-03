@@ -81,11 +81,30 @@ window.hoaDonCtrl = function ($scope, $http) {
                 console.log(response.data);
                 // Có thể làm gì đó với phản hồi thành công ở đây
                 alert("Xác nhận hóa đơn " + id + " thành công.");
-                // Tải lại hóa đơn hoặc cập nhật danh sách
+                location.reload(true);
                 $scope.getHoaDonsByTrangThai(2, 0);
+
             })
             .catch(function (error) {
+                location.reload(true);
                 $scope.getHoaDonsByTrangThai(2, 0);
+            });
+    };
+    $scope.cancelInvoice = function (id) {
+        console.log('Cancel invoice with ID:', id);
+        // Gọi API để xác nhận hóa đơn
+        $http.put('http://localhost:8083/hoadon/huyHD?idHD=' + id)
+            .then(function (response) {
+                console.log(response.data);
+                // Có thể làm gì đó với phản hồi thành công ở đây
+                alert("Hủy hóa đơn " + id + " thành công.");
+                // Tải lại hóa đơn hoặc cập nhật danh sách
+                location.reload();
+                $scope.getHoaDonsByTrangThai(4, 0);
+            })
+            .catch(function (error) {
+                location.reload();
+                $scope.getHoaDonsByTrangThai(4, 0);
             });
     };
     $scope.detailHoaDon = function (id) {

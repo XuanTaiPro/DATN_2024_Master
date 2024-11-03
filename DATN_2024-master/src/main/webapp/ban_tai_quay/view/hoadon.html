@@ -139,16 +139,26 @@
                                         <p><strong>Số điện thoại:</strong> {{ hoaDonDetail.sdtNguoiNhan }} </p>
                                         <p><strong>Địa chỉ :</strong> {{hoaDonDetail.diaChiNguoiNhan}}</p>
                                     </div>
-
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <button class="btn btn-outline-warning" ng-if="hoaDonDetail.trangThai === 0" ng-click="confirmInvoice(hoaDonDetail.id)" >
+                                        Xác nhận
+                                    </button>
+                                    <button class="btn btn-outline-danger" ng-if="hoaDonDetail.trangThai === 0" ng-click="cancelInvoice(hoaDonDetail.id)" >
+                                        Hủy hóa đơn
+                                    </button>
+                                </div>
+                            </div>
+
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button class="btn btn-success" ng-if="hd.trangThai === 0" ng-click="confirmInvoice(hd.id)" >
+                <button class="btn btn-outline-warning" ng-if="hd.trangThai === 0" ng-click="confirmInvoice(hd.id)" >
                     Xác nhận
                 </button>
             </td>
