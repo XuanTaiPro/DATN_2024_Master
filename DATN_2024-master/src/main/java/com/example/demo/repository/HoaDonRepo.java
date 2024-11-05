@@ -23,7 +23,6 @@ public interface HoaDonRepo extends JpaRepository<HoaDon,String> {
                                  @Param("loaiHD") Integer loaiHD,
                                  @Param("nhanVien") String nhanVien,
                                  Pageable pageable);
-
-    @Query("SELECT hd FROM HoaDon hd WHERE hd.khachHang.ten like:tenKH AND hd.loaiHD =:loaiHD AND hd.nhanVien.ten =:nhanVien")
-    Page<HoaDon> searchHoaDon(@Param("tenKH")String tenKH,@Param("loaiHD")Integer loaiHD,@Param("nhanVien")String nhanVien,Pageable pageable);
+    @Query("SELECT hd FROM HoaDon hd WHERE hd.trangThai = :trangThai ORDER BY hd.ngayTao DESC")
+    List<HoaDon> getHDTaiQuay(@Param("trangThai") Integer trangThai);
 }

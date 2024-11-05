@@ -15,6 +15,7 @@ public class ChiTietHoaDonRep {
     private String tongTien;
     private int soLuong;
     private String giaBan;
+    private String tienGiam;
     private int trangThai;
     private LocalDateTime ngayTao;
     private LocalDateTime ngaySua;
@@ -23,4 +24,5 @@ public class ChiTietHoaDonRep {
     private String gia;
     private String idHD;
     private String linkAnh;
+    private String soNgaySuDung;
 }

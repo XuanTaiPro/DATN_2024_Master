@@ -9,12 +9,17 @@ import com.example.demo.repository.ChiTietHoaDonRepo;
 import com.example.demo.repository.ChiTietSanPhamRepository;
 import com.example.demo.repository.HoaDonRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -105,17 +110,32 @@ public class ChiTietHoaDonController {
         return ResponseEntity.ok("Cập nhật chi tiết hóa đơn thành công.");
     }
 
-    @GetMapping("getCTHD")
-    public ResponseEntity<?> getChiTietHoaDonByIdHD(@RequestParam String idHD) {
-        List<ChiTietHoaDon> chiTietList = chiTietHoaDonRepo.findByHoaDon_Id(idHD);
-        if (chiTietList.isEmpty()) {
-            return ResponseEntity.status(404).body(null);
+    @GetMapping("/getCTHD")
+    public ResponseEntity<?> getChiTietHoaDonByIdHD(
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "idHD") String idHD) {
+
+        // Kiểm tra nếu idHD không hợp lệ (ví dụ: null hoặc trống)
+        if (idHD == null || idHD.isEmpty()) {
+            return ResponseEntity.badRequest().body("Mã hóa đơn không hợp lệ.");
         }
-        List<ChiTietHoaDonRep> responseList = chiTietList.stream()
-                .map(ChiTietHoaDon::toResponse)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseList);
+
+        // Tạo đối tượng PageRequest để phân trang
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "ngayTao"));
+
+        // Lấy danh sách chi tiết hóa đơn theo idHD và phân trang
+        Page<ChiTietHoaDon> cthdPage = chiTietHoaDonRepo.findByHoaDon_Id(idHD, pageRequest);
+
+        // Tạo response trả về
+        Map<String, Object> response = new HashMap<>();
+        response.put("cthds", cthdPage.getContent().stream().map(ChiTietHoaDon::toResponse).collect(Collectors.toList()));
+        response.put("totalPages", cthdPage.getTotalPages());
+        response.put("totalElements", cthdPage.getTotalElements());
+
+        // Trả về kết quả dưới dạng ResponseEntity
+        return ResponseEntity.ok(response);
     }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteChiTietHoaDon(@PathVariable String id) {

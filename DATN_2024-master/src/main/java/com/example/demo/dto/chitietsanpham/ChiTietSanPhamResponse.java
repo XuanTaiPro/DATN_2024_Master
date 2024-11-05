@@ -14,6 +14,7 @@ public class ChiTietSanPhamResponse {
     private String id;
     private String ma;
     private String gia;
+    private String tienGiam;
     private String soNgaySuDung;
     private LocalDateTime ngaySanXuat;
     private LocalDateTime hsd;

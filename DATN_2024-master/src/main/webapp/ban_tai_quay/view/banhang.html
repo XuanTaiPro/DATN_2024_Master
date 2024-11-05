@@ -1,0 +1,79 @@
+<div class="tab">
+    <div class="input-group" style="padding-left: 50px; padding-right: 50px;">
+        <input type="text" class="form-control"
+               placeholder="Tìm kiếm theo tên sản phẩm"
+               ng-model="searchText"
+               ng-change="filterSanPham()">
+        <div class="input-group-append">
+            <button id="addInvoiceBtn" class="btn btn-primary" style="margin-left: 10px;" ng-click="addInvoiceTab()">+ Tạo Hóa Đơn</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="tabs">
+    <ul class="nav nav-tabs">
+        <li class="nav-item" ng-repeat="tab in tabs">
+            <a class="nav-link" ng-class="{active: selectedTab === $index}" ng-click="selectTab($index)">
+                {{ tab.title }}
+                <button type="button" class="btn close-btn" aria-label="Close" ng-click="closeTab($index)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="tabcontent">
+    <div ng-repeat="tab in tabs" ng-show="selectedTab === $index">
+        <h3>{{ tab.title }}</h3>
+        <p>Thông tin chi tiết hóa đơn:</p>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>STT</th>
+            <th>Ảnh</th>
+            <th>Tên sản phẩm</th>
+            <th>Số ngày sử dụng</th>
+            <th>Giá bán</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+            <th colspan="2">Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="cthd in cthds">
+            <td>{{$index + 1 + (currentPage * itemsPerPage)}}</td>
+            <td><img src="{{cthd.linkAnh}}" alt="" width="100px" height="100px"></td>
+            <td>{{cthd.tenSP}}</td>
+            <td>{{cthd.soNgaySuDung}}</td>
+            <td>
+                {{ cthd.giaBan }} VND
+                <span ng-if="cthd.tienGiam && cthd.tienGiam !== 0" class="text-danger">
+                    (Giảm: {{ cthd.tienGiam }} VND)
+                  </span>
+            </td>
+            <td>{{cthd.soLuong}}</td>
+            <td>{{cthd.tongTien}}VND</td>
+            <td>
+                <button class="btn btn-danger">Xóa</button>
+            </td>
+        </tr>
+        </tbody>
+            </table>
+
+    <div class="text-center">
+        <ul class="pagination">
+            <li ng-class="{ 'disabled': currentPage === 0 }">
+                <button href="" ng-click="previousPage()">Previous</button>
+            </li>
+            <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
+                <button href="" ng-click="getCTSPByIdHD({{idHD}}, page)">{{ page + 1 }}</button>
+            </li>
+            <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
+                <button href="" ng-click="nextPage()">Next</button>
+            </li>
+        </ul>
+    </div>
+</div>

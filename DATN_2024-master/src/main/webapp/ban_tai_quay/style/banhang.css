@@ -1,0 +1,128 @@
+/* Căn giữa phân trang */
+.text-center {
+    text-align: center;
+}
+
+/* Các nút phân trang */
+.pagination {
+    display: inline-flex; /* Sử dụng flex để bố trí các nút trong hàng */
+    padding-left: 0;
+    list-style: none;
+    margin: 0;
+}
+
+.pagination .page-item {
+    margin: 0 5px; /* Khoảng cách giữa các nút */
+}
+
+.pagination .page-item button {
+    padding: 5px 10px; /* Tùy chỉnh kích thước nút */
+    border-radius: 5px; /* Bo tròn góc */
+    border: 1px solid #ddd; /* Viền mờ */
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển màu nền và màu chữ */
+}
+
+/* Khi nút phân trang không được chọn */
+.pagination .page-item button {
+    background-color: #f8f9fa; /* Nền nút mặc định */
+    color: #007bff; /* Màu chữ mặc định */
+}
+
+/* Khi nút phân trang được chọn */
+.pagination .page-item.active button {
+    background-color: #007bff; /* Nền nút sáng khi được chọn */
+    color: white; /* Màu chữ khi nút sáng */
+}
+
+/* Khi hover vào nút phân trang */
+.pagination .page-item button:hover {
+    background-color: #007bff; /* Nền khi hover */
+    color: white; /* Đổi màu chữ khi hover */
+}
+
+/* Khi nút phân trang bị disabled */
+.pagination .disabled button {
+    background-color: #e9ecef; /* Nền màu xám khi bị disable */
+    color: #6c757d; /* Màu chữ xám khi bị disable */
+    cursor: not-allowed; /* Con trỏ không cho phép */
+}
+
+/* Hiệu ứng cho nút Previous và Next khi bị disabled */
+.pagination .disabled button:hover {
+    background-color: #e9ecef; /* Nền xám khi hover vào nút disabled */
+    color: #6c757d; /* Màu chữ xám khi hover vào nút disabled */
+}
+
+/* Cấu hình nút đóng trong tab */
+.close-btn {
+    background-color: transparent; /* Mất nền ban đầu */
+    border: none; /* Không có viền */
+}
+
+/* Màu icon mặc định */
+.close-btn i {
+    color: black; /* Màu icon mặc định */
+    transition: background-color 0.3s, color 0.3s; /* Thêm hiệu ứng chuyển màu */
+}
+
+/* Nền đỏ khi hover */
+.close-btn:hover {
+    background-color: red; /* Nền đỏ khi hover */
+}
+
+/* Đổi màu icon thành trắng khi hover */
+.close-btn:hover i {
+    color: white;
+}
+
+/* Khi tab được chọn, không có nền */
+.nav-link.active .close-btn {
+    background-color: transparent; /* Không có nền khi tab được chọn */
+}
+
+/* Đổi màu icon khi hover hoặc khi tab đang chọn */
+.nav-link.active .close-btn:hover {
+    background-color: red; /* Nền đỏ khi hover vào icon */
+}
+
+.nav-link.active .close-btn:hover i {
+    color: white; /* Đổi màu icon thành trắng khi hover vào icon */
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    list-style: none;
+    margin: 20px 0;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination a {
+    display: block;
+    padding: 10px 15px;
+    color: #007bff; /* Màu chữ */
+    text-decoration: none;
+    border: 1px solid #007bff; /* Viền */
+    border-radius: 5px; /* Bo góc */
+    transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển đổi */
+}
+
+.pagination a:hover {
+    background-color: #007bff; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}
+
+.pagination .disabled a {
+    color: #6c757d; /* Màu chữ cho nút disabled */
+    border-color: #6c757d; /* Viền cho nút disabled */
+}
+
+.pagination .active a {
+    background-color: #007bff; /* Màu nền cho trang đang hoạt động */
+    color: white; /* Màu chữ cho trang đang hoạt động */
+}

@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -69,13 +72,20 @@ public class ChiTietHoaDon {
     }
 
     public ChiTietHoaDonRep toResponse() {
-
+        double tienGiam=0;
+        if (chiTietSanPham.getSanPham().getGiamGia() != null &&
+                chiTietSanPham.getSanPham().getGiamGia().getNgayKetThuc().isAfter(LocalDateTime.now()) &&
+                chiTietSanPham.getSanPham().getGiamGia().getNgayBatDau().isBefore(LocalDateTime.now())) {
+            double giaGiam = Double.valueOf(chiTietSanPham.getSanPham().getGiamGia().getGiaGiam()) / 100;
+            tienGiam=Double.valueOf(chiTietSanPham.getSanPham().getGiamGia().getGiaGiam())/100*Double.valueOf(chiTietSanPham.getGia());
+        }
         return new ChiTietHoaDonRep(
                 id,
                 maCTHD,
                 tongTien,
                 soLuong,
                 giaBan,
+                String.valueOf(tienGiam),
                 trangThai,
                 ngayTao,
                 ngaySua,
@@ -83,7 +93,8 @@ public class ChiTietHoaDon {
                 chiTietSanPham != null ? chiTietSanPham.getSanPham().getTenSP() : null,
                 chiTietSanPham != null ? chiTietSanPham.getGia() : null,
                 hoaDon != null ? hoaDon.getId() : null,
-                chiTietSanPham.getAnhCTSP().get(0).getLink()
+                chiTietSanPham.getAnhCTSP().get(0).getLink(),
+                chiTietSanPham.getSoNgaySuDung()
         );
     }
 

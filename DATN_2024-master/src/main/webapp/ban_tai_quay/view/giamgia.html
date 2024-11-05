@@ -238,16 +238,16 @@
     </tr>
     </tbody>
 </table>
-<nav class="text-center justify-content-center align-items-center">
+<div class="text-center">
     <ul class="pagination">
         <li ng-class="{ 'disabled': currentPage === 0 }">
-            <a href="" ng-click="previousPage()">Previous</a>
+            <button href="" ng-click="previousPage()">Previous</button>
         </li>
         <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
-            <a href="" ng-click="getAllGiamGias(page)">{{ page + 1 }}</a>
+            <button href="" ng-click="getAllGiamGias(page)">{{ page + 1 }}</button>
         </li>
         <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
-            <a href="" ng-click="nextPage()">Next</a>
+            <button href="" ng-click="nextPage()">Next</button>
         </li>
     </ul>
 </nav>
