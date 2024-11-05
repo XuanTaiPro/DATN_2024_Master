@@ -100,19 +100,7 @@ public class HoaDonController {
             return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + req.getIdNV());
         }
 
-        // Trước khi lưu hóa đơn
-        System.out.println("Mã hóa đơn: " + hoaDon.getMaHD());
-        System.out.println("Ngày tạo: " + hoaDon.getNgayTao());
-        System.out.println("Ngày sửa: " + hoaDon.getNgaySua());
-        System.out.println("Ngày thanh toán: " + hoaDon.getNgayThanhToan());
-        System.out.println("Ngày nhận hàng: " + hoaDon.getNgayNhanHang());
-        System.out.println("Mã voucher: " + hoaDon.getMaVoucher());
-        System.out.println("Thành tiền: " + hoaDon.getThanhTien());
-        System.out.println("Phí vận chuyển: " + hoaDon.getPhiVanChuyen());
-        System.out.println("Trạng thái: " + hoaDon.getTrangThai());
 
-        // Lưu hóa đơn
-        // Lưu hóa đơn
         try {
             hoaDonRepo.save(hoaDon);
             return ResponseEntity.ok().body(Map.of("message", "Thêm hóa đơn thành công!", "hoaDon", hoaDon));
