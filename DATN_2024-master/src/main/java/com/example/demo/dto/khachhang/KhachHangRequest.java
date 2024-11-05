@@ -1,7 +1,6 @@
 package com.example.demo.dto.khachhang;
 
 import com.example.demo.entity.KhachHang;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,10 +41,10 @@ public class KhachHangRequest {
     @NotNull(message = "Trạng thái không được để trống")
     private Integer trangThai;
 
-//    @NotBlank(message = "Ngày tạo không được để trống")
+    // @NotBlank(message = "Ngày tạo không được để trống")
     private LocalDateTime ngayTao;
 
-//    @NotBlank(message = "Ngày sửa không được để trống")
+    // @NotBlank(message = "Ngày sửa không được để trống")
     private LocalDateTime ngaySua;
 
     public KhachHang toEntity() {

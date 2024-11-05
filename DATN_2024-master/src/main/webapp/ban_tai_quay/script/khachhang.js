@@ -1,5 +1,5 @@
 window.khachhangCtrl = function ($scope, $http) {
-    const url = "http://localhost:8080/khachhang";
+    const url = "http://localhost:8083/khachhang";
 
     $scope.listKhachHang = [];
     $scope.currentPage = 0;
@@ -8,7 +8,7 @@ window.khachhangCtrl = function ($scope, $http) {
     $scope.emptyMessage = "";
 
     $scope.loadPage = function (page) {
-        $http.get('http://localhost:8080/khachhang/page?page=' + page)
+        $http.get('http://localhost:8083/khachhang/page?page=' + page)
             .then(function (response) {
                 $scope.listKhachHang = response.data.khachHangs;
                 $scope.currentPage = response.data.currentPage;
@@ -97,7 +97,7 @@ window.khachhangCtrl = function ($scope, $http) {
 
         };
         console.log("Dữ liệu nhân viên mới:", newKhachHang);
-        $http.post('http://localhost:8080/khachhang/add', newKhachHang)
+        $http.post('http://localhost:8083/khachhang/add', newKhachHang)
             .then(function (response) {
                 $scope.listKhachHang.push(response.data);
                 // Đóng modal
@@ -116,7 +116,7 @@ window.khachhangCtrl = function ($scope, $http) {
 
     $scope.updateKhachHang = function () {
         console.log("Cập nhật Khách Hàng:", $scope.selectedKhachHang);  // Kiểm tra dữ liệu trước khi gửi
-        $http.put('http://localhost:8080/khachhang/update/' + $scope.selectedKhachHang.id, $scope.selectedKhachHang)
+        $http.put('http://localhost:8083/khachhang/update/' + $scope.selectedKhachHang.id, $scope.selectedKhachHang)
             .then(function (response) {
                 location.reload()
             })
@@ -128,7 +128,7 @@ window.khachhangCtrl = function ($scope, $http) {
     $scope.delete = function (id) {
         console.log("Xóa");
         if (confirm('Bạn có chắc chắn muốn xóa ?')) {
-            $http.delete('http://localhost:8080/khachhang/delete/' + id)
+            $http.delete('http://localhost:8083/khachhang/delete/' + id)
                 .then(function (response) {
                     // Kiểm tra phản hồi server
                     console.log(response.data);

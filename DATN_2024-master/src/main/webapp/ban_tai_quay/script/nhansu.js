@@ -11,7 +11,7 @@ window.nhansuCtrl= function($scope, $http) {
     $scope.emptyMessage = "";
 
     $scope.loadPage = function (page) {
-        $http.get('http://localhost:8080/nhanvien/page?page=' + page)
+        $http.get('http://localhost:8083/nhanvien/page?page=' + page)
             .then(function (response) {
                 $scope.listNhanVien = response.data.nhanViens;
                 $scope.currentPage = response.data.currentPage;
@@ -73,7 +73,7 @@ window.nhansuCtrl= function($scope, $http) {
     //     console.error('Lỗi:', error);
     // });
     $scope.listQuyen = [];
-    $http.get( "http://localhost:8080/quyen")
+    $http.get( "http://localhost:8083/quyen")
         .then(function(response) {
             $scope.listQuyen = response.data;
             console.log("Lấy danh sách quyền thành công", $scope.listQuyen);
@@ -111,7 +111,7 @@ window.nhansuCtrl= function($scope, $http) {
         $scope.selectedQuyen = $scope.selectedNhanVien.tenQuyen
         $scope.idQuyen = null
         console.log( $scope.selectedQuyen)
-        fetch('http://localhost:8080/quyen/getId?ten=' +$scope.selectedQuyen).then(function (response){
+        fetch('http://localhost:8083/quyen/getId?ten=' +$scope.selectedQuyen).then(function (response){
             return  response.text()
         }).then(function(data) {
             $scope.$apply(function() {
@@ -143,7 +143,7 @@ window.nhansuCtrl= function($scope, $http) {
         };
         console.log("Dữ liệu nhân viên mới:", newNhanVien);
 
-        $http.post('http://localhost:8080/nhanvien/add', newNhanVien)
+        $http.post('http://localhost:8083/nhanvien/add', newNhanVien)
             .then(function (response) {
                 $scope.listNhanVien.push(response.data);
 
@@ -172,7 +172,7 @@ window.nhansuCtrl= function($scope, $http) {
         }
         // $event.preventDefault()
         $scope.selectedNhanVien.idQuyen = $scope.idQuyen;
-        $http.put('http://localhost:8080/nhanvien/update/' + $scope.selectedNhanVien.id, $scope.selectedNhanVien)
+        $http.put('http://localhost:8083/nhanvien/update/' + $scope.selectedNhanVien.id, $scope.selectedNhanVien)
             .then(function (response) {
                location.reload()
             })
@@ -187,7 +187,7 @@ window.nhansuCtrl= function($scope, $http) {
     $scope.deleteNhanVien = function (id) {
         console.log("Xóa");
         if (confirm('Bạn có chắc chắn muốn xóa nhân viên này?')) {
-            $http.delete('http://localhost:8080/nhanvien/delete/' + id)
+            $http.delete('http://localhost:8083/nhanvien/delete/' + id)
                 .then(function (response) {
                     // Kiểm tra phản hồi server
                     console.log(response.data);

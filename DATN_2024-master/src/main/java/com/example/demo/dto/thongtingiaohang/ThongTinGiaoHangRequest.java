@@ -1,6 +1,5 @@
 package com.example.demo.dto.thongtingiaohang;
 
-import com.example.demo.entity.KhachHang;
 import com.example.demo.entity.ThongTinGiaoHang;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -26,10 +25,10 @@ public class ThongTinGiaoHangRequest {
     @NotBlank(message = "Địa chỉ người nhận Không được để trống")
     private String dcNguoiNhan;
 
-//    @NotBlank(message = "Ngày tạo Không được để trống")
+    // @NotBlank(message = "Ngày tạo Không được để trống")
     private LocalDateTime ngayTao;
 
-//    @NotBlank(message = "Ngày sửa Không được để trống")
+    // @NotBlank(message = "Ngày sửa Không được để trống")
     private LocalDateTime ngaySua;
 
     @NotNull(message = "trạng thái Không được để trống")
@@ -38,11 +37,10 @@ public class ThongTinGiaoHangRequest {
     @NotNull(message = "idKH Không được để trống")
     private String idKH;
 
-
-    public ThongTinGiaoHang toEntity(){
+    public ThongTinGiaoHang toEntity() {
         if (this.id == null || this.id.isEmpty()) {
             this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         }
-        return new ThongTinGiaoHang(id,sdtNguoiNhan,tenNguoiNhan,dcNguoiNhan,null,null,trangThai,null);
+        return new ThongTinGiaoHang(id, sdtNguoiNhan, tenNguoiNhan, dcNguoiNhan, null, null, trangThai, null);
     }
 }

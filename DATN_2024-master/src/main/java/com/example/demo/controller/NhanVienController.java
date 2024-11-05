@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.dto.nhanvien.NhanVienRequest;
 import com.example.demo.dto.nhanvien.NhanVienResponse;
 import com.example.demo.entity.NhanVien;
-import com.example.demo.entity.Quyen;
 import com.example.demo.repository.NhanVienRepository;
 import com.example.demo.repository.QuyenRepository;
 import com.example.demo.service.GenerateCodeAll;
@@ -62,7 +61,6 @@ public class NhanVienController {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping("detail/{id}")
     public ResponseEntity<?> detail(@PathVariable String id) {
         if (nvRepo.findById(id).isPresent()) {
@@ -79,9 +77,11 @@ public class NhanVienController {
             bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
             return ResponseEntity.badRequest().body(errors);
         }
-        if (nhanVienRequest.getMa() == null || nhanVienRequest.getMa().isEmpty()) {//nếu mã chưa đc điền thì tự động thêm mã
+
+        if (nhanVienRequest.getMa() == null || nhanVienRequest.getMa().isEmpty()) {
             nhanVienRequest.setMa(generateCodeAll.generateMaNhanVien());
         }
+
         if (nhanVienRequest.getId() == null || nhanVienRequest.getId().isEmpty()) {
             nhanVienRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
@@ -90,17 +90,21 @@ public class NhanVienController {
         nhanVien.setQuyen(qRepo.getById(nhanVienRequest.getIdQuyen()));
         nhanVien.setNgayTao(LocalDateTime.now());
         nvRepo.save(nhanVien);
+
         return ResponseEntity.ok("thêm thành công");
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody NhanVienRequest nhanVienRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody NhanVienRequest nhanVienRequest,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
+
         Optional<NhanVien> optionalNhanVien = nvRepo.findById(id);
+
         if (optionalNhanVien.isPresent()) {
             NhanVien nhanVien = optionalNhanVien.get();
             if (nhanVienRequest.getImg() == null || nhanVienRequest.getImg().isEmpty()) {
@@ -112,13 +116,13 @@ public class NhanVienController {
             nhanVienUpdate.setMa(optionalNhanVien.get().getMa());
             nhanVienUpdate.setNgaySua(LocalDateTime.now());
             nhanVienUpdate.setNgayTao(optionalNhanVien.get().getNgayTao());
-            NhanVien savedNhanVien = nvRepo.save(nhanVienUpdate);  // Lưu thay đổi và lấy đối tượng đã lưu
-            return ResponseEntity.ok(savedNhanVien);  // Trả về đối tượng đã cập nhật
+            NhanVien savedNhanVien = nvRepo.save(nhanVienUpdate);
+
+            return ResponseEntity.ok(savedNhanVien);
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
         }
     }
-
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {

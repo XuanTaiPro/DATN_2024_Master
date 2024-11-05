@@ -2,7 +2,6 @@ package com.example.demo.entity;
 
 import com.example.demo.dto.khachhang.KhachHangResponse;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,6 +50,6 @@ public class KhachHang {
     private LocalDateTime ngaySua;
 
     public KhachHangResponse toResponse() {
-        return new KhachHangResponse(id, ma, ten, email,passw, gioiTinh, sdt, diaChi, trangThai);
+        return new KhachHangResponse(id, ma, ten, email, passw, gioiTinh, sdt, diaChi, trangThai);
     }
 }

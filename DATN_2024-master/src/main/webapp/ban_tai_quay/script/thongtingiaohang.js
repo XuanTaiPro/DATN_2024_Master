@@ -1,5 +1,5 @@
 window.thongtingiaohangCtrl = function ($scope, $http) {
-    const url = "http://localhost:8080/thongtingiaohang";
+    const url = "http://localhost:8083/thongtingiaohang";
 
     $scope.listTtgh = [];
     $scope.currentPage = 0;
@@ -8,7 +8,7 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
     $scope.emptyMessage = "";
 
     $scope.loadPage = function (page) {
-        $http.get('http://localhost:8080/thongtingiaohang/page?page=' + page)
+        $http.get('http://localhost:8083/thongtingiaohang/page?page=' + page)
             .then(function (response) {
                 $scope.listTtgh = response.data.thongTinGiaoHangs;
                 $scope.currentPage = response.data.currentPage;
@@ -63,7 +63,7 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
     $scope.loadPage(0);
 
     $scope.listKH = [];
-    $http.get("http://localhost:8080/khachhang")
+    $http.get("http://localhost:8083/khachhang")
         .then(function (response) {
             $scope.listKH = response.data;
             console.log("Lấy danh sách khách hàng thành công", $scope.listKH);
@@ -84,7 +84,7 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
         $scope.idKH = null;
         console.log($scope.selectedKhachHang);
 
-        fetch('http://localhost:8080/khachhang/getId?ten=' + $scope.selectedKhachHang)
+        fetch('http://localhost:8083/khachhang/getId?ten=' + $scope.selectedKhachHang)
             .then(function (response) {
                 return response.json();  // Chuyển đổi sang JSON vì API trả về danh sách
             })
@@ -117,7 +117,7 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
             idKH: $scope.idKH,
         };
         console.log("Dữ liệu voucher mới:", newTtgh);
-        $http.post('http://localhost:8080/thongtingiaohang/add', newTtgh)
+        $http.post('http://localhost:8083/thongtingiaohang/add', newTtgh)
             .then(function (response) {
                 // Đóng modal
                 $('#productModal').modal('hide');
@@ -138,7 +138,7 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
             return;
         }
         $scope.selectedTtgh.idKH = $scope.idKH;
-        $http.put('http://localhost:8080/thongtingiaohang/update/' + $scope.selectedTtgh.id, $scope.selectedTtgh)
+        $http.put('http://localhost:8083/thongtingiaohang/update/' + $scope.selectedTtgh.id, $scope.selectedTtgh)
             .then(function (response) {
                 location.reload()
             })
@@ -149,7 +149,7 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
     $scope.delete = function (id) {
         console.log("Xóa");
         if (confirm('Bạn có chắc chắn muốn xóa ?')) {
-            $http.delete('http://localhost:8080/thongtingiaohang/delete/' + id)
+            $http.delete('http://localhost:8083/thongtingiaohang/delete/' + id)
                 .then(function (response) {
                     console.log(response.data);
                     location.reload()

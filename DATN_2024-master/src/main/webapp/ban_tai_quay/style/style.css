@@ -1,0 +1,56 @@
+body {
+    background-color: #f0f8ff; /* Màu nền nhẹ */
+    color: black; /* Màu chữ đen */
+}
+
+.container {
+    border: 2px solid #007bff; /* Viền màu xanh dương */
+    padding: 20px;
+    border-radius: 10px; /* Góc bo tròn */
+    background-color: white; /* Nền trắng cho container */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ cho container */
+    max-width: 95%; /* Mở rộng chiều rộng của container */
+    margin: auto; /* Căn giữa container */
+}
+
+.btn-outline-success {
+    background-color: #ff7f50; /* Màu cam cho nút "Add" */
+    color: white; /* Màu chữ trắng cho nút */
+    border-color: #ff7f50; /* Viền màu cam cho nút */
+}
+
+.btn-outline-success:hover {
+    background-color: #ff4500; /* Màu cam đậm khi hover */
+    border-color: #ff4500; /* Viền màu cam đậm khi hover */
+}
+
+.table {
+    width: 100%; /* Đặt chiều rộng bảng là 100% */
+    table-layout: auto; /* Bảng sẽ tự điều chỉnh kích thước các cột */
+}
+
+.table th, .table td {
+    vertical-align: middle; /* Căn giữa nội dung trong bảng */
+    padding: 10px; /* Thêm khoảng cách bên trong các ô */
+    word-wrap: break-word; /* Bọc nội dung trong ô để không bị tràn */
+}
+.nav-link.active {
+    background-color: #007bff; /* Màu nền cho tab đang hoạt động */
+    color: white; /* Màu chữ cho tab đang hoạt động */
+    border-radius: 0.25rem; /* Thêm đường viền góc để làm nổi bật tab */
+}
+
+.table thead th {
+    background-color: #007bff; /* Nền màu xanh dương cho tiêu đề bảng */
+    color: white; /* Màu chữ trắng cho tiêu đề */
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    width: 120px; /* Đặt chiều rộng cụ thể cho cột hình ảnh */
+}
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 50px; /* Cột STT nhỏ hơn */
+}

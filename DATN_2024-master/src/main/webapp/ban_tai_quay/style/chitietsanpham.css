@@ -1,0 +1,71 @@
+.image-wrapper {
+    position: relative; /* Đặt vị trí tương đối cho div chứa hình ảnh */
+    display: inline-block; /* Để các hình ảnh hiển thị cạnh nhau */
+}
+
+.product-image {
+    width: 100px; /* Hoặc chiều rộng mong muốn */
+    height: 100px; /* Hoặc chiều cao mong muốn */
+    object-fit: cover; /* Đảm bảo hình ảnh không bị biến dạng */
+}
+
+.remove-button {
+    position: absolute; /* Đặt nút xóa ở vị trí tuyệt đối */
+    top: 5px; /* Đặt nút ở phía trên cùng */
+    right: 5px; /* Đặt nút ở phía bên phải */
+    padding: 0; /* Loại bỏ padding */
+    width: 20px; /* Kích thước nút */
+    height: 20px; /* Kích thước nút */
+    border-radius: 50%; /* Làm cho nút thành hình tròn */
+    background-color: red; /* Màu nền cho nút */
+    color: white; /* Màu chữ cho nút */
+    border: none; /* Loại bỏ viền của nút */
+    font-size: 14px; /* Kích thước chữ */
+    z-index: 1; /* Đảm bảo nút ở trên cùng */
+}
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Căn giữa nội dung */
+    margin: 20px 0; /* Thêm một chút khoảng cách phía trên và dưới */
+}
+
+.page-numbers {
+    margin: 0 15px; /* Thêm khoảng cách giữa nút Previous/Next và các số trang */
+}
+
+.page-numbers span {
+    margin: 0 5px; /* Thêm khoảng cách giữa các số trang */
+}
+
+button {
+    background-color: #007bff; /* Màu nền nút */
+    color: white; /* Màu chữ */
+    border: none; /* Xóa viền */
+    border-radius: 5px; /* Bo tròn góc */
+    padding: 8px 12px; /* Thêm khoảng cách bên trong nút */
+    cursor: pointer; /* Hiệu ứng con trỏ khi di chuột */
+    transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng chuyển đổi */
+}
+
+button:hover {
+    background-color: #0056b3; /* Màu nền khi di chuột */
+    transform: scale(1.05); /* Tăng kích thước nhẹ khi di chuột */
+}
+
+button:disabled {
+    background-color: #ccc; /* Màu nền cho nút không khả dụng */
+    cursor: not-allowed; /* Thay đổi con trỏ khi không khả dụng */
+}
+
+.active button {
+    font-weight: bold; /* Tô đậm số trang đang hoạt động */
+    background-color: #0056b3; /* Màu nền cho nút đang hoạt động */
+    border-radius: 5px; /* Bo tròn góc cho nút hoạt động */
+}
+
+/* Thêm khoảng cách cho nút Previous và Next */
+.pagination button {
+    margin: 0 10px; /* Thêm khoảng cách giữa nút Previous/Next và các số trang */
+}
+

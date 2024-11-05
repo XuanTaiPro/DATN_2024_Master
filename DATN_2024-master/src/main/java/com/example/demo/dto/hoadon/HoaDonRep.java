@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +23,9 @@ public class HoaDonRep {
     private int trangThai;
     private int loaiHD;
     private String phiVanChuyen;
-    private String thongTinGiaoHang;
+    private String tenNguoiNhan;
+    private String sdtNguoiNhan;
+    private String diaChiNguoiNhan;
     private String tenKH;
     private String sdt;
     private String email;

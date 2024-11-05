@@ -40,9 +40,8 @@ public class KhachHangController {
     }
 
     @GetMapping("getId")
-    public List<String> findKhachHangByTen(@RequestParam String ten) {
-        List<KhachHang> khachHangList = (List<KhachHang>) khRepo.getKhachHangByTen(ten);
-        return khachHangList.stream().map(KhachHang::getId).collect(Collectors.toList());
+    public String findKhachHangByTen(@RequestParam String ten) {
+        return khRepo.getKhachHangByTen(ten).getId();
     }
 
     @GetMapping("findAllNotPW")

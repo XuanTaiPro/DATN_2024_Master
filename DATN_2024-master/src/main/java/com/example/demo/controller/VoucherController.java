@@ -82,7 +82,6 @@ public class VoucherController {
         if (voucherId == null || voucherId.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID của voucher không được bỏ trống.");
         }
-
         Voucher voucher = vcRepo.findById(voucherId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Voucher không tồn tại"));
 
@@ -90,12 +89,24 @@ public class VoucherController {
             voucher.setSoLuong(voucher.getSoLuong() - 1);
             if (voucher.getSoLuong() == 0) {
                 voucher.setTrangThai(0);
+            } else {
+                voucher.setTrangThai(1);
             }
             vcRepo.save(voucher);
             return ResponseEntity.ok("Voucher đã được áp dụng thành công.");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Voucher này đã hết số lượng.");
         }
+    }
+
+    @GetMapping("/{id}/customers")
+    public ResponseEntity<List<KhachHang>> getCustomersByVoucherId(@PathVariable("id") String voucherId) {
+        // Lấy danh sách IDKH từ CHITIETVOUCHER theo IDVC
+        List<String> idKH = ctvcRepo.findCustomerIdsByVoucherId(voucherId);
+        // Tìm chi tiết khách hàng theo danh sách IDKH
+        List<KhachHang> khachHangList = khRepo.findAllById(idKH);
+
+        return ResponseEntity.ok(khachHangList);
     }
 
     @GetMapping("page")
@@ -139,10 +150,6 @@ public class VoucherController {
         if (voucherRequest.getMa() == null || voucherRequest.getMa().isEmpty()) {//nếu mã chưa đc điền thì tự động thêm mã
             voucherRequest.setMa(generateCodeAll.generateMaVoucher());
         }
-//        if (vcRepo.existsByMa(voucherRequest.getMa())) {
-//            return ResponseEntity.badRequest().body("mã đã tồn tại");
-//        }
-
         Voucher voucher = voucherRequest.toEntity();
         voucher.setLoaiVoucher(lvcRepo.getById(voucherRequest.getIdLoaiVC()));
         voucher.setNgayTao(LocalDateTime.now());
@@ -165,6 +172,7 @@ public class VoucherController {
         return ResponseEntity.ok("thêm thành công");
     }
 
+
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody VoucherRequest voucherRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -172,29 +180,51 @@ public class VoucherController {
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
-//        if (vcRepo.findById(id).isPresent()) {
-//            Voucher voucher = voucherRequest.toEntity();
-//            voucher.setId(id);
-//            voucher.setLoaiVoucher(lvcRepo.getById(voucherRequest.getIdLoaiVC()));
-//            vcRepo.save(voucher);
-//            return ResponseEntity.ok("Update thành công ");
-//        } else {
-//            return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
-//        }
         Optional<Voucher> optionalVoucher = vcRepo.findById(id);
         if (optionalVoucher.isPresent()) {
 
             Voucher voucherUpdate = voucherRequest.toEntity();
-            voucherRequest.setId(id);
+            voucherUpdate.setId(id);
             voucherUpdate.setLoaiVoucher(lvcRepo.getById(voucherRequest.getIdLoaiVC()));
             voucherUpdate.setMa(optionalVoucher.get().getMa());
             voucherUpdate.setNgaySua(LocalDateTime.now());
             voucherUpdate.setNgayTao(optionalVoucher.get().getNgayTao());
-            Voucher savedVoucher = vcRepo.save(voucherUpdate);  // Lưu thay đổi và lấy đối tượng đã lưu
-            return ResponseEntity.ok(savedVoucher);  // Trả về đối tượng đã cập nhật
+            if (voucherUpdate.getSoLuong() > 0) {
+                voucherUpdate.setTrangThai(1); // Hoạt động
+            } else {
+                voucherUpdate.setTrangThai(0); // Không hoạt động
+            }
+            Voucher savedVoucher = vcRepo.save(voucherUpdate);
+
+            if (!ctvcRepo.getCTVC(id).isEmpty()) {
+                ctvcRepo.deleteByVoucherId(id);
+            }
+            if (voucherRequest.getIdKH() != null && !voucherRequest.getIdKH().isEmpty()) {
+                for (String customerId : voucherRequest.getIdKH()) {
+                    Optional<KhachHang> khachHang = khRepo.findById(customerId);
+                    if (khachHang.isPresent()) {
+                        ChiTietVoucher chiTietVoucher = new ChiTietVoucher();
+                        chiTietVoucher.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+                        chiTietVoucher.setKhachHang(khachHang.get());
+                        chiTietVoucher.setVoucher(voucherUpdate);
+                        ctvcRepo.save(chiTietVoucher);
+                    } else {
+                        return ResponseEntity.badRequest().body("Khách hàng với ID " + customerId + " không tồn tại");
+                    }
+                    System.out.println(customerId);
+                }
+            }
+
+            return ResponseEntity.ok(savedVoucher);
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
         }
+    }
+
+    @DeleteMapping("deleteByidVC/{idVC}")
+    public ResponseEntity<?> deleteByIdVC(@PathVariable String idVC){
+        ctvcRepo.deleteByVoucherId(idVC);
+        return ResponseEntity.ok().body("Xóa thành công");
     }
 
     @DeleteMapping("delete/{id}")

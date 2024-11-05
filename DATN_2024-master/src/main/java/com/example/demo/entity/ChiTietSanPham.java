@@ -1,16 +1,12 @@
 package com.example.demo.entity;
 
 import com.example.demo.dto.chitietsanpham.ChiTietSanPhamResponse;
-import com.example.demo.entity.AnhCTSP;
-import com.example.demo.entity.SanPham;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,14 +22,13 @@ public class ChiTietSanPham {
 
     @Id
     @Column(name = "id")
-    private String id ;
+    private String id;
 
     @Column(name = "ma")
     private String ma;
 
     @Column(name = "gia")
     private String gia;
-
 
     @Column(name = "soNgaySuDung")
     private String soNgaySuDung;
@@ -49,7 +44,6 @@ public class ChiTietSanPham {
 
     @Column(name = "soLuong")
     private int soLuong;
-
 
     @Column(name = "trangThai")
     private int trangThai;

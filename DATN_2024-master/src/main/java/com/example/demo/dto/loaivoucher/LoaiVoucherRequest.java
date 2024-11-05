@@ -2,7 +2,6 @@ package com.example.demo.dto.loaivoucher;
 
 import com.example.demo.entity.LoaiVoucher;
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -24,10 +23,10 @@ public class LoaiVoucherRequest {
     @NotBlank(message = "Tên không được để trống")
     private String ten;
 
-//    @NotBlank(message = "Ngày tạo không được để trống")
+    // @NotBlank(message = "Ngày tạo không được để trống")
     private LocalDateTime ngayTao;
 
-//    @NotBlank(message = "Ngày sửa không được để trống")
+    // @NotBlank(message = "Ngày sửa không được để trống")
     private LocalDateTime ngaySua;
 
     @NotNull(message = "Trạng thái không được để trống")
@@ -36,7 +35,7 @@ public class LoaiVoucherRequest {
     @NotBlank(message = "Mô tả không được để trống")
     private String moTa;
 
-    public LoaiVoucher toEntity(){
-        return new LoaiVoucher(id,ma,ten,null,null,trangThai,moTa);
+    public LoaiVoucher toEntity() {
+        return new LoaiVoucher(id, ma, ten, null, null, trangThai, moTa);
     }
 }

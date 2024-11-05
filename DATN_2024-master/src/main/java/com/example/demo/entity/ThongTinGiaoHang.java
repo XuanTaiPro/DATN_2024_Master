@@ -1,6 +1,5 @@
 package com.example.demo.entity;
 
-import com.example.demo.dto.thongbao.ThongBaoResponse;
 import com.example.demo.dto.thongtingiaohang.ThongTinGiaoHangResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "THONGTINGIAOHANG")
 public class ThongTinGiaoHang {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private String id;
 
@@ -45,6 +44,7 @@ public class ThongTinGiaoHang {
     private KhachHang khachHang;
 
     public ThongTinGiaoHangResponse toResponse() {
-        return new ThongTinGiaoHangResponse(id, sdtNguoiNhan, tenNguoiNhan, dcNguoiNhan, ngayTao, ngaySua,trangThai, khachHang.getTen(), khachHang.getEmail());
+        return new ThongTinGiaoHangResponse(id, sdtNguoiNhan, tenNguoiNhan, dcNguoiNhan, ngayTao, ngaySua, trangThai,
+                khachHang.getTen(), khachHang.getEmail());
     }
 }

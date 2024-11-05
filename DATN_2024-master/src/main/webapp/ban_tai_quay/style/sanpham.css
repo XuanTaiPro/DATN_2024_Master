@@ -1,0 +1,37 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    list-style: none;
+    margin: 20px 0;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination a {
+    display: block;
+    padding: 10px 15px;
+    color: #007bff; /* Màu chữ */
+    text-decoration: none;
+    border: 1px solid #007bff; /* Viền */
+    border-radius: 5px; /* Bo góc */
+    transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển đổi */
+}
+
+.pagination a:hover {
+    background-color: #007bff; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}
+
+.pagination .disabled a {
+    color: #6c757d; /* Màu chữ cho nút disabled */
+    border-color: #6c757d; /* Viền cho nút disabled */
+}
+
+.pagination .active a {
+    background-color: #007bff; /* Màu nền cho trang đang hoạt động */
+    color: white; /* Màu chữ cho trang đang hoạt động */
+}

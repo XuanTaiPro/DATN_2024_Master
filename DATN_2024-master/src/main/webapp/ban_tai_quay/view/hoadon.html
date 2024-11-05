@@ -1,0 +1,137 @@
+<h2 class="text-center">Quản Lý Hóa Đơn</h2>
+<div class="input-group" style="padding-left: 50px;padding-right: 50px;">
+    <input type="text" class="form-control"
+           ng-change="getHoaDonsByTrangThai(selectedTrangThai, 0)"
+           placeholder="Tìm kiếm theo tên khách hàng"
+           ng-model="searchText">
+</div>
+
+<!-- Phần combobox lọc -->
+<div class="row" style="padding-left: 50px;padding-right: 50px;padding-top: 20px;">
+    <div class="col-md-3">
+        <select class="form-select"
+                ng-model="selectedLoaiHD"
+                ng-change="getHoaDonsByTrangThai(selectedTrangThai, 0)"
+                ng-options="option.value as option.name for option in loaiHDFilters">
+            <option value="">Tất cả loại hóa đơn</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <select class="form-select"
+                ng-model="selectedNhanVien"
+                ng-change="getHoaDonsByTrangThai(selectedTrangThai, 0)"
+                ng-options="nv.ten as nv.ten for nv in nhanViens">
+            <option value="">Nhân viên</option>
+        </select>
+    </div>
+</div>
+<div class="container mt-5">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(null, 0)" ng-class="{'active': selectedTrangThai === null}">Tất cả</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(0, 0)" ng-class="{'active': selectedTrangThai === 0}">Chờ xác nhận</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(1, 0)" ng-class="{'active': selectedTrangThai === 1}">Chờ</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(2, 0)" ng-class="{'active': selectedTrangThai === 2}">Đã xác nhận</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(3, 0)" ng-class="{'active': selectedTrangThai === 3}">Hoàn thành</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(4, 0)" ng-class="{'active': selectedTrangThai === 4}">Đã hủy</a>
+        </li>
+    </ul>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>STT</th>
+            <th>Mã</th>
+            <th>Tên khách hàng</th>
+            <th>Số điện thoại khách hàng</th>
+            <th>Ngày tạo</th>
+            <th>Loại hóa đơn</th>
+            <th>Tổng tiền</th>
+            <th colspan="2">Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="hd in hoaDons">
+            <td>{{$index + 1 + (currentPage * itemsPerPage)}}</td>
+            <td>{{hd.maHD}}</td>
+            <td>{{hd.tenKH}}</td>
+            <td>{{hd.sdt}}</td>
+            <td>{{hd.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+            <td>{{hd.loaiHD == 1 ? 'Online' : 'Tại quầy' }}</td>
+            <td>{{hd.thanhTien}} VND</td>
+            <td>
+                <button class="btn btn-success" ng-click="detailHoaDon(hd.id)" data-bs-toggle="modal" data-bs-target="#readData">
+                    <i class="bi bi-eye"></i>
+                </button>
+                <div class="modal fade" id="readData" tabindex="-1" aria-labelledby="readDataLabel" aria-hidden="true">
+                    <div class="modal-dialog  modal-xl modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="readDataLabel">Chi tiết hóa đơn</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <h5 class="title">Thông tin hóa đơn</h5>
+                                    <div class="col-md-3">
+                                        <p><strong>Mã hóa đơn:</strong> {{ hoaDonDetail.maHD}} </p>
+                                        <p><strong>Tên khách hàng:</strong> {{ hoaDonDetail.tenKH }} </p>
+                                        <p><strong>Số điện thoại:</strong> {{hoaDonDetail.sdt}}</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p><strong>Loại hóa đơn:</strong> {{hoaDonDetail.loaiHD == 1 ? 'Online' : 'Tại quầy' }} </p>
+                                        <p><strong>Tổng tiền:</strong> {{ hoaDonDetail.thanhTien }} </p>
+                                        <p><strong>Trạng thái:</strong>
+                                            {{ hoaDonDetail.trangThai == 0 ? 'Chờ xác nhận' :
+                                            hoaDonDetail.trangThai == 1 ? 'Chờ' :
+                                            hoaDonDetail.trangThai == 2 ? 'Đã xác nhận' :
+                                            hoaDonDetail.trangThai == 3 ? 'Hoàn thành' :
+                                            hoaDonDetail.trangThai == 4 ? 'Đã hủy' : 'Không xác định' }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p><strong>Tên người nhận:</strong> {{ hoaDonDetail.tenNguoiNhan}} </p>
+                                        <p><strong>Số điện thoại:</strong> {{ hoaDonDetail.sdtNguoiNhan }} </p>
+                                        <p><strong>Địa chỉ :</strong> {{hoaDonDetail.diaChiNguoiNhan}}</p>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-success" ng-if="hd.trangThai === 0" ng-click="confirmInvoice(hd.id)" >
+                    Xác nhận
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav class="text-center">
+        <ul class="pagination">
+            <li ng-class="{ 'disabled': currentPage === 0 }">
+                <a href="" ng-click="previousPage()">Previous</a>
+            </li>
+            <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
+                <a href="" ng-click="getHoaDonsByTrangThai(selectedTrangThai, page)">{{ page + 1 }}</a>
+            </li>
+            <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
+                <a href="" ng-click="nextPage()">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>

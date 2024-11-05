@@ -5,7 +5,6 @@ import com.example.demo.entity.SanPham;
 import com.example.demo.repository.GiamGiaRepository;
 import com.example.demo.repository.SanPhamRepository;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +18,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -30,22 +28,25 @@ public class GiamGiaController {
     GiamGiaRepository giamGiaRepository;
     @Autowired
     SanPhamRepository sanPhamRepository;
+
     @GetMapping()
     public ResponseEntity<?> getAll() {
         Sort sort = Sort.by(Sort.Direction.DESC, "ngayTao");
         List<GiamGia> giamGiaList = giamGiaRepository.findAll(sort);
         return ResponseEntity.ok(giamGiaList);
     }
+
     @GetMapping("/phanTrang")
-    public ResponseEntity<?> phanTrang(@RequestParam(name = "page",defaultValue = "0")Integer page) {
+    public ResponseEntity<?> phanTrang(@RequestParam(name = "page", defaultValue = "0") Integer page) {
         PageRequest pageRequest = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "ngayTao"));
-        Page<GiamGia> giamGiaPage=giamGiaRepository.findAll(pageRequest);
+        Page<GiamGia> giamGiaPage = giamGiaRepository.findAll(pageRequest);
         Map<String, Object> response = new HashMap<>();
         response.put("giamGias", giamGiaPage.getContent());
         response.put("totalPages", giamGiaPage.getTotalPages());
         response.put("totalElements", giamGiaPage.getTotalElements());
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/detail")
     public ResponseEntity<?> detail(@RequestParam Map<String, String> request) {
         String id = request.get("id");
@@ -55,12 +56,13 @@ public class GiamGiaController {
         GiamGia giamGia = giamGiaRepository.findById(id).orElse(null);
         if (giamGia != null) {
             Map<String, Object> response = new HashMap<>();
-            response.put("listSanPham", giamGia.getListSanPham());  // Thêm danh sách sản phẩm
-            response.put("giamGiaDetail", giamGia);  // Thêm chi tiết giảm giá
+            response.put("listSanPham", giamGia.getListSanPham()); // Thêm danh sách sản phẩm
+            response.put("giamGiaDetail", giamGia); // Thêm chi tiết giảm giá
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.badRequest().body("Không tìm thấy giảm giá có id: " + id);
     }
+
     @GetMapping("/detailByMa")
     public ResponseEntity<?> detailByMa(@RequestBody Map<String, String> request) {
         String ma = request.get("ma");
@@ -74,10 +76,12 @@ public class GiamGiaController {
         if (giamGia != null) {
             return ResponseEntity.ok(giamGia);
         }
-        return ResponseEntity.badRequest().body("Không tìm thấy giảm giá có mã: " +ma);
+        return ResponseEntity.badRequest().body("Không tìm thấy giảm giá có mã: " + ma);
     }
+
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Valid @ModelAttribute GiamGia giamGia,@RequestParam("selectedProducts") List<String> selectedProducts) {
+    public ResponseEntity<?> add(@Valid @ModelAttribute GiamGia giamGia,
+            @RequestParam("selectedProducts") List<String> selectedProducts) {
         giamGia.setNgayTao(LocalDateTime.now());
         giamGia.setNgaySua(null);
 
@@ -129,10 +133,10 @@ public class GiamGiaController {
         for (String productId : selectedProducts) {
             SanPham sanPham = sanPhamRepository.findById(productId).orElse(null);
             if (sanPham == null) {
-                System.out.println("ID:"+productId);
+                System.out.println("ID:" + productId);
                 return ResponseEntity.badRequest().body("Sản phẩm với ID: " + productId + " không tồn tại!");
             }
-            if (sanPham!=null){
+            if (sanPham != null) {
                 sanPham.setGiamGia(giamGia);
             }
 
@@ -141,6 +145,7 @@ public class GiamGiaController {
         sanPhamRepository.saveAll(sanPhams); //
         return ResponseEntity.ok("Add done!");
     }
+
     private boolean isValidDateFormat(LocalDateTime date) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -150,8 +155,10 @@ public class GiamGiaController {
             return false;
         }
     }
+
     @PutMapping("/update")
-    public ResponseEntity<?> update(@Valid @ModelAttribute GiamGia giamGia, @RequestParam("selectedProducts") List<String> selectedProducts) {
+    public ResponseEntity<?> update(@Valid @ModelAttribute GiamGia giamGia,
+            @RequestParam("selectedProducts") List<String> selectedProducts) {
         String id = giamGia.getId();
         if (id == null || id.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("ID không được để trống.");
@@ -233,10 +240,10 @@ public class GiamGiaController {
         for (String productId : selectedProducts) {
             SanPham sanPham = sanPhamRepository.findById(productId).orElse(null);
             if (sanPham == null) {
-                System.out.println("ProductID: "+productId);
+                System.out.println("ProductID: " + productId);
                 return ResponseEntity.badRequest().body("Sản phẩm với ID: " + productId + " không tồn tại!");
             }
-            if (sanPham!=null){
+            if (sanPham != null) {
                 sanPham.setGiamGia(giamGiaUpdate);
             }
             sanPhams.add(sanPham);
@@ -246,6 +253,7 @@ public class GiamGiaController {
         // Lưu cập nhật cho GiamGia
         return ResponseEntity.ok("Cập nhật thành công!");
     }
+
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody Map<String, String> body) {
         String id = body.get("id");

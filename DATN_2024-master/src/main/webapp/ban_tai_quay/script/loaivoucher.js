@@ -1,5 +1,5 @@
 window.loaivoucherCtrl = function ($scope, $http) {
-    const url = "http://localhost:8080/loaivoucher";
+    const url = "http://localhost:8083/loaivoucher";
 
     $scope.listLoaiVoucher = [];
     $scope.currentPage = 0;
@@ -8,7 +8,7 @@ window.loaivoucherCtrl = function ($scope, $http) {
     $scope.emptyMessage = "";
 
     $scope.loadPage = function (page) {
-        $http.get('http://localhost:8080/loaivoucher/page?page=' + page)
+        $http.get('http://localhost:8083/loaivoucher/page?page=' + page)
             .then(function (response) {
                 $scope.listLoaiVoucher = response.data.loaiVouchers;
                 $scope.currentPage = response.data.currentPage;
@@ -80,7 +80,7 @@ window.loaivoucherCtrl = function ($scope, $http) {
             moTa: $scope.moTa,
         };
         console.log("Dữ liệu mới:", newLoaiVoucher);
-        $http.post('http://localhost:8080/loaivoucher/add', newLoaiVoucher)
+        $http.post('http://localhost:8083/loaivoucher/add', newLoaiVoucher)
             .then(function (response) {
                 $('#productModal').modal('hide');
                 setTimeout(function () {
@@ -96,7 +96,7 @@ window.loaivoucherCtrl = function ($scope, $http) {
 
     $scope.updateLoaiVoucher = function () {
         console.log("Cập nhật Loại Voucher:", $scope.selectedLoaiVoucher);  // Kiểm tra dữ liệu trước khi gửi
-        $http.put('http://localhost:8080/loaivoucher/update/' + $scope.selectedLoaiVoucher.id, $scope.selectedLoaiVoucher)
+        $http.put('http://localhost:8083/loaivoucher/update/' + $scope.selectedLoaiVoucher.id, $scope.selectedLoaiVoucher)
             .then(function (response) {
                 location.reload()
             })
@@ -108,7 +108,7 @@ window.loaivoucherCtrl = function ($scope, $http) {
 
     $scope.delete = function (id) {
         if (confirm('Bạn có chắc chắn muốn xóa?')) {
-            $http.delete('http://localhost:8080/loaivoucher/delete/' + id)
+            $http.delete('http://localhost:8083/loaivoucher/delete/' + id)
                 .then(function (response) {
                     // Kiểm tra phản hồi server
                     console.log(response.data);

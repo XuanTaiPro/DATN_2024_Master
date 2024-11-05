@@ -43,7 +43,11 @@ public class HoaDonReq {
 
     private String phiVanChuyen;
 
-    private String thongTinGiaoHang;
+    private String tenNguoiNhan;
+
+    private String sdtNguoiNhan;
+
+    private String diaChiNguoiNhan;
 
     @NotBlank(message = "Vui lòng nhập vào ID khách hàng")
     private String idKH;
