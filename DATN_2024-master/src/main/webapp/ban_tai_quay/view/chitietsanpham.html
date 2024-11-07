@@ -94,8 +94,12 @@
         </td>
         <td>{{ctsp.id}}</td>
         <td>{{ctsp.ma}}</td>
-        <td>{{ctsp.gia}} VND</td>
-        <td>{{ctsp.soNgaySuDung}} ngày</td>
+        <td>
+            {{ ctsp.gia }} VND
+            <span ng-if="ctsp.tienGiam && ctsp.tienGiam !== 0" class="text-danger">
+    (Giảm: {{ ctsp.tienGiam }} VND)
+  </span>
+        </td>        <td>{{ctsp.soNgaySuDung}} ngày</td>
         <td>{{ctsp.ngaySanXuat | date:'yyyy-MM-dd'}}</td>
         <td>{{ctsp.hsd| date:'yyyy-MM-dd'}}</td>
         <td>{{ctsp.ngayNhap | date:'yyyy-MM-dd'}}</td>
@@ -237,19 +241,19 @@
     </tbody>
 </table>
 
-<nav>
+<div class="text-center">
     <ul class="pagination">
         <li ng-class="{ 'disabled': currentPage === 0 }">
-            <a href="" ng-click="previousPage()">Previous</a>
+            <button href="" ng-click="previousPage()">Previous</button>
         </li>
         <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
-            <a href="" ng-click="getAllProducts(page)">{{ page + 1 }}</a>
+            <button href="" ng-click="getAllProducts(page)">{{ page + 1 }}</button>
         </li>
         <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
-            <a href="" ng-click="nextPage()">Next</a>
+            <button href="" ng-click="nextPage()">Next</button>
         </li>
     </ul>
-</nav>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

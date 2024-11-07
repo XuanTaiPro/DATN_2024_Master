@@ -86,7 +86,7 @@ public class KhachHangController {
     @GetMapping("detail/{id}")
     public ResponseEntity<?> detail(@PathVariable String id) {
         if (khRepo.findById(id).isPresent()) {
-            return ResponseEntity.ok().body(khRepo.findById(id).stream().map(KhachHang::toResponse));
+            return ResponseEntity.ok().body(khRepo.findById(id).get().toResponse());
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id để hiển thị");
         }

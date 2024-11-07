@@ -14,7 +14,7 @@ window.hoaDonCtrl = function ($scope, $http) {
     $scope.searchText = '';
     $scope.loaiHDFilters = [
         { value: 1, name: 'Online' },
-        { value: 2, name: 'Tại quầy' }
+        { value: 0, name: 'Tại quầy' }
     ];
     $scope.nhanViens = [];
     $http.get('http://localhost:8083/hoadon/listNV').then(function (response) {
@@ -42,8 +42,6 @@ window.hoaDonCtrl = function ($scope, $http) {
         if ($scope.selectedNhanVien !== null) {
             url += '&nhanVien=' + $scope.selectedNhanVien;
         }
-
-        // Thêm tìm kiếm vào URL nếu không phải là chuỗi rỗng
         if ($scope.searchText) {
             url += '&searchText=' + encodeURIComponent($scope.searchText);
         }
@@ -51,6 +49,7 @@ window.hoaDonCtrl = function ($scope, $http) {
         $http.get(url)
             .then(function (response) {
                 $scope.hoaDons = response.data.hoaDons;
+                console.log($scope.hoaDons);
                 $scope.totalPages = response.data.totalPages;
                 $scope.pages = Array.from({ length: $scope.totalPages }, (v, i) => i);
             })

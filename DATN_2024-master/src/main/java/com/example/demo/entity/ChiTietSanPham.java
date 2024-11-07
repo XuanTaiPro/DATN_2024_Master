@@ -70,6 +70,7 @@ public class ChiTietSanPham {
     }
 
     public ChiTietSanPhamResponse toChiTietSanPhamResponse() {
+        double tienGiam=0;
         List<String> linkAnhList = anhCTSP != null
                 ? anhCTSP.stream().map(AnhCTSP::getLink).collect(Collectors.toList())
                 : new ArrayList<>(); // Trả về danh sách rỗng nếu không có hình ảnh
@@ -77,12 +78,14 @@ public class ChiTietSanPham {
                 sanPham.getGiamGia().getNgayKetThuc().isAfter(LocalDateTime.now()) &&
                 sanPham.getGiamGia().getNgayBatDau().isBefore(LocalDateTime.now())) {
             double giaGiam = Double.valueOf(sanPham.getGiamGia().getGiaGiam()) / 100;
+            tienGiam=Double.valueOf(sanPham.getGiamGia().getGiaGiam())/100*Double.valueOf(this.gia);
             gia = String.valueOf(Double.valueOf(this.gia) * (1 - giaGiam));
         }
         return new ChiTietSanPhamResponse(
                 id,
                 ma,
                 gia,
+                String.valueOf(tienGiam),
                 soNgaySuDung,
                 ngaySanXuat,
                 hsd,
