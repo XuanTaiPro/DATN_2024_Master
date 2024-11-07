@@ -40,7 +40,7 @@
 
             <div class="voucher-list mt-3">
                 <h5>Voucher của khách hàng</h5>
-                <table class="table table-hover">
+                <table class="table table-hover table-condensed table-fixed">
                     <thead class="thead-light">
                     <tr>
                         <th>Tên Voucher</th>
@@ -242,6 +242,16 @@
 <div id="overlay" class="overlay" onclick="closeForm()"></div>
 
 <style>
+    /*cuộn table*/
+    .table-fixed tbody{
+        display: block;
+        height: 250px;
+        overflow-y: auto;
+    }
+    .table-fixed tr{
+        display: block;
+
+    }
     /*thành tiền*/
     .amount-container {
         display: flex; /* Đặt các phần tử con nằm trên cùng một hàng */
@@ -340,7 +350,7 @@
     }
 
     .table thead tr {
-        height: 50px; /* Chiều cao cho các ô trong header */
+        height: 80px; /* Chiều cao cho các ô trong header */
     }
 
     .table thead td {
