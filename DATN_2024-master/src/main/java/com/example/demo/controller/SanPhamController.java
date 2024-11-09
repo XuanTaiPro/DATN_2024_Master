@@ -31,6 +31,7 @@ public class SanPhamController {
 
     @Autowired
     SanPhamRepository sanPhamRepository;
+
     @Autowired
     DanhMucRepository danhMucRepository;
     @Autowired
@@ -54,12 +55,13 @@ public class SanPhamController {
 
     @GetMapping("/getSanPham-online")
     public Map<String, Object> getAllProductsWithMinPrice(@RequestParam(defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page, 8);
+        Pageable pageable = PageRequest.of(page, 3);
         List<SanPhamOnlineResponse> products = sanPhamRepository.findAllWithDetails(pageable);
+        List<SanPham> pList = sanPhamRepository.findAll();
 
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("data", products);
-        int pageSize = (products.size() % 5 == 0) ? (products.size() / 5) : (products.size() / 5) + 1;
+        int pageSize = (pList.size() % 3 == 0) ? (pList.size() / 3) : (pList.size() / 3) + 1;
         result.put("total", pageSize);
         return result;
     }
@@ -79,14 +81,13 @@ public class SanPhamController {
     }
 
     @GetMapping("/detail")
-    public ResponseEntity<?> detail(@RequestBody Map<String, String> body) {
-        String id = body.get("id");
-        if (id == null || id.trim().isEmpty()) {
+    public ResponseEntity<?> detail(@RequestParam(name = "idSP") String idsp) {
+        if (idsp == null || idsp.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("ID không được để trống.");
         }
-        Optional<SanPham> existingSanPham = sanPhamRepository.findById(id);
+        Optional<SanPham> existingSanPham = sanPhamRepository.findById(idsp);
         if (existingSanPham.isEmpty()) {
-            return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm có id: " + id);
+            return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm có id: " + idsp);
         }
         return ResponseEntity.ok(existingSanPham.get().toResponse());
     }

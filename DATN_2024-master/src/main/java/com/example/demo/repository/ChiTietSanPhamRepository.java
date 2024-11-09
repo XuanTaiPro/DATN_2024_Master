@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, String> {
         @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.ma=:ma")
@@ -15,6 +16,9 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
         @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id=:idSP")
         Page<ChiTietSanPham> getAllByIdSP(@Param("idSP") String idSP, Pageable pageable);
+
+        @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id=:idSP")
+        List<ChiTietSanPham> getByIdSP(@Param("idSP") String idSP);
 
         @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.ma=:ma AND ctsp.id<>:id")
         ChiTietSanPham getByMaAndId(@Param("ma") String ma, @Param("id") String id);
