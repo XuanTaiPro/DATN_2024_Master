@@ -1,8 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.nhanvien.NhanVienResponse;
-import com.example.demo.dto.thongbao.ThongBaoRequest;
-import com.example.demo.dto.thongbao.ThongBaoResponse;
 import com.example.demo.dto.voucher.VoucherRequest;
 import com.example.demo.dto.voucher.VoucherResponse;
 import com.example.demo.dto.voucher.VoucherThanhToan;
@@ -57,7 +54,8 @@ public class VoucherController {
     public ResponseEntity<List<VoucherThanhToan>> getVoucherByKhachHang(@PathVariable String idKH) {
         List<ChiTietVoucher> chiTietVouchers = ctvcRepo.findByKhachHang_Id(idKH);
         System.out.println("ChiTietVouchers: " + chiTietVouchers);
-        // Chuyển đổi danh sách ChiTietVoucher sang danh sách VoucherThanhToan, kiểm tra null cho mỗi voucher
+        // Chuyển đổi danh sách ChiTietVoucher sang danh sách VoucherThanhToan, kiểm tra
+        // null cho mỗi voucher
         List<VoucherThanhToan> vouchers = chiTietVouchers.stream()
                 .filter(ctv -> ctv.getVoucher() != null) // Bỏ qua các ChiTietVoucher không có Voucher
                 .map(ctv -> new VoucherThanhToan(
@@ -147,7 +145,8 @@ public class VoucherController {
         if (voucherRequest.getId() == null || voucherRequest.getId().isEmpty()) {
             voucherRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
-        if (voucherRequest.getMa() == null || voucherRequest.getMa().isEmpty()) {//nếu mã chưa đc điền thì tự động thêm mã
+        if (voucherRequest.getMa() == null || voucherRequest.getMa().isEmpty()) {// nếu mã chưa đc điền thì tự động thêm
+                                                                                 // mã
             voucherRequest.setMa(generateCodeAll.generateMaVoucher());
         }
         Voucher voucher = voucherRequest.toEntity();
@@ -172,9 +171,9 @@ public class VoucherController {
         return ResponseEntity.ok("thêm thành công");
     }
 
-
     @PutMapping("update/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody VoucherRequest voucherRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody VoucherRequest voucherRequest,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -222,24 +221,23 @@ public class VoucherController {
     }
 
     @DeleteMapping("deleteByidVC/{idVC}")
-    public ResponseEntity<?> deleteByIdVC(@PathVariable String idVC){
+    public ResponseEntity<?> deleteByIdVC(@PathVariable String idVC) {
         ctvcRepo.deleteByVoucherId(idVC);
         return ResponseEntity.ok().body("Xóa thành công");
     }
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
-        Map<String, String> response = new HashMap<>();  // Khởi tạo Map để trả về JSON hợp lệ
+        Map<String, String> response = new HashMap<>(); // Khởi tạo Map để trả về JSON hợp lệ
         if (vcRepo.findById(id).isPresent()) {
             vcRepo.deleteById(id);
             response.put("message", "Xóa thành công");
-            return ResponseEntity.ok(response);  // Trả về phản hồi JSON
+            return ResponseEntity.ok(response); // Trả về phản hồi JSON
         } else {
             response.put("message", "Không tìm thấy id cần xóa");
-            return ResponseEntity.badRequest().body(response);  // Trả về phản hồi JSON khi lỗi
+            return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON khi lỗi
         }
     }
-
 
     @GetMapping("search")
     public ResponseEntity<?> searchVoucher(@RequestParam String ten) {

@@ -1,7 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.chitiethoadon.ChiTietHoaDonRep;
-import com.example.demo.dto.hoadon.HoaDonRep;
 import com.example.demo.dto.hoadon.HoaDonReq;
 import com.example.demo.dto.khachhang.KhachHangResponse;
 import com.example.demo.dto.nhanvien.NhanVienResponse;
@@ -14,7 +12,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,10 +42,10 @@ public class HoaDonController {
 
     @GetMapping("/page")
     public ResponseEntity<?> page(@RequestParam(name = "page", defaultValue = "0") Integer page,
-                                  @RequestParam(name = "trangThai", required = false) Integer trangThai,
-                                  @RequestParam(name = "searchText", required = false) String tenKH,
-                                  @RequestParam(name = "loaiHD", required = false) Integer loaiHD,
-                                  @RequestParam(name = "nhanVien", required = false) String nhanVien) {
+            @RequestParam(name = "trangThai", required = false) Integer trangThai,
+            @RequestParam(name = "searchText", required = false) String tenKH,
+            @RequestParam(name = "loaiHD", required = false) Integer loaiHD,
+            @RequestParam(name = "nhanVien", required = false) String nhanVien) {
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "ngayTao"));
         Page<HoaDon> hoaDonPage = hoaDonRepo.findHDByFilters(trangThai, tenKH, loaiHD, nhanVien, pageRequest);
         Map<String, Object> response = new HashMap<>();
@@ -58,11 +55,13 @@ public class HoaDonController {
 
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/getHDTaiQuay")
     public ResponseEntity<?> page() {
         List<HoaDon> listHoaDon = hoaDonRepo.getHDTaiQuay(1);
         return ResponseEntity.ok(listHoaDon);
     }
+
     @PostMapping("/add")
     public ResponseEntity<?> createHoaDon(@ModelAttribute HoaDonReq req) {
         // Kiểm tra ID nhân viên
@@ -86,17 +85,20 @@ public class HoaDonController {
         hoaDon.setKhachHang(null);
         hoaDon.setSdtNguoiNhan(null);
 
-//        // Xử lý khách hàng
-//        if (req.getIdKH() != null && !req.getIdKH().trim().isEmpty()) {
-//            Optional<KhachHang> khachHangOptional = khachHangRepo.findById(req.getIdKH());
-//            if (khachHangOptional.isPresent()) {
-//                hoaDon.setKhachHang(khachHangOptional.get());
-//            } else {
-//                return ResponseEntity.badRequest().body("Không tìm thấy khách hàng với ID: " + req.getIdKH());
-//            }
-//        } else {
-//            return ResponseEntity.badRequest().body("ID khách hàng không được để trống.");
-//        }
+        // // Xử lý khách hàng
+        // if (req.getIdKH() != null && !req.getIdKH().trim().isEmpty()) {
+        // Optional<KhachHang> khachHangOptional =
+        // khachHangRepo.findById(req.getIdKH());
+        // if (khachHangOptional.isPresent()) {
+        // hoaDon.setKhachHang(khachHangOptional.get());
+        // } else {
+        // return ResponseEntity.badRequest().body("Không tìm thấy khách hàng với ID: "
+        // + req.getIdKH());
+        // }
+        // } else {
+        // return ResponseEntity.badRequest().body("ID khách hàng không được để
+        // trống.");
+        // }
 
         // Xử lý nhân viên
         Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById(req.getIdNV());
@@ -105,7 +107,6 @@ public class HoaDonController {
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + req.getIdNV());
         }
-
 
         try {
             hoaDonRepo.save(hoaDon);
@@ -117,6 +118,7 @@ public class HoaDonController {
         }
 
     }
+
     @PutMapping("/xacNhanHD")
     public ResponseEntity<String> xacNhanHD(@RequestParam(name = "idHD") String idHD) {
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(idHD);
@@ -130,9 +132,10 @@ public class HoaDonController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
         }
     }
+
     @GetMapping("/listNV")
     public List<NhanVienResponse> getAllNhanVien() {
-        NhanVien nhanVien=new NhanVien();
+        NhanVien nhanVien = new NhanVien();
         nhanVien.setNgayTao(LocalDateTime.now());
         List<NhanVien> nhanVienList = nhanVienRepo.findAll();
         return nhanVienList.stream()
@@ -142,7 +145,7 @@ public class HoaDonController {
 
     @GetMapping("/listKH")
     public ResponseEntity<List<KhachHangResponse>> getAllKhachHang() {
-        KhachHang khachHang=new KhachHang();
+        KhachHang khachHang = new KhachHang();
         khachHang.setNgayTao(LocalDateTime.now());
         List<KhachHang> khachHangList = khachHangRepo.findAll();
         List<KhachHangResponse> responseList = khachHangList.stream()
@@ -161,28 +164,29 @@ public class HoaDonController {
         }
     }
     // Read by ID
-//    @GetMapping("/detail/{idHD}")
-//    public ResponseEntity<HoaDonRep> getHoaDonById(@PathVariable String idHD) {
-//        return hoaDonRepo.findById(idHD).map(hoaDon -> {
-//            List<ChiTietHoaDon> chiTietHoaDons = chiTietHoaDonRepo.findByHoaDon_Id(idHD);
-//
-//            List<ChiTietHoaDonRep> chiTietRepList = chiTietHoaDons.stream().map(chiTiet -> {
-//                ChiTietHoaDonRep chiTietRep = new ChiTietHoaDonRep();
-//                chiTietRep.setId(chiTiet.getId());
-//                chiTietRep.setMaCTHD(chiTiet.getMaCTHD());
-//                chiTietRep.setTongTien(chiTiet.getTongTien());
-//                chiTietRep.setSoLuong(chiTiet.getSoLuong());
-//                chiTietRep.setGiaBan(chiTiet.getGiaBan());
-//                chiTietRep.setTrangThai(chiTiet.getTrangThai());
-//                chiTietRep.setGhiChu(chiTiet.getGhiChu());
-//                return chiTietRep;
-//            }).collect(Collectors.toList());
-//
-//            // Chuyển đổi hoaDon thành DTO và thiết lập danh sách chi tiết
-//            HoaDonRep rep = hoaDon.toResponse();
-//            return ResponseEntity.ok(rep);
-//        }).orElseGet(() -> ResponseEntity.notFound().build());
-//    }
+    // @GetMapping("/detail/{idHD}")
+    // public ResponseEntity<HoaDonRep> getHoaDonById(@PathVariable String idHD) {
+    // return hoaDonRepo.findById(idHD).map(hoaDon -> {
+    // List<ChiTietHoaDon> chiTietHoaDons = chiTietHoaDonRepo.findByHoaDon_Id(idHD);
+    //
+    // List<ChiTietHoaDonRep> chiTietRepList = chiTietHoaDons.stream().map(chiTiet
+    // -> {
+    // ChiTietHoaDonRep chiTietRep = new ChiTietHoaDonRep();
+    // chiTietRep.setId(chiTiet.getId());
+    // chiTietRep.setMaCTHD(chiTiet.getMaCTHD());
+    // chiTietRep.setTongTien(chiTiet.getTongTien());
+    // chiTietRep.setSoLuong(chiTiet.getSoLuong());
+    // chiTietRep.setGiaBan(chiTiet.getGiaBan());
+    // chiTietRep.setTrangThai(chiTiet.getTrangThai());
+    // chiTietRep.setGhiChu(chiTiet.getGhiChu());
+    // return chiTietRep;
+    // }).collect(Collectors.toList());
+    //
+    // // Chuyển đổi hoaDon thành DTO và thiết lập danh sách chi tiết
+    // HoaDonRep rep = hoaDon.toResponse();
+    // return ResponseEntity.ok(rep);
+    // }).orElseGet(() -> ResponseEntity.notFound().build());
+    // }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateHoaDon(@PathVariable String id, @Validated @RequestBody HoaDonReq req) {
