@@ -23,9 +23,6 @@ public class ChiTietHoaDonRep {
     private String tenSP;
     private String gia;
     private String idHD;
-<<<<<<< HEAD
-=======
     private String linkAnh;
     private String soNgaySuDung;
->>>>>>> 25f4e8127337f7d4a4676e740b7c7ca3f89950b0
 }

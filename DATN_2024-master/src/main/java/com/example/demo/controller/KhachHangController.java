@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.khachhang.KhachHangRequest;
+import com.example.demo.dto.khachhang.KhachHangRequestOnline;
 import com.example.demo.dto.khachhang.KhachHangResponse;
 import com.example.demo.dto.nhanvien.NhanVienResponse;
 import com.example.demo.dto.voucher.VoucherResponse;
@@ -120,14 +121,6 @@ public class KhachHangController {
             System.out.println(mess.toString());
             return ResponseEntity.badRequest().body(mess.toString());
         }
-//        if (khRepo.findById(id).isPresent()) {
-//            KhachHang khachHang = khachHangRequest.toEntity();
-//            khachHang.setId(id);
-//            khRepo.save(khachHang);
-//            return ResponseEntity.ok("Update thành công ");
-//        } else {
-//            return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
-//        }
         Optional<KhachHang> optionalKhachHang = khRepo.findById(id);
         if (optionalKhachHang.isPresent()) {
             KhachHang khachHang = optionalKhachHang.get();
@@ -135,12 +128,41 @@ public class KhachHangController {
             khachHangUpdate.setId(id);
             khachHangUpdate.setNgaySua(LocalDateTime.now());
             khachHang.setNgayTao(optionalKhachHang.get().getNgayTao());
-            KhachHang saveKH = khRepo.save(khachHangUpdate);  // Lưu thay đổi và lấy đối tượng đã lưu
-            return ResponseEntity.ok(saveKH);  // Trả về đối tượng đã cập nhật
+            KhachHang saveKH = khRepo.save(khachHangUpdate);
+            return ResponseEntity.ok(saveKH);
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
         }
     }
+
+    @PutMapping("updateOnline/{id}")
+    public ResponseEntity<?> updateOnline(@PathVariable String id, @Valid @RequestBody KhachHangRequestOnline khachHangRequestOnlinest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder mess = new StringBuilder();
+            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
+            System.out.println(mess.toString());
+            return ResponseEntity.badRequest().body(mess.toString());
+        }
+        Optional<KhachHang> optionalKhachHang = khRepo.findById(id);
+        if (optionalKhachHang.isPresent()) {
+
+            KhachHang khachHang = optionalKhachHang.get();
+            KhachHang khachHangUpdateOnline = khachHangRequestOnlinest.toEntity();
+
+            khachHangUpdateOnline.setId(id);
+            khachHangUpdateOnline.setNgaySua(LocalDateTime.now());
+            khachHang.setNgayTao(optionalKhachHang.get().getNgayTao());
+            khachHang.setMa(optionalKhachHang.get().getMa());
+            khachHang.setPassw(optionalKhachHang.get().getPassw());
+            khachHang.setTrangThai(optionalKhachHang.get().getTrangThai());
+
+            KhachHang saveKH = khRepo.save(khachHangUpdateOnline);
+            return ResponseEntity.ok(saveKH);
+        } else {
+            return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
+        }
+    }
+
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> deleteKhachHang(@PathVariable String id) {

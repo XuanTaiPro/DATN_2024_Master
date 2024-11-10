@@ -25,7 +25,7 @@ window.thanhtoanCtrl = function ($scope, $http) {
         $scope.selectedCustomerId = id; // Lưu ID khách hàng
 
         // Gọi API để lấy voucher của khách hàng
-        $scope.getVouchersByCustomer(id);
+        $scope.loadPageVC(0);
 
         // Nếu không có voucher đã áp dụng, thì cập nhật lại tổng tiền
         if (!$scope.appliedVoucherId) {
@@ -37,32 +37,115 @@ window.thanhtoanCtrl = function ($scope, $http) {
         }
     };
 
-    $scope.getVouchersByCustomer = function (id) {
-        $http.get(`http://localhost:8083/voucher/VCkhachHang/${id}`)
+    $scope.currentPageVC = 0;
+    $scope.pageSizeVC = 2;
+
+    $scope.loadPageVC = function (page) {
+        $scope.currentPageVC = page; // Cập nhật trang hiện tại trước khi gọi API
+        if (!$scope.selectedCustomerId) {
+            console.warn('Chưa chọn khách hàng');
+            return;
+        }
+        $http.get(`http://localhost:8083/voucher/VCkhachHang/${$scope.selectedCustomerId}?page=${$scope.currentPageVC}&size=${$scope.pageSizeVC}`)
             .then(function (response) {
-                $scope.vouchers = response.data;
-                console.log("Lấy danh sách voucher thành công", $scope.vouchers);
+                // Cập nhật dữ liệu voucher và thông tin phân trang
+                $scope.vouchers = response.data.vouchers;
+                $scope.totalPagesVC = response.data.totalPagesVC;
+                $scope.totalItemsVC = response.data.totalItemsVC;
             })
             .catch(function (error) {
                 console.error("Lỗi khi lấy voucher:", error);
             });
     };
 
-    $http.get('http://localhost:8083/chitiethoadon/getCTHD?idHD=1C5331D3')
-        .then(function (response) {
-            $scope.listCTHD = response.data;
-            // Gán dữ liệu trả về vào listCTHD
-            let listData = response.data;
-            let tt = 0
-            listData.forEach(item => {
-                tt += parseInt(item.tongTien)
+// Hàm để tạo dãy số trang cho phân trang
+    $scope.range = function (totalPagesVC) {
+        return Array.from({ length: totalPagesVC }, (_, i) => i);
+    };
+
+// Gọi lần đầu để tải trang đầu tiên (nếu có khách hàng được chọn)
+    $scope.$watch('selectedCustomerId', function (newVal, oldVal) {
+        if (newVal) {
+            $scope.loadPageVC(0); // Tải trang đầu tiên khi khách hàng được chọn
+        }
+    });
+
+// Hàm chuyển đến trang trước
+    $scope.prevPageVC = function () {
+        if ($scope.currentPageVC > 0) {
+            $scope.loadPageVC($scope.currentPageVC - 1);
+        }
+    };
+
+// Hàm chuyển đến trang tiếp theo
+    $scope.nextPageVC = function () {
+        if ($scope.currentPageVC < $scope.totalPagesVC - 1) {
+            $scope.loadPageVC($scope.currentPageVC + 1);
+        }
+    };
+
+// Hàm chuyển đến một trang cụ thể
+    $scope.setPageVC = function (page) {
+        $scope.loadPageVC(page);
+    };
+
+
+//phân trang cthd
+    $scope.currentPage = 0;
+    $scope.range = function (totalPages) {
+        return Array.from({ length: totalPages }, (_, i) => i);
+    };
+
+    $scope.loadPage = function (page) {
+        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=1C5331D3&page=${page}`)
+            .then(function (response) {
+                let data = response.data;
+                $scope.listCTHD = data.cthds;
+                $scope.totalPages = data.totalPages;
+                $scope.totalElements = data.totalElements;
+                $scope.currentPage = page;
+
+                if ($scope.listCTHD.length === 0) {
+                    $scope.emptyMessage = response.data.message || "Danh sách trống!";
+                } else {
+                    $scope.emptyMessage = ""; // Reset lại thông báo nếu có dữ liệu
+                }
+
+                // Tính tổng tiền
+                let tt = 0;
+                data.cthds.forEach(item => {
+                    tt += parseInt(item.tongTien);
+                });
+                $scope.tongTien = tt;
             })
-            $scope.tongTien = tt
-            $scope.calculateTotalAmount();//cập nhật tổng tiền về như cũ
-        })
-        .catch(function (error) {
-            console.error("Lỗi:", error);
-        });
+            .catch(function (error) {
+                console.error("Lỗi:", error);
+            });
+    };
+
+// Gọi lần đầu để tải trang đầu tiên
+    $scope.loadPage($scope.currentPage);
+
+// Chuyển đến trang trước
+    $scope.prevPage = function () {
+        if ($scope.currentPage > 0) {
+            $scope.loadPage($scope.currentPage - 1);
+        }
+    };
+
+// Chuyển đến trang tiếp theo
+    $scope.nextPage = function () {
+        if ($scope.currentPage < $scope.totalPages - 1) {
+            $scope.loadPage($scope.currentPage + 1);
+        }
+    };
+
+// Chuyển đến một trang cụ thể
+    $scope.setPage = function (page) {
+        $scope.loadPage(page);
+    };
+
+
 
 //cập nhật lại tổng tiền về ban đầu khi đổi khách hàng
     $scope.calculateTotalAmount = function () {
@@ -179,4 +262,17 @@ window.thanhtoanCtrl = function ($scope, $http) {
         new bootstrap.Modal(document.getElementById('confirmModal')).hide();
         location.reload();
     };
+    //check ngày kết thúc voucher
+    $scope.getDaysLeft = function (ngayKetThuc) {
+        var today = new Date(); // Ngày hiện tại
+        var endDate = new Date(ngayKetThuc); // Ngày kết thúc từ voucher
+
+        // Tính toán số ngày còn lại
+        var timeDiff = endDate - today;
+        var daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Chuyển đổi từ milliseconds sang ngày
+
+        return daysLeft;
+    };
+
+
 }

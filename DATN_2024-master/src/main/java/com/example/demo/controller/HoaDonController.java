@@ -65,11 +65,9 @@ public class HoaDonController {
     }
     @PostMapping("/add")
     public ResponseEntity<?> createHoaDon(@ModelAttribute HoaDonReq req) {
-        // Kiểm tra ID nhân viên
         if (req.getIdNV() == null || req.getIdNV().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("ID nhân viên không được để trống.");
         }
-        // Tạo mới hóa đơn
         HoaDon hoaDon = new HoaDon();
 
         // Sao chép các thuộc tính khác từ req
@@ -86,18 +84,6 @@ public class HoaDonController {
         hoaDon.setKhachHang(null);
         hoaDon.setSdtNguoiNhan(null);
 
-//        // Xử lý khách hàng
-//        if (req.getIdKH() != null && !req.getIdKH().trim().isEmpty()) {
-//            Optional<KhachHang> khachHangOptional = khachHangRepo.findById(req.getIdKH());
-//            if (khachHangOptional.isPresent()) {
-//                hoaDon.setKhachHang(khachHangOptional.get());
-//            } else {
-//                return ResponseEntity.badRequest().body("Không tìm thấy khách hàng với ID: " + req.getIdKH());
-//            }
-//        } else {
-//            return ResponseEntity.badRequest().body("ID khách hàng không được để trống.");
-//        }
-
         // Xử lý nhân viên
         Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById(req.getIdNV());
         if (nhanVienOptional.isPresent()) {
@@ -105,8 +91,6 @@ public class HoaDonController {
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + req.getIdNV());
         }
-
-
         try {
             hoaDonRepo.save(hoaDon);
             return ResponseEntity.ok().body(Map.of("message", "Thêm hóa đơn thành công!", "hoaDon", hoaDon));
@@ -209,7 +193,6 @@ public class HoaDonController {
                     return ResponseEntity.badRequest().body(null);
                 }
             }
-
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(req.getMaHD());
             hoaDon.setMaVoucher(req.getMaVoucher());

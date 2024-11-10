@@ -54,12 +54,16 @@ public class VoucherController {
     }
 
     @GetMapping("/VCkhachHang/{idKH}")
-    public ResponseEntity<List<VoucherThanhToan>> getVoucherByKhachHang(@PathVariable String idKH) {
-        List<ChiTietVoucher> chiTietVouchers = ctvcRepo.findByKhachHang_Id(idKH);
-        System.out.println("ChiTietVouchers: " + chiTietVouchers);
-        // Chuyển đổi danh sách ChiTietVoucher sang danh sách VoucherThanhToan, kiểm tra null cho mỗi voucher
-        List<VoucherThanhToan> vouchers = chiTietVouchers.stream()
-                .filter(ctv -> ctv.getVoucher() != null) // Bỏ qua các ChiTietVoucher không có Voucher
+    public ResponseEntity<Map<String, Object>> getVoucherByKhachHang(
+            @PathVariable String idKH,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ChiTietVoucher> chiTietVoucherPage = ctvcRepo.findByKhachHang_Id(idKH, pageable);
+
+        List<VoucherThanhToan> vouchers = chiTietVoucherPage.getContent().stream()
+                .filter(ctv -> ctv.getVoucher() != null)
                 .map(ctv -> new VoucherThanhToan(
                         ctv.getVoucher().getId(),
                         ctv.getVoucher().getTen(),
@@ -69,12 +73,18 @@ public class VoucherController {
                         ctv.getVoucher().getNgayKetThuc(),
                         ctv.getVoucher().getSoLuong(),
                         ctv.getVoucher().getTrangThai()
-
                 ))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(vouchers);
+        Map<String, Object> response = new HashMap<>();
+        response.put("vouchers", vouchers);
+        response.put("currentPageVC", chiTietVoucherPage.getNumber());
+        response.put("totalPagesVC", chiTietVoucherPage.getTotalPages());
+        response.put("totalItemsVC", chiTietVoucherPage.getTotalElements());
+
+        return ResponseEntity.ok(response);
     }
+
 
     @PostMapping("/apply")
     public ResponseEntity<?> applyVoucher(@RequestBody Map<String, String> data) {

@@ -1,9 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.KhachHang;
-import com.example.demo.entity.LoaiVoucher;
-import com.example.demo.entity.Quyen;
-import com.example.demo.entity.Voucher;
+import com.example.demo.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +16,8 @@ public interface KhachHangRepository extends JpaRepository<KhachHang,String> {
 
     KhachHang getKhachHangByTen(String ten);
 
+    @Query("SELECT kh FROM KhachHang kh WHERE kh.email = :email AND kh.passw = :passw ")
+    KhachHang loginKH(@Param("email") String email , @Param("passw") String passw);
 
 
 
