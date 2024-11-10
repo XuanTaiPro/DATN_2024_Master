@@ -1,14 +1,11 @@
 package com.example.demo.dto.hoadon;
 
-import com.example.demo.dto.chitiethoadon.ChiTietHoaDonRep;
-import com.example.demo.entity.ChiTietHoaDon;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,8 +30,6 @@ public class HoaDonRep {
     private String sdt;
     private String email;
     private String tenNV;
-    private List<ChiTietHoaDon> chiTietHoaDons;
-
 }
 
 

@@ -1,0 +1,241 @@
+.back-ground {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    filter: brightness(0.8);
+    background: url("https://png.pngtree.com/thumb_back/fw800/background/20190223/ourmid/pngtree-full-light-blue-line-wavy-diamond-background-image_68273.jpg"), no-repeat, center;
+    background-size: cover;
+    opacity: 0.7;
+    z-index: -1;
+}
+
+.form-login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 500px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    border-radius: 15px;
+    border: .5px solid rgb(200, 200, 200);
+    box-shadow: 0 0 10px 6px rgb(190, 215, 215);
+    background-color: rgb(220, 235, 235);
+    overflow: hidden;
+}
+h3 {
+    text-align: center;
+    top: 10%;
+    position: absolute;
+}
+
+.form-login::before {
+    content: "";
+    position: absolute;
+    width: 60px;
+    height: 2px;
+    border-radius: 10px;
+    background-color: lightblue;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    animation: run-border 10s linear infinite;
+}
+
+@keyframes run-border {
+    0% {
+        top: 0;
+        left: -28px;
+        transform: rotate(0deg);
+    }
+
+    24.9% {
+        top: 0;
+        left: calc(100% - 32px);
+        /* Trừ đi chiều rộng của phần tử */
+        transform: rotate(0deg);
+        /* Giữ nguyên góc quay */
+    }
+
+    25% {
+        top: 0;
+        left: calc(100% - 32px);
+        transform: rotate(90deg);
+        /* Xoay khi đến góc */
+    }
+
+    49.9% {
+        top: calc(100% - 4px);
+        /* Trừ đi chiều cao của phần tử */
+        left: calc(100% - 32px);
+        transform: rotate(90deg);
+    }
+
+    50% {
+        top: calc(100% - 4px);
+        left: calc(100% - 32px);
+        transform: rotate(180deg);
+    }
+
+    74.9% {
+        top: calc(100% - 4px);
+        left: 0;
+        transform: rotate(180deg);
+    }
+
+    75% {
+        top: calc(100% - 4px);
+        left: -28px;
+        transform: rotate(270deg);
+    }
+
+    99.9% {
+        top: 0;
+        left: -28px;
+        transform: rotate(270deg);
+    }
+
+    100% {
+        top: 0;
+        left: -28px;
+        transform: rotate(360deg);
+    }
+}
+
+.form-user {
+    display: grid;
+    align-items: center;
+    width: 80%;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    transition: all 2s ease;
+}
+
+.active-form-user {
+    left: -100%;
+}
+
+.form-confirm {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    top: 50%;
+    right: -150%;
+    transform: translateX(-50%);
+    position: absolute;
+    transition: all 2s ease;
+}
+p {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+
+.active-form-confirm {
+    right: -50%;
+}
+
+.user-account,
+.pass-account {
+    display: flex;
+    position: relative;
+    padding: 10px 0;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+input {
+    width: 100%;
+    height: 45px;
+    border: .5px solid rgb(75, 170, 255);
+    border-radius: 15px;
+    padding-left: 10px;
+    font: 18px 'Times New Roman';
+    outline: none;
+}
+
+label {
+    position: absolute;
+    background-color: transparent ;
+    color: inherit;
+    font-size: 17px;
+    z-index: 1;
+    transition: all .4s ease-out;
+}
+
+
+.active-label {
+    top: 50%;
+    left: 20%;
+    background-color: white;
+    transform: translate(-50%, -50%);
+}
+
+.no-active-label {
+    top: 0;
+    left: 15px;
+    background: linear-gradient(to top, white 50%, rgb(220, 235, 235) 50%);
+}
+
+.button-next-step,
+.login-face-id {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+}
+button {
+    height: 40px;
+    outline: none;
+    border: .5px solid rgb(75, 170, 255);
+    border-radius: 10px;
+    font: 16px 'Times New Roman';
+    padding: 0 15px;
+    cursor: pointer;
+}
+
+
+/* .confirm-account {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 500px;
+    margin-bottom: 20px;
+
+    #passconfirm {
+        width: 200px;
+        height: 35px;
+        border: .5px solid rgb(75, 170, 255);
+        border-radius: 10px;
+        box-sizing: border-box;
+        padding-left: 10px;
+        outline: none;
+        filter: blur(0);
+        font: 18px 'Times New Roman';
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+.button-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-login {
+    border: .5px solid rgb(75, 170, 255);
+    border-radius: 10px;
+    padding: 10px 15px;
+    font: 16px 'Times New Roman';
+    cursor: pointer;
+} */

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+
+    <link rel="stylesheet" href="../style/login.css">
+    <!--    <script src="../script/login.js"></script>-->
+</head>
+
+<body>
+<div class="back-ground">
+</div>
+<div class="form-login">
+    <h3>Đăng nhập</h3>
+    <form class="form-user">
+        <div class="user-account">
+            <label for="username">Tài khoản</label>
+            <input type="text" id="username" name="username">
+            <span class="error-message" id="error-TK"></span>
+        </div>
+        <div class="pass-account">
+            <label for="current-password">Mật khẩu</label>
+            <input type="password" id="current-password" name="current-password">
+            <span class="error-message" id="error-PW"></span>
+        </div>
+        <div class="button-next-step">
+            <button class="btn-next-step">Tiếp tục</button>
+        </div>
+        <div class="login-face-id">
+            <button><i class='bx bx-scan'></i> Đăng nhập bằng khuôn mặt</button>
+        </div>
+    </form>
+    <form class="form-confirm">
+        <p>Chúng tôi đã gửi cho bạn mã xác nhận. Vui lòng hãy kiểm tra email của bạn.</p>
+    </form>
+</div>
+
+<script>
+    const inpUser = document.querySelector('#username')
+    const lbUser = document.querySelector('label[for="username"]')
+
+    const inpPass = document.querySelector('#current-password')
+    const lbPass = document.querySelector('label[for="current-password"]')
+
+    const btnNextStep = document.querySelector('.btn-next-step')
+    const btnLogin = document.querySelector('.btn-login')
+    const formUser = document.querySelector('.form-user')
+    const formConfirm = document.querySelector('.form-confirm')
+
+    lbPass.classList.add('active-label')
+    lbUser.classList.add('active-label')
+
+    inpUser.addEventListener('focus', () => {
+        lbUser.classList.add('no-active-label')
+        lbUser.classList.remove('active-label')
+    })
+    inpUser.addEventListener('blur', () => {
+        if (inpUser.value === '') {
+            lbUser.classList.remove('no-active-label')
+            lbUser.classList.add('active-label')
+        }
+    })
+
+    inpPass.addEventListener('focus', () => {
+        lbPass.classList.add('no-active-label')
+        lbPass.classList.remove('active-label')
+    })
+    inpPass.addEventListener('blur', () => {
+        if (inpPass.value === '') {
+            lbPass.classList.remove('no-active-label')
+            lbPass.classList.add('active-label')
+        }
+    })
+
+    btnNextStep.addEventListener('click', (e) => {
+        e.preventDefault()
+
+        errorTK.innerText = ''
+        errorPW.innerText = ''
+
+        if(inpUser.value.trim()===''){
+            errorTK.innerText= 'Vui lòng nhập tài khoản'
+        }
+        if(inpPass.value.trim()===''){
+            errorPW.innerText= 'Vui lòng nhập mật khẩu'
+        }
+        if (inpUser.value.trim() !== '' && inpPass.value.trim() !== '') {
+            formUser.classList.add('active-form-user')
+            formConfirm.classList.add('active-form-confirm')
+            getData()
+        }
+    })
+
+    let dataFetch
+
+    const getData = async () =>{
+        let account = {
+            email : inpUser.value,
+            passw : inpPass.value
+        }
+        const loginNV = await fetch('http://localhost:8083/login/onlineSale',
+            { method : 'POST', headers :{ 'Content-Type' : 'application/json'}, body: JSON.stringify(account)})
+            .then((resp) => {
+                return resp.json()
+            })
+            .then(data =>  {
+                dataFetch = data
+            })
+        console.log(dataFetch)
+    }
+</script>
+</body>
+
+</html>

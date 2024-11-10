@@ -80,61 +80,26 @@ window.hoaDonCtrl = function ($scope, $http) {
                 console.log(response.data);
                 // Có thể làm gì đó với phản hồi thành công ở đây
                 alert("Xác nhận hóa đơn " + id + " thành công.");
-                location.reload(true);
-                $scope.getHoaDonsByTrangThai(2, 0);
-
-            })
-            .catch(function (error) {
-                location.reload(true);
-                $scope.getHoaDonsByTrangThai(2, 0);
-            });
-    };
-    $scope.cancelInvoice = function (id) {
-        console.log('Cancel invoice with ID:', id);
-        // Gọi API để xác nhận hóa đơn
-        $http.put('http://localhost:8083/hoadon/huyHD?idHD=' + id)
-            .then(function (response) {
-                console.log(response.data);
-                // Có thể làm gì đó với phản hồi thành công ở đây
-                alert("Hủy hóa đơn " + id + " thành công.");
                 // Tải lại hóa đơn hoặc cập nhật danh sách
-                location.reload();
-                $scope.getHoaDonsByTrangThai(4, 0);
+                $scope.getHoaDonsByTrangThai(2, 0);
             })
             .catch(function (error) {
-                location.reload();
-                $scope.getHoaDonsByTrangThai(4, 0);
+                $scope.getHoaDonsByTrangThai(2, 0);
             });
     };
     $scope.detailHoaDon = function (id) {
+        // Gửi yêu cầu tới server để lấy thông tin chi tiết của hóa đơn theo id
         $http.get('http://localhost:8083/hoadon/detail', { params: { idHD: id } })
             .then(function (response) {
-                console.log("Full response data:", response.data); // Log toàn bộ dữ liệu phản hồi
-                // Lưu hoaDonRep và chiTietHoaDons vào scope
-                if (response.data) {
-                    $scope.hoaDonDetail = response.data.hoaDonRep; // Lưu thông tin hóa đơn
-                    $scope.chiTietHoaDons = response.data.chiTietHoaDons; // Lưu danh sách chi tiết hóa đơn
-
-                    console.log("hoaDonDetail:", $scope.hoaDonDetail);
-                    console.log("Chi tiết hóa đơn:", $scope.chiTietHoaDons);
-                }
-
-                $('#readData').modal('show'); // Hiển thị modal
+                // Lưu thông tin chi tiết vào scope để hiển thị
+                $scope.hoaDonDetail = response.data;
+                // Hiển thị modal chi tiết
+                $('#readData').modal('show');
             })
             .catch(function (error) {
                 console.error('Error fetching invoice details:', error);
                 alert('Không thể lấy thông tin chi tiết của hóa đơn.');
             });
     };
-    $scope.getTotalAmount = function(items) {
-        let total = 0;
-        if (items) {
-            items.forEach(item => {
-                total += Number(item.tongTien); // Cộng dồn tổng tiền
-            });
-        }
-        return total; // Trả về tổng tiền
-    };
-
     $scope.getHoaDonsByTrangThai(null, 0);
 };

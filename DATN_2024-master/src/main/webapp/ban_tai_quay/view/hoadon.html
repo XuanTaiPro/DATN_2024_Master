@@ -81,51 +81,16 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <h5 class="title">Thông tin các sản phẩm</h5>
-                                <div class="row">
-                                    <table class="table table-hover mt-4">
-                                        <thead>
-                                        <tr>
-                                            <th>STT</th>
-                                            <th>Hình ảnh</th>
-                                            <th>Mã sản phẩm</th>
-                                            <th>Tổng tiền</th>
-                                            <th>Giá</th>
-                                            <th>Số lượng</th>
-                                            <th>Ghi chú</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr ng-repeat="hdct in chiTietHoaDons">
-                                            <td>{{$index + 1}}</td>
-                                            <td>
-                                                <img ng-src="{{hdct.linkAnh}}" alt="Ảnh sản phẩm" class="img-fluid" width="100" height="100" />
-                                            </td>
-                                            <td>{{ hdct.tenSP }}</td>
-                                            <td>{{ hdct.tongTien }}</td>
-                                            <td>{{ hdct.gia }}</td>
-                                            <td>{{ hdct.soLuong }}</td>
-                                            <td>{{ hdct.ghiChu }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="6" class="text-end"><strong>Tổng tiền:</strong></td>
-                                            <td>{{ getTotalAmount(chiTietHoaDons) }} VND</td>
-                                        </tr>
-                                        </tbody>
-
-                                    </table>
-
-                                </div>
                                 <div class="row">
                                     <h5 class="title">Thông tin hóa đơn</h5>
                                     <div class="col-md-3">
+                                        <p><strong>Mã hóa đơn:</strong> {{ hoaDonDetail.maHD}} </p>
                                         <p><strong>Tên khách hàng:</strong> {{ hoaDonDetail.tenKH }} </p>
                                         <p><strong>Số điện thoại:</strong> {{hoaDonDetail.sdt}}</p>
-                                        <p><strong>Email:</strong> {{ hoaDonDetail.email }} </p>
                                     </div>
                                     <div class="col-md-3">
-                                        <p><strong>Mã hóa đơn:</strong> {{ hoaDonDetail.maHD}} </p>
                                         <p><strong>Loại hóa đơn:</strong> {{hoaDonDetail.loaiHD == 1 ? 'Online' : 'Tại quầy' }} </p>
+                                        <p><strong>Tổng tiền:</strong> {{ hoaDonDetail.thanhTien }} </p>
                                         <p><strong>Trạng thái:</strong>
                                             {{ hoaDonDetail.trangThai == 0 ? 'Chờ xác nhận' :
                                             hoaDonDetail.trangThai == 1 ? 'Chờ' :
@@ -139,26 +104,16 @@
                                         <p><strong>Số điện thoại:</strong> {{ hoaDonDetail.sdtNguoiNhan }} </p>
                                         <p><strong>Địa chỉ :</strong> {{hoaDonDetail.diaChiNguoiNhan}}</p>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <button class="btn btn-outline-warning" ng-if="hoaDonDetail.trangThai === 0" ng-click="confirmInvoice(hoaDonDetail.id)" >
-                                        Xác nhận
-                                    </button>
-                                    <button class="btn btn-outline-danger" ng-if="hoaDonDetail.trangThai === 0" ng-click="cancelInvoice(hoaDonDetail.id)" >
-                                        Hủy hóa đơn
-                                    </button>
-                                </div>
-                            </div>
 
+                                </div>
+                            </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button class="btn btn-outline-warning" ng-if="hd.trangThai === 0" ng-click="confirmInvoice(hd.id)" >
+                <button class="btn btn-success" ng-if="hd.trangThai === 0" ng-click="confirmInvoice(hd.id)" >
                     Xác nhận
                 </button>
             </td>
@@ -169,13 +124,21 @@
     <nav class="text-center">
         <ul class="pagination">
             <li ng-class="{ 'disabled': currentPage === 0 }">
+<<<<<<< HEAD
+                <a href="" ng-click="previousPage()">Previous</a>
+=======
                 <button href="" ng-click="previousPage()">Previous</button>
+>>>>>>> 25f4e8127337f7d4a4676e740b7c7ca3f89950b0
             </li>
             <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
                 <button href="" ng-click="getHoaDonsByTrangThai(selectedTrangThai, page)">{{ page + 1 }}</button>
             </li>
             <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
+<<<<<<< HEAD
+                <a href="" ng-click="nextPage()">Next</a>
+=======
                 <button href="" ng-click="nextPage()">Next</button>
+>>>>>>> 25f4e8127337f7d4a4676e740b7c7ca3f89950b0
             </li>
         </ul>
     </nav>

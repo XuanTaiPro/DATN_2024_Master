@@ -1,5 +1,5 @@
 window.thongbaoCtrl = function ($scope, $http) {
-    const url = "http://localhost:8080/thongbao";
+    const url = "http://localhost:8083/thongbao";
 
     $scope.listThongBao = [];
     $scope.currentPage = 0;
@@ -8,7 +8,7 @@ window.thongbaoCtrl = function ($scope, $http) {
     $scope.emptyMessage = "";
 
     $scope.loadPage = function (page) {
-        $http.get('http://localhost:8080/thongbao/page?page=' + page)
+        $http.get('http://localhost:8083/thongbao/page?page=' + page)
             .then(function (response) {
                 $scope.listThongBao = response.data.thongBaos;
                 $scope.currentPage = response.data.currentPage;
@@ -64,7 +64,7 @@ window.thongbaoCtrl = function ($scope, $http) {
 
 
     $scope.listKH = [];
-    $http.get("http://localhost:8080/khachhang")
+    $http.get("http://localhost:8083/khachhang")
         .then(function (response) {
             $scope.listKH = response.data;
             console.log("Lấy danh sách khách hàng thành công", $scope.listKH);
@@ -99,7 +99,7 @@ window.thongbaoCtrl = function ($scope, $http) {
         $scope.idKH = null;
         console.log($scope.selectedKhachHang);
 
-        fetch('http://localhost:8080/khachhang/getId?ten=' + $scope.selectedKhachHang)
+        fetch('http://localhost:8083/khachhang/getId?ten=' + $scope.selectedKhachHang)
             .then(function (response) {
                 return response.json();  // Chuyển đổi sang JSON vì API trả về danh sách
             })
@@ -130,7 +130,7 @@ window.thongbaoCtrl = function ($scope, $http) {
         };
 
         console.log("Dữ liệu mới:", newThongBao);
-        $http.post('http://localhost:8080/thongbao/add', newThongBao)
+        $http.post('http://localhost:8083/thongbao/add', newThongBao)
             .then(function (response) {
                 // Đóng modal
                 $('#productModal').modal('hide');
@@ -151,7 +151,7 @@ window.thongbaoCtrl = function ($scope, $http) {
             return;
         }
         $scope.selectedThongBao.idKH = $scope.idKH;
-        $http.put('http://localhost:8080/thongbao/update/' + $scope.selectedThongBao.id, $scope.selectedThongBao)
+        $http.put('http://localhost:8083/thongbao/update/' + $scope.selectedThongBao.id, $scope.selectedThongBao)
             .then(function (response) {
                 location.reload()
             })
@@ -162,7 +162,7 @@ window.thongbaoCtrl = function ($scope, $http) {
     $scope.delete = function (id) {
         console.log("Xóa");
         if (confirm('Bạn có chắc chắn muốn xóa Thông Báo này?')) {
-            $http.delete('http://localhost:8080/thongbao/delete/' + id)
+            $http.delete('http://localhost:8083/thongbao/delete/' + id)
                 .then(function (response) {
                     console.log(response.data);
                     location.reload()

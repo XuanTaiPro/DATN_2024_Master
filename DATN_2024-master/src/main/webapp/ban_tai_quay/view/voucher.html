@@ -71,7 +71,7 @@
     </div>
 </section>
 
-<!--add nhân viên-->
+<!--add-->
 
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -192,8 +192,6 @@
     </div>
 </div>
 
-
-
 <div class="modal fade" id="UpdateForm" tabindex="-1" aria-labelledby="userFormLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -240,6 +238,18 @@
                             </select>
                         </div>
                         <div>
+                            <button type="button" class="btn btn-primary" ng-click="openCustomerModalUpdate()">
+                                Chọn khách hàng
+                            </button>
+                        </div>
+                        <div class="container-inline">
+                            <label>Khách hàng:</label>
+                            <select ng-model="selectedCustomerUpdate" class="short-select">
+                                <option value="" disabled>Khách hàng đã chọn</option>
+                                <option ng-repeat="customer in selectedCustomersUpdate" value="{{customer.id}}">{{customer.ten}}</option>
+                            </select>
+                        </div>
+                        <div>
                             <label for="trangThaiUpdate">Trạng thái:</label>
                             <select ng-model="selectedVoucher.trangThai" id="trangThaiUpdate" class="short-select"
                                     required>
@@ -260,6 +270,48 @@
     </div>
 </div>
 
+<div class="modal fade" id="customerModalUpdate" tabindex="-1" aria-labelledby="customerModalLabelUpdate" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chọn khách hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="thead-light">
+                        <tr>
+                            <th>
+                                <input type="checkbox" ng-model="selectAllUpdate" ng-click="toggleAllCheckboxesUpdate()">
+                            </th>
+                            <th>Tên</th>
+                            <th>Email</th>
+                            <th>Giới Tính</th>
+                            <th>SDT</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="khachHang in listKhachHang">
+                            <td>
+                                <input type="checkbox" ng-model="khachHang.selectedUpdate" ng-change="toggleCustomerSelectionUpdate(khachHang, 'update')">
+                            </td>
+                            <td>{{ khachHang.ten }}</td>
+                            <td>{{ khachHang.email }}</td>
+                            <td>{{ khachHang.gioiTinh }}</td>
+                            <td>{{ khachHang.sdt }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" ng-click="confirmSelectionUpdate()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Detail -->
 <div class="modal fade" id="DetailForm" tabindex="-1" aria-labelledby="userFormLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -302,6 +354,27 @@
                         <div>
                             <label>Tên loại voucher:</label>
                             <input type="text" ng-model="selectedVoucher.tenLoaiVC" readonly>
+                        </div>
+                        <div>
+                            <label>Khách hàng sở hữu</label>
+                        </div>
+                        <div class="mt-3">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Tên Khách Hàng</th>
+                                    <th>Email</th>
+                                    <th>Số Điện Thoại</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="customer in selectedVoucherCustomers">
+                                    <td>{{ customer.ten }}</td>
+                                    <td>{{ customer.email }}</td>
+                                    <td>{{ customer.sdt }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <div>
                             <label>Trạng thái:</label>
@@ -427,6 +500,7 @@
     /* Modal thêm và cập nhật nhân viên */
     .modal-content {
         border-radius: 8px;
+        z-index: 1000;
     }
 
     .modal-header {
@@ -506,4 +580,106 @@
         max-width: 370px;
     }
 
+    table tr td{
+        vertical-align: middle;
+    }
+
+    td button{
+        margin: 5px;
+    }
+
+    td button i{
+        font-size: 20px;
+    }
+
+
+    .modal-header{
+        background: #0d6efd;
+        color: #fff;
+    }
+
+    .modal-body form {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 0;
+    }
+
+    .modal-body form .imgholder{
+        width: 200px;
+        height: 200px;
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .imgholder .upload{
+        position: absolute;
+        bottom: 0;
+        left: 10;
+        width: 100%;
+        height: 100px;
+        background: rgba(0,0,0,0.3);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .upload i{
+        color: #fff;
+        font-size: 35px;
+    }
+
+    .imgholder:hover .upload{
+        display: flex;
+    }
+
+    .imgholder .upload input{
+        display: none;
+    }
+
+    .modal-body form .inputField{
+        flex-basis: 68%;
+        border-left: 5px groove blue;
+        padding-left: 20px;
+    }
+
+    form .inputField > div{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    form .inputField > div label{
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    #userForm form .inputField > div label::after{
+        content: "*";
+        color: red;
+    }
+
+    form .inputField > div input{
+        width: 75%;
+        padding: 10px;
+        border: none;
+        outline: none;
+        background: transparent;
+        border-bottom: 2px solid blue;
+    }
+
+    .modal-footer .submit{
+        font-size: 18px;
+    }
+
+
+    #readData form .inputField > div input{
+        color: #000;
+        font-size: 18px;
+    }
+    /*bảng trong form detail*/
 </style>

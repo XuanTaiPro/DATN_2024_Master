@@ -22,4 +22,8 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, String> {
                                         @Param("diaChi") String diaChi,
                                         @Param("trangThai") Integer trangThai);
 
+
+    @Query("SELECT nv FROM NhanVien nv WHERE nv.email = :email AND nv.passw = :passw ")
+    NhanVien loginNV(@Param("email") String email , @Param("passw") String passw);
+
 }

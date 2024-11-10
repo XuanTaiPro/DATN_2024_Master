@@ -67,6 +67,7 @@ public class GiamGia {
     private String moTa;
 
     @OneToMany(mappedBy = "giamGia", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
     private List<SanPham> listSanPham = new ArrayList<>();
     @PrePersist
     public void prePersist() {

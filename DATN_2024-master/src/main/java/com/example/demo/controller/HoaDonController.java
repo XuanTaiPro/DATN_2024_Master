@@ -69,11 +69,9 @@ public class HoaDonController {
     }
     @PostMapping("/add")
     public ResponseEntity<?> createHoaDon(@ModelAttribute HoaDonReq req) {
-        // Kiểm tra ID nhân viên
         if (req.getIdNV() == null || req.getIdNV().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("ID nhân viên không được để trống.");
         }
-        // Tạo mới hóa đơn
         HoaDon hoaDon = new HoaDon();
 
         // Sao chép các thuộc tính khác từ req
@@ -90,18 +88,6 @@ public class HoaDonController {
         hoaDon.setKhachHang(null);
         hoaDon.setSdtNguoiNhan(null);
 
-//        // Xử lý khách hàng
-//        if (req.getIdKH() != null && !req.getIdKH().trim().isEmpty()) {
-//            Optional<KhachHang> khachHangOptional = khachHangRepo.findById(req.getIdKH());
-//            if (khachHangOptional.isPresent()) {
-//                hoaDon.setKhachHang(khachHangOptional.get());
-//            } else {
-//                return ResponseEntity.badRequest().body("Không tìm thấy khách hàng với ID: " + req.getIdKH());
-//            }
-//        } else {
-//            return ResponseEntity.badRequest().body("ID khách hàng không được để trống.");
-//        }
-
         // Xử lý nhân viên
         Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById(req.getIdNV());
         if (nhanVienOptional.isPresent()) {
@@ -109,20 +95,6 @@ public class HoaDonController {
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + req.getIdNV());
         }
-
-        // Trước khi lưu hóa đơn
-        System.out.println("Mã hóa đơn: " + hoaDon.getMaHD());
-        System.out.println("Ngày tạo: " + hoaDon.getNgayTao());
-        System.out.println("Ngày sửa: " + hoaDon.getNgaySua());
-        System.out.println("Ngày thanh toán: " + hoaDon.getNgayThanhToan());
-        System.out.println("Ngày nhận hàng: " + hoaDon.getNgayNhanHang());
-        System.out.println("Mã voucher: " + hoaDon.getMaVoucher());
-        System.out.println("Thành tiền: " + hoaDon.getThanhTien());
-        System.out.println("Phí vận chuyển: " + hoaDon.getPhiVanChuyen());
-        System.out.println("Trạng thái: " + hoaDon.getTrangThai());
-
-        // Lưu hóa đơn
-        // Lưu hóa đơn
         try {
             hoaDonRepo.save(hoaDon);
             return ResponseEntity.ok().body(Map.of("message", "Thêm hóa đơn thành công!", "hoaDon", hoaDon));
@@ -142,18 +114,6 @@ public class HoaDonController {
             hoaDonExisting.setTrangThai(2);
             hoaDonRepo.save(hoaDonExisting);
             return ResponseEntity.ok("Xác nhận hóa đơn thành công.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
-        }
-    }
-    @PutMapping("/huyHD")
-    public ResponseEntity<String> huyHD(@RequestParam(name = "idHD") String idHD) {
-        Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(idHD);
-        if (hoaDonOptional.isPresent()) {
-            HoaDon hoaDonExisting = hoaDonOptional.get();
-            hoaDonExisting.setTrangThai(4);
-            hoaDonRepo.save(hoaDonExisting);
-            return ResponseEntity.ok("Hủy hóa đơn thành công.");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
         }
@@ -182,22 +142,12 @@ public class HoaDonController {
     @GetMapping("/detail")
     public ResponseEntity<?> detailHoaDon(@RequestParam(name = "idHD") String idHD) {
         Optional<HoaDon> hoaDon = hoaDonRepo.findById(idHD);
-        if (hoaDon.isPresent()) {
-            HoaDonRep hoaDonRep = hoaDon.get().toResponse(); // Populate DTO
-            List<ChiTietHoaDonRep> chiTietResponses = hoaDon.get().getChiTietHoaDons().stream()
-                    .map(ChiTietHoaDon::toResponse)
-                    .collect(Collectors.toList());
-            Map<String, Object> response = new HashMap<>();
-            response.put("hoaDonRep", hoaDonRep);
-            response.put("chiTietHoaDons", chiTietResponses);
-
-            return ResponseEntity.ok(response);
+        if (hoaDon != null) {
+            return ResponseEntity.ok(hoaDon.get().toResponse());
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-
-
     // Read by ID
 //    @GetMapping("/detail/{idHD}")
 //    public ResponseEntity<HoaDonRep> getHoaDonById(@PathVariable String idHD) {
@@ -247,7 +197,6 @@ public class HoaDonController {
                     return ResponseEntity.badRequest().body(null);
                 }
             }
-
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(req.getMaHD());
             hoaDon.setMaVoucher(req.getMaVoucher());

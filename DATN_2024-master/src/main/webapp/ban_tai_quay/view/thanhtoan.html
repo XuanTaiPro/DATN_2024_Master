@@ -11,67 +11,115 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="cthd in listCTHD">
-                <td>{{cthd.tenSP}}</td>
-                <td>{{cthd.giaBan}}</td>
-                <td>{{cthd.soLuong}}</td>
-                <td>{{cthd.tongTien}} VND</td>
+            <tr ng-repeat="cthds in listCTHD">
+                <td>{{cthds.tenSP}}</td>
+                <td>{{cthds.giaBan}}</td>
+                <td>{{cthds.soLuong}}</td>
+                <td>{{cthds.tongTien}} VND</td>
             </tr>
             </tbody>
         </table>
+        <p class="text-center text-muted" ng-if="listCTHD.length === 0">{{ emptyMessage }}</p>
+        <ul class="pagination justify-content-center">
+            <li class="page-item" ng-class="{disabled: currentPage == 0}">
+                <a class="page-link" href="" ng-click="prevPage()">«</a>
+            </li>
+            <li class="page-item" ng-repeat="n in range(totalPages) track by $index"
+                ng-class="{active: n == currentPage}">
+                <a class="page-link" href="" ng-click="setPage(n)">{{ n + 1 }}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: currentPage == totalPages - 1}">
+                <a class="page-link" href="" ng-click="nextPage()">»</a>
+            </li>
+        </ul>
 
-        <div class="bordered-form">
-            <form>
-                <div class="form-group mt-3">
-                    <label for="customerName">Tên khách hàng:</label>
-                    <input type="text" class="form-control" id="customerName" name="customerName"
-                           ng-model="selectedCustomerName">
-                </div>
-                <div class="form-group mt-3">
-                    <label for="customerPhone">Số điện thoại:</label>
-                    <input type="text" class="form-control" id="customerPhone" name="customerPhone"
-                           ng-model="selectedCustomerPhone">
-                </div>
-                <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal"
-                        data-bs-target="#customerModal">
-                    Chọn khách hàng
-                </button>
-            </form>
+        <div class="customer-voucher-container">
+            <div class="bordered-form">
+                <form>
+                    <div class="form-group mt-3">
+                        <label for="customerName">Tên khách hàng:</label>
+                        <input type="text" class="form-control" id="customerName" name="customerName" ng-model="selectedCustomerName" >
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="customerPhone">Số điện thoại:</label>
+                        <input type="text" class="form-control" id="customerPhone" name="customerPhone" ng-model="selectedCustomerPhone" >
+                    </div>
+                    <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#customerModal">
+                        Chọn khách hàng
+                    </button>
+                </form>
+
+            </div>
+
+            <div class="voucher-list mt-3">
+                <h5>Voucher của khách hàng</h5>
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Tên Voucher</th>
+                        <th>Giá giảm</th>
+                        <th>Đơn tối thiểu</th>
+                        <th>Giảm tối đa</th>
+                        <th>Hạn sử dụng</th>
+                        <th>Số lượng</th>
+                        <th>Chọn</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="voucher in vouchers" ng-if="selectedCustomerName">
+                        <td>{{ voucher.ten }}</td>
+                        <td>{{ voucher.giamGia }}</td>
+                        <td>{{ voucher.giamMin }}</td>
+                        <td>{{ voucher.giamMax }}</td>
+                        <td>
+                            <span ng-if="getDaysLeft(voucher.ngayKetThuc) > 0">
+                                  {{ getDaysLeft(voucher.ngayKetThuc) }} ngày
+                            </span>
+                            <span ng-if="getDaysLeft(voucher.ngayKetThuc) <= 0">
+                                 Hết hạn
+                            </span>
+                        </td>
+                        <td>{{ voucher.soLuong }}</td>
+                        <td>
+                            <button class="btn btn-primary" ng-click="applyVoucher(voucher)"
+                                    ng-disabled="voucher.trangThai === 0 || voucher.soLuong === 0 || getDaysLeft(voucher.ngayKetThuc) <= 0">
+                                Áp dụng
+                            </button>
+                        </td>
+                    </tr>
+                    <tr ng-if="vouchers.length === 0 && selectedCustomerName">
+                        <td colspan="7" class="text-center">Khách hàng hiện không sở hữu voucher nào</td>
+                    </tr>
+                    <tr>
+                        <div class="message" ng-if="!selectedCustomerName">
+                            <span>Vui lòng chọn khách hàng hưởng voucher</span>
+                        </div>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Phân trang -->
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" ng-class="{disabled: currentPageVC == 0}">
+                        <a class="page-link" href="" ng-click="prevPageVC()">«</a>
+                    </li>
+                    <li class="page-item" ng-repeat="n in range(totalPagesVC) track by $index"
+                        ng-class="{active: n == currentPageVC}">
+                        <a class="page-link" href="" ng-click="setPageVC(n)">{{ n + 1 }}</a>
+                    </li>
+                    <li class="page-item" ng-class="{disabled: currentPageVC == totalPagesVC - 1}">
+                        <a class="page-link" href="" ng-click="nextPageVC()">»</a>
+                    </li>
+                </ul>
+            </div>
+
         </div>
 
         <div class="amount-container">
             <label>Thành tiền: </label>
-            <p id="totalAmount">{{tongTien}} VNĐ</p>
+            <p id="totalAmount">{{tongTien | number:0}} VNĐ</p>
         </div>
-        <div class="voucher-list mt-4" ng-if="vouchers && vouchers.length > 0">
-            <h5>Voucher của khách hàng</h5>
-            <table class="table table-hover">
-                <thead class="thead-light">
-                <tr>
-                    <th>Tên Voucher</th>
-                    <th>Giá giảm</th>
-                    <th>Giảm tối thiểu</th>
-                    <th>Giảm tối đa</th>
-                    <th>Ngày kết thúc</th>
-                    <th>Số lượng</th>
-                    <th>Chọn</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="voucher in vouchers">
-                    <td>{{ voucher.ten }}</td>
-                    <td>{{ voucher.giamGia }}</td>
-                    <td>{{ voucher.giamMin }}</td>
-                    <td>{{ voucher.giamMax }}</td>
-                    <td>{{ voucher.ngayKetThuc | date:'dd/MM/yyyy' }}</td>
-                    <td>{{ voucher.soLuong }}</td>
-                    <td>
-                        <button class="btn btn-primary" ng-click="applyVoucher(voucher)">Áp dụng</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+
 
         <div class="form-group mt-3">
             <label>Hình thức thanh toán:</label><br>
@@ -179,10 +227,9 @@
             </div>
         </div>
 
-        <button class="btn btn-success mt-3" onclick="submitThanhtoan()" id="xacnhan">Xác nhận</button>
+        <!--        <button class="btn btn-success mt-3" onclick="submitThanhtoan()" id="xacnhan">Xác nhận</button>-->
 
-        <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel"
-             aria-hidden="true">
+        <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -430,5 +477,38 @@
         border-radius: 10px;
         margin-bottom: 20px;
     }
+
+    /*khách hàng và voucher*/
+
+    .bordered-form{
+        margin-top: 20px;
+    }
+    .customer-voucher-container {
+        display: flex;
+        align-items: flex-start; /* Căn chỉnh phần tử theo chiều dọc */
+    }
+
+    .bordered-form {
+        flex: 1; /* 1 phần cho form khách hàng */
+        margin-right: 20px; /* Khoảng cách giữa form và bảng */
+    }
+
+    .voucher-list {
+        flex: 2; /* 2 phần cho bảng voucher khách hàng */
+    }
+
+    .message {
+        color: red; /* Đổi màu thông báo cho nổi bật */
+        margin-top: 10px; /* Khoảng cách trên thông báo */
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f5f5f5; /* Màu nền cho hàng khi hover */
+    }
+
+    .text-center {
+        text-align: center; /* Căn giữa nội dung trong ô */
+    }
+
 </style>
 </html>

@@ -1,7 +1,6 @@
 package com.example.demo.entity;
 
 import com.example.demo.dto.chitiethoadon.ChiTietHoaDonRep;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -52,12 +51,10 @@ public class ChiTietHoaDon {
 
     @ManyToOne
     @JoinColumn(name = "IDHOADON")
-    @JsonBackReference
     private HoaDon hoaDon;
 
     @ManyToOne
     @JoinColumn(name = "IDCTSP")
-    @JsonBackReference
     private ChiTietSanPham chiTietSanPham;
 
     @PrePersist
@@ -72,12 +69,13 @@ public class ChiTietHoaDon {
     }
 
     public ChiTietHoaDonRep toResponse() {
-        double tienGiam=0;
+        double tienGiam = 0;
         if (chiTietSanPham.getSanPham().getGiamGia() != null &&
                 chiTietSanPham.getSanPham().getGiamGia().getNgayKetThuc().isAfter(LocalDateTime.now()) &&
                 chiTietSanPham.getSanPham().getGiamGia().getNgayBatDau().isBefore(LocalDateTime.now())) {
             double giaGiam = Double.valueOf(chiTietSanPham.getSanPham().getGiamGia().getGiaGiam()) / 100;
-            tienGiam=Double.valueOf(chiTietSanPham.getSanPham().getGiamGia().getGiaGiam())/100*Double.valueOf(chiTietSanPham.getGia());
+            tienGiam = Double.valueOf(chiTietSanPham.getSanPham().getGiamGia().getGiaGiam()) / 100
+                    * Double.valueOf(chiTietSanPham.getGia());
         }
         return new ChiTietHoaDonRep(
                 id,
@@ -90,13 +88,11 @@ public class ChiTietHoaDon {
                 ngayTao,
                 ngaySua,
                 ghiChu,
-                chiTietSanPham != null ? chiTietSanPham.getSanPham().getTenSP() : null,
+                chiTietSanPham != null && chiTietSanPham.getSanPham() != null ? chiTietSanPham.getSanPham().getTenSP() : null,
                 chiTietSanPham != null ? chiTietSanPham.getGia() : null,
                 hoaDon != null ? hoaDon.getId() : null,
-                chiTietSanPham.getAnhCTSP().get(0).getLink(),
-                chiTietSanPham.getSoNgaySuDung()
-        );
+                (chiTietSanPham != null && !chiTietSanPham.getAnhCTSP().isEmpty()) ? chiTietSanPham.getAnhCTSP().get(0).getLink() : null,
+                chiTietSanPham != null ? chiTietSanPham.getSoNgaySuDung() : null);
     }
-
 
 }

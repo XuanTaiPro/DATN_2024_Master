@@ -1,5 +1,5 @@
 window.voucherCtrl = function ($scope, $http) {
-    const url = "http://localhost:8080/voucher";
+    const url = "http://localhost:8083/voucher";
 
     $scope.listVoucher = [];
     $scope.listKhachHang = [];
@@ -9,7 +9,7 @@ window.voucherCtrl = function ($scope, $http) {
     $scope.emptyMessage = "";
 
     $scope.loadPage = function (page) {
-        $http.get('http://localhost:8080/voucher/page?page=' + page)
+        $http.get('http://localhost:8083/voucher/page?page=' + page)
             .then(function (response) {
                 $scope.listVoucher = response.data.vouchers;
                 $scope.currentPage = response.data.currentPage;
@@ -71,7 +71,7 @@ window.voucherCtrl = function ($scope, $http) {
     // });
 
     $scope.listLVC = [];
-    $http.get("http://localhost:8080/loaivoucher")
+    $http.get("http://localhost:8083/loaivoucher")
         .then(function (response) {
             $scope.listLVC = response.data;
             console.log("Lấy danh sách LVC thành công", $scope.listLVC);
@@ -80,7 +80,7 @@ window.voucherCtrl = function ($scope, $http) {
             console.error("Lỗi khi lấy danh sách LVC:", error);
         });
 
-    $http.get('http://localhost:8080/khachhang').then(function (response) {
+    $http.get('http://localhost:8083/khachhang').then(function (response) {
         $scope.listKhachHang = response.data;
         console.log("Lấy dữ liệu thành công");
     }).catch((error) => {
@@ -88,7 +88,9 @@ window.voucherCtrl = function ($scope, $http) {
     });
 
     $scope.selectedCustomers = [];
+    $scope.selectedCustomersUpdate = [];
     $scope.selectAll = false;
+    $scope.selectAllUpdate = false;
 
 // Hàm toggle cho từng khách hàng
     $scope.toggleCustomerSelection = function(khachHang) {
@@ -100,16 +102,26 @@ window.voucherCtrl = function ($scope, $http) {
                 $scope.selectedCustomers.splice(index, 1);
             }
         }
-
         // Cập nhật trạng thái của selectAll
         $scope.selectAll = $scope.listKhachHang.length > 0 && $scope.selectedCustomers.length === $scope.listKhachHang.length;
+    };
+    $scope.toggleCustomerSelectionUpdate = function(khachHang) {
+        if (khachHang.selectedUpdate) {
+            $scope.selectedCustomersUpdate.push(khachHang);
+        } else {
+            const index = $scope.selectedCustomersUpdate.indexOf(khachHang);
+            if (index > -1) {
+                $scope.selectedCustomersUpdate.splice(index, 1);
+            }
+        }
+        // Cập nhật trạng thái của selectAll
+        $scope.selectAllUpdate = $scope.listKhachHang.length > 0 && $scope.selectedCustomersUpdate.length === $scope.listKhachHang.length;
     };
 
 // Hàm chọn tất cả hoặc bỏ chọn tất cả
     $scope.toggleAllCheckboxes = function() {
         $scope.selectAll = !$scope.selectAll; // Đảo ngược trạng thái của selectAll
         $scope.selectedCustomers = []; // Reset danh sách selectedCustomers
-
         angular.forEach($scope.listKhachHang, function(khachHang) {
             khachHang.selected = $scope.selectAll; // Đặt trạng thái selected cho từng khách hàng
             if ($scope.selectAll) {
@@ -117,12 +129,22 @@ window.voucherCtrl = function ($scope, $http) {
             }
         });
     };
-
-
-
+    $scope.toggleAllCheckboxesUpdate = function() {
+        $scope.selectAllUpdate = !$scope.selectAllUpdate; // Đảo ngược trạng thái của selectAll
+        $scope.selectedCustomersUpdate = []; // Reset danh sách selectedCustomers
+        angular.forEach($scope.listKhachHang, function(khachHang) {
+            khachHang.selectedUpdate = $scope.selectAllUpdate; // Đặt trạng thái selected cho từng khách hàng
+            if ($scope.selectAllUpdate) {
+                $scope.selectedCustomersUpdate.push(khachHang); // Nếu chọn tất cả, thêm vào danh sách
+            }
+        });
+    };
 
     $scope.openCustomerModal = function() {
         $('#customerModal').modal('show');
+    };
+    $scope.openCustomerModalUpdate = function() {
+        $('#customerModalUpdate').modal('show');
     };
 
     $scope.confirmSelection = function() {
@@ -131,31 +153,13 @@ window.voucherCtrl = function ($scope, $http) {
         // Giữ modal "Thêm Voucher" mở
         $('#productModal').modal('show');
     };
-
-
-    $scope.viewDetail = function (voucher) {
-        $scope.selectedVoucher = angular.copy(voucher);
-        $scope.selectedVoucher.trangThai = voucher.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động';
-    }
-    $scope.openUpdateModal = function (voucher) {
-        $scope.selectedVoucher = angular.copy(voucher);
-        $scope.selectedLVC = $scope.selectedVoucher.tenLoaiVC
-        $scope.idLoaiVC = null
-        console.log($scope.selectedLVC)
-        fetch('http://localhost:8080/loaivoucher/getId?ten=' + $scope.selectedLVC).then(function (response) {
-            return response.text()
-        }).then(function (data) {
-            $scope.$apply(function () {
-                $scope.idLoaiVC = data;  // Gán giá trị trả về vào $scope.idQuyen
-                console.log($scope.idLoaiVC);
-            });
-        }).catch(function (er) {
-            console.error(er)
-        })
-
-        $scope.selectedVoucher.trangThai = voucher.trangThai.toString();
-        console.log("Trạng thái hiện tại:", $scope.selectedVoucher.trangThai);
+    $scope.confirmSelectionUpdate = function() {
+        $('#customerModalUpdate').modal('hide');
+//cập nhật khách đã chọn
+        $scope.selectedCustomersUpdate = $scope.listKhachHang.filter(kh => kh.selectedUpdate);
+        $('#UpdateForm').modal('show');
     };
+
 
     $scope.toggleCustomerSelection = function (khachHang) {
         if (khachHang.selected) {
@@ -167,6 +171,71 @@ window.voucherCtrl = function ($scope, $http) {
             }
         }
     };
+    $scope.toggleCustomerSelectionUpdate = function (khachHang) {
+        if (khachHang.selectedUpdate) {
+            if (!$scope.selectedCustomersUpdate.includes(khachHang)) {
+                $scope.selectedCustomersUpdate.push(khachHang);
+            }
+        } else {
+            const index = $scope.selectedCustomersUpdate.indexOf(khachHang);
+            if (index > -1) {
+                $scope.selectedCustomersUpdate.splice(index, 1);
+            }
+        }
+    };
+
+
+
+    $scope.viewDetail = function (voucher) {
+        $scope.selectedVoucher = angular.copy(voucher);
+        $scope.selectedVoucher.trangThai = voucher.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động';
+
+        fetch('http://localhost:8083/voucher/' + voucher.id + '/customers')
+            .then(response => response.json())
+            .then(data => {
+                $scope.$apply(() => {
+                    $scope.selectedVoucherCustomers = data; // Gán danh sách khách hàng vào scope
+                });
+            })
+            .catch(error => console.error("Error fetching customers:", error));
+    }
+    $scope.openUpdateModal = function (voucher) {
+        $scope.selectedVoucher = angular.copy(voucher);
+
+        $scope.selectedLVC = $scope.selectedVoucher.tenLoaiVC
+        $scope.idLoaiVC = null
+        console.log($scope.selectedLVC)
+        fetch('http://localhost:8083/loaivoucher/getId?ten=' + $scope.selectedLVC).then(function (response) {
+            return response.text()
+        }).then(function (data) {
+            $scope.$apply(function () {
+                $scope.idLoaiVC = data;  // Gán giá trị trả về vào $scope.idQuyen
+                console.log($scope.idLoaiVC);
+            });
+        }).catch(function (er) {
+            console.error(er)
+        })
+
+
+        //lấy khách hàng theo id voucher liên kết với chiTietVoucher
+        fetch('http://localhost:8083/voucher/' + voucher.id + '/customers')
+            .then(response => response.json())
+            .then(data => {
+                $scope.$apply(() => {
+                    $scope.selectedCustomersUpdate = data; // Gán danh sách khách hàng vào scope
+
+                    if ($scope.selectedCustomersUpdate.length > 0) {
+                        $scope.selectedCustomerUpdate = $scope.selectedCustomersUpdate[0].id;
+                    }
+                });
+            })
+            .catch(error => console.error("Error fetching customers:", error));
+
+        $scope.selectedVoucher.trangThai = voucher.trangThai.toString();
+        console.log("Trạng thái hiện tại:", $scope.selectedVoucher.trangThai);
+    };
+
+
 
     $scope.addVoucher = function (e) {
         const newVoucher = {
@@ -183,7 +252,7 @@ window.voucherCtrl = function ($scope, $http) {
         };
 
         console.log("Dữ liệu mới:", newVoucher);
-        $http.post('http://localhost:8080/voucher/add', newVoucher)
+        $http.post('http://localhost:8083/voucher/add', newVoucher)
             .then(function (response) {
                 // Đóng modal
                 $('#productModal').modal('hide');
@@ -202,20 +271,31 @@ window.voucherCtrl = function ($scope, $http) {
             alert("Vui lòng chọn quyền cho nhân viên.");
             return;
         }
-        $scope.selectedVoucher.idLoaiVC = $scope.idLoaiVC;
-        $http.put('http://localhost:8080/voucher/update/' + $scope.selectedVoucher.id, $scope.selectedVoucher)
+
+        const updatedVoucher = {
+            ...$scope.selectedVoucher,
+            idLoaiVC: $scope.idLoaiVC,
+            idKH: $scope.selectedCustomersUpdate.map(c => c.id)
+        };
+
+        console.log("Dữ liệu cập nhật:", updatedVoucher);
+
+        $http.put('http://localhost:8083/voucher/update/' + $scope.selectedVoucher.id, updatedVoucher)
             .then(function (response) {
-                location.reload()
+                location.reload();
+                // Reload hoặc cập nhật lại dữ liệu nếu cần
             })
-            .catch(function () {
+            .catch(function (error) {
+                console.error("Lỗi khi cập nhật voucher:", error);
             });
     };
+
 
 
     $scope.deleteVoucher = function (id) {
         console.log("Xóa");
         if (confirm('Bạn có chắc chắn muốn xóa?')) {
-            $http.delete('http://localhost:8080/voucher/delete/' + id)
+            $http.delete('http://localhost:8083/voucher/delete/' + id)
                 .then(function (response) {
                     // Kiểm tra phản hồi server
                     console.log(response.data);
