@@ -3,7 +3,6 @@ package com.example.demo.dto.khachhang;
 import com.example.demo.entity.KhachHang;
 import jakarta.validation.constraints.*;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class KhachHangRequestOnline {
@@ -15,7 +14,6 @@ public class KhachHangRequestOnline {
     @NotBlank(message = "Email không được để trống")
     @Email(message = "Email không hợp lệ")
     private String email;
-
 
     @NotBlank(message = "Giới tính không được để trống")
     private String gioiTinh;

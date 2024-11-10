@@ -5,11 +5,9 @@ import com.example.demo.dto.chitiethoadon.ChiTietHoaDonReq;
 import com.example.demo.entity.ChiTietHoaDon;
 import com.example.demo.entity.ChiTietSanPham;
 import com.example.demo.entity.HoaDon;
-import com.example.demo.entity.SanPham;
 import com.example.demo.repository.ChiTietHoaDonRepo;
 import com.example.demo.repository.ChiTietSanPhamRepository;
 import com.example.demo.repository.HoaDonRepo;
-import com.example.demo.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,8 +30,7 @@ public class ChiTietHoaDonController {
 
     @Autowired
     private HoaDonRepo hoaDonRepo;
-    @Autowired
-    private SanPhamRepository sanPhamRepository;
+
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepo;
 
@@ -49,10 +46,10 @@ public class ChiTietHoaDonController {
         if (chiTietSanPhamOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("Chi tiết sản phẩm không tồn tại.");
         }
-        chiTietSanPhamOptional.get().setSoLuong(chiTietSanPhamOptional.get().getSoLuong()- req.getSoLuong());
+        chiTietSanPhamOptional.get().setSoLuong(chiTietSanPhamOptional.get().getSoLuong() - req.getSoLuong());
         chiTietSanPhamRepo.save(chiTietSanPhamOptional.get());
         ChiTietHoaDon chiTietHoaDons = new ChiTietHoaDon();
-        chiTietHoaDons.setTongTien(String.valueOf(req.getSoLuong()*Double.valueOf(req.getGiaBan())));
+        chiTietHoaDons.setTongTien(String.valueOf(req.getSoLuong() * Double.valueOf(req.getGiaBan())));
         chiTietHoaDons.setSoLuong(req.getSoLuong());
         chiTietHoaDons.setTrangThai(1);
         chiTietHoaDons.setNgayTao(LocalDateTime.now());
@@ -73,7 +70,8 @@ public class ChiTietHoaDonController {
     }
 
     @PutMapping("/updateSoLuong")
-    public ResponseEntity<?> updateCTHDSoLuong(@RequestParam(name = "id") String id, @Validated @ModelAttribute ChiTietHoaDon req) {
+    public ResponseEntity<?> updateCTHDSoLuong(@RequestParam(name = "id") String id,
+            @Validated @ModelAttribute ChiTietHoaDon req) {
         ChiTietHoaDon chiTietHoaDonExisting = chiTietHoaDonRepo.getById(id);
 
         if (chiTietHoaDonExisting == null) {
@@ -84,7 +82,8 @@ public class ChiTietHoaDonController {
         chiTietHoaDonExisting.setHoaDon(chiTietHoaDonExisting.getHoaDon());
         chiTietHoaDonExisting.setChiTietSanPham(chiTietHoaDonExisting.getChiTietSanPham());
         chiTietHoaDonExisting.setMaCTHD(chiTietHoaDonExisting.getMaCTHD());
-        chiTietHoaDonExisting.setTongTien(String.valueOf(Double.valueOf(chiTietHoaDonExisting.getGiaBan())*chiTietHoaDonExisting.getSoLuong()));
+        chiTietHoaDonExisting.setTongTien(
+                String.valueOf(Double.valueOf(chiTietHoaDonExisting.getGiaBan()) * chiTietHoaDonExisting.getSoLuong()));
         chiTietHoaDonExisting.setGhiChu(req.getGhiChu());
         chiTietHoaDonExisting.setNgayTao(chiTietHoaDonExisting.getNgayTao());
         chiTietHoaDonExisting.setNgaySua(LocalDateTime.now());
@@ -94,7 +93,8 @@ public class ChiTietHoaDonController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateChiTietHoaDon(@RequestParam(name = "id") String id, @Validated @ModelAttribute ChiTietHoaDonReq req) {
+    public ResponseEntity<?> updateChiTietHoaDon(@RequestParam(name = "id") String id,
+            @Validated @ModelAttribute ChiTietHoaDonReq req) {
         Optional<ChiTietHoaDon> chiTietHoaDonOptional = chiTietHoaDonRepo.findById(id);
         if (chiTietHoaDonOptional.isEmpty()) {
             return ResponseEntity.status(404).body("Không tìm thấy chi tiết hóa đơn với ID: " + id);
@@ -110,7 +110,6 @@ public class ChiTietHoaDonController {
         chiTietHoaDon.setNgaySua(LocalDateTime.now());
         chiTietHoaDon.setGhiChu(req.getGhiChu());
 
-
         Optional<ChiTietSanPham> chiTietSanPhamOptional = chiTietSanPhamRepo.findById(req.getIdCTSP());
         if (chiTietSanPhamOptional.isPresent()) {
             chiTietHoaDon.setChiTietSanPham(chiTietSanPhamOptional.get());
@@ -124,7 +123,7 @@ public class ChiTietHoaDonController {
         } else {
             return ResponseEntity.badRequest().body("Hóa đơn không tồn tại.");
         }
-        System.out.println("Yêu cầu cập nhật:"+ req);
+        System.out.println("Yêu cầu cập nhật:" + req);
         chiTietHoaDonRepo.save(chiTietHoaDon);
         return ResponseEntity.ok("Cập nhật chi tiết hóa đơn thành công.");
     }
@@ -147,14 +146,14 @@ public class ChiTietHoaDonController {
 
         // Tạo response trả về
         Map<String, Object> response = new HashMap<>();
-        response.put("cthds", cthdPage.getContent().stream().map(ChiTietHoaDon::toResponse).collect(Collectors.toList()));
+        response.put("cthds",
+                cthdPage.getContent().stream().map(ChiTietHoaDon::toResponse).collect(Collectors.toList()));
         response.put("totalPages", cthdPage.getTotalPages());
         response.put("totalElements", cthdPage.getTotalElements());
 
         // Trả về kết quả dưới dạng ResponseEntity
         return ResponseEntity.ok(response);
     }
-
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteChiTietHoaDon(@PathVariable String id) {

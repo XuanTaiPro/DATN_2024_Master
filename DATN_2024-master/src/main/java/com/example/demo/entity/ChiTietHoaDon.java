@@ -8,10 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -88,10 +85,13 @@ public class ChiTietHoaDon {
                 ngayTao,
                 ngaySua,
                 ghiChu,
-                chiTietSanPham != null && chiTietSanPham.getSanPham() != null ? chiTietSanPham.getSanPham().getTenSP() : null,
+                chiTietSanPham != null && chiTietSanPham.getSanPham() != null ? chiTietSanPham.getSanPham().getTenSP()
+                        : null,
                 chiTietSanPham != null ? chiTietSanPham.getGia() : null,
                 hoaDon != null ? hoaDon.getId() : null,
-                (chiTietSanPham != null && !chiTietSanPham.getAnhCTSP().isEmpty()) ? chiTietSanPham.getAnhCTSP().get(0).getLink() : null,
+                (chiTietSanPham != null && !chiTietSanPham.getAnhCTSP().isEmpty())
+                        ? chiTietSanPham.getAnhCTSP().get(0).getLink()
+                        : null,
                 chiTietSanPham != null ? chiTietSanPham.getSoNgaySuDung() : null);
     }
 

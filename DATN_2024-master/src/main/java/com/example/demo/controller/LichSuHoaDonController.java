@@ -6,7 +6,6 @@ import com.example.demo.entity.HoaDon;
 import com.example.demo.entity.LichSuHoaDon;
 import com.example.demo.repository.HoaDonRepo;
 import com.example.demo.repository.LichSuHoaDonRepo;
-import com.example.demo.repository.NhanVienRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,9 +30,6 @@ public class LichSuHoaDonController {
     @Autowired
     private HoaDonRepo hoaDonRepo;
 
-    @Autowired
-    private NhanVienRepository nhanVienRepo;
-
     // Lấy danh sách lịch sử hóa đơn
     @GetMapping("/list")
     public ResponseEntity<List<LichSuHoaDonResponse>> getAllLichSuHoaDon() {
@@ -47,14 +43,16 @@ public class LichSuHoaDonController {
 
     // Tìm kiếm lịch sử hóa đơn theo tên nhân viên hoặc mã hóa đơn
     @GetMapping("/search")
-    public ResponseEntity<Page<LichSuHoaDonResponse>> searchByTenNVOrMaHD(@RequestParam("keyword") String keyword, Pageable pageable) {
+    public ResponseEntity<Page<LichSuHoaDonResponse>> searchByTenNVOrMaHD(@RequestParam("keyword") String keyword,
+            Pageable pageable) {
         Page<LichSuHoaDon> searchResult = lichSuHoaDonRepo.searchByTenNVOrMaHD(keyword, pageable);
         Page<LichSuHoaDonResponse> responsePage = searchResult.map(LichSuHoaDon::toResponse);
         return ResponseEntity.ok(responsePage);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<LichSuHoaDonResponse> addLichSuHoaDon(@Validated @RequestBody LichSuHoaDonRequest lichSuHoaDonRequest) {
+    public ResponseEntity<LichSuHoaDonResponse> addLichSuHoaDon(
+            @Validated @RequestBody LichSuHoaDonRequest lichSuHoaDonRequest) {
         // Kiểm tra hóa đơn tồn tại dựa trên idHD từ LichSuHoaDonRequest
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(lichSuHoaDonRequest.getIdHD());
         if (!hoaDonOptional.isPresent()) {

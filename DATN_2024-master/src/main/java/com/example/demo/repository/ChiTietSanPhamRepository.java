@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, String> {
@@ -16,6 +15,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
         @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id=:idSP")
         Page<ChiTietSanPham> getAllByIdSP(@Param("idSP") String idSP, Pageable pageable);
+
         @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id = :idSP AND ctsp.trangThai = :trangThai")
         List<ChiTietSanPham> getAllByIdSPHD(@Param("idSP") String idSP, @Param("trangThai") int trangThai);
 
@@ -23,9 +23,8 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
         ChiTietSanPham getByMaAndId(@Param("ma") String ma, @Param("id") String id);
 
         @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id = :idSP " +
-                        "AND ctsp.soNgaySuDung = :soNgaySuDung " )
+                        "AND ctsp.soNgaySuDung = :soNgaySuDung ")
         ChiTietSanPham trungCTSP(@Param("idSP") String idSP,
-                        @Param("soNgaySuDung") String soNgaySuDung
-                                 );
+                        @Param("soNgaySuDung") String soNgaySuDung);
 
 }
