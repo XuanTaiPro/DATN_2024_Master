@@ -67,7 +67,7 @@ public class ChiTietHoaDon {
         }
         if (this.getMaCTHD() == null) {
             // Tạo mã hóa đơn tự động
-            this.maCTHD = "HD" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+            this.maCTHD = "CTHD" + UUID.randomUUID().toString().replace("-", "").substring(0, 6).toUpperCase();
         }
     }
 

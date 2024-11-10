@@ -27,10 +27,11 @@ public class ChiTietHoaDonReq {
     private int trangThai;
     private LocalDateTime ngayTao;
     private LocalDateTime ngaySua;
+
     private String ghiChu;
+
     @NotNull(message = "ID hóa đơn không được để trống")
     private String idHD;
-    @NotNull(message = "ID hóa đơn không được để trống")
+    @NotNull(message = "ID chi tiết sản phẩm không được để trống")
     private String idCTSP;
-
 }

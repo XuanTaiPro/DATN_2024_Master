@@ -18,6 +18,9 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
     @Query("SELECT sp FROM SanPham sp WHERE sp.tenSP = :tenSP")
     SanPham getByName(@Param("tenSP") String tenSP);
 
+    @Query("SELECT sp FROM SanPham sp WHERE (:tenSP IS NULL OR sp.tenSP LIKE %:tenSP%) AND sp.trangThai=:trangThai")
+    List<SanPham> getByTenSP(@Param("tenSP") String tenSP,@Param("trangThai")Integer trangThai);
+
     @Query("SELECT sp FROM SanPham  sp where sp.maSP=:ma and sp.id<>:id")
     SanPham getByMaAndId(@Param("ma") String ma, @Param("id") String id);
 

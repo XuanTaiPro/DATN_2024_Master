@@ -50,17 +50,21 @@ public class HoaDonController {
                                   @RequestParam(name = "loaiHD", required = false) Integer loaiHD,
                                   @RequestParam(name = "nhanVien", required = false) String nhanVien) {
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "ngayTao"));
-        Page<HoaDon> hoaDonPage = hoaDonRepo.findHDByFilters(trangThai, tenKH, loaiHD, nhanVien, pageRequest);
+        Page<HoaDon> hoaDonPage = hoaDonRepo.findHDByFilters(trangThai,  loaiHD, nhanVien, pageRequest);
         Map<String, Object> response = new HashMap<>();
         response.put("hoaDons", hoaDonPage.getContent().stream().map(HoaDon::toResponse).collect(Collectors.toList()));
         response.put("totalPages", hoaDonPage.getTotalPages());
         response.put("totalElements", hoaDonPage.getTotalElements());
-
         return ResponseEntity.ok(response);
     }
     @GetMapping("/getHDTaiQuay")
     public ResponseEntity<?> page() {
         List<HoaDon> listHoaDon = hoaDonRepo.getHDTaiQuay(1);
+        return ResponseEntity.ok(listHoaDon);
+    }
+    @GetMapping("/getHDNullKH")
+    public ResponseEntity<?> nullKH() {
+        List<HoaDon> listHoaDon = hoaDonRepo.getHDNullKH();
         return ResponseEntity.ok(listHoaDon);
     }
     @PostMapping("/add")

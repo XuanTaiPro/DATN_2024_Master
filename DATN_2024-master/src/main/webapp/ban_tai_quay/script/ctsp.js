@@ -13,8 +13,6 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
         gia: null,
         soNgaySuDung: null,
         soNgaySuDungInput: null,
-        ngaySanXuat: null,
-        hsd: null,
         ngayNhap: null,
         soLuong: null,
         imagePreviews: [], // Khởi tạo danh sách hình ảnh hiện tại
@@ -68,8 +66,6 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
         else if(product.soNgaySuDung==null){
             formData.append('soNgaySuDung', product.soNgaySuDungInput);
         }
-        formData.append('ngaySanXuat', moment(product.ngaySanXuat).format('YYYY-MM-DDTHH:mm:ss'));
-        formData.append('hsd', moment(product.hanSuDung).format('YYYY-MM-DDTHH:mm:ss'));
         formData.append('ngayNhap', moment(product.ngayNhap).format('YYYY-MM-DDTHH:mm:ss'));
         formData.append('soLuong', product.soLuong);
         formData.append('trangThai', 1);
@@ -143,11 +139,9 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
         if( $scope.productDetail.soNgaySuDung!=null){
             formData.append('soNgaySuDung',  $scope.productDetail.soNgaySuDung);
         }
-        else if(product.soNgaySuDung==null){
+        else if($scope.productDetail.soNgaySuDung==null){
             formData.append('soNgaySuDung',  $scope.productDetail.soNgaySuDungInput);
         }
-        formData.append('ngaySanXuat', moment($scope.productDetail.ngaySanXuat).format('YYYY-MM-DDTHH:mm:ss'));
-        formData.append('hsd', moment($scope.productDetail.hsd).format('YYYY-MM-DDTHH:mm:ss'));
         formData.append('ngayNhap', moment($scope.productDetail.ngayNhap).format('YYYY-MM-DDTHH:mm:ss'));
         formData.append('soLuong', $scope.productDetail.soLuong);
         formData.append('trangThai', $scope.productDetail.trangThai);

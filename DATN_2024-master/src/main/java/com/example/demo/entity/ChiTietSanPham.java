@@ -33,12 +33,6 @@ public class ChiTietSanPham {
     @Column(name = "soNgaySuDung")
     private String soNgaySuDung;
 
-    @Column(name = "HSD")
-    private LocalDateTime hsd;
-
-    @Column(name = "ngaySanXuat")
-    private LocalDateTime ngaySanXuat;
-
     @Column(name = "ngayNhap")
     private LocalDateTime ngayNhap;
 
@@ -87,14 +81,13 @@ public class ChiTietSanPham {
                 gia,
                 String.valueOf(tienGiam),
                 soNgaySuDung,
-                ngaySanXuat,
-                hsd,
                 ngayNhap,
                 soLuong,
                 trangThai,
                 ngayTao,
                 ngaySua,
                 sanPham.getMaSP(),
+                sanPham.getId(),
                 linkAnhList // Include the image link in the response
         );
     }

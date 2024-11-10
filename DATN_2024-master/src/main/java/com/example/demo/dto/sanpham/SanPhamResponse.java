@@ -44,4 +44,6 @@ public class SanPhamResponse {
     private String tenThuongHieu;
 
     private String tenGiamGia;
+
+    private String linkAnh;
 }

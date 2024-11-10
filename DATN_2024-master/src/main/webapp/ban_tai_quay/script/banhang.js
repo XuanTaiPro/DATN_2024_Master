@@ -1,4 +1,4 @@
-window.banhangCtrl = function ($scope, $http) {
+window.banhangCtrl = function ($scope, $http, $document) {
     $scope.tabs = []; // Khởi tạo danh sách tab
     $scope.selectedTab = 0; // Chỉ số tab đang chọn
     $scope.searchText = ""; // Khởi tạo biến tìm kiếm
@@ -7,6 +7,9 @@ window.banhangCtrl = function ($scope, $http) {
     $scope.currentPage = 0;
     $scope.itemsPerPage = 10; // Number of items per page
     $scope.totalPages = 0;
+    $scope.sanPhams = []; // Nếu không có từ khóa tìm kiếm, xóa danh sách sản phẩm
+    $scope.searchResultsVisible = false;
+
     // Hàm thêm tab mới cho hóa đơn
     $scope.addInvoiceTab = function () {
         const formData = new FormData();
@@ -85,7 +88,104 @@ window.banhangCtrl = function ($scope, $http) {
         }
         $scope.selectTab(index);
     };
+    $scope.filterSanPham = function () {
+        if ($scope.searchText) {
+            $http.get('http://localhost:8083/san-pham/getByTenSP?tenSP=' + $scope.searchText)
+                .then(function (response) {
+                    $scope.sanPhams = response.data;
+                    $scope.searchResultsVisible = true; // Hiện kết quả tìm kiếm
+                    console.log($scope.sanPhams);
+                })
+                .catch(function (error) {
+                    console.error("Lỗi khi tìm kiếm sản phẩm:", error);
+                });
+        } else {
+            $scope.sanPhams = []; // Nếu không có từ khóa tìm kiếm, xóa danh sách sản phẩm
+        }
+    };
+    $document.on('click', function (event) {
+        var searchResultsElement = angular.element(document.querySelector('.search-results'));
+        var inputElement = angular.element(document.querySelector('input[ng-model="searchText"]'));
 
+        // Kiểm tra xem click có phải ngoài div kết quả tìm kiếm hoặc ngoài ô tìm kiếm không
+        if (!searchResultsElement[0].contains(event.target) && !inputElement[0].contains(event.target)) {
+            $scope.$apply(function() {
+                $scope.searchResultsVisible = false; // Ẩn kết quả tìm kiếm
+            });
+        }
+    });
+    $scope.updateTotal = function(cthd) {
+        const formData = new FormData();
+        formData.append('soLuong', cthd.soLuong);
+        formData.append('ghiChu', cthd.ghiChu);
+
+        $http.put('http://localhost:8083/chitiethoadon/updateSoLuong?id=' + cthd.id, formData, {
+            headers: { 'Content-Type': undefined }
+        })
+            .then(function(response) {
+                console.log("Update successful:", response);
+
+                // Lấy idHD của tab hiện tại
+                const selectedTab = $scope.tabs[$scope.selectedTab];
+                const selectedIdHD = selectedTab.idHD;
+
+                // Gọi lại hàm để load lại danh sách chi tiết hóa đơn của tab hiện tại
+                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+
+                // alert("Cập nhật thành công!");
+            })
+            .catch(function(error) {
+                const selectedTab = $scope.tabs[$scope.selectedTab];
+                const selectedIdHD = selectedTab.idHD;
+                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+                // console.error("Error updating :", error);
+            });
+    };
+    $scope.selectSanPham = function(sanPham) {
+        $scope.selectedSanPham = sanPham;  // Lưu sản phẩm đã chọn
+        $scope.soLuong = 1; // Đặt lại số lượng
+        $scope.currentPage = 0; // Nếu không có page được truyền vào, dùng trang 0
+        $http.get(`http://localhost:8083/chi-tiet-san-pham/getAllCTSP?idSP=${sanPham.id}`)
+            .then(function(response) {
+                console.log(response);
+                $scope.products = response.data; // Gán danh sách sản phẩm từ dữ liệu trả về
+            })
+            .catch(function(error) {data
+                $scope.errorMessage = 'Lỗi khi lấy sản phẩm: ' + error.data;
+                console.error($scope.errorMessage);
+            });
+        $('#productModal').modal('show');  // Hiển thị modal
+    };
+    $scope.addCTHD=function(ctsp){
+        const formData = new FormData();
+        console.log('Ghi chú hiện tại: ', $scope.ghiChu);  // Kiểm tra giá trị ghiChu
+
+        formData.append('soLuong',$scope.soLuong);
+        formData.append('ghiChu', $scope.ghiChu || 'note');  // Ghi chú có thể bị null hoặc undefined
+        const selectedTab = $scope.tabs[$scope.selectedTab];
+        const selectedIdHD = selectedTab.idHD;
+        formData.append('idHD',selectedIdHD);
+        formData.append('giaBan',ctsp.gia);
+        formData.append('idCTSP',ctsp.id);
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`); // In ra key và value
+        }
+        $http.post('http://localhost:8083/chitiethoadon/add', formData, {
+            headers: {
+                'Content-Type': undefined // Cho phép browser tự động thiết lập boundary
+            }})
+            .then(function(response) {
+                console.log(response.data);
+                alert('Thêm chi tiết hóa đơn thành công!');
+                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+            })
+            .catch(function(error) {
+                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+                console.error('Lỗi:', error);
+                // alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
+            });
+    }
     // Gọi hàm lấy hóa đơn khi khởi tạo controller
     $scope.getHDTaiQuay();
+
 };

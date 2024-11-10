@@ -3,14 +3,73 @@
         <input type="text" class="form-control"
                placeholder="Tìm kiếm theo tên sản phẩm"
                ng-model="searchText"
-               ng-change="filterSanPham()">
+               ng-change="filterSanPham()"
+               ng-model-options="{ debounce: 100 }">
         <div class="input-group-append">
             <button id="addInvoiceBtn" class="btn btn-primary" style="margin-left: 10px;" ng-click="addInvoiceTab()">+ Tạo Hóa Đơn</button>
         </div>
     </div>
 </div>
 
-
+<div class="search-results" ng-show="searchResultsVisible">
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="sanPham in sanPhams" ng-click="selectSanPham(sanPham)">
+            <div class="flex-grow-1">
+                <strong>{{ sanPham.tenSP }}</strong>
+                <div>
+                    <span>Mã: {{ sanPham.maSP }}</span>
+                    <span>
+                        <img ng-src="{{ sanPham.linkAnh }}" alt="Ảnh sản phẩm" width="100" height="100">
+                    </span>
+                    <span> | Số lượng: {{ sanPham.tongSoLuong }}</span>
+                    <span> | {{ sanPham.congDung }}</span>
+                </div>
+            </div>
+<!--            <button class="btn btn-info btn-sm">Chọn</button>-->
+        </li>
+    </ul>
+</div>
+<div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Chọn Sản Phẩm</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Tên sản phẩm:</strong> {{ selectedSanPham.tenSP }}</p>
+                <p><strong>Mã sản phẩm:</strong> {{ selectedSanPham.maSP }}</p>
+                <p><strong>Công dụng:</strong> {{ selectedSanPham.congDung }}</p>
+                <ul class="list-group" style="max-height: 300px; overflow-y: auto;">
+                    <li class="list-group-item" ng-repeat="ctsp in products">
+                        <div class="flex-grow-1">
+                            <div>
+                                <span>
+                                    <img ng-if="ctsp.linkAnhList.length > 0" ng-src="{{ctsp.linkAnhList[0]}}" alt="{{ctsp.ma}}" width="60" height="60" class="me-1">
+                                    <span ng-if="ctsp.linkAnhList.length === 0">Không có ảnh</span>                    </span>
+                                    <span> | Số lượng: {{ ctsp.soLuong }}</span>
+                                    <span> | Số ngày sử dụng: {{ ctsp.soNgaySuDung }}</span>
+                                    <span> | Giá bán: {{ ctsp.gia }}</span>
+                                <div class="form-group">
+                                    <label>Số lượng:</label>
+                                    <input type="number"  class="form-control" ng-model="soLuong" min="1" max="{{ ctsp.soLuong }}">
+                                    <label>Ghi chú:</label>
+                                    <input type="text"  class="form-control" ng-model="ghiChu" />
+                                    <button ng-click="addCTHD(ctsp)">Thêm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="tabs">
     <ul class="nav nav-tabs">
         <li class="nav-item" ng-repeat="tab in tabs">
@@ -28,52 +87,120 @@
     <div ng-repeat="tab in tabs" ng-show="selectedTab === $index">
         <h3>{{ tab.title }}</h3>
         <p>Thông tin chi tiết hóa đơn:</p>
-    </div>
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th>STT</th>
-            <th>Ảnh</th>
-            <th>Tên sản phẩm</th>
-            <th>Số ngày sử dụng</th>
-            <th>Giá bán</th>
-            <th>Số lượng</th>
-            <th>Thành tiền</th>
-            <th colspan="2">Thao tác</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="cthd in cthds">
-            <td>{{$index + 1 + (currentPage * itemsPerPage)}}</td>
-            <td><img src="{{cthd.linkAnh}}" alt="" width="100px" height="100px"></td>
-            <td>{{cthd.tenSP}}</td>
-            <td>{{cthd.soNgaySuDung}}</td>
-            <td>
-                {{ cthd.giaBan }} VND
-                <span ng-if="cthd.tienGiam && cthd.tienGiam !== 0" class="text-danger">
-                    (Giảm: {{ cthd.tienGiam }} VND)
-                  </span>
-            </td>
-            <td>{{cthd.soLuong}}</td>
-            <td>{{cthd.tongTien}}VND</td>
-            <td>
-                <button class="btn btn-danger">Xóa</button>
-            </td>
-        </tr>
-        </tbody>
-            </table>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>STT</th>
+                <th>Ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Số ngày sử dụng</th>
+                <th>Giá bán</th>
+                <th>Số lượng</th>
+                <th>Ghi chú</th>
+                <th>Thành tiền</th>
+                <th colspan="2">Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="cthd in cthds">
+                <td>{{$index + 1 + (currentPage * itemsPerPage)}}</td>
+                <td><img src="{{cthd.linkAnh}}" alt="" width="100px" height="100px" class="img-thumbnail"></td>
+                <td>{{cthd.tenSP}}</td>
+                <td>{{cthd.soNgaySuDung}}</td>
+                <td>
+                    {{ cthd.giaBan }} VND
+                    <span ng-if="cthd.tienGiam && cthd.tienGiam !== 0" class="text-danger">
+                        (Giảm: {{ cthd.tienGiam }} VND)
+                    </span>
+                </td>
+                <td>
+                    <input type="hidden" ng-model="cthd.id">
+                    <input type="number" class="form-control" ng-model="cthd.soLuong"
+                            ng-change="updateTotal(cthd)" style="width: 90px"/>
+                </td>
+                <td><input ng-model="cthd.ghiChu" ng-change="updateTotal(cthd)" style="width: 150px">
+                    </td>
+                <td>{{cthd.tongTien}} VND</td>
+                <td>
+                    <button class="btn btn-danger">Xóa</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-    <div class="text-center">
-        <ul class="pagination">
-            <li ng-class="{ 'disabled': currentPage === 0 }">
-                <button href="" ng-click="previousPage()">Previous</button>
-            </li>
-            <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
-                <button href="" ng-click="getCTSPByIdHD({{idHD}}, page)">{{ page + 1 }}</button>
-            </li>
-            <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
-                <button href="" ng-click="nextPage()">Next</button>
-            </li>
-        </ul>
+        <div class="text-center">
+            <ul class="pagination">
+                <li ng-class="{ 'disabled': currentPage === 0 }">
+                    <button class="btn btn-outline-secondary" ng-click="previousPage()">Previous</button>
+                </li>
+                <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
+                    <button class="btn btn-outline-primary" ng-click="getCTSPByIdHD(tab.idHD, page)">{{ page + 1 }}</button>
+                </li>
+                <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
+                    <button class="btn btn-outline-secondary" ng-click="nextPage()">Next</button>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
+
+<style>
+    .search-results {
+        max-height: 300px;
+        width: 1000px;/* Giới hạn chiều cao */
+        overflow-y: auto;  /* Thêm thanh cuộn khi kết quả dài */
+        position: absolute;
+        /*background-color: white;*/
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng mờ */
+        border-radius: 5px; /* Bo góc */
+        z-index: 1000; /* Đảm bảo danh sách hiện lên trên các phần tử khác */
+        padding-left: 40px;
+    }
+
+    .list-group-item {
+        display: flex;
+        justify-content: space-between; /* Căn chỉnh nội dung */
+        align-items: center;  /* Giữa dọc */
+        padding: 10px; /* Padding */
+        transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+        cursor: pointer; /* Con trỏ chuột dạng tay */
+    }
+
+    .list-group-item:hover {
+        background-color: #f1f1f1; /* Màu nền khi di chuột */
+    }
+
+    .list-group-item img {
+        width: 50px; /* Chiều rộng hình ảnh */
+        height: 50px; /* Chiều cao hình ảnh */
+        margin-right: 10px; /* Khoảng cách bên phải */
+    }
+
+    strong {
+        font-size: 1.1em; /* Kích thước chữ đậm */
+    }
+
+    .pagination {
+        margin-top: 20px;
+    }
+
+    .img-thumbnail {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 4px;
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+    .close-btn {
+        background: transparent; /* Nền trong suốt */
+        border: none; /* Xóa đường viền */
+        cursor: pointer; /* Con trỏ chuột dạng tay */
+        color: #d9534f; /* Màu đỏ */
+        margin-left: 5px; /* Khoảng cách */
+    }
+
+    .close-btn:hover {
+        color: #c9302c; /* Màu đỏ đậm khi hover */
+    }
+</style>

@@ -94,6 +94,15 @@
                     .mapToInt(ChiTietSanPham::getSoLuong)
                     .sum();
 
+            // Check if listCTSP and AnhCTSP are not empty before accessing
+            String anhLink = null;
+            if (!listCTSP.isEmpty()) {
+                ChiTietSanPham firstCTSP = listCTSP.get(0);
+                if (firstCTSP != null && !firstCTSP.getAnhCTSP().isEmpty()) {
+                    anhLink = firstCTSP.getAnhCTSP().get(0).getLink();
+                }
+            }
+
             return new SanPhamResponse(
                     id,
                     maSP,
@@ -108,10 +117,12 @@
                     hdsd,
                     trangThai,
                     moTa,
-                    danhMuc.getTen(),
-                    thuongHieu.getTen(),
-                    giamGiaTen  // Pass the discount name to the response
+                    danhMuc != null ? danhMuc.getTen() : null,  // Check for null in danhMuc
+                    thuongHieu != null ? thuongHieu.getTen() : null,  // Check for null in thuongHieu
+                    giamGiaTen,
+                    anhLink
             );
         }
+
 
     }

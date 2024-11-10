@@ -40,18 +40,25 @@
         DanhGiaRepository danhGiaRepository;
 
         @GetMapping()
-        public ResponseEntity<?> getAll(@RequestParam(name = "idSP", required = false) String idSP) {
+        public ResponseEntity<?> getAll() {
             List<ChiTietSanPham>chiTietSanPhams=chiTietSanPhamRepository.findAll();
             if (chiTietSanPhams.isEmpty()) {
                 return ResponseEntity.noContent().build(); // Trả về 204 No Content nếu không có sản phẩm nào
             }
-
             List<ChiTietSanPhamResponse> responseList = chiTietSanPhams.stream()
                     .map(ChiTietSanPham::toChiTietSanPhamResponse)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(responseList);
         }
 
+        @GetMapping("/getAllCTSP")
+        public ResponseEntity<?>getAllCTSP(@RequestParam(name = "idSP", required = false) String idSP){
+            List<ChiTietSanPham> listCTSP=chiTietSanPhamRepository.getAllByIdSPHD(idSP,1);
+            List<ChiTietSanPhamResponse> responseList = listCTSP.stream()
+                    .map(ChiTietSanPham::toChiTietSanPhamResponse)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responseList);
+        }
         @GetMapping("/page")
         public ResponseEntity<?> page(@RequestParam(name = "page", defaultValue = "0") Integer page,@RequestParam(name = "idSP", required = false) String idSP) {
             PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("ngayTao")));
@@ -65,31 +72,6 @@
             response.put("totalElements", chiTietSanPhamPage.getTotalElements());
             response.put("pageSize", chiTietSanPhamPage.getSize());
             return ResponseEntity.ok(response);
-        }
-        @GetMapping("/expiring-soon")
-        public ResponseEntity<?> getExpiringSoon() {
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime sixMonthsFromNow = now.plus(6, ChronoUnit.MONTHS);
-
-            // Tìm tất cả các chi tiết sản phẩm và lọc những sản phẩm sắp hết hạn
-            List<ChiTietSanPham> chiTietSanPhams = chiTietSanPhamRepository.findAll();
-            List<Map<String, Object>> expiringSoonList = chiTietSanPhams.stream()
-                    .filter(ctsp -> ctsp.getHsd() != null && ctsp.getHsd().isBefore(sixMonthsFromNow))
-                    .map(ctsp -> {
-                        Map<String, Object> productDetails = new HashMap<>();
-                        ChiTietSanPhamResponse response = ctsp.toChiTietSanPhamResponse();
-                        productDetails.put("product", response);
-                        productDetails.put("detailsLink", "/chi-tiet-san-pham/detail"); // Chỉ sử dụng endpoint, không có tham số id trong URL
-                        productDetails.put("id", ctsp.getId()); // Truyền id của sản phẩm trong body
-                        return productDetails;
-                    })
-                    .collect(Collectors.toList());
-
-            if (expiringSoonList.isEmpty()) {
-                return ResponseEntity.ok("Không có sản phẩm nào sắp hết hạn trong vòng 6 tháng.");
-            }
-
-            return ResponseEntity.ok(expiringSoonList);
         }
 
         @GetMapping("/detail")
@@ -135,10 +117,7 @@
             // Kiểm tra sản phẩm đã tồn tại
             ChiTietSanPham existingChiTietSanPham = chiTietSanPhamRepository.trungCTSP(
                     chiTietSanPhamRequest.getIdSP(),
-                    chiTietSanPhamRequest.getSoNgaySuDung(),
-                    chiTietSanPhamRequest.getNgaySanXuat(),
-                    chiTietSanPhamRequest.getHsd(),
-                    chiTietSanPhamRequest.getGia());
+                    chiTietSanPhamRequest.getSoNgaySuDung());
 
             // Cập nhật số lượng nếu sản phẩm đã tồn tại
             if (existingChiTietSanPham != null) {
@@ -179,7 +158,6 @@
 
             return ResponseEntity.ok("Thêm mới chi tiết sản phẩm và hình ảnh thành công!");
         }
-
 
 
         @PutMapping("/update")

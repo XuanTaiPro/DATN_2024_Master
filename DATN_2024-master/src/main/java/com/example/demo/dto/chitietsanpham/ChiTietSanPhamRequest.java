@@ -24,15 +24,7 @@ public class ChiTietSanPhamRequest {
     @NotBlank(message = "Số ngày sử dụng không được để trống")
     @Size(max = 255, message = "Số ngày sử dụng không được vượt quá 255 ký tự")
     private String soNgaySuDung;
-
-    @NotNull(message = "Ngày sản xuất không được để trống")
-    @PastOrPresent(message = "Ngày sản xuất phải là ngày hiện tại hoặc trong quá khứ")
-    private LocalDateTime ngaySanXuat;
-
-    @NotNull(message = "Hạn sử dụng không được để trống")
-    @FutureOrPresent(message = "Hạn sử dụng phải là ngày hiện tại hoặc trong tương lai")
-    private LocalDateTime hsd;
-
+    
     @NotNull(message = "Ngày nhập không được để trống")
     @PastOrPresent(message = "Ngày nhập phải là ngày hiện tại hoặc trong quá khứ")
     private LocalDateTime ngayNhap;

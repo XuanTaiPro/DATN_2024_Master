@@ -90,7 +90,10 @@ public class SanPhamController {
         }
         return ResponseEntity.ok(existingSanPham.get().toResponse());
     }
-
+    @GetMapping("/getByTenSP")
+    public ResponseEntity<?>getByName(@RequestParam(name = "tenSP",required = false)String tenSP){
+        return ResponseEntity.ok(sanPhamRepository.getByTenSP(tenSP,1).stream().map(SanPham::toResponse));
+    }
     @PostMapping("/detailByMa")
     public ResponseEntity<?> detailByMa(@RequestBody Map<String, String> body) {
         String ma = body.get("ma");

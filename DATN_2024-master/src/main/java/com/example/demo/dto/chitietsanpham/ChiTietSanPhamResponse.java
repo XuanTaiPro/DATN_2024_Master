@@ -16,14 +16,13 @@ public class ChiTietSanPhamResponse {
     private String gia;
     private String tienGiam;
     private String soNgaySuDung;
-    private LocalDateTime ngaySanXuat;
-    private LocalDateTime hsd;
     private LocalDateTime ngayNhap;
     private int soLuong;
     private int trangThai;
     private LocalDateTime ngayTao;
     private LocalDateTime ngaySua;
     private String maSP;
+    private String idSP;
     private List<String> linkAnhList; // Danh sách liên kết hình ảnh
 
 }

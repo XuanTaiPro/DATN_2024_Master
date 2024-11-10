@@ -31,14 +31,6 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Ngày sản xuất:</label>
-                        <input type="datetime-local" class="form-control" ng-model="product.ngaySanXuat" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Hạn sử dụng:</label>
-                        <input type="datetime-local" class="form-control" ng-model="product.hanSuDung" required>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">Ngày nhập:</label>
                         <input type="datetime-local" class="form-control" ng-model="product.ngayNhap" required>
                     </div>
@@ -75,8 +67,6 @@
         <th>Mã</th>
         <th>Giá</th>
         <th>Số ngày sử dụng</th>
-        <th>Ngày sản xuất</th>
-        <th>Hạn sử dụng</th>
         <th>Ngày nhập</th>
         <th>Số lượng</th>
         <th>Trạng thái</th>
@@ -100,8 +90,6 @@
     (Giảm: {{ ctsp.tienGiam }} VND)
   </span>
         </td>        <td>{{ctsp.soNgaySuDung}} ngày</td>
-        <td>{{ctsp.ngaySanXuat | date:'yyyy-MM-dd'}}</td>
-        <td>{{ctsp.hsd| date:'yyyy-MM-dd'}}</td>
         <td>{{ctsp.ngayNhap | date:'yyyy-MM-dd'}}</td>
         <td>{{ctsp.soLuong}}</td>
         <td>
@@ -127,8 +115,6 @@
                                 <div class="col-md-6">
                                     <p><strong>Giá:</strong> {{ productDetail.gia }} VND</p>
                                     <p><strong>Số ngày sử dụng:</strong> {{ productDetail.soNgaySuDung }} Ngày</p>
-                                    <p><strong>Ngày sản xuất:</strong> {{ productDetail.ngaySanXuat | date:'yyyy-MM-dd' }}</p>
-                                    <p><strong>Hạn sử dụng:</strong> {{ productDetail.hsd | date:'yyyy-MM-dd' }}</p>
                                     <p><strong>Ngày nhập:</strong> {{ productDetail.ngayNhap | date:'yyyy-MM-dd' }}</p>
                                     <p><strong>Số lượng:</strong> {{ productDetail.soLuong }}</p>
                                     <p><strong>Trạng thái:</strong>
@@ -190,14 +176,6 @@
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Ngày sản xuất:</label>
-                                    <input type="datetime-local" class="form-control" ng-model="productDetail.ngaySanXuat" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Hạn sử dụng:</label>
-                                    <input type="datetime-local" class="form-control" ng-model="productDetail.hsd" required>
-                                </div>
-                                <div class="mb-3">
                                     <label class="form-label">Ngày nhập:</label>
                                     <input type="datetime-local" class="form-control" ng-model="productDetail.ngayNhap" required>
                                 </div>
@@ -218,21 +196,19 @@
                                 </div>
                                 <label class="form-label">Trạng thái:</label>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" ng-model="productDetail    .trangThai" ng-value="1">
+                                    <input class="form-check-input" type="radio" ng-model="productDetail.trangThai" ng-value="1">
                                     <label class="form-check-label">Active</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" ng-model="productDetail.trangThai" ng-value="0">
                                     <label class="form-check-label">Inactive</label>
                                 </div>
-
                                 <button type="submit" class="btn btn-outline-success">Cập Nhật</button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-
             <button class="btn btn-danger" ng-click="deleteProduct(ctsp.id)">
                 <i class="bi bi-trash"></i>
             </button>

@@ -5,9 +5,11 @@ import com.example.demo.dto.chitiethoadon.ChiTietHoaDonReq;
 import com.example.demo.entity.ChiTietHoaDon;
 import com.example.demo.entity.ChiTietSanPham;
 import com.example.demo.entity.HoaDon;
+import com.example.demo.entity.SanPham;
 import com.example.demo.repository.ChiTietHoaDonRepo;
 import com.example.demo.repository.ChiTietSanPhamRepository;
 import com.example.demo.repository.HoaDonRepo;
+import com.example.demo.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,12 +35,14 @@ public class ChiTietHoaDonController {
 
     @Autowired
     private HoaDonRepo hoaDonRepo;
-
+    @Autowired
+    private SanPhamRepository sanPhamRepository;
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepo;
 
     @PostMapping("/add")
-    public ResponseEntity<String> createChiTietHoaDon(@Validated @RequestBody ChiTietHoaDonReq req) {
+    public ResponseEntity<String> createChiTietHoaDon(@Validated @ModelAttribute ChiTietHoaDonReq req) {
+
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(req.getIdHD());
         if (hoaDonOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("Hóa đơn không tồn tại.");
@@ -50,15 +54,14 @@ public class ChiTietHoaDonController {
         }
 
         ChiTietHoaDon chiTietHoaDons = new ChiTietHoaDon();
-        chiTietHoaDons.setMaCTHD(req.getMaCTHD());
-        chiTietHoaDons.setTongTien(req.getTongTien());
-
-        chiTietHoaDons.setTrangThai(req.getTrangThai());
+        chiTietHoaDons.setTongTien(String.valueOf(req.getSoLuong()*Double.valueOf(req.getGiaBan())));
+        chiTietHoaDons.setSoLuong(req.getSoLuong());
+        chiTietHoaDons.setTrangThai(1);
         chiTietHoaDons.setNgayTao(LocalDateTime.now());
         chiTietHoaDons.setGhiChu(req.getGhiChu());
         chiTietHoaDons.setHoaDon(hoaDonOptional.get());
         chiTietHoaDons.setChiTietSanPham(chiTietSanPhamOptional.get());
-
+        chiTietHoaDons.setGiaBan(req.getGiaBan());
         chiTietHoaDonRepo.save(chiTietHoaDons);
         return ResponseEntity.ok("Thêm chi tiết hóa đơn thành công.");
     }
@@ -71,16 +74,34 @@ public class ChiTietHoaDonController {
         return ResponseEntity.ok(chiTietHoaDons);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateChiTietHoaDon(@PathVariable String id, @Validated @RequestBody ChiTietHoaDonReq req) {
+    @PutMapping("/updateSoLuong")
+    public ResponseEntity<?> updateCTHDSoLuong(@RequestParam(name = "id") String id, @Validated @ModelAttribute ChiTietHoaDon req) {
+        ChiTietHoaDon chiTietHoaDonExisting = chiTietHoaDonRepo.getById(id);
+
+        if (chiTietHoaDonExisting == null) {
+            return ResponseEntity.badRequest().body("Chi tiết hóa đơn không tồn tại");
+        }
+
+        chiTietHoaDonExisting.setSoLuong(req.getSoLuong());
+        chiTietHoaDonExisting.setHoaDon(chiTietHoaDonExisting.getHoaDon());
+        chiTietHoaDonExisting.setChiTietSanPham(chiTietHoaDonExisting.getChiTietSanPham());
+        chiTietHoaDonExisting.setMaCTHD(chiTietHoaDonExisting.getMaCTHD());
+        chiTietHoaDonExisting.setTongTien(String.valueOf(Double.valueOf(chiTietHoaDonExisting.getGiaBan())*chiTietHoaDonExisting.getSoLuong()));
+        chiTietHoaDonExisting.setGhiChu(req.getGhiChu());
+        chiTietHoaDonExisting.setNgayTao(chiTietHoaDonExisting.getNgayTao());
+        chiTietHoaDonExisting.setNgaySua(LocalDateTime.now());
+        chiTietHoaDonRepo.save(chiTietHoaDonExisting); // Save the updated entity
+
+        return ResponseEntity.ok("Update Done!");
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateChiTietHoaDon(@RequestParam(name = "id") String id, @Validated @ModelAttribute ChiTietHoaDonReq req) {
         Optional<ChiTietHoaDon> chiTietHoaDonOptional = chiTietHoaDonRepo.findById(id);
         if (chiTietHoaDonOptional.isEmpty()) {
             return ResponseEntity.status(404).body("Không tìm thấy chi tiết hóa đơn với ID: " + id);
         }
-
         ChiTietHoaDon chiTietHoaDon = chiTietHoaDonOptional.get();
-
-
         double giaBan = Double.parseDouble(req.getGiaBan());
         int soLuong = req.getSoLuong();
         double tongTien = giaBan * soLuong;
