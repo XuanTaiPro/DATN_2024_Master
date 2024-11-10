@@ -60,7 +60,7 @@ public class HoaDonController {
     @GetMapping("/getHDTaiQuay")
     public ResponseEntity<?> page() {
         List<HoaDon> listHoaDon = hoaDonRepo.getHDTaiQuay(1);
-        return ResponseEntity.ok(listHoaDon);
+        return ResponseEntity.ok(listHoaDon.stream().map(HoaDon::toResponse));
     }
     @GetMapping("/getHDNullKH")
     public ResponseEntity<?> nullKH() {

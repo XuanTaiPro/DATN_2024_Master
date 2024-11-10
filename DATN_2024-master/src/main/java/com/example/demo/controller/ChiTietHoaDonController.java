@@ -49,7 +49,8 @@ public class ChiTietHoaDonController {
         if (chiTietSanPhamOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("Chi tiết sản phẩm không tồn tại.");
         }
-
+        chiTietSanPhamOptional.get().setSoLuong(chiTietSanPhamOptional.get().getSoLuong()- req.getSoLuong());
+        chiTietSanPhamRepo.save(chiTietSanPhamOptional.get());
         ChiTietHoaDon chiTietHoaDons = new ChiTietHoaDon();
         chiTietHoaDons.setTongTien(String.valueOf(req.getSoLuong()*Double.valueOf(req.getGiaBan())));
         chiTietHoaDons.setSoLuong(req.getSoLuong());

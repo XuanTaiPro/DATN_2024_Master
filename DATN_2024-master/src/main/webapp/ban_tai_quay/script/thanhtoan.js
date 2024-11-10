@@ -97,10 +97,10 @@ window.thanhtoanCtrl = function ($scope, $http) {
     };
 
     $scope.loadPage = function (page) {
-        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=1C5331D3&page=${page}`)
+        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=A117B65E&page=0`)
             .then(function (response) {
                 let data = response.data;
-                $scope.listCTHD = data.cthds;
+                $scope.listCTHD = response.data.cthds;
                 $scope.totalPages = data.totalPages;
                 $scope.totalElements = data.totalElements;
                 $scope.currentPage = page;
