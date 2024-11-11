@@ -61,6 +61,17 @@ public class ThongTinGiaoHangController {
         return ResponseEntity.ok().body(ttghRepo.findById(id).stream().map(ThongTinGiaoHang::toResponse));
     }
 
+    @GetMapping("detailByKhach/{id}")
+    public ResponseEntity<?> detailByKhach(@PathVariable String id) {
+        List<ThongTinGiaoHang> ttgh = ttghRepo.fHangs(id);
+        if (ttgh == null || ttgh.size() == 0) {
+            return ResponseEntity.badRequest().body("Không tìm được khách hàng");
+        }
+
+        return ResponseEntity.ok(ttgh.stream().map(ThongTinGiaoHang::toResponse));
+
+    }
+
     @PostMapping("add")
     public ResponseEntity<?> add(@Valid @RequestBody ThongTinGiaoHangRequest thongTinGiaoHangRequest,
             BindingResult bindingResult) {
