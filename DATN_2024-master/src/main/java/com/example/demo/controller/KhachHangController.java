@@ -130,28 +130,25 @@ public class KhachHangController {
 
     @PutMapping("updateOnline/{id}")
     public ResponseEntity<?> updateOnline(@PathVariable String id,
-            @Valid @RequestBody KhachHangRequestOnline khachHangRequestOnlinest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+            @Valid @RequestBody KhachHangRequestOnline kHRequestOnline, BindingResult result) {
+        if (result.hasErrors()) {
             StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            System.out.println(mess.toString());
+            result.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
-        Optional<KhachHang> optionalKhachHang = khRepo.findById(id);
-        if (optionalKhachHang.isPresent()) {
+        KhachHang kh = khRepo.findById(id).orElse(null);
+        if (kh != null) {
+            KhachHang khachHang = kHRequestOnline.toEntity();
 
-            KhachHang khachHang = optionalKhachHang.get();
-            KhachHang khachHangUpdateOnline = khachHangRequestOnlinest.toEntity();
+            khachHang.setId(id);
+            khachHang.setNgaySua(LocalDateTime.now());
+            khachHang.setNgayTao(kh.getNgayTao());
+            khachHang.setMa(kh.getMa());
+            khachHang.setPassw(kh.getPassw());
+            khachHang.setTrangThai(kh.getTrangThai());
 
-            khachHangUpdateOnline.setId(id);
-            khachHangUpdateOnline.setNgaySua(LocalDateTime.now());
-            khachHang.setNgayTao(optionalKhachHang.get().getNgayTao());
-            khachHang.setMa(optionalKhachHang.get().getMa());
-            khachHang.setPassw(optionalKhachHang.get().getPassw());
-            khachHang.setTrangThai(optionalKhachHang.get().getTrangThai());
-
-            KhachHang saveKH = khRepo.save(khachHangUpdateOnline);
-            return ResponseEntity.ok(saveKH);
+            khRepo.save(khachHang);
+            return ResponseEntity.ok("Update thành công");
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
         }

@@ -16,6 +16,15 @@ public interface ThongTinGiaoHangRepository extends JpaRepository<ThongTinGiaoHa
         List<ThongTinGiaoHang> searchByTenOrSdtNguoiNhan(@Param("tenNguoiNhan") String tenNguoiNhan,
                         @Param("sdtNguoiNhan") String sdtNguoiNhan);
 
-        @Query("Select t from ThongTinGiaoHang t where t.khachHang.id = :id")
+        @Query("Select t from ThongTinGiaoHang t where t.khachHang.id = :id and t.trangThai = 1")
         List<ThongTinGiaoHang> fHangs(@Param(value = "id") String id);
+
+        @Query("Select t from ThongTinGiaoHang t where id = :id")
+        ThongTinGiaoHang getTTGHById(@Param(value = "id") String id);
+
+        @Query("SELECT t FROM ThongTinGiaoHang t WHERE t.trangThai = 1")
+        List<ThongTinGiaoHang> getTTGH();
+
+        @Query("Select t.khachHang.id from ThongTinGiaoHang t where t.id = :id")
+        String getCustomerIdByTTGHId(@Param(value = "id") String id);
 }

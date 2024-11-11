@@ -2,9 +2,15 @@ package com.example.demo.dto.khachhang;
 
 import com.example.demo.entity.KhachHang;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class KhachHangRequestOnline {
     private String id;
 
