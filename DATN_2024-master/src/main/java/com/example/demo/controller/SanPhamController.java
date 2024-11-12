@@ -79,21 +79,22 @@ public class SanPhamController {
     }
 
     @GetMapping("/detail")
-    public ResponseEntity<?> detail(@RequestBody Map<String, String> body) {
-        String id = body.get("id");
-        if (id == null || id.trim().isEmpty()) {
+    public ResponseEntity<?> detail(@RequestParam(name = "idSP") String idSP) {
+        if (idSP == null || idSP.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("ID không được để trống.");
         }
-        Optional<SanPham> existingSanPham = sanPhamRepository.findById(id);
+        Optional<SanPham> existingSanPham = sanPhamRepository.findById(idSP);
         if (existingSanPham.isEmpty()) {
-            return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm có id: " + id);
+            return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm có id: " + idSP);
         }
         return ResponseEntity.ok(existingSanPham.get().toResponse());
     }
+
     @GetMapping("/getByTenSP")
-    public ResponseEntity<?>getByName(@RequestParam(name = "tenSP",required = false)String tenSP){
-        return ResponseEntity.ok(sanPhamRepository.getByTenSP(tenSP,1).stream().map(SanPham::toResponse));
+    public ResponseEntity<?> getByName(@RequestParam(name = "tenSP", required = false) String tenSP) {
+        return ResponseEntity.ok(sanPhamRepository.getByTenSP(tenSP, 1).stream().map(SanPham::toResponse));
     }
+
     @PostMapping("/detailByMa")
     public ResponseEntity<?> detailByMa(@RequestBody Map<String, String> body) {
         String ma = body.get("ma");
