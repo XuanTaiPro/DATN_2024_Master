@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class HoaDonReq {
     private String id;
 
-    @NotBlank(message = "Mã hóa đơn không được để trống")
+//    @NotBlank(message = "Mã hóa đơn không được để trống")
     private String maHD;
 
     private String maVoucher;
@@ -47,10 +47,10 @@ public class HoaDonReq {
 
     private String diaChiNguoiNhan;
 
-    @NotBlank(message = "Vui lòng nhập vào ID khách hàng")
+//    @NotBlank(message = "Vui lòng nhập vào ID khách hàng")
     private String idKH;
 
-    @NotBlank(message = "Vui lòng nhập vào ID nhân viên")
+//    @NotBlank(message = "Vui lòng nhập vào ID nhân viên")
     private String idNV;
 
 }

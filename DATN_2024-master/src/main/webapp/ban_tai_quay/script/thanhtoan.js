@@ -97,7 +97,7 @@ window.thanhtoanCtrl = function ($scope, $http) {
     };
 
     $scope.loadPage = function (page) {
-        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=A117B65E&page=0`)
+        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=1C5331D3&page=0`)
             .then(function (response) {
                 let data = response.data;
                 $scope.listCTHD = response.data.cthds;
@@ -248,19 +248,32 @@ window.thanhtoanCtrl = function ($scope, $http) {
             return;
         }
 
-        if ($scope.appliedVoucherId) {
-            $http.post(`http://localhost:8083/voucher/apply`, { id: $scope.appliedVoucherId })
-                .then(function (response) {
-                    console.log("Voucher đã được trừ số lượng thực sự.");
-                })
-                .catch(function (error) {
-                    console.log("Lỗi khi cập nhật số lượng voucher:", error);
-                    alert("Có lỗi xảy ra khi áp dụng voucher: " + (error.data || error.statusText));
-                });
-        }
-        alert("Thanh toán thành công!");
-        new bootstrap.Modal(document.getElementById('confirmModal')).hide();
-        location.reload();
+        let hoaDonData = {
+            idKH: $scope.selectedCustomerId || null,  // Đặt null nếu không chọn khách hàng
+            tenNguoiNhan: $scope.selectedCustomerName,
+            sdtNguoiNhan: $scope.selectedCustomerPhone,
+            tongTien: $scope.tongTien,
+            maVoucher: $scope.appliedVoucherId || null
+        };
+        $http.put(`http://localhost:8083/hoadon/update/1C5331D3`, hoaDonData)
+            .then(function (response) {
+                alert("Thanh toán thành công!");
+                if ($scope.appliedVoucherId) {
+                    $http.post(`http://localhost:8083/voucher/apply`, { id: $scope.appliedVoucherId })
+                        .then(function () {
+                            console.log("Voucher đã được trừ số lượng.");
+                        })
+                        .catch(function (error) {
+                            console.error("Lỗi khi áp dụng voucher:", error);
+                        });
+                }
+                new bootstrap.Modal(document.getElementById('confirmModal')).hide();
+                location.reload();
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi cập nhật hóa đơn:", error);
+                alert("Có lỗi xảy ra khi hoàn tất thanh toán.");
+            });
     };
     //check ngày kết thúc voucher
     $scope.getDaysLeft = function (ngayKetThuc) {

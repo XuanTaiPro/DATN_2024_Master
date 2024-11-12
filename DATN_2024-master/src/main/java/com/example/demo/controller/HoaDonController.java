@@ -195,6 +195,10 @@ public class HoaDonController {
                 } else {
                     return ResponseEntity.badRequest().body(null);
                 }
+            }else {
+                hoaDon.setKhachHang(null);
+                hoaDon.setTenNguoiNhan(req.getTenNguoiNhan());
+                hoaDon.setSdtNguoiNhan(req.getSdtNguoiNhan());
             }
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(req.getMaHD());
@@ -205,8 +209,6 @@ public class HoaDonController {
             hoaDon.setTrangThai(req.getTrangThai());
             hoaDon.setLoaiHD(req.getLoaiHD());
             hoaDon.setPhiVanChuyen(req.getPhiVanChuyen());
-            hoaDon.setTenNguoiNhan(req.getTenNguoiNhan());
-            hoaDon.setSdtNguoiNhan(req.getSdtNguoiNhan());
             hoaDon.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
             hoaDon.setNgaySua(LocalDateTime.now());
 
