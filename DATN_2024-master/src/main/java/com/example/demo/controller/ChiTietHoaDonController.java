@@ -156,13 +156,9 @@ public class ChiTietHoaDonController {
     }
 
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteChiTietHoaDon(@RequestBody Map<String, String> request) {
-        String id = request.get("id");
-        ChiTietHoaDon existingCTHD=chiTietHoaDonRepo.findById(id).get();
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteChiTietHoaDon(@PathVariable String id) {
         if (chiTietHoaDonRepo.existsById(id)) {
-            existingCTHD.getChiTietSanPham().setSoLuong(existingCTHD.getSoLuong()+existingCTHD.getChiTietSanPham().getSoLuong());
-            chiTietSanPhamRepo.save(existingCTHD.getChiTietSanPham());
             chiTietHoaDonRepo.deleteById(id);
             return ResponseEntity.ok("Xóa chi tiết hóa đơn thành công.");
         } else {

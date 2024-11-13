@@ -3,11 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.khachhang.KhachHangRequest;
 import com.example.demo.dto.khachhang.KhachHangRequestOnline;
 import com.example.demo.dto.khachhang.KhachHangResponse;
-import com.example.demo.dto.nhanvien.NhanVienResponse;
-import com.example.demo.dto.voucher.VoucherResponse;
 import com.example.demo.entity.KhachHang;
-import com.example.demo.entity.NhanVien;
-import com.example.demo.entity.ThongBao;
 import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.service.GenerateCodeAll;
 import jakarta.validation.Valid;
@@ -15,14 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @CrossOrigin("*")
 @RestController
@@ -63,7 +57,7 @@ public class KhachHangController {
         khachHangPage.forEach(c -> list.add(c.toResponse()));
 
         Map<String, Object> response = new HashMap<>();
-        response.put("khachHangs", list);  // Chú ý tên trường phải giống với front-end
+        response.put("khachHangs", list); // Chú ý tên trường phải giống với front-end
         response.put("currentPage", khachHangPage.getNumber());
         response.put("totalItems", khachHangPage.getTotalElements());
         response.put("totalPages", khachHangPage.getTotalPages());
@@ -74,7 +68,6 @@ public class KhachHangController {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping("pageNotPW")
     public ResponseEntity<?> pageNotPW(@RequestParam(defaultValue = "0") Integer page) {
         Pageable p = PageRequest.of(page, 10);
@@ -82,7 +75,6 @@ public class KhachHangController {
         khRepo.findAll(p).forEach(c -> list.add(c.toResponse()));
         return ResponseEntity.ok(list);
     }
-
 
     @GetMapping("detail/{id}")
     public ResponseEntity<?> detail(@PathVariable String id) {
@@ -114,7 +106,8 @@ public class KhachHangController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody KhachHangRequest khachHangRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody KhachHangRequest khachHangRequest,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -136,33 +129,30 @@ public class KhachHangController {
     }
 
     @PutMapping("updateOnline/{id}")
-    public ResponseEntity<?> updateOnline(@PathVariable String id, @Valid @RequestBody KhachHangRequestOnline khachHangRequestOnlinest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+    public ResponseEntity<?> updateOnline(@PathVariable String id,
+            @Valid @RequestBody KhachHangRequestOnline kHRequestOnline, BindingResult result) {
+        if (result.hasErrors()) {
             StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            System.out.println(mess.toString());
+            result.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
-        Optional<KhachHang> optionalKhachHang = khRepo.findById(id);
-        if (optionalKhachHang.isPresent()) {
+        KhachHang kh = khRepo.findById(id).orElse(null);
+        if (kh != null) {
+            KhachHang khachHang = kHRequestOnline.toEntity();
 
-            KhachHang khachHang = optionalKhachHang.get();
-            KhachHang khachHangUpdateOnline = khachHangRequestOnlinest.toEntity();
+            khachHang.setId(id);
+            khachHang.setNgaySua(LocalDateTime.now());
+            khachHang.setNgayTao(kh.getNgayTao());
+            khachHang.setMa(kh.getMa());
+            khachHang.setPassw(kh.getPassw());
+            khachHang.setTrangThai(kh.getTrangThai());
 
-            khachHangUpdateOnline.setId(id);
-            khachHangUpdateOnline.setNgaySua(LocalDateTime.now());
-            khachHang.setNgayTao(optionalKhachHang.get().getNgayTao());
-            khachHang.setMa(optionalKhachHang.get().getMa());
-            khachHang.setPassw(optionalKhachHang.get().getPassw());
-            khachHang.setTrangThai(optionalKhachHang.get().getTrangThai());
-
-            KhachHang saveKH = khRepo.save(khachHangUpdateOnline);
-            return ResponseEntity.ok(saveKH);
+            khRepo.save(khachHang);
+            return ResponseEntity.ok("Update thành công");
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
         }
     }
-
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> deleteKhachHang(@PathVariable String id) {

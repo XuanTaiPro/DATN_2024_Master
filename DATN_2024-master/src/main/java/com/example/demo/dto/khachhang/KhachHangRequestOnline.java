@@ -2,10 +2,15 @@ package com.example.demo.dto.khachhang;
 
 import com.example.demo.entity.KhachHang;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class KhachHangRequestOnline {
     private String id;
 
@@ -15,7 +20,6 @@ public class KhachHangRequestOnline {
     @NotBlank(message = "Email không được để trống")
     @Email(message = "Email không hợp lệ")
     private String email;
-
 
     @NotBlank(message = "Giới tính không được để trống")
     private String gioiTinh;

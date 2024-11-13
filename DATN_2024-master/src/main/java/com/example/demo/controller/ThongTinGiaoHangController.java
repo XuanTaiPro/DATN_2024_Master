@@ -61,6 +61,17 @@ public class ThongTinGiaoHangController {
         return ResponseEntity.ok().body(ttghRepo.findById(id).stream().map(ThongTinGiaoHang::toResponse));
     }
 
+    @GetMapping("detailByKhach/{id}")
+    public ResponseEntity<?> detailByKhach(@PathVariable String id) {
+        List<ThongTinGiaoHang> ttgh = ttghRepo.fHangs(id);
+        if (ttgh == null || ttgh.size() == 0) {
+            return ResponseEntity.badRequest().body("Không tìm được khách hàng");
+        }
+
+        return ResponseEntity.ok(ttgh.stream().map(ThongTinGiaoHang::toResponse));
+
+    }
+
     @PostMapping("add")
     public ResponseEntity<?> add(@Valid @RequestBody ThongTinGiaoHangRequest thongTinGiaoHangRequest,
             BindingResult bindingResult) {
@@ -126,14 +137,15 @@ public class ThongTinGiaoHangController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
-        Map<String, String> response = new HashMap<>(); // Khởi tạo Map để trả về JSON hợp lệ
-        if (ttghRepo.findById(id).isPresent()) {
-            ttghRepo.deleteById(id);
-            response.put("message", "Xóa thành công");
-            return ResponseEntity.ok(response); // Trả về phản hồi JSON
+        ThongTinGiaoHang ttgh = ttghRepo.getTTGHById(id);
+        if (ttgh != null) {
+            ThongTinGiaoHang newTTGH = ttghRepo.getTTGHById(id);
+            newTTGH.setTrangThai(0);
+            ttghRepo.save(newTTGH);
+            String idKH = ttghRepo.getCustomerIdByTTGHId(id);
+            return ResponseEntity.ok(ttghRepo.fHangs(idKH).stream().map(ThongTinGiaoHang::toResponse));
         } else {
-            response.put("message", "Không tìm thấy id cần xóa");
-            return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON khi lỗi
+            return ResponseEntity.badRequest().body("Không tìm thấy id cần xóa");
         }
     }
 
