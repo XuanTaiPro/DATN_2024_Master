@@ -54,9 +54,9 @@
                                     <span> | Giá bán: {{ ctsp.gia }}</span>
                                 <div class="form-group">
                                     <label>Số lượng:</label>
-                                    <input type="number"  class="form-control" ng-model="soLuong" min="1" max="{{ ctsp.soLuong }}">
+                                    <input type="number"  class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}">
                                     <label>Ghi chú:</label>
-                                    <input type="text"  class="form-control" ng-model="ghiChu" />
+                                    <input type="text"  class="form-control" ng-model="ctsp.ghiChuCTHD" />
                                     <button ng-click="addCTHD(ctsp)">Thêm</button>
                                 </div>
                             </div>
@@ -122,7 +122,7 @@
                     </td>
                 <td>{{cthd.tongTien}} VND</td>
                 <td>
-                    <button class="btn btn-danger">Xóa</button>
+                    <button ng-click="deleteCTHD(cthd.id)" class="btn btn-danger">Xóa</button>
                 </td>
             </tr>
             </tbody>

@@ -158,10 +158,10 @@ window.banhangCtrl = function ($scope, $http, $document) {
     };
     $scope.addCTHD=function(ctsp){
         const formData = new FormData();
-        console.log('Ghi chú hiện tại: ', $scope.ghiChu);  // Kiểm tra giá trị ghiChu
+        console.log('Ghi chú hiện tại: ', ctsp.ghiChuCTHD);  // Kiểm tra giá trị ghiChu
 
-        formData.append('soLuong',$scope.soLuong);
-        formData.append('ghiChu', $scope.ghiChu || 'note');  // Ghi chú có thể bị null hoặc undefined
+        formData.append('soLuong',ctsp.soLuongCTHD);
+        formData.append('ghiChu', ctsp.ghiChuCTHD || 'note');  // Ghi chú có thể bị null hoặc undefined
         const selectedTab = $scope.tabs[$scope.selectedTab];
         const selectedIdHD = selectedTab.idHD;
         formData.append('idHD',selectedIdHD);
@@ -184,6 +184,24 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 console.error('Lỗi:', error);
                 // alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
             });
+    }
+    $scope.deleteCTHD=function (idCTHD){
+        const selectedTab = $scope.tabs[$scope.selectedTab];
+        const selectedIdHD = selectedTab.idHD;
+        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
+            $http({
+                method: 'DELETE',
+                url: 'http://localhost:8083/chitiethoadon/delete', // Đường dẫn đến API
+                data: { id: idCTHD }, // Gửi id sản phẩm qua request body
+                headers: { "Content-Type": "application/json;charset=utf-8" }
+            }).then(function (response) {
+                console.log(response.data);
+                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+            }, function (error) {
+                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+                // alert(response.data); // Hiển thị thông báo thành công
+            });
+        }
     }
     // Gọi hàm lấy hóa đơn khi khởi tạo controller
     $scope.getHDTaiQuay();
