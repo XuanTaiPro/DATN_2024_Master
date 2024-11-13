@@ -85,7 +85,11 @@
 
 <div class="tabcontent">
     <div ng-repeat="tab in tabs" ng-show="selectedTab === $index">
-        <h3>{{ tab.title }}</h3> <button><a href="http://localhost:8083/chitiethoadon/getCTHD?idHD=A117B65E&page=0"></a></button>
+        <h3>{{ tab.title }}</h3>
+        <h3>{{ tab.idHD }}</h3>
+        <button>
+        <a ng-href="#!/thanhtoan/{{tab.idHD}}" class="btn" style="background-color: #3498db; color: white;">Thanh toán</a>
+         </button>
         <p>Thông tin chi tiết hóa đơn:</p>
         <table class="table table-hover">
             <thead>

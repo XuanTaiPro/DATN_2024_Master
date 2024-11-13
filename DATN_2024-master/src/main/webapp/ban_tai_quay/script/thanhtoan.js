@@ -1,4 +1,5 @@
-window.thanhtoanCtrl = function ($scope, $http) {
+window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
+    $scope.idHD = $routeParams.idHD;
 
     $scope.listCTHD = [];
     $scope.listKhachHang = [];
@@ -97,14 +98,15 @@ window.thanhtoanCtrl = function ($scope, $http) {
     };
 
     $scope.loadPage = function (page) {
-        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=1C5331D3&page=0`)
+        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=${$scope.idHD}&page=0`)
             .then(function (response) {
                 let data = response.data;
                 $scope.listCTHD = response.data.cthds;
                 $scope.totalPages = data.totalPages;
                 $scope.totalElements = data.totalElements;
                 $scope.currentPage = page;
-
+                console.log(response.data);
+                console.log($scope.idHD);
                 if ($scope.listCTHD.length === 0) {
                     $scope.emptyMessage = response.data.message || "Danh sách trống!";
                 } else {
