@@ -138,7 +138,6 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 const selectedTab = $scope.tabs[$scope.selectedTab];
                 const selectedIdHD = selectedTab.idHD;
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
-                // console.error("Error updating :", error);
             });
     };
     $scope.selectSanPham = function(sanPham) {
@@ -178,11 +177,14 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 console.log(response.data);
                 alert('Thêm chi tiết hóa đơn thành công!');
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+                $scope.selectSanPham($scope.selectedSanPham);
+
             })
             .catch(function(error) {
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
                 console.error('Lỗi:', error);
-                // alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
+                $scope.selectSanPham($scope.selectedSanPham);
+
             });
     }
     $scope.deleteCTHD=function (idCTHD){
