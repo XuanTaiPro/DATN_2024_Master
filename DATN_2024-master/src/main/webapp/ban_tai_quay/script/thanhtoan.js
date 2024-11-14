@@ -226,20 +226,6 @@ window.thanhtoanCtrl = function ($scope, $http) {
         // Lưu ID của voucher đã áp dụng để ngăn việc áp dụng lại
         $scope.appliedVoucherId = voucher.id;
 
-
-        // $http.post(`http://localhost:8080/voucher/apply`, {id: voucher.id})
-        //     .then(function (response) {
-        //         voucher.soLuong -= 1;
-        //         if (voucher.soLuong == 0) {
-        //             voucher.trangThai = 0;
-        //         }
-        //         console.log("Cập nhật số lượng voucher thành công.");
-        //         $scope.getVouchersByCustomer($scope.selectedCustomerId);
-        //     })
-        //     .catch(function (error) {
-        //         console.error("Lỗi khi cập nhật số lượng voucher:", error);
-        //         alert("Có lỗi xảy ra khi áp dụng voucher: " + (error.data || error.statusText));
-        //     });
     };
 
     $scope.completePayment = function () {
@@ -250,8 +236,8 @@ window.thanhtoanCtrl = function ($scope, $http) {
 
         let hoaDonData = {
             idKH: $scope.selectedCustomerId || null,  // Đặt null nếu không chọn khách hàng
-            tenNguoiNhan: $scope.selectedCustomerName,
-            sdtNguoiNhan: $scope.selectedCustomerPhone,
+            tenNguoiNhan: $scope.selectedCustomerId ? null : $scope.selectedCustomerName,
+            sdtNguoiNhan: $scope.selectedCustomerId ? null : $scope.selectedCustomerPhone,
             tongTien: $scope.tongTien,
             maVoucher: $scope.appliedVoucherId || null
         };

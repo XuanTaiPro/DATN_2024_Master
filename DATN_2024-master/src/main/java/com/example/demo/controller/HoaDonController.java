@@ -192,6 +192,8 @@ public class HoaDonController {
                 Optional<KhachHang> khachHangOptional = khachHangRepo.findById(req.getIdKH());
                 if (khachHangOptional.isPresent()) {
                     hoaDon.setKhachHang(khachHangOptional.get());
+                    hoaDon.setTenNguoiNhan(null);
+                    hoaDon.setSdtNguoiNhan(null);
                 } else {
                     return ResponseEntity.badRequest().body(null);
                 }
