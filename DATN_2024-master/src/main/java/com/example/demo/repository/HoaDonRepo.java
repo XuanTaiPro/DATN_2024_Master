@@ -28,5 +28,4 @@ public interface HoaDonRepo extends JpaRepository<HoaDon,String> {
     List<HoaDon> getHDTaiQuay(@Param("trangThai") Integer trangThai);
     @Query("SELECT hd FROM HoaDon hd WHERE hd.khachHang IS NULL")
     List<HoaDon> getHDNullKH();
-
 }

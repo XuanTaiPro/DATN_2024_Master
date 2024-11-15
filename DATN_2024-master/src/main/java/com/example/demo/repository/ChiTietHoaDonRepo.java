@@ -11,5 +11,6 @@ public interface ChiTietHoaDonRepo extends JpaRepository<ChiTietHoaDon, String> 
 
     @Query("SELECT cthd FROM ChiTietHoaDon cthd WHERE  cthd.hoaDon.id = :idHD")
     Page<ChiTietHoaDon> findByHoaDon_Id(@Param("idHD") String idHD, Pageable pageable);
-
+    @Query("SELECT cthd FROM ChiTietHoaDon cthd WHERE cthd.hoaDon.id=:idHD AND cthd.chiTietSanPham.id=:idCTSP")
+    ChiTietHoaDon trungCTHD(@Param("idHD") String idHD,@Param("idCTSP") String idCTSP);
 }

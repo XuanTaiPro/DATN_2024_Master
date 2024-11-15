@@ -30,7 +30,7 @@ app.config(function ($routeProvider) {
             templateUrl: 'view/khachhang.html',
             controller: khachhangCtrl
         })
-        .when('/thanhtoan', {
+        .when('/thanhtoan/:idHD', {  // Add dynamic route for payment
             templateUrl: 'view/thanhtoan.html',
             controller: thanhtoanCtrl
         })
