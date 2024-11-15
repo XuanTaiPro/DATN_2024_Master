@@ -11,10 +11,10 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ChiTietVoucherRepository extends JpaRepository<ChiTietVoucher ,String> {
+public interface ChiTietVoucherRepository extends JpaRepository<ChiTietVoucher, String> {
     Page<ChiTietVoucher> findByKhachHang_Id(String idKH, Pageable pageable);
 
-//    List<ChiTietVoucher> findByVoucher_Id(String voucherId);
+    // List<ChiTietVoucher> findByVoucher_Id(String voucherId);
 
     @Modifying
     @Transactional
@@ -26,5 +26,7 @@ public interface ChiTietVoucherRepository extends JpaRepository<ChiTietVoucher ,
 
     @Query("SELECT c.khachHang.id FROM ChiTietVoucher c WHERE c.voucher.id = :voucherId")
     List<String> findCustomerIdsByVoucherId(@Param("voucherId") String voucherId);
-}
 
+    @Query("select c from ChiTietVoucher c where c.khachHang.id = :idkh")
+    List<ChiTietVoucher> getByIdKhach(String idkh);
+}
