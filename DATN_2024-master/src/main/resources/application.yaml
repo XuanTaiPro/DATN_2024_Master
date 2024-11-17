@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: demo
+
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=DATN_2024;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: 1234
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: none  # Ưu tiên cấu hình từ file properties (nếu cần chỉnh lại thì đổi)
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  web:
+    cors:
+      allowed-origin-patterns: http://localhost:3000
+      allow-credentials: true
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+server:
+  port: ${API_PORT:8083}
+
+payment:
+  vnPay:
+    url: ${PAY_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+    tmnCode: ${TMN_CODE:EJAZ49CF}
+    secretKey: ${SECRET_KEY:A90NPKSRZ7WZ7B5IJCVM77622HN3KCCT}
+    returnUrl: ${RETURN_URL:http://127.0.0.1:5500/ban_online/layout.html#!/pay}
+    version: ${VERSION:2.1.0} 
+    command: ${COMMAND:pay}
+    orderType: ${ORDER_TYPE:other}
