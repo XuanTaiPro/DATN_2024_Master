@@ -45,8 +45,8 @@ server:
 payment:
   vnPay:
     url: ${PAY_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
-    tmnCode: ${TMN_CODE:EJAZ49CF}
-    secretKey: ${SECRET_KEY:A90NPKSRZ7WZ7B5IJCVM77622HN3KCCT}
+    tmnCode: ${TMN_CODE:0H4202B8}
+    secretKey: ${SECRET_KEY:HBFT1W5ADAGQX2HJVH7BVCJ6HI5LZQLR}
     returnUrl: ${RETURN_URL:http://127.0.0.1:5500/ban_online/layout.html#!/pay}
     version: ${VERSION:2.1.0} 
     command: ${COMMAND:pay}

@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-
 import com.example.demo.dto.giohangchitiet.GioHangChiTietRequest;
 import com.example.demo.dto.giohangchitiet.GioHangChiTietResponse;
 import com.example.demo.entity.GioHangChiTiet;
@@ -21,7 +20,7 @@ import java.util.UUID;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("giohangchitiet")
-public class   GioHangChiTietController {
+public class GioHangChiTietController {
     @Autowired
     private GioHangChiTietRepository ghRepo;
 
@@ -58,19 +57,46 @@ public class   GioHangChiTietController {
         }
     }
 
+    @GetMapping("detailByIdKhach")
+    public ResponseEntity<?> detailByIdKhach(@RequestParam(name = "idKhach") String id) {
+        if (ghRepo.getAllByKhach(id) != null) {
+            return ResponseEntity.ok().body(ghRepo.getAllByKhach(id).stream().map(gh -> gh.toOnline()));
+        } else {
+            return ResponseEntity.badRequest().body("Không tìm thấy danh sach");
+        }
+    }
+
+    @GetMapping("updateQuantity")
+    public ResponseEntity<?> updateQuantity(@RequestParam(name = "id") String id,
+            @RequestParam(name = "quantity") Integer quantity) {
+
+        if (ghRepo.findById(id).isPresent()) {
+            GioHangChiTiet gioHangChiTiet = ghRepo.findById(id).get();
+            gioHangChiTiet.setSoLuong(quantity);
+            ghRepo.save(gioHangChiTiet);
+
+            return ResponseEntity.ok().build();
+        } else {
+
+            return ResponseEntity.badRequest().body("Không tìm thấy id để cập nhật");
+        }
+    }
+
     @PostMapping("add")
-    public ResponseEntity<?> add(@Valid @RequestBody GioHangChiTietRequest gioHangChiTietRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> add(@Valid @RequestBody GioHangChiTietRequest gioHangChiTietRequest,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
-        if (gioHangChiTietRequest.getMa() == null || gioHangChiTietRequest.getMa().isEmpty()) {//nếu mã chưa đc điền thì tự động thêm mã
+        if (gioHangChiTietRequest.getMa() == null || gioHangChiTietRequest.getMa().isEmpty()) {// nếu mã chưa đc điền
+                                                                                               // thì tự động thêm mã
             gioHangChiTietRequest.setMa(generateCodeAll.generateMaGHCT());
         }
-//        if (ghRepo.existsByMa(gioHangChiTietRequest.getMa())) {
-//            return ResponseEntity.badRequest().body("mã đã tồn tại");
-//        }
+        // if (ghRepo.existsByMa(gioHangChiTietRequest.getMa())) {
+        // return ResponseEntity.badRequest().body("mã đã tồn tại");
+        // }
         if (gioHangChiTietRequest.getId() == null || gioHangChiTietRequest.getId().isEmpty()) {
             gioHangChiTietRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
@@ -82,7 +108,8 @@ public class   GioHangChiTietController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody GioHangChiTietRequest gioHangChiTietRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable String id,
+            @Valid @RequestBody GioHangChiTietRequest gioHangChiTietRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
