@@ -15,4 +15,7 @@ public interface GioHangChiTietRepository extends JpaRepository<GioHangChiTiet, 
 
     @Query("Select g from GioHangChiTiet g where g.khachHang.id = :idkh")
     List<GioHangChiTiet> getAllByKhach(@Param(value = "idkh") String id);
+
+    @Query("select g from GioHangChiTiet g where g.khachHang.id = :idKh and g.chiTietSanPham.id = :idCTSP")
+    GioHangChiTiet getByIdKhachAndCTSP(@Param("idKh") String idKh, @Param("idCTSP") String idCTSP);
 }

@@ -27,6 +27,6 @@ public interface ChiTietVoucherRepository extends JpaRepository<ChiTietVoucher, 
     @Query("SELECT c.khachHang.id FROM ChiTietVoucher c WHERE c.voucher.id = :voucherId")
     List<String> findCustomerIdsByVoucherId(@Param("voucherId") String voucherId);
 
-    @Query("select c from ChiTietVoucher c where c.khachHang.id = :idkh")
-    List<ChiTietVoucher> getByIdKhach(String idkh);
+    @Query("select c.id from ChiTietVoucher c where c.khachHang.id = :idkh and c.trangThai = 1")
+    List<String> getByIdKhach(String idkh);
 }

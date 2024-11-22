@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.ChiTietVoucher;
+import com.example.demo.entity.Voucher;
 import com.example.demo.repository.ChiTietVoucherRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +27,15 @@ public class ChiTietVoucherController {
             return ResponseEntity.badRequest().body("Không tìm thấy id khách hàng");
         }
 
-        List<ChiTietVoucher> list = ctvcRepo.getByIdKhach(id);
-        return ResponseEntity.ok().body(list);
+        List<String> list = ctvcRepo.getByIdKhach(id);
+
+        List<Voucher> voucherList = new ArrayList<>();
+
+        for (String idVC : list) {
+            voucherList.add(ctvcRepo.findById(idVC).get().getVoucher());
+        }
+
+        return ResponseEntity.ok().body(voucherList);
     }
 
 }

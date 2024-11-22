@@ -13,9 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -94,17 +94,47 @@ public class GioHangChiTietController {
                                                                                                // thì tự động thêm mã
             gioHangChiTietRequest.setMa(generateCodeAll.generateMaGHCT());
         }
-        // if (ghRepo.existsByMa(gioHangChiTietRequest.getMa())) {
-        // return ResponseEntity.badRequest().body("mã đã tồn tại");
-        // }
-        if (gioHangChiTietRequest.getId() == null || gioHangChiTietRequest.getId().isEmpty()) {
-            gioHangChiTietRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        }
+
         GioHangChiTiet gioHangChiTiet = gioHangChiTietRequest.toEntity();
         gioHangChiTiet.setKhachHang(khRepo.getById(gioHangChiTietRequest.getIdKH()));
         gioHangChiTiet.setChiTietSanPham(ctspRepo.getById(gioHangChiTietRequest.getIdCTSP()));
         ghRepo.save(gioHangChiTiet);
         return ResponseEntity.ok("thêm thành công");
+    }
+
+    @PostMapping("addOnline")
+    public ResponseEntity<?> addOnline(@RequestBody GioHangChiTietRequest gh) {
+        String idKh = gh.getIdKH();
+        String idCTSP = gh.getIdCTSP();
+
+        if (khRepo.findById(idKh) == null) {
+            return ResponseEntity.badRequest().body("Không tìm được khách");
+        }
+
+        if (ctspRepo.findById(idCTSP) == null) {
+            return ResponseEntity.badRequest().body("Không tìm được sản phẩm");
+        }
+
+        GioHangChiTiet getGH = ghRepo.getByIdKhachAndCTSP(idKh, idCTSP);
+        if (getGH == null) {
+            GioHangChiTiet ghChiTiet = gh.toEntity();
+
+            ghChiTiet.setMa(generateCodeAll.generateMaGHCT());
+            ghChiTiet.setTrangThai(1);
+            ghChiTiet.setKhachHang(khRepo.findById(idKh).get());
+            ghChiTiet.setChiTietSanPham(ctspRepo.findById(idCTSP).get());
+            ghChiTiet.setNgayTao(String.valueOf(LocalDate.now()));
+
+            ghRepo.save(ghChiTiet);
+
+            return ResponseEntity.ok().body("Đã thêm");
+        } else {
+            getGH.setSoLuong(gh.getSoLuong() + getGH.getSoLuong());
+
+            ghRepo.save(getGH);
+
+            return ResponseEntity.ok().body("Đã cập nhật");
+        }
     }
 
     @PutMapping("update/{id}")

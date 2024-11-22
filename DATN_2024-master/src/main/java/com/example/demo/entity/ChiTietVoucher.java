@@ -22,4 +22,7 @@ public class ChiTietVoucher {
     @ManyToOne
     @JoinColumn(name = "IDVC")
     private Voucher voucher;
+
+    @Column(name = "TRANGTHAI")
+    private Integer trangThai;
 }
