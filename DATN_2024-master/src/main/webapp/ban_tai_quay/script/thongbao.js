@@ -114,7 +114,7 @@ window.thongbaoCtrl = function ($scope, $http) {
                 }
             })
             .catch(function (error) {
-                console.error("Lỗi khi gọi API:", error);
+                // console.error("Lỗi khi gọi API:", error);
             });
 
         $scope.selectedThongBao.trangThai = thongBao.trangThai.toString();
@@ -180,6 +180,27 @@ window.thongbaoCtrl = function ($scope, $http) {
     };
 
 
+    $scope.sendEmail = function (thongBao) {
+        const emailRequest = {
+            emailNguoiNhan: thongBao.emailKH,
+            tieuDe: "Thông báo từ Shop bán thực phẩm chức năng Loopy",
+            noiDung: thongBao.noiDung
+        };
+
+        $http.post('http://localhost:8083/mail/sentKH', emailRequest)
+            .then(function (response) {
+                // Hiển thị thông báo thành công từ phản hồi JSON
+                alert(response.data.message);
+            })
+            .catch(function (error) {
+                // Hiển thị thông báo lỗi từ phản hồi JSON
+                const errorMessage = error.data && error.data.message ? error.data.message : "Không thể gửi email. Vui lòng thử lại!";
+                alert(errorMessage);
+                console.error("Lỗi khi gửi email:", error);
+            });
+    };
+
+
     function resetForm() {
         $scope.noiDung = "";
         $scope.ngayDoc = "";
@@ -187,6 +208,8 @@ window.thongbaoCtrl = function ($scope, $http) {
         $scope.idKH = "";
         $scope.trangThai = "";
     }
+
+
 
 };
 
