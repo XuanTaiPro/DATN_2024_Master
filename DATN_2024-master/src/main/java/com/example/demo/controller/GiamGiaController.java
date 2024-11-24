@@ -35,6 +35,33 @@ public class GiamGiaController {
         List<GiamGia> giamGiaList = giamGiaRepository.findAll(sort);
         return ResponseEntity.ok(giamGiaList);
     }
+    @GetMapping("/inspection")
+    public ResponseEntity<?> getGG() {
+        List<GiamGia> giamGiaList = giamGiaRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+        List<String> updatedGiamGiaNames = new ArrayList<>(); // Danh sách tên giảm giá đã cập nhật
+
+        for (GiamGia gg : giamGiaList) {
+            if (gg.getNgayKetThuc().isBefore(now)) { // Kiểm tra ngày kết thúc
+                gg.setTrangThai(2);
+
+                List<SanPham> sanPhamList = gg.getListSanPham();
+                for (SanPham sp : sanPhamList) {
+                    sp.setGiamGia(null); // Đặt idGG về null
+                }
+
+                giamGiaRepository.save(gg); // Lưu trạng thái giảm giá
+                sanPhamRepository.saveAll(sanPhamList); // Lưu lại các sản phẩm
+
+                updatedGiamGiaNames.add(gg.getTen()); // Thêm tên giảm giá đã cập nhật vào danh sách
+            }
+        }
+
+        // Trả về danh sách tên giảm giá đã cập nhật
+        return ResponseEntity.ok(updatedGiamGiaNames.isEmpty()
+                ? "Không có giảm giá nào cần cập nhật!"
+                : updatedGiamGiaNames);
+    }
 
     @GetMapping("/phanTrang")
     public ResponseEntity<?> phanTrang(@RequestParam(name = "page", defaultValue = "0") Integer page) {

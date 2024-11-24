@@ -126,3 +126,62 @@
     background-color: #007bff; /* Màu nền cho trang đang hoạt động */
     color: white; /* Màu chữ cho trang đang hoạt động */
 }
+.search-results {
+    max-height: 300px;
+    width: 1000px;/* Giới hạn chiều cao */
+    overflow-y: auto;  /* Thêm thanh cuộn khi kết quả dài */
+    position: absolute;
+    /*background-color: white;*/
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng mờ */
+    border-radius: 5px; /* Bo góc */
+    z-index: 1000; /* Đảm bảo danh sách hiện lên trên các phần tử khác */
+    padding-left: 40px;
+}
+
+.list-group-item {
+    display: flex;
+    justify-content: space-between; /* Căn chỉnh nội dung */
+    align-items: center;  /* Giữa dọc */
+    padding: 10px; /* Padding */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+    cursor: pointer; /* Con trỏ chuột dạng tay */
+}
+
+.list-group-item:hover {
+    background-color: #f1f1f1; /* Màu nền khi di chuột */
+}
+
+.list-group-item img {
+    width: 50px; /* Chiều rộng hình ảnh */
+    height: 50px; /* Chiều cao hình ảnh */
+    margin-right: 10px; /* Khoảng cách bên phải */
+}
+
+strong {
+    font-size: 1.1em; /* Kích thước chữ đậm */
+}
+
+.pagination {
+    margin-top: 20px;
+}
+
+.img-thumbnail {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px;
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.close-btn {
+    background: transparent; /* Nền trong suốt */
+    border: none; /* Xóa đường viền */
+    cursor: pointer; /* Con trỏ chuột dạng tay */
+    color: #d9534f; /* Màu đỏ */
+    margin-left: 5px; /* Khoảng cách */
+}
+
+.close-btn:hover {
+    color: #c9302c; /* Màu đỏ đậm khi hover */
+}
+

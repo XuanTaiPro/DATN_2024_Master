@@ -39,13 +39,13 @@ public class GiamGia {
     private LocalDateTime ngaySua;
 
     @NotNull(message = "Ngày bắt đầu không được để trống")
-    @FutureOrPresent(message = "Ngày bắt đầu phải là ngày hiện tại hoặc tương lai")
+//    @FutureOrPresent(message = "Ngày bắt đầu phải là ngày hiện tại hoặc tương lai")
     @Column(name = "ngayBatDau")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")  // Định dạng cho ngày bắt đầu
     private LocalDateTime ngayBatDau;
 
     @NotNull(message = "Ngày kết thúc không được để trống")
-    @Future(message = "Ngày kết thúc phải là ngày trong tương lai")
+//    @Future(message = "Ngày kết thúc phải là ngày trong tương lai")
     @Column(name = "ngayKetThuc")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")  // Định dạng cho ngày kết thúc
     private LocalDateTime ngayKetThuc;

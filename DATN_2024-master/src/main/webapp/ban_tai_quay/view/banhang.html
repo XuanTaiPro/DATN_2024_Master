@@ -6,8 +6,56 @@
                ng-change="filterSanPham()"
                ng-model-options="{ debounce: 100 }">
         <div class="input-group-append">
-            <button id="addInvoiceBtn" class="btn btn-primary" style="margin-left: 10px;" ng-click="addInvoiceTab()">+ Tạo Hóa Đơn</button>
+            <button id="addInvoiceBtn" class="btn btn-primary" style="margin-left: 10px;" ng-click="confirmAddInvoice()">
+                + Tạo Hóa Đơn
+            </button>
         </div>
+        <div class="modal fade" id="confirmAddInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="confirmAddInvoiceModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="confirmAddInvoiceModalLabel">Xác nhận</h4>
+                        <button type="button" class="btn close-btn"  aria-label="Close" ng-click="closeConfirmModalAddInvoice()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                       <h5> Bạn có chắc chắn muốn tạo hóa đơn mới không?</h5>
+                    </div>
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-secondary" ng-click="closeConfirmModalAddInvoice()">Hủy</button>
+                        <button type="button" class="btn btn-success" ng-click="addInvoiceTab()">Xác nhận</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="addInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="addInvoiceModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content text-center">
+                    <div class="modal-header justify-content-center border-0">
+                        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" width="120" height="120">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <!-- Vòng tròn bên ngoài -->
+                                <circle cx="60" cy="60" r="50" stroke="#28a745" stroke-width="5" fill="none"></circle>
+                                <!-- Dấu tích -->
+                                <path d="M72 40L55 65L47 55" stroke="#28a745" stroke-width="5" stroke-linecap="round"
+                                      stroke-linejoin="round"></path>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Thêm thành công -->
+                        <h5 class="mt-3 text-success">Thêm thành công!</h5>
+                        <button type="button" class="btn btn-success mt-3" ng-click="closeModalAddInvoice()">Oke</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 </div>
 
@@ -25,7 +73,6 @@
                     <span> | {{ sanPham.congDung }}</span>
                 </div>
             </div>
-<!--            <button class="btn btn-info btn-sm">Chọn</button>-->
         </li>
     </ul>
 </div>
@@ -57,7 +104,26 @@
                                     <input type="number"  class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}">
                                     <label>Ghi chú:</label>
                                     <input type="text"  class="form-control" ng-model="ctsp.ghiChuCTHD" />
-                                    <button ng-click="addCTHD(ctsp)">Thêm</button>
+                                    <button ng-click="confirmAddInvoiceDetail()">Thêm</button>
+                                    <div class="modal fade" id="confirmAddInvoiceDetailModal" tabindex="-1" role="dialog" aria-labelledby="confirmAddInvoiceDetailModalLabel" >
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title" id="confirmAddInvoiceDetailModalLabel">Xác nhận</h4>
+                                                    <button type="button" class="btn close-btn"  aria-label="Close" ng-click="closeConfirmModalAddInvoiceDetail()">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5> Bạn có chắc chắn muốn thêm sản phẩm này không?</h5>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" ng-click="closeConfirmModalAddInvoiceDetail()">Hủy</button>
+                                                    <button type="button" class="btn btn-success" ng-click="addCTHD(ctsp)">Xác nhận</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -65,17 +131,17 @@
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ng-click="closeProductModal()">Đóng</button>
             </div>
         </div>
     </div>
 </div>
-<div class="tabs">
+<div class="tabs" >
     <ul class="nav nav-tabs">
-        <li class="nav-item" ng-repeat="tab in tabs">
-            <a class="nav-link" ng-class="{active: selectedTab === $index}" ng-click="selectTab($index)">
+        <li class="nav-item" ng-repeat="tab in tabs" style="width: 255px">
+            <a class="nav-link" ng-class="{active: selectedTab === $index}" ng-click="selectTab($index)" >
                 {{ tab.title }}
-                <button type="button" class="btn close-btn" aria-label="Close" ng-click="closeTab($index)">
+                <button type="button" class="btn close-btn"  aria-label="Close" ng-click="showActionModal($index)">
                     <i class="fas fa-times"></i>
                 </button>
             </a>
@@ -83,14 +149,33 @@
     </ul>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="actionModal" tabindex="-1" role="dialog" aria-labelledby="actionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="actionModalLabel">Khi bạn đóng hóa đơn sẽ bị xóa,bạn có chắc chắn?</h5>
+                <!-- Dấu X đóng modal -->
+                <button type="button" class="close" ng-click="closeModal()" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <button type="button" class="btn btn-danger" ng-click="deleteInvoice(selectedInvoiceId, selectedTabIndex)">Đóng và xóa hóa đơn</button>
+                <!-- Nút Hủy đóng modal -->
+                <button type="button" class="btn btn-secondary" ng-click="closeModal()">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="tabcontent">
     <div ng-repeat="tab in tabs" ng-show="selectedTab === $index">
         <h3>{{ tab.title }}</h3>
-        <h3>{{ tab.idHD }}</h3>
-        <button>
-        <a ng-href="#!/thanhtoan/{{tab.idHD}}" class="btn" style="background-color: #3498db; color: white;">Thanh toán</a>
-         </button>
-        <p>Thông tin chi tiết hóa đơn:</p>
+        <button class="btn btn-primary btn-lg" style="border-radius: 5px; padding: 10px 20px;">
+            <a ng-href="#!/thanhtoan/{{tab.idHD}}" style="text-decoration: none; color: white;">Thanh toán</a>
+        </button>
+        <h4 class="text-center">Thông tin chi tiết hóa đơn:</h4>
         <table class="table table-hover">
             <thead>
             <tr>
@@ -122,8 +207,9 @@
                     <input type="number" class="form-control" ng-model="cthd.soLuong"
                             ng-change="updateTotal(cthd)" style="width: 90px"/>
                 </td>
-                <td><input ng-model="cthd.ghiChu" ng-change="updateTotal(cthd)" style="width: 150px">
-                    </td>
+                <td>
+                    <input ng-model="cthd.ghiChu" ng-change="updateTotal(cthd)" style="width: 150px">
+                </td>
                 <td>{{cthd.tongTien}} VND</td>
                 <td>
                     <button ng-click="deleteCTHD(cthd.id)" class="btn btn-danger">Xóa</button>
@@ -148,63 +234,3 @@
     </div>
 </div>
 
-<style>
-    .search-results {
-        max-height: 300px;
-        width: 1000px;/* Giới hạn chiều cao */
-        overflow-y: auto;  /* Thêm thanh cuộn khi kết quả dài */
-        position: absolute;
-        /*background-color: white;*/
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng mờ */
-        border-radius: 5px; /* Bo góc */
-        z-index: 1000; /* Đảm bảo danh sách hiện lên trên các phần tử khác */
-        padding-left: 40px;
-    }
-
-    .list-group-item {
-        display: flex;
-        justify-content: space-between; /* Căn chỉnh nội dung */
-        align-items: center;  /* Giữa dọc */
-        padding: 10px; /* Padding */
-        transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
-        cursor: pointer; /* Con trỏ chuột dạng tay */
-    }
-
-    .list-group-item:hover {
-        background-color: #f1f1f1; /* Màu nền khi di chuột */
-    }
-
-    .list-group-item img {
-        width: 50px; /* Chiều rộng hình ảnh */
-        height: 50px; /* Chiều cao hình ảnh */
-        margin-right: 10px; /* Khoảng cách bên phải */
-    }
-
-    strong {
-        font-size: 1.1em; /* Kích thước chữ đậm */
-    }
-
-    .pagination {
-        margin-top: 20px;
-    }
-
-    .img-thumbnail {
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 4px;
-        max-width: 100px;
-        max-height: 100px;
-    }
-
-    .close-btn {
-        background: transparent; /* Nền trong suốt */
-        border: none; /* Xóa đường viền */
-        cursor: pointer; /* Con trỏ chuột dạng tay */
-        color: #d9534f; /* Màu đỏ */
-        margin-left: 5px; /* Khoảng cách */
-    }
-
-    .close-btn:hover {
-        color: #c9302c; /* Màu đỏ đậm khi hover */
-    }
-</style>

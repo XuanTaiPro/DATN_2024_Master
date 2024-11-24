@@ -17,13 +17,21 @@ public interface HoaDonRepo extends JpaRepository<HoaDon,String> {
     @Query("SELECT hd FROM HoaDon hd WHERE (:trangThai IS NULL OR hd.trangThai = :trangThai) " +
             "AND (:loaiHD IS NULL OR hd.loaiHD = :loaiHD) " +
             "AND (:nhanVien IS NULL OR hd.nhanVien.ten = :nhanVien) " +
-            "AND (hd.khachHang IS NULL OR hd.khachHang IS NOT NULL )")
+            "AND (:tenKH IS NULL OR hd.khachHang.ten LIKE %:tenKH%) " +
+            "AND (hd.khachHang IS NULL OR hd.khachHang IS NOT NULL)")
     Page<HoaDon> findHDByFilters(@Param("trangThai") Integer trangThai,
-//                                 @Param("tenKH") String tenKH,
+                                 @Param("loaiHD") Integer loaiHD,
+                                 @Param("nhanVien") String nhanVien,
+                                 @Param("tenKH") String tenKH,
+                                 Pageable pageable);
+    @Query("SELECT hd FROM HoaDon hd WHERE (:trangThai IS NULL OR hd.trangThai = :trangThai) " +
+            "AND (:loaiHD IS NULL OR hd.loaiHD = :loaiHD) " +
+            "AND (:nhanVien IS NULL OR hd.nhanVien.ten = :nhanVien) " +
+            "AND (hd.khachHang IS NULL OR hd.khachHang IS NOT NULL)")
+    Page<HoaDon> findHDByFiltersNullTenKH(@Param("trangThai") Integer trangThai,
                                  @Param("loaiHD") Integer loaiHD,
                                  @Param("nhanVien") String nhanVien,
                                  Pageable pageable);
-
     @Query("SELECT hd FROM HoaDon hd WHERE hd.trangThai = :trangThai ORDER BY hd.ngayTao DESC")
     List<HoaDon> getHDTaiQuay(@Param("trangThai") Integer trangThai);
     @Query("SELECT hd FROM HoaDon hd WHERE hd.khachHang IS NULL")
