@@ -72,6 +72,27 @@ public class HoaDonController {
         return ResponseEntity.ok(listHoaDon);
     }
 
+    @GetMapping("getHDbyClientID")
+    public ResponseEntity<?> getHDbyClientID(@RequestParam String idKH) {
+        if (hoaDonRepo.getHDByCustomerId(idKH) == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy hóa đơn nào cho khách hàng này");
+        } else {
+            return ResponseEntity.ok(hoaDonRepo.getHDByCustomerId(idKH).stream().map(HoaDon::toResponse));
+        }
+    }
+
+    @GetMapping("getHDbyClientSDT")
+    public ResponseEntity<?> getHDbyClientSDT(@RequestParam String sdt) {
+        if (sdt.trim().isEmpty())
+            return ResponseEntity.badRequest().body("Số điện thoại đang trống");
+
+        if (hoaDonRepo.getHDBySDT(sdt) == null || hoaDonRepo.getHDBySDT(sdt).size() == 0) {
+            return ResponseEntity.badRequest().body("Không tìm thấy hóa đơn nào cho số điện " + sdt);
+        } else {
+            return ResponseEntity.ok(hoaDonRepo.getHDBySDT(sdt).stream().map(HoaDon::toResponse));
+        }
+    }
+
     @PostMapping("/add")
     public ResponseEntity<?> createHoaDon(@ModelAttribute HoaDonReq req) {
         if (req.getIdNV() == null || req.getIdNV().trim().isEmpty()) {
@@ -152,7 +173,7 @@ public class HoaDonController {
         if (hoaDon != null) {
             return ResponseEntity.ok(hoaDon.get().toResponse());
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.badRequest().body("Không tìm được hóa đơn");
         }
     }
     // Read by ID
@@ -204,7 +225,7 @@ public class HoaDonController {
                 } else {
                     return ResponseEntity.badRequest().body(null);
                 }
-            }else {
+            } else {
                 hoaDon.setKhachHang(null);
                 hoaDon.setTenNguoiNhan(req.getTenNguoiNhan());
                 hoaDon.setSdtNguoiNhan(req.getSdtNguoiNhan());

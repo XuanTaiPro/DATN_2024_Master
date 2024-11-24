@@ -15,8 +15,6 @@ import java.util.UUID;
 public class ThongTinGiaoHangRequest {
     private String id;
 
-    @NotBlank(message = "SDT người nhận Không được để trống")
-    @Pattern(regexp = "^0\\d{9}$", message = "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0")
     private String sdtNguoiNhan;
 
     @NotBlank(message = "Tên người nhận Không được để trống")
@@ -31,7 +29,6 @@ public class ThongTinGiaoHangRequest {
     // @NotBlank(message = "Ngày sửa Không được để trống")
     private LocalDateTime ngaySua;
 
-    @NotNull(message = "trạng thái Không được để trống")
     private Integer trangThai;
 
     @NotNull(message = "idKH Không được để trống")

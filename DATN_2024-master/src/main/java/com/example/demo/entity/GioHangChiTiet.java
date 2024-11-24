@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.dto.giohangchitiet.GioHangChiTietOnline;
 import com.example.demo.dto.giohangchitiet.GioHangChiTietResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "GIOHANGCHITIET")
 public class GioHangChiTiet {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private String id;
 
@@ -40,6 +41,12 @@ public class GioHangChiTiet {
     private ChiTietSanPham chiTietSanPham;
 
     public GioHangChiTietResponse toResponse() {
-        return new GioHangChiTietResponse(id, ma, soLuong, trangThai, ngayTao, khachHang.getTen(), chiTietSanPham.getMa(), chiTietSanPham.getGia());
+        return new GioHangChiTietResponse(id, ma, soLuong, trangThai, ngayTao, khachHang.getTen(),
+                chiTietSanPham.getMa(), chiTietSanPham.getGia());
+    }
+
+    public GioHangChiTietOnline toOnline() {
+        return new GioHangChiTietOnline(id, ma, chiTietSanPham.getSoLuong(), soLuong, chiTietSanPham.sanPham.getTenSP(),
+                chiTietSanPham.getSoNgaySuDung(), chiTietSanPham.getGia());
     }
 }
