@@ -19,7 +19,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
     SanPham getByName(@Param("tenSP") String tenSP);
 
     @Query("SELECT sp FROM SanPham sp WHERE (:tenSP IS NULL OR sp.tenSP LIKE %:tenSP%) AND sp.trangThai=:trangThai")
-    List<SanPham> getByTenSP(@Param("tenSP") String tenSP,@Param("trangThai")Integer trangThai);
+    List<SanPham> getByTenSP(@Param("tenSP") String tenSP, @Param("trangThai") Integer trangThai);
 
     @Query("SELECT sp FROM SanPham  sp where sp.maSP=:ma and sp.id<>:id")
     SanPham getByMaAndId(@Param("ma") String ma, @Param("id") String id);
@@ -33,8 +33,10 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
     @Query("SELECT sp FROM SanPham sp WHERE sp.giamGia.id=:id")
     List<SanPham> findByGiamGiaId(@Param("id") String id);
 
-    @Query("SELECT new com.example.demo.dto.sanpham.SanPhamOnlineResponse(p.id, p.tenSP, MIN(CAST(pd.gia AS float))) " +
+    @Query("SELECT new com.example.demo.dto.sanpham.SanPhamOnlineResponse(p.id, p.tenSP, MIN(CAST(pd.gia AS float)), COALESCE(gg.giaGiam, 0)) "
+            +
             "FROM SanPham p JOIN p.listCTSP pd " +
-            "GROUP BY p.id, p.tenSP")
+            "LEFT JOIN p.giamGia gg " +
+            "GROUP BY p.id, p.tenSP, gg.giaGiam")
     List<SanPhamOnlineResponse> findAllWithDetails(Pageable pageable);
 }
