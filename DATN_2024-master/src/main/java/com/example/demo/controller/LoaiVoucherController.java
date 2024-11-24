@@ -39,6 +39,15 @@ public class LoaiVoucherController {
         return lvcRepo.getLoaiVoucherByTen(ten).getId();
     }
 
+    @GetMapping("getByIdKhach/{id}")
+    public ResponseEntity<?> getByIdKhach(@PathVariable String id) {
+        if (lvcRepo.findById(id).isPresent()) {
+            return ResponseEntity.ok().body(lvcRepo.findById(id).get().toResponse());
+        } else {
+            return ResponseEntity.badRequest().body("Không tìm thấy id để hiển thị");
+        }
+    }
+
     @GetMapping("page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,

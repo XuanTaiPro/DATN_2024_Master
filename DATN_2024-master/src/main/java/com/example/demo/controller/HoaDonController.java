@@ -4,13 +4,12 @@ import com.example.demo.dto.hoadon.HoaDonReq;
 import com.example.demo.dto.khachhang.KhachHangResponse;
 import com.example.demo.dto.nhanvien.NhanVienResponse;
 import com.example.demo.entity.*;
-import com.example.demo.repository.HoaDonRepo;
-import com.example.demo.repository.KhachHangRepository;
-import com.example.demo.repository.NhanVienRepository;
+import com.example.demo.repository.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,19 +34,29 @@ public class HoaDonController {
     private NhanVienRepository nhanVienRepo;
     @Autowired
     private KhachHangRepository khachHangRepo;
-
+    @Autowired
+    private ChiTietHoaDonRepo chiTietHoaDonRepo;
+    @Autowired
+    private ChiTietSanPhamRepository chiTietSanPhamRepo;
     @GetMapping("/page")
-    public ResponseEntity<?> page(@RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestParam(name = "trangThai", required = false) Integer trangThai,
-            @RequestParam(name = "searchText", required = false) String tenKH,
-            @RequestParam(name = "loaiHD", required = false) Integer loaiHD,
-            @RequestParam(name = "nhanVien", required = false) String nhanVien) {
+    public ResponseEntity<?> page(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(required = false) Integer trangThai,
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) Integer loaiHD,
+            @RequestParam(required = false) String nhanVien) {
+
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "ngayTao"));
-        Page<HoaDon> hoaDonPage = hoaDonRepo.findHDByFilters(trangThai, loaiHD, nhanVien, pageRequest);
-        Map<String, Object> response = new HashMap<>();
-        response.put("hoaDons", hoaDonPage.getContent().stream().map(HoaDon::toResponse).collect(Collectors.toList()));
-        response.put("totalPages", hoaDonPage.getTotalPages());
-        response.put("totalElements", hoaDonPage.getTotalElements());
+        Page<HoaDon> hoaDonPage = (searchText != null)
+                ? hoaDonRepo.findHDByFilters(trangThai, loaiHD, nhanVien, searchText, pageRequest)
+                : hoaDonRepo.findHDByFiltersNullTenKH(trangThai, loaiHD, nhanVien, pageRequest);
+
+        Map<String, Object> response = Map.of(
+                "hoaDons", hoaDonPage.getContent().stream().map(HoaDon::toResponse).collect(Collectors.toList()),
+                "totalPages", hoaDonPage.getTotalPages(),
+                "totalElements", hoaDonPage.getTotalElements()
+        );
+
         return ResponseEntity.ok(response);
     }
 
@@ -61,6 +70,27 @@ public class HoaDonController {
     public ResponseEntity<?> nullKH() {
         List<HoaDon> listHoaDon = hoaDonRepo.getHDNullKH();
         return ResponseEntity.ok(listHoaDon);
+    }
+
+    @GetMapping("getHDbyClientID")
+    public ResponseEntity<?> getHDbyClientID(@RequestParam String idKH) {
+        if (hoaDonRepo.getHDByCustomerId(idKH) == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy hóa đơn nào cho khách hàng này");
+        } else {
+            return ResponseEntity.ok(hoaDonRepo.getHDByCustomerId(idKH).stream().map(HoaDon::toResponse));
+        }
+    }
+
+    @GetMapping("getHDbyClientSDT")
+    public ResponseEntity<?> getHDbyClientSDT(@RequestParam String sdt) {
+        if (sdt.trim().isEmpty())
+            return ResponseEntity.badRequest().body("Số điện thoại đang trống");
+
+        if (hoaDonRepo.getHDBySDT(sdt) == null || hoaDonRepo.getHDBySDT(sdt).size() == 0) {
+            return ResponseEntity.badRequest().body("Không tìm thấy hóa đơn nào cho số điện " + sdt);
+        } else {
+            return ResponseEntity.ok(hoaDonRepo.getHDBySDT(sdt).stream().map(HoaDon::toResponse));
+        }
     }
 
     @PostMapping("/add")
@@ -143,7 +173,7 @@ public class HoaDonController {
         if (hoaDon != null) {
             return ResponseEntity.ok(hoaDon.get().toResponse());
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.badRequest().body("Không tìm được hóa đơn");
         }
     }
     // Read by ID
@@ -197,7 +227,7 @@ public class HoaDonController {
                 } else {
                     return ResponseEntity.badRequest().body(null);
                 }
-            }else {
+            } else {
                 hoaDon.setKhachHang(null);
                 hoaDon.setTenNguoiNhan(req.getTenNguoiNhan());
                 hoaDon.setSdtNguoiNhan(req.getSdtNguoiNhan());
@@ -227,13 +257,28 @@ public class HoaDonController {
     }
 
     // Delete
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteHoaDon(@PathVariable String id) {
-        if (hoaDonRepo.existsById(id)) {
-            hoaDonRepo.deleteById(id);
-            return ResponseEntity.ok().build();
-        } else {
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteHoaDon(@RequestBody Map<String, String> request) {
+        String id = request.get("id");
+        if (!hoaDonRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+        List<ChiTietHoaDon> listCTHD = chiTietHoaDonRepo.getByIdHD(id);
+        for (ChiTietHoaDon cthd : listCTHD) {
+            ChiTietSanPham chiTietSanPham = cthd.getChiTietSanPham();
+            // Cập nhật lại số lượng sản phẩm
+            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + cthd.getSoLuong());
+            chiTietSanPhamRepo.save(chiTietSanPham);
+        }
+
+        // Xóa tất cả các chi tiết hóa đơn
+        chiTietHoaDonRepo.deleteAll(listCTHD);
+
+        // Xóa hóa đơn chính
+        hoaDonRepo.deleteById(id);
+
+        // Trả về mã 200 nếu thành công
+        return ResponseEntity.ok().build();
     }
+
 }

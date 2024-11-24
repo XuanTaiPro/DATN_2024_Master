@@ -13,4 +13,6 @@ public class SanPhamOnlineResponse {
     private String tenSP;
 
     private float gia;
+
+    private String giamgia;
 }

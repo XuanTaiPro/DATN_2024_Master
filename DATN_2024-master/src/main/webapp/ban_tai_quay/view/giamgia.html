@@ -104,7 +104,7 @@
         <td>{{gg.ngayBatDau}}</td>
         <td>{{gg.ngayKetThuc}}</td>
         <td>{{gg.giaGiam}}%</td>
-        <td>{{gg.trangThai === 1 ? 'Đang hoạt động' : (gg.trangThai === 0 ? 'Không hoạt động' : (gg.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định')) }}</td>
+        <td>{{gg.trangThai === 1 ? 'Đang hoạt động' : (gg.trangThai === 0 ? 'Không hoạt động' : (gg.trangThai === 2 ? 'Đã kết thúc' : 'Trạng thái không xác định')) }}</td>
         <td>{{gg.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{gg.ngaySua | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{gg.moTa}}</td>
@@ -136,7 +136,7 @@
                                     <p><strong>Ngày tạo:</strong> {{ giamGiaDetail.ngayTao | date:'yyyy-MM-dd HH:mm:ss' }}</p>
                                     <p><strong>Ngày sửa:</strong> {{ giamGiaDetail.ngaySua | date:'yyyy-MM-dd HH:mm:ss' }}</p>
                                     <p><strong>Mô tả:</strong> {{ giamGiaDetail.moTa }}</p>
-                                    <h5 class="mt-3">Sản phẩm được áp dụng giảm giá:</h5>
+                                    <h5 class="mt-3">Sản phẩm đang áp dụng giảm giá:</h5>
                                     <ul class="list-group scrollable-list">
                                         <li class="list-group-item" ng-repeat="sp in giamGiaDetail.listSanPham">
                                             {{ sp.tenSP }} - {{ sp.maSP }}

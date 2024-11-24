@@ -5,9 +5,11 @@ import com.example.demo.dto.chitiethoadon.ChiTietHoaDonReq;
 import com.example.demo.entity.ChiTietHoaDon;
 import com.example.demo.entity.ChiTietSanPham;
 import com.example.demo.entity.HoaDon;
+import com.example.demo.entity.SanPham;
 import com.example.demo.repository.ChiTietHoaDonRepo;
 import com.example.demo.repository.ChiTietSanPhamRepository;
 import com.example.demo.repository.HoaDonRepo;
+import com.example.demo.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,34 +32,60 @@ public class ChiTietHoaDonController {
 
     @Autowired
     private HoaDonRepo hoaDonRepo;
-
+    @Autowired
+    private SanPhamRepository sanPhamRepository;
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepo;
 
     @PostMapping("/add")
     public ResponseEntity<String> createChiTietHoaDon(@Validated @ModelAttribute ChiTietHoaDonReq req) {
 
+        // Kiểm tra tồn tại của hóa đơn
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(req.getIdHD());
         if (hoaDonOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("Hóa đơn không tồn tại.");
         }
 
+        // Kiểm tra tồn tại của chi tiết sản phẩm
         Optional<ChiTietSanPham> chiTietSanPhamOptional = chiTietSanPhamRepo.findById(req.getIdCTSP());
         if (chiTietSanPhamOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("Chi tiết sản phẩm không tồn tại.");
         }
-        chiTietSanPhamOptional.get().setSoLuong(chiTietSanPhamOptional.get().getSoLuong() - req.getSoLuong());
-        chiTietSanPhamRepo.save(chiTietSanPhamOptional.get());
-        ChiTietHoaDon chiTietHoaDons = new ChiTietHoaDon();
-        chiTietHoaDons.setTongTien(String.valueOf(req.getSoLuong() * Double.valueOf(req.getGiaBan())));
-        chiTietHoaDons.setSoLuong(req.getSoLuong());
-        chiTietHoaDons.setTrangThai(1);
-        chiTietHoaDons.setNgayTao(LocalDateTime.now());
-        chiTietHoaDons.setGhiChu(req.getGhiChu());
-        chiTietHoaDons.setHoaDon(hoaDonOptional.get());
-        chiTietHoaDons.setChiTietSanPham(chiTietSanPhamOptional.get());
-        chiTietHoaDons.setGiaBan(req.getGiaBan());
-        chiTietHoaDonRepo.save(chiTietHoaDons);
+
+        ChiTietSanPham chiTietSanPham = chiTietSanPhamOptional.get();
+
+        // Kiểm tra số lượng sản phẩm đủ để trừ hay không
+        if (chiTietSanPham.getSoLuong() < req.getSoLuong()) {
+            return ResponseEntity.badRequest().body("Số lượng sản phẩm không đủ.");
+        }
+
+        // Tìm ChiTietHoaDon hiện có
+        ChiTietHoaDon chiTietHoaDonExisting = chiTietHoaDonRepo.trungCTHD(req.getIdHD(), req.getIdCTSP());
+        if (chiTietHoaDonExisting != null) {
+            // Nếu đã tồn tại, tăng số lượng của ChiTietHoaDon hiện có và trừ số lượng của
+            // ChiTietSanPham
+            chiTietHoaDonExisting.setSoLuong(chiTietHoaDonExisting.getSoLuong() + req.getSoLuong());
+            chiTietHoaDonExisting
+                    .setTongTien(String.valueOf(chiTietHoaDonExisting.getSoLuong() * Double.valueOf(req.getGiaBan())));
+            chiTietHoaDonRepo.save(chiTietHoaDonExisting);
+        } else {
+            // Nếu chưa tồn tại, tạo mới ChiTietHoaDon
+            ChiTietHoaDon chiTietHoaDons = new ChiTietHoaDon();
+            chiTietHoaDons.setTongTien(String.valueOf(req.getSoLuong() * Double.valueOf(req.getGiaBan())));
+            chiTietHoaDons.setSoLuong(req.getSoLuong());
+            chiTietHoaDons.setTrangThai(1);
+            chiTietHoaDons.setNgayTao(LocalDateTime.now());
+            chiTietHoaDons.setGhiChu(req.getGhiChu());
+            chiTietHoaDons.setHoaDon(hoaDonOptional.get());
+            chiTietHoaDons.setChiTietSanPham(chiTietSanPham);
+            chiTietHoaDons.setGiaBan(req.getGiaBan());
+            chiTietHoaDonRepo.save(chiTietHoaDons);
+        }
+
+        // Trừ số lượng sản phẩm
+        chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - req.getSoLuong());
+        chiTietSanPhamRepo.save(chiTietSanPham);
+
         return ResponseEntity.ok("Thêm chi tiết hóa đơn thành công.");
     }
 
@@ -77,7 +105,22 @@ public class ChiTietHoaDonController {
         if (chiTietHoaDonExisting == null) {
             return ResponseEntity.badRequest().body("Chi tiết hóa đơn không tồn tại");
         }
+        int oldSoLuong = chiTietHoaDonExisting.getSoLuong();
+        int newSoLuong = req.getSoLuong();
+        int soLuongDifference = newSoLuong - oldSoLuong;
 
+        // Cập nhật ChiTietSanPham liên kết với ChiTietHoaDon
+        ChiTietSanPham chiTietSanPham = chiTietHoaDonExisting.getChiTietSanPham();
+        if (chiTietSanPham != null) {
+            int updatedSoLuongCTSP = chiTietSanPham.getSoLuong() - soLuongDifference;
+
+            if (updatedSoLuongCTSP < 0) {
+                return ResponseEntity.badRequest().body("Không đủ số lượng trong kho");
+            }
+
+            chiTietSanPham.setSoLuong(updatedSoLuongCTSP);
+            chiTietSanPhamRepo.save(chiTietSanPham);
+        }
         chiTietHoaDonExisting.setSoLuong(req.getSoLuong());
         chiTietHoaDonExisting.setHoaDon(chiTietHoaDonExisting.getHoaDon());
         chiTietHoaDonExisting.setChiTietSanPham(chiTietHoaDonExisting.getChiTietSanPham());
@@ -155,9 +198,23 @@ public class ChiTietHoaDonController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteChiTietHoaDon(@PathVariable String id) {
+    @GetMapping("getAllByOrderId")
+    public ResponseEntity<?> getAllByOrderId(@RequestParam(name = "idHD") String idHD) {
+        if (chiTietHoaDonRepo.findByHoaDon(idHD) == null) {
+            return ResponseEntity.badRequest().body("Không tìm được chi tiết cho hóa đơn");
+        } else {
+            return ResponseEntity.ok(chiTietHoaDonRepo.findByHoaDon(idHD).stream().map(ChiTietHoaDon::toResponse));
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteChiTietHoaDon(@RequestBody Map<String, String> request) {
+        String id = request.get("id");
+        ChiTietHoaDon existingCTHD = chiTietHoaDonRepo.findById(id).get();
         if (chiTietHoaDonRepo.existsById(id)) {
+            existingCTHD.getChiTietSanPham()
+                    .setSoLuong(existingCTHD.getSoLuong() + existingCTHD.getChiTietSanPham().getSoLuong());
+            chiTietSanPhamRepo.save(existingCTHD.getChiTietSanPham());
             chiTietHoaDonRepo.deleteById(id);
             return ResponseEntity.ok("Xóa chi tiết hóa đơn thành công.");
         } else {

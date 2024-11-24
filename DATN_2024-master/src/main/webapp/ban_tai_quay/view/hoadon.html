@@ -120,26 +120,19 @@
         </tr>
         </tbody>
     </table>
-
+<div class="text-center">
     <nav class="text-center">
         <ul class="pagination">
             <li ng-class="{ 'disabled': currentPage === 0 }">
-<<<<<<< HEAD
-                <a href="" ng-click="previousPage()">Previous</a>
-=======
                 <button href="" ng-click="previousPage()">Previous</button>
->>>>>>> 25f4e8127337f7d4a4676e740b7c7ca3f89950b0
             </li>
             <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
                 <button href="" ng-click="getHoaDonsByTrangThai(selectedTrangThai, page)">{{ page + 1 }}</button>
             </li>
             <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
-<<<<<<< HEAD
-                <a href="" ng-click="nextPage()">Next</a>
-=======
                 <button href="" ng-click="nextPage()">Next</button>
->>>>>>> 25f4e8127337f7d4a4676e740b7c7ca3f89950b0
             </li>
         </ul>
     </nav>
+</div>
 </div>

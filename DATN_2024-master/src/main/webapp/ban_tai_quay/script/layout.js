@@ -30,7 +30,7 @@ app.config(function ($routeProvider) {
             templateUrl: 'view/khachhang.html',
             controller: khachhangCtrl
         })
-        .when('/thanhtoan', {
+        .when('/thanhtoan/:idHD', {  // Add dynamic route for payment
             templateUrl: 'view/thanhtoan.html',
             controller: thanhtoanCtrl
         })
@@ -59,7 +59,34 @@ app.config(function ($routeProvider) {
         })
 })
 
-app.controller('myCtrl', function ($scope, $http) { })
+app.controller('myCtrl', function ($scope, $http) {
+    $scope.modalMessage = ""; // Nội dung thông báo
+
+    // Hàm kiểm tra cập nhật giảm giá
+    $scope.inspection = function () {
+        $http.get('http://localhost:8083/giam-gia/inspection')
+            .then(function (response) {
+                $scope.modalMessage = "Các giảm giá đã được cập nhật: " + (response.data.join(', ') || "Không có gì để cập nhật");
+                console.log($scope.modalMessage);
+                setTimeout(function () {
+                    $('#notificationModal').modal('show');
+                }, 0);
+            })
+            .catch(function () {
+                $scope.modalMessage = "Đã xảy ra lỗi khi kiểm tra giảm giá!";
+                setTimeout(function () {
+                    $('#notificationModal').modal('show');
+                }, 0);
+            });
+    };
+
+    $scope.closeNotificationModal = function () {
+        setTimeout(function () {
+            $('#notificationModal').modal('hide');
+        }, 0);    };
+
+    $scope.inspection();
+})
 
 document.addEventListener('DOMContentLoaded', function () {
     const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a')

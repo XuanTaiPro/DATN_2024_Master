@@ -80,9 +80,7 @@ public class ThongTinGiaoHangController {
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
-        if (thongTinGiaoHangRequest.getId() == null || thongTinGiaoHangRequest.getId().isEmpty()) {
-            thongTinGiaoHangRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        }
+
         // khách hàng này đã có địa chỉ này rồi k thêm được
         if (ttghRepo.existsByKhachHang_IdAndDcNguoiNhan(thongTinGiaoHangRequest.getIdKH(),
                 thongTinGiaoHangRequest.getDcNguoiNhan())) {
@@ -91,8 +89,9 @@ public class ThongTinGiaoHangController {
         ThongTinGiaoHang thongTinGiaoHang = thongTinGiaoHangRequest.toEntity();
         thongTinGiaoHang.setKhachHang(khRepo.getById(thongTinGiaoHangRequest.getIdKH()));
         thongTinGiaoHang.setNgayTao(LocalDateTime.now());
+        thongTinGiaoHang.setTrangThai(1);
         ttghRepo.save(thongTinGiaoHang);
-        return ResponseEntity.ok("thêm thành công");
+        return ResponseEntity.ok().body(ttghRepo.fHangs(thongTinGiaoHangRequest.getIdKH()));
     }
 
     @PutMapping("update/{id}")
