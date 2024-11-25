@@ -5,11 +5,12 @@ import com.example.demo.dto.khachhang.KhachHangResponse;
 import com.example.demo.dto.nhanvien.NhanVienResponse;
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
+import com.example.demo.service.GenerateCodeAll;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,14 +30,28 @@ public class HoaDonController {
 
     @Autowired
     private HoaDonRepo hoaDonRepo;
+
+    @Autowired
+    private GenerateCodeAll generateCodeAll;
+
+    @Autowired
+    private GiamGiaRepository ggRepo;
+
     @Autowired
     private NhanVienRepository nhanVienRepo;
+
     @Autowired
     private KhachHangRepository khachHangRepo;
+
     @Autowired
     private ChiTietHoaDonRepo chiTietHoaDonRepo;
+
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepo;
+
+    @Autowired
+    private ThongTinGiaoHangRepository ttghRepo;
+
     @GetMapping("/page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
@@ -54,8 +68,7 @@ public class HoaDonController {
         Map<String, Object> response = Map.of(
                 "hoaDons", hoaDonPage.getContent().stream().map(HoaDon::toResponse).collect(Collectors.toList()),
                 "totalPages", hoaDonPage.getTotalPages(),
-                "totalElements", hoaDonPage.getTotalElements()
-        );
+                "totalElements", hoaDonPage.getTotalElements());
 
         return ResponseEntity.ok(response);
     }
@@ -109,8 +122,6 @@ public class HoaDonController {
         hoaDon.setMaVoucher(null); // Không gán giá trị cho maVoucher
         hoaDon.setNgayThanhToan(null); // Không gán giá trị cho ngayThanhToan
         hoaDon.setNgayNhanHang(null); // Không gán giá trị cho ngayNhanHang
-        hoaDon.setThanhTien(null);
-        hoaDon.setPhiVanChuyen(null);
         hoaDon.setKhachHang(null);
         hoaDon.setSdtNguoiNhan(null);
 
@@ -130,6 +141,101 @@ public class HoaDonController {
                     .body(Map.of("error", "Có lỗi xảy ra khi lưu hóa đơn: " + e.getMessage()));
         }
 
+    }
+
+    @PostMapping("/add-hD-online")
+    public ResponseEntity<?> addHDOnline(@RequestBody Map<String, Object> payMap) {
+        String idKh = (String) payMap.get("idKH");
+        Map<String, String> inforKh;
+        String idAddress, discountCode;
+
+        List<Map<String, Object>> payList = (List<Map<String, Object>>) payMap.get("listProduct");
+        String payment = (String) payMap.get("payment");
+
+        HoaDon hd = new HoaDon();
+        hd.setMaHD(generateCodeAll.generateMa("HD-", 7));
+        hd.setNgayTao(LocalDateTime.now());
+        hd.setNgaySua(null);
+        hd.setTrangThai(0);
+        hd.setLoaiHD(0);
+        hd.setThanhtoan(Integer.parseInt(payment));
+
+        if (Integer.parseInt(payment) == 2) {
+            hd.setNgayThanhToan(LocalDateTime.now());
+        }
+
+        if (idKh == null) {
+            inforKh = (Map<String, String>) payMap.get("inforNoLogin");
+            hd.setTenNguoiNhan(inforKh.get("nameNoLogin"));
+            hd.setSdtNguoiNhan(inforKh.get("phoneNoLogin"));
+            hd.setDiaChiNguoiNhan(inforKh.get("addressNoLogin"));
+
+            hd.setKhachHang(null);
+        } else {
+            KhachHang kh = khachHangRepo.findById(idKh).get();
+            hd.setKhachHang(kh);
+
+            idAddress = (String) payMap.get("indexAddress");
+
+            if (Integer.parseInt(idAddress) == 0) {
+                // người đặt chọn thông tin giao hàng mặc định
+                hd.setTenNguoiNhan(kh.getTen());
+                hd.setSdtNguoiNhan(kh.getSdt());
+                hd.setDiaChiNguoiNhan(kh.getDiaChi());
+            } else {
+                // set địa chỉ người nhận
+                List<ThongTinGiaoHang> listTTGH = ttghRepo.fHangs(kh.getId());
+                hd.setTenNguoiNhan(listTTGH.get(Integer.parseInt(idAddress) - 1).getTenNguoiNhan());
+                hd.setSdtNguoiNhan(listTTGH.get(Integer.parseInt(idAddress) - 1).getSdtNguoiNhan());
+                hd.setDiaChiNguoiNhan(listTTGH.get(Integer.parseInt(idAddress) - 1).getDcNguoiNhan());
+            }
+
+            discountCode = (String) payMap.get("discountCode");
+            if ("Chưa có".equals(discountCode)) {
+                hd.setMaVoucher(null);
+            } else {
+                hd.setMaVoucher(discountCode);
+            }
+        }
+
+        hoaDonRepo.save(hd);
+
+        for (Map<String, Object> prod : payList) {
+            ChiTietHoaDon cthd = new ChiTietHoaDon();
+
+            HoaDon getHD = hoaDonRepo.findByMaHD(hd.getMaHD()).get();
+            if (getHD == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi tìm hóa đơn");
+            }
+
+            cthd.setHoaDon(getHD);
+            Integer soLuongTrongGio = (Integer) prod.get("soLuongTrongGio");
+
+            cthd.setSoLuong(soLuongTrongGio);
+            cthd.setNgayTao(LocalDateTime.now());
+
+            String idCTSP = (String) prod.get("id");
+            ChiTietSanPham ctsp = chiTietSanPhamRepo.findById(idCTSP).get();
+            cthd.setGiaBan(ctsp.getGia());
+            cthd.setChiTietSanPham(ctsp);
+
+            String idSP = (String) prod.get("idSP");
+            String idGiamGia = ggRepo.getIdGiamGia(idSP);
+            if (idGiamGia != null) {
+                GiamGia gg = ggRepo.findById(idGiamGia).get();
+
+                Integer giaSauGiam = Integer.parseInt(ctsp.getGia()) - Integer.parseInt(ctsp.getGia())
+                        * Integer.parseInt(gg.getGiaGiam()) / 100;
+
+                cthd.setGiaSauGiam(String.valueOf(giaSauGiam));
+            } else {
+                cthd.setGiaSauGiam(ctsp.getGia());
+            }
+
+            chiTietHoaDonRepo.save(cthd);
+        }
+
+        return ResponseEntity.ok().body("Thêm thành công");
     }
 
     @PutMapping("/xacNhanHD")
@@ -235,12 +341,10 @@ public class HoaDonController {
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(req.getMaHD());
             hoaDon.setMaVoucher(req.getMaVoucher());
-            hoaDon.setThanhTien(req.getThanhTien());
             hoaDon.setNgayThanhToan(req.getNgayThanhToan());
             hoaDon.setNgayNhanHang(req.getNgayNhanHang());
             hoaDon.setTrangThai(req.getTrangThai());
             hoaDon.setLoaiHD(req.getLoaiHD());
-            hoaDon.setPhiVanChuyen(req.getPhiVanChuyen());
             hoaDon.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
             hoaDon.setNgaySua(LocalDateTime.now());
 

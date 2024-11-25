@@ -4,6 +4,7 @@ import com.example.demo.dto.chitiethoadon.ChiTietHoaDonRep;
 import com.example.demo.dto.chitiethoadon.ChiTietHoaDonReq;
 import com.example.demo.entity.ChiTietHoaDon;
 import com.example.demo.entity.ChiTietSanPham;
+import com.example.demo.entity.GiamGia;
 import com.example.demo.entity.HoaDon;
 import com.example.demo.entity.SanPham;
 import com.example.demo.repository.ChiTietHoaDonRepo;
@@ -33,7 +34,7 @@ public class ChiTietHoaDonController {
     @Autowired
     private HoaDonRepo hoaDonRepo;
     @Autowired
-    private SanPhamRepository sanPhamRepository;
+    private SanPhamRepository sPRepo;
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepo;
 
@@ -59,19 +60,25 @@ public class ChiTietHoaDonController {
             return ResponseEntity.badRequest().body("Số lượng sản phẩm không đủ.");
         }
 
+        GiamGia getGiamGia = sPRepo.findById(chiTietSanPham.getSanPham().getId()).get().getGiamGia();
+        int giaSauGiam = 0;
+        if (getGiamGia != null) {
+            String phanTramGiam = getGiamGia.getGiaGiam();
+            giaSauGiam = Integer.parseInt(chiTietSanPham.getGia())
+                    - Integer.parseInt(chiTietSanPham.getGia()) * Integer.parseInt(phanTramGiam) / 100;
+        }
         // Tìm ChiTietHoaDon hiện có
-        ChiTietHoaDon chiTietHoaDonExisting = chiTietHoaDonRepo.trungCTHD(req.getIdHD(), req.getIdCTSP());
-        if (chiTietHoaDonExisting != null) {
+        ChiTietHoaDon cTHDExisting = chiTietHoaDonRepo.trungCTHD(req.getIdHD(), req.getIdCTSP());
+        if (cTHDExisting != null) {
             // Nếu đã tồn tại, tăng số lượng của ChiTietHoaDon hiện có và trừ số lượng của
             // ChiTietSanPham
-            chiTietHoaDonExisting.setSoLuong(chiTietHoaDonExisting.getSoLuong() + req.getSoLuong());
-            chiTietHoaDonExisting
-                    .setTongTien(String.valueOf(chiTietHoaDonExisting.getSoLuong() * Double.valueOf(req.getGiaBan())));
-            chiTietHoaDonRepo.save(chiTietHoaDonExisting);
+            cTHDExisting.setSoLuong(cTHDExisting.getSoLuong() + req.getSoLuong());
+            cTHDExisting.setGiaSauGiam(String.valueOf(giaSauGiam));
+            chiTietHoaDonRepo.save(cTHDExisting);
         } else {
             // Nếu chưa tồn tại, tạo mới ChiTietHoaDon
             ChiTietHoaDon chiTietHoaDons = new ChiTietHoaDon();
-            chiTietHoaDons.setTongTien(String.valueOf(req.getSoLuong() * Double.valueOf(req.getGiaBan())));
+            chiTietHoaDons.setGiaSauGiam(String.valueOf(giaSauGiam));
             chiTietHoaDons.setSoLuong(req.getSoLuong());
             chiTietHoaDons.setTrangThai(1);
             chiTietHoaDons.setNgayTao(LocalDateTime.now());
@@ -121,12 +128,27 @@ public class ChiTietHoaDonController {
             chiTietSanPham.setSoLuong(updatedSoLuongCTSP);
             chiTietSanPhamRepo.save(chiTietSanPham);
         }
+
+        GiamGia getGiamGia = sPRepo.findById(chiTietSanPham.getSanPham().getId()).get().getGiamGia();
+        int giaSauGiam = 0;
+        if (getGiamGia != null) {
+            String phanTramGiam = getGiamGia.getGiaGiam();
+            int phanTram = Integer.parseInt(phanTramGiam);
+
+            if (phanTram < 100) {
+                giaSauGiam = Integer.parseInt(chiTietSanPham.getGia())
+                        - Integer.parseInt(chiTietSanPham.getGia()) * phanTram / 100;
+
+                chiTietHoaDonExisting.setGiaSauGiam(String.valueOf(giaSauGiam));
+            }
+        }
+        chiTietHoaDonExisting.setGiaSauGiam("0");
+
         chiTietHoaDonExisting.setSoLuong(req.getSoLuong());
         chiTietHoaDonExisting.setHoaDon(chiTietHoaDonExisting.getHoaDon());
         chiTietHoaDonExisting.setChiTietSanPham(chiTietHoaDonExisting.getChiTietSanPham());
         chiTietHoaDonExisting.setMaCTHD(chiTietHoaDonExisting.getMaCTHD());
-        chiTietHoaDonExisting.setTongTien(
-                String.valueOf(Double.valueOf(chiTietHoaDonExisting.getGiaBan()) * chiTietHoaDonExisting.getSoLuong()));
+
         chiTietHoaDonExisting.setGhiChu(req.getGhiChu());
         chiTietHoaDonExisting.setNgayTao(chiTietHoaDonExisting.getNgayTao());
         chiTietHoaDonExisting.setNgaySua(LocalDateTime.now());
@@ -143,11 +165,22 @@ public class ChiTietHoaDonController {
             return ResponseEntity.status(404).body("Không tìm thấy chi tiết hóa đơn với ID: " + id);
         }
         ChiTietHoaDon chiTietHoaDon = chiTietHoaDonOptional.get();
-        double giaBan = Double.parseDouble(req.getGiaBan());
-        int soLuong = req.getSoLuong();
-        double tongTien = giaBan * soLuong;
 
-        chiTietHoaDon.setTongTien(String.valueOf(Double.valueOf(tongTien)));
+        ChiTietSanPham ctSP = chiTietSanPhamRepo.findById(req.getIdCTSP()).get();
+        SanPham sp = sPRepo.findById(ctSP.getSanPham().getId()).get();
+        GiamGia giamGia = sp.getGiamGia();
+
+        int giaSauGiam = 0;
+
+        if (giamGia != null) {
+            if (Integer.parseInt(giamGia.getGiaGiam()) < 100) {
+                giaSauGiam = Integer.parseInt(ctSP.getGia())
+                        - Integer.parseInt(ctSP.getGia()) * Integer.parseInt(giamGia.getGiaGiam()) / 100;
+            }
+        }
+
+        chiTietHoaDon.setGiaSauGiam(String.valueOf(giaSauGiam));
+
         chiTietHoaDon.setSoLuong(req.getSoLuong());
         chiTietHoaDon.setGiaBan(req.getGiaBan());
         chiTietHoaDon.setNgaySua(LocalDateTime.now());
