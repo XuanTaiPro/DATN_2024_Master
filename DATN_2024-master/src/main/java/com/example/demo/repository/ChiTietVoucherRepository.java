@@ -29,4 +29,7 @@ public interface ChiTietVoucherRepository extends JpaRepository<ChiTietVoucher, 
 
     @Query("select c.id from ChiTietVoucher c where c.khachHang.id = :idkh and c.trangThai = 1")
     List<String> getByIdKhach(String idkh);
+
+    @Query("select c from ChiTietVoucher c where c.voucher.id = :idVC and c.khachHang.id = :idKh")
+    ChiTietVoucher getByIdVCAndIdKh(@Param("idVC") String idVC, @Param("idKh") String idKh);
 }

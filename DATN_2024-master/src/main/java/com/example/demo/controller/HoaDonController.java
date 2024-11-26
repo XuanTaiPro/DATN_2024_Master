@@ -52,6 +52,12 @@ public class HoaDonController {
     @Autowired
     private ThongTinGiaoHangRepository ttghRepo;
 
+    @Autowired
+    private VoucherRepository vcRepo;
+
+    @Autowired
+    private ChiTietVoucherRepository ctvcRepo;
+
     @GetMapping("/page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
@@ -166,13 +172,37 @@ public class HoaDonController {
 
         if (idKh == null) {
             inforKh = (Map<String, String>) payMap.get("inforNoLogin");
-            hd.setTenNguoiNhan(inforKh.get("nameNoLogin"));
-            hd.setSdtNguoiNhan(inforKh.get("phoneNoLogin"));
-            hd.setDiaChiNguoiNhan(inforKh.get("addressNoLogin"));
+
+            String tenNN = inforKh.get("nameNoLogin");
+            String sdtNN = inforKh.get("phoneNoLogin");
+            String dcNN = inforKh.get("addressNoLogin");
+
+            if ("".equals(tenNN.trim())) {
+                return ResponseEntity.badRequest().body("Tên người nhận không được để trống.");
+            }
+
+            if ("".equals(sdtNN.trim())) {
+                return ResponseEntity.badRequest().body("Số điện thoại người nhận không được để trống.");
+            } else if (!sdtNN.matches("\\d+")) {
+                return ResponseEntity.badRequest().body("Số điện thoại người nhận chỉ bao gồm số");
+            }
+
+            if ("".equals(dcNN.trim())) {
+                return ResponseEntity.badRequest().body("Địa chỉ người nhận không được để trống.");
+            }
+
+            hd.setTenNguoiNhan(tenNN);
+            hd.setSdtNguoiNhan(sdtNN);
+            hd.setDiaChiNguoiNhan(dcNN);
 
             hd.setKhachHang(null);
         } else {
-            KhachHang kh = khachHangRepo.findById(idKh).get();
+            KhachHang kh = khachHangRepo.findById(idKh).orElse(null);
+
+            if (kh == null) {
+                return ResponseEntity.badRequest().body("Khách hàng không được tìm thấy");
+            }
+
             hd.setKhachHang(kh);
 
             idAddress = (String) payMap.get("indexAddress");
@@ -185,6 +215,11 @@ public class HoaDonController {
             } else {
                 // set địa chỉ người nhận
                 List<ThongTinGiaoHang> listTTGH = ttghRepo.fHangs(kh.getId());
+
+                if (listTTGH.get(Integer.parseInt(idAddress) - 1) == null) {
+                    return ResponseEntity.badRequest().body("Giá trị của thông tin giao hàng không tồn tại");
+                }
+
                 hd.setTenNguoiNhan(listTTGH.get(Integer.parseInt(idAddress) - 1).getTenNguoiNhan());
                 hd.setSdtNguoiNhan(listTTGH.get(Integer.parseInt(idAddress) - 1).getSdtNguoiNhan());
                 hd.setDiaChiNguoiNhan(listTTGH.get(Integer.parseInt(idAddress) - 1).getDcNguoiNhan());
@@ -194,6 +229,17 @@ public class HoaDonController {
             if ("Chưa có".equals(discountCode)) {
                 hd.setMaVoucher(null);
             } else {
+                Voucher voucher = vcRepo.findById(discountCode).orElse(null);
+
+                if (voucher == null) {
+                    return ResponseEntity.badRequest().body("Voucher Code sai");
+                }
+
+                ChiTietVoucher ctvc = ctvcRepo.getByIdVCAndIdKh(voucher.getId(), idKh);
+                ctvc.setTrangThai(2);
+
+                ctvcRepo.save(ctvc);
+
                 hd.setMaVoucher(discountCode);
             }
         }
@@ -215,14 +261,23 @@ public class HoaDonController {
             cthd.setNgayTao(LocalDateTime.now());
 
             String idCTSP = (String) prod.get("id");
-            ChiTietSanPham ctsp = chiTietSanPhamRepo.findById(idCTSP).get();
+            ChiTietSanPham ctsp = chiTietSanPhamRepo.findById(idCTSP).orElse(null);
+
+            if (ctsp == null) {
+                return ResponseEntity.badRequest().body("Sản phẩm gửi đi không tồn tại");
+            }
+
             cthd.setGiaBan(ctsp.getGia());
             cthd.setChiTietSanPham(ctsp);
 
             String idSP = (String) prod.get("idSP");
             String idGiamGia = ggRepo.getIdGiamGia(idSP);
             if (idGiamGia != null) {
-                GiamGia gg = ggRepo.findById(idGiamGia).get();
+                GiamGia gg = ggRepo.findById(idGiamGia).orElse(null);
+
+                if (gg == null) {
+                    return ResponseEntity.badRequest().body("Giảm giá gửi đi không tồn tại");
+                }
 
                 Integer giaSauGiam = Integer.parseInt(ctsp.getGia()) - Integer.parseInt(ctsp.getGia())
                         * Integer.parseInt(gg.getGiaGiam()) / 100;
