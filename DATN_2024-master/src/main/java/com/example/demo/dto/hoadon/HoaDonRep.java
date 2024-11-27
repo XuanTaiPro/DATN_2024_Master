@@ -22,7 +22,7 @@ public class HoaDonRep {
     private LocalDateTime ngayNhanHang;
     private int trangThai;
     private int loaiHD;
-    private String phiVanChuyen;
+    private Integer thanhToan;
     private String tenNguoiNhan;
     private String sdtNguoiNhan;
     private String diaChiNguoiNhan;
@@ -31,6 +31,3 @@ public class HoaDonRep {
     private String email;
     private String tenNV;
 }
-
-
-

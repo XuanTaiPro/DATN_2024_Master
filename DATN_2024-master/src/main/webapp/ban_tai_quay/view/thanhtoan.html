@@ -39,21 +39,32 @@
                     <div class="form-group mt-3">
                         <label for="customerName">Tên khách hàng:</label>
                         <input type="text" class="form-control" id="customerName" name="customerName" ng-model="selectedCustomerName" >
+                        <div style="color: red;" ng-show="isSubmitted && !selectedCustomerName">
+                            Tên khách hàng không được để trống.
+                        </div>
                     </div>
                     <div class="form-group mt-3">
                         <label for="customerPhone">Số điện thoại:</label>
                         <input type="text" class="form-control" id="customerPhone" name="customerPhone" ng-model="selectedCustomerPhone" >
+                        <div style="color: red;" ng-show="isSubmitted && !selectedCustomerPhone">
+                            Số điện thoại không được để trống.
+                        </div>
                     </div>
                     <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#customerModal">
                         Chọn khách hàng
                     </button>
+                    <button type="button" class="btn btn-secondary mt-3" ng-click="khachVangLai()">
+                        Khách vãng lai
+                    </button>
                 </form>
-
             </div>
 
             <div class="voucher-list mt-3">
                 <h5>Voucher của khách hàng</h5>
-                <table class="table table-hover">
+                <div class="message" ng-if="!selectedCustomerName">
+                    <span>Vui lòng chọn khách hàng hưởng voucher</span>
+                </div>
+                <table class="table table-hover" ng-if="vouchers.length > 0 && selectedCustomerName">
                     <thead class="thead-light">
                     <tr>
                         <th>Tên Voucher</th>
@@ -66,18 +77,18 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="voucher in vouchers" ng-if="selectedCustomerName">
+                    <tr ng-repeat="voucher in vouchers">
                         <td>{{ voucher.ten }}</td>
                         <td>{{ voucher.giamGia }}</td>
                         <td>{{ voucher.giamMin }}</td>
                         <td>{{ voucher.giamMax }}</td>
                         <td>
-                            <span ng-if="getDaysLeft(voucher.ngayKetThuc) > 0">
-                                  {{ getDaysLeft(voucher.ngayKetThuc) }} ngày
-                            </span>
+                <span ng-if="getDaysLeft(voucher.ngayKetThuc) > 0">
+                      {{ getDaysLeft(voucher.ngayKetThuc) }} ngày
+                </span>
                             <span ng-if="getDaysLeft(voucher.ngayKetThuc) <= 0">
-                                 Hết hạn
-                            </span>
+                     Hết hạn
+                </span>
                         </td>
                         <td>{{ voucher.soLuong }}</td>
                         <td>
@@ -87,19 +98,13 @@
                             </button>
                         </td>
                     </tr>
-                    <tr ng-if="vouchers.length === 0 && selectedCustomerName">
-                        <td colspan="7" class="text-center">Khách hàng hiện không sở hữu voucher nào</td>
-                    </tr>
-                    <tr>
-                        <div class="message" ng-if="!selectedCustomerName">
-                            <span>Vui lòng chọn khách hàng hưởng voucher</span>
-                        </div>
-                    </tr>
                     </tbody>
                 </table>
 
-                <!-- Phân trang -->
-                <ul class="pagination justify-content-center">
+                <div ng-if="vouchers.length === 0 && selectedCustomerName" class="text-center mt-3">
+                    Khách hàng hiện không sở hữu voucher nào.
+                </div>
+                <ul class="pagination justify-content-center" ng-if="vouchers.length > 0">
                     <li class="page-item" ng-class="{disabled: currentPageVC == 0}">
                         <a class="page-link" href="" ng-click="prevPageVC()">«</a>
                     </li>
@@ -112,6 +117,7 @@
                     </li>
                 </ul>
             </div>
+
 
         </div>
 
@@ -149,8 +155,9 @@
                         <img src="https://media-cdn-v2.laodong.vn/storage/newsportal/2021/6/15/920631/4128Nh_2021-06-15_Lu.jpeg"
                              alt="QR Code" class="img-fluid">
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <div class="ck">
+                        <button type="button" class="btn btn-success btn-custom-complete" ng-click="completePaymentCK()">Hoàn tất thanh toán
+                        </button>
                     </div>
                 </div>
             </div>
@@ -169,25 +176,27 @@
                                 <label for="amountPaid">Tiền khách đưa:</label>
                                 <input type="text" class="form-control" id="amountPaid" ng-model="amountPaid"
                                        ng-change="calculateChange()">
-                                <div id="error-message" style="color: red;" ng-show="showError">Số tiền cần thanh toán
-                                    không đủ.
+                                <div id="invalid-message" style="color: red;" ng-show="invalidAmount">
+                                    Số tiền phải là số nguyên dương và không chứa ký tự đặc biệt.
+                                </div>
+                                <div id="error-message" style="color: red;" ng-show="showError">
+                                    Số tiền cần thanh toán không đủ.
                                 </div>
                             </div>
                             <div class="form-group mt-3" style="display: flex">
                                 <label>Tiền thừa:</label>
-                                <p id="changeAmount">{{changeAmount}} VNĐ</p>
+                                <p id="changeAmount" ng-show="!invalidAmount && !showError">{{changeAmount}} VNĐ</p>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#confirmModal" ng-click="showConfirmation()">Xác nhận
-                        </button>
+                        <button type="button" class="btn btn-primary" ng-click="showConfirmation()">Xác nhận</button>
                     </div>
                 </div>
             </div>
         </div>
+
 
         <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -510,5 +519,16 @@
         text-align: center; /* Căn giữa nội dung trong ô */
     }
 
+    /* Định kiểu cho nút hoàn tất thanh toán */
+    .btn-custom-complete {
+        padding: 5px 10px; /* Thu gọn khoảng cách bên trong */
+        position: absolute; /* Định vị nút */
+        bottom: 10px; /* Căn sát mép dưới của modal */
+        right: 10px; /* Căn sát mép phải của modal */
+        border-radius: 5px; /* Bo góc nút */
+    }
+    .ck{
+        margin-top: 25px;
+    }
 </style>
 </html>

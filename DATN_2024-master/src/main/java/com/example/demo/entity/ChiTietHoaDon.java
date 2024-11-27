@@ -67,10 +67,11 @@ public class ChiTietHoaDon {
 
     public ChiTietHoaDonRep toResponse() {
         double tienGiam = 0;
+        double giaGiam = 0;
         if (chiTietSanPham.getSanPham().getGiamGia() != null &&
                 chiTietSanPham.getSanPham().getGiamGia().getNgayKetThuc().isAfter(LocalDateTime.now()) &&
                 chiTietSanPham.getSanPham().getGiamGia().getNgayBatDau().isBefore(LocalDateTime.now())) {
-            double giaGiam = Double.valueOf(chiTietSanPham.getSanPham().getGiamGia().getGiaGiam()) / 100;
+            giaGiam = Double.valueOf(chiTietSanPham.getSanPham().getGiamGia().getGiaGiam()) / 100;
             tienGiam = Double.valueOf(chiTietSanPham.getSanPham().getGiamGia().getGiaGiam()) / 100
                     * Double.valueOf(chiTietSanPham.getGia());
         }

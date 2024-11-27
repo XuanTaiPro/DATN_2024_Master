@@ -100,18 +100,6 @@ public class ThongBaoController {
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
-        // if (tbRepo.findById(id).isPresent()) {
-        // ThongBao thongBao = thongBaoRequest.toEntity();
-        // thongBao.setId(id);
-        // thongBao.setKhachHang(khRepo.getById(thongBaoRequest.getIdKH()));
-        // thongBao.setNgayGui(LocalDateTime.now());
-        // thongBao.setNgayDoc(LocalDateTime.now());
-        // tbRepo.save(thongBao);
-        // return ResponseEntity.ok("Update thành công ");
-        // } else {
-        // return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
-        // }
-
         Optional<ThongBao> optionalThongBao = tbRepo.findById(id);
         if (optionalThongBao.isPresent()) {
 

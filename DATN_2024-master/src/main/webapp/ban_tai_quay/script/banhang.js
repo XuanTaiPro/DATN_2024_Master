@@ -290,7 +290,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
             })
             .catch(function(error) {
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
-                console.error('Lỗi:', error);
+                console.log('Lỗi:', error.message);
                 $scope.selectSanPham($scope.selectedSanPham);
 
             });

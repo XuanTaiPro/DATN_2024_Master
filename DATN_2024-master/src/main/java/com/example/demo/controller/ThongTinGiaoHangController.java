@@ -136,13 +136,21 @@ public class ThongTinGiaoHangController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
-        ThongTinGiaoHang ttgh = ttghRepo.getTTGHById(id);
-        if (ttgh != null) {
-            ThongTinGiaoHang newTTGH = ttghRepo.getTTGHById(id);
-            newTTGH.setTrangThai(0);
-            ttghRepo.save(newTTGH);
-            String idKH = ttghRepo.getCustomerIdByTTGHId(id);
-            return ResponseEntity.ok(ttghRepo.fHangs(idKH).stream().map(ThongTinGiaoHang::toResponse));
+//        ThongTinGiaoHang ttgh = ttghRepo.getTTGHById(id);
+//        if (ttgh != null) {
+//            ThongTinGiaoHang newTTGH = ttghRepo.getTTGHById(id);
+//            newTTGH.setTrangThai(0);
+//            ttghRepo.save(newTTGH);
+//            String idKH = ttghRepo.getCustomerIdByTTGHId(id);
+//            return ResponseEntity.ok(ttghRepo.fHangs(idKH).stream().map(ThongTinGiaoHang::toResponse));
+//        } else {
+//            return ResponseEntity.badRequest().body("Không tìm thấy id cần xóa");
+//        }
+        if (ttghRepo.findById(id).isPresent()) {
+            ttghRepo.deleteById(id);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Xóa thành công");
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần xóa");
         }

@@ -17,7 +17,7 @@ import java.util.UUID;
 public class HoaDon {
     @Id
     @Column(name = "ID")
-    private String id ;
+    private String id;
 
     @Column(name = "MAHD", length = 10)
     private String maHD;
@@ -30,6 +30,7 @@ public class HoaDon {
 
     @Column(name = "NGAYSUA")
     private LocalDateTime ngaySua;
+
 
     @Column(name = "NGAYTHANHTOAN")
     private LocalDateTime ngayThanhToan;
@@ -46,9 +47,6 @@ public class HoaDon {
     @Column(name = "LOAIHD")
     private int loaiHD;
 
-    @Column(name = "PHIVANCHUYEN")
-    private String phiVanChuyen;
-
     @Column(name = "TENNGUOINHAN")
     private String tenNguoiNhan;
 
@@ -57,6 +55,9 @@ public class HoaDon {
 
     @Column(name = "DIACHINGUOINHAN")
     private String diaChiNguoiNhan;
+
+    @Column(name = "THANHTOAN")
+    private Integer thanhtoan;
 
     @ManyToOne
     @JoinColumn(name = "IDNV")
@@ -76,6 +77,7 @@ public class HoaDon {
             this.maHD = "HD" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
         }
     }
+
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
     private List<ChiTietHoaDon> chiTietHoaDons;
 
@@ -91,18 +93,16 @@ public class HoaDon {
                 ngayNhanHang,
                 trangThai,
                 loaiHD,
-                phiVanChuyen,
+                thanhtoan,
                 tenNguoiNhan,
                 sdtNguoiNhan,
                 diaChiNguoiNhan,
                 khachHang != null ? khachHang.getTen() : null,
                 khachHang != null ? khachHang.getSdt() : null,
                 khachHang != null ? khachHang.getEmail() : null,
-                nhanVien != null ? nhanVien.getTen() : null
-        );
+                nhanVien != null ? nhanVien.getTen() : null);
     }
 
 
 
 }
-

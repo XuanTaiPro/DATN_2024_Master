@@ -37,6 +37,12 @@
     </form>
     <form class="form-confirm">
         <p>Chúng tôi đã gửi cho bạn mã xác nhận. Vui lòng hãy kiểm tra email của bạn.</p>
+        <div class="otp-input">
+            <label for="otp">Mã OTP</label>
+            <input type="text" id="otp" name="otp">
+            <span class="error-message" id="error-OTP"></span>
+        </div>
+        <button class="btn-submit-otp">Xác nhận OTP</button>
     </form>
 </div>
 
@@ -54,6 +60,11 @@
 
     const errorTK = document.querySelector('#error-TK')
     const errorPW = document.querySelector('#error-PW')
+
+    const inpOtp = document.querySelector('#otp');
+    const btnSubmitOtp = document.querySelector('.btn-submit-otp');
+    const errorOTP = document.querySelector('#error-OTP');
+
 
     lbPass.classList.add('active-label')
     lbUser.classList.add('active-label')
@@ -79,12 +90,22 @@
             lbPass.classList.add('active-label')
         }
     })
-
+    //
+    // var genOtp = function () {
+    //     let otp = '';
+    //     for (let i = 0; i < 6; i++) {
+    //         otp += Math.floor(Math.random() * 10); // Random số từ 0 đến 9
+    //     }
+    //     return otp;
+    // };
     btnNextStep.addEventListener('click', (e) => {
         e.preventDefault()
 
         errorTK.innerText = ''
         errorPW.innerText = ''
+
+        const email = inpUser.value.trim(); // Lấy giá trị từ input
+        const password = inpPass.value.trim();
 
         if(inpUser.value.trim()===''){
             errorTK.innerText= 'Vui lòng nhập tài khoản'
@@ -93,10 +114,34 @@
             errorPW.innerText= 'Vui lòng nhập mật khẩu'
         }
 
-        if (inpUser.value.trim() !== '' && inpPass.value.trim() !== '') {
-            formUser.classList.add('active-form-user')
-            formConfirm.classList.add('active-form-confirm')
-            getData()
+        // if (inpUser.value.trim() !== '' && inpPass.value.trim() !== '') {
+        //     formUser.classList.add('active-form-user')
+        //     formConfirm.classList.add('active-form-confirm')
+        //     getData()
+        // }
+
+        // let otp = genOtp()
+        if (email !== '' && password !== '') {
+            fetch('http://localhost:8083/login/manager', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, passw: password ,otp : otp })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        formUser.classList.add('active-form-user')
+                        formConfirm.classList.add('active-form-confirm')
+                        // sessionStorage.setItem()
+                    } else {
+                        // Hiển thị lỗi nếu đăng nhập thất bại
+                        errorTK.innerText = data.message || 'Đăng nhập thất bại, vui lòng thử lại';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    errorTK.innerText = 'Đã xảy ra lỗi, vui lòng thử lại';
+                });
         }
     })
 
@@ -110,13 +155,44 @@
         const loginNV = await fetch('http://localhost:8083/login/manager',
             { method : 'POST', headers :{ 'Content-Type' : 'application/json'}, body: JSON.stringify(account)})
             .then((resp) => {
-                return resp.json()
+                return resp.text()
             })
             .then(data =>  {
-                dataFetch = data
+                sessionStorage.setItem("otp",data)
+                console.log(data)
             })
-        console.log(dataFetch)
+
     }
+
+    btnSubmitOtp.addEventListener('click', async (e) => {
+        e.preventDefault();
+        errorOTP.innerText = '';
+        const otpValue = inpOtp.value.trim();
+        if (otpValue === '') {
+            errorOTP.innerText = 'Vui lòng nhập mã OTP';
+            return;
+        }
+
+        // Lấy thông tin email từ session hoặc từ form trước đó
+        const email = inpUser.value;
+
+        // Gửi yêu cầu kiểm tra OTP
+        const otpRequest = { email: email, otp: otpValue };
+        const response = await fetch('http://localhost:8083/login/checkOtp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(otpRequest)
+        });
+
+        const result = await response.json();
+        if (result.success === false) {
+            errorOTP.innerText = result.message || 'Mã OTP không chính xác';
+        } else {
+                console.log(result)
+            window.location.href = result.redirectUrl
+        }
+
+    });
 </script>
 <style>
     .error-message {
