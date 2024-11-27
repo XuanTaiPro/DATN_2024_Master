@@ -39,4 +39,5 @@ public class ChiTietHoaDonRep {
     private String linkAnh;
 
     private String soNgaySuDung;
+    private int soLuongChiTietSanPham;
 }

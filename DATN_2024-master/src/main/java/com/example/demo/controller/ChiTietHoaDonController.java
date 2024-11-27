@@ -61,11 +61,11 @@ public class ChiTietHoaDonController {
         }
 
         GiamGia getGiamGia = sPRepo.findById(chiTietSanPham.getSanPham().getId()).get().getGiamGia();
-        int giaSauGiam = 0;
+        double giaSauGiam = 0;
         if (getGiamGia != null) {
             String phanTramGiam = getGiamGia.getGiaGiam();
-            giaSauGiam = Integer.parseInt(chiTietSanPham.getGia())
-                    - Integer.parseInt(chiTietSanPham.getGia()) * Integer.parseInt(phanTramGiam) / 100;
+            giaSauGiam = Double.parseDouble(chiTietSanPham.getGia())
+                    - Double.parseDouble(chiTietSanPham.getGia()) * Double.parseDouble(phanTramGiam) / 100;
         }
         // Tìm ChiTietHoaDon hiện có
         ChiTietHoaDon cTHDExisting = chiTietHoaDonRepo.trungCTHD(req.getIdHD(), req.getIdCTSP());
@@ -130,26 +130,26 @@ public class ChiTietHoaDonController {
         }
 
         GiamGia getGiamGia = sPRepo.findById(chiTietSanPham.getSanPham().getId()).get().getGiamGia();
-        int giaSauGiam = 0;
+        double giaSauGiam = 0;
         if (getGiamGia != null) {
             String phanTramGiam = getGiamGia.getGiaGiam();
             int phanTram = Integer.parseInt(phanTramGiam);
 
             if (phanTram < 100) {
-                giaSauGiam = Integer.parseInt(chiTietSanPham.getGia())
-                        - Integer.parseInt(chiTietSanPham.getGia()) * phanTram / 100;
+                giaSauGiam = Double.parseDouble(chiTietSanPham.getGia())
+                        - Double.parseDouble(chiTietSanPham.getGia()) * Double.parseDouble(phanTramGiam) / 100;
 
                 chiTietHoaDonExisting.setGiaSauGiam(String.valueOf(giaSauGiam));
             }
         } else {
             chiTietHoaDonExisting.setGiaSauGiam("0");
         }
+
+        chiTietHoaDonExisting.setGiaBan(chiTietSanPham.getGia());
         chiTietHoaDonExisting.setSoLuong(req.getSoLuong());
         chiTietHoaDonExisting.setHoaDon(chiTietHoaDonExisting.getHoaDon());
         chiTietHoaDonExisting.setChiTietSanPham(chiTietHoaDonExisting.getChiTietSanPham());
         chiTietHoaDonExisting.setMaCTHD(chiTietHoaDonExisting.getMaCTHD());
-
-        chiTietHoaDonExisting.setGhiChu(req.getGhiChu());
         chiTietHoaDonExisting.setNgayTao(chiTietHoaDonExisting.getNgayTao());
         chiTietHoaDonExisting.setNgaySua(LocalDateTime.now());
         chiTietHoaDonRepo.save(chiTietHoaDonExisting); // Save the updated entity
@@ -157,52 +157,62 @@ public class ChiTietHoaDonController {
         return ResponseEntity.ok("Update Done!");
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateChiTietHoaDon(@RequestParam(name = "id") String id,
-            @Validated @ModelAttribute ChiTietHoaDonReq req) {
-        Optional<ChiTietHoaDon> chiTietHoaDonOptional = chiTietHoaDonRepo.findById(id);
-        if (chiTietHoaDonOptional.isEmpty()) {
-            return ResponseEntity.status(404).body("Không tìm thấy chi tiết hóa đơn với ID: " + id);
-        }
-        ChiTietHoaDon chiTietHoaDon = chiTietHoaDonOptional.get();
-
-        ChiTietSanPham ctSP = chiTietSanPhamRepo.findById(req.getIdCTSP()).get();
-        SanPham sp = sPRepo.findById(ctSP.getSanPham().getId()).get();
-        GiamGia giamGia = sp.getGiamGia();
-
-        int giaSauGiam = 0;
-
-        if (giamGia != null) {
-            if (Integer.parseInt(giamGia.getGiaGiam()) < 100) {
-                giaSauGiam = Integer.parseInt(ctSP.getGia())
-                        - Integer.parseInt(ctSP.getGia()) * Integer.parseInt(giamGia.getGiaGiam()) / 100;
-            }
-        }
-
-        chiTietHoaDon.setGiaSauGiam(String.valueOf(giaSauGiam));
-
-        chiTietHoaDon.setSoLuong(req.getSoLuong());
-        chiTietHoaDon.setGiaBan(req.getGiaBan());
-        chiTietHoaDon.setNgaySua(LocalDateTime.now());
-        chiTietHoaDon.setGhiChu(req.getGhiChu());
-
-        Optional<ChiTietSanPham> chiTietSanPhamOptional = chiTietSanPhamRepo.findById(req.getIdCTSP());
-        if (chiTietSanPhamOptional.isPresent()) {
-            chiTietHoaDon.setChiTietSanPham(chiTietSanPhamOptional.get());
-        } else {
-            return ResponseEntity.badRequest().body("Chi tiết sản phẩm không tồn tại.");
-        }
-
-        Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(req.getIdHD());
-        if (hoaDonOptional.isPresent()) {
-            chiTietHoaDon.setHoaDon(hoaDonOptional.get());
-        } else {
-            return ResponseEntity.badRequest().body("Hóa đơn không tồn tại.");
-        }
-        System.out.println("Yêu cầu cập nhật:" + req);
-        chiTietHoaDonRepo.save(chiTietHoaDon);
-        return ResponseEntity.ok("Cập nhật chi tiết hóa đơn thành công.");
-    }
+    // @PutMapping("/update")
+    // public ResponseEntity<?> updateChiTietHoaDon(@RequestParam(name = "id")
+    // String id,
+    // @Validated @ModelAttribute ChiTietHoaDonReq req) {
+    // Optional<ChiTietHoaDon> chiTietHoaDonOptional =
+    // chiTietHoaDonRepo.findById(id);
+    // if (chiTietHoaDonOptional.isEmpty()) {
+    // return ResponseEntity.status(404).body("Không tìm thấy chi tiết hóa đơn với
+    // ID: " + id);
+    // }
+    // ChiTietHoaDon chiTietHoaDon = chiTietHoaDonOptional.get();
+    // <<<<<<< HEAD
+    // double giaBan = Double.parseDouble(req.getGiaBan());
+    // int soLuong = req.getSoLuong();
+    //
+    // =======
+    //
+    // ChiTietSanPham ctSP = chiTietSanPhamRepo.findById(req.getIdCTSP()).get();
+    // SanPham sp = sPRepo.findById(ctSP.getSanPham().getId()).get();
+    // GiamGia giamGia = sp.getGiamGia();
+    //
+    // int giaSauGiam = 0;
+    //
+    // if (giamGia != null) {
+    // if (Integer.parseInt(giamGia.getGiaGiam()) < 100) {
+    // giaSauGiam = Integer.parseInt(ctSP.getGia())
+    // - Integer.parseInt(ctSP.getGia()) * Integer.parseInt(giamGia.getGiaGiam()) /
+    // 100;
+    // }
+    // }
+    //
+    // chiTietHoaDon.setGiaSauGiam(String.valueOf(giaSauGiam));
+    // >>>>>>> 3748b3f12bafbb8e0a2715e0eef64972cf0b4aab
+    //
+    // chiTietHoaDon.setSoLuong(req.getSoLuong());
+    // chiTietHoaDon.setGiaBan(req.getGiaBan());
+    // chiTietHoaDon.setNgaySua(LocalDateTime.now());
+    //
+    // Optional<ChiTietSanPham> chiTietSanPhamOptional =
+    // chiTietSanPhamRepo.findById(req.getIdCTSP());
+    // if (chiTietSanPhamOptional.isPresent()) {
+    // chiTietHoaDon.setChiTietSanPham(chiTietSanPhamOptional.get());
+    // } else {
+    // return ResponseEntity.badRequest().body("Chi tiết sản phẩm không tồn tại.");
+    // }
+    //
+    // Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(req.getIdHD());
+    // if (hoaDonOptional.isPresent()) {
+    // chiTietHoaDon.setHoaDon(hoaDonOptional.get());
+    // } else {
+    // return ResponseEntity.badRequest().body("Hóa đơn không tồn tại.");
+    // }
+    // System.out.println("Yêu cầu cập nhật:" + req);
+    // chiTietHoaDonRepo.save(chiTietHoaDon);
+    // return ResponseEntity.ok("Cập nhật chi tiết hóa đơn thành công.");
+    // }
 
     @GetMapping("/getCTHD")
     public ResponseEntity<?> getChiTietHoaDonByIdHD(

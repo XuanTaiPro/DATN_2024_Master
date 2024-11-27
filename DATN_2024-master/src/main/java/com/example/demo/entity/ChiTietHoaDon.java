@@ -86,14 +86,13 @@ public class ChiTietHoaDon {
                 ngayTao,
                 ngaySua,
                 ghiChu,
-                chiTietSanPham != null && chiTietSanPham.getSanPham() != null ? chiTietSanPham.getSanPham().getTenSP()
-                        : null,
+                chiTietSanPham != null && chiTietSanPham.getSanPham() != null ? chiTietSanPham.getSanPham().getTenSP() : null,
                 chiTietSanPham != null ? chiTietSanPham.getGia() : null,
                 hoaDon != null ? hoaDon.getId() : null,
-                (chiTietSanPham != null && !chiTietSanPham.getAnhCTSP().isEmpty())
-                        ? chiTietSanPham.getAnhCTSP().get(0).getLink()
-                        : null,
-                chiTietSanPham != null ? chiTietSanPham.getSoNgaySuDung() : null);
+                (chiTietSanPham != null && !chiTietSanPham.getAnhCTSP().isEmpty()) ? chiTietSanPham.getAnhCTSP().get(0).getLink() : null,
+                chiTietSanPham != null ? chiTietSanPham.getSoNgaySuDung() : null,
+                chiTietSanPham != null ? chiTietSanPham.getSoLuong() : 0  // Make sure to handle null values for SoLuong
+        );
     }
 
 }

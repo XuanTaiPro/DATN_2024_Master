@@ -31,8 +31,6 @@ public class HoaDon {
     @Column(name = "NGAYSUA")
     private LocalDateTime ngaySua;
 
-    @Column(name = "GHICHU")
-    private String ghiChu;
 
     @Column(name = "NGAYTHANHTOAN")
     private LocalDateTime ngayThanhToan;
@@ -42,6 +40,9 @@ public class HoaDon {
 
     @Column(name = "TRANGTHAI")
     private int trangThai;
+
+    @Column(name = "GHICHU")
+    private String ghiChu;
 
     @Column(name = "LOAIHD")
     private int loaiHD;
@@ -78,7 +79,7 @@ public class HoaDon {
     }
 
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
-    private List<ChiTietHoaDon> chiTietHoaDons; // Quan hệ với ChiTietHoaDon
+    private List<ChiTietHoaDon> chiTietHoaDons;
 
     public HoaDonRep toResponse() {
         return new HoaDonRep(
@@ -101,5 +102,7 @@ public class HoaDon {
                 khachHang != null ? khachHang.getEmail() : null,
                 nhanVien != null ? nhanVien.getTen() : null);
     }
+
+
 
 }
