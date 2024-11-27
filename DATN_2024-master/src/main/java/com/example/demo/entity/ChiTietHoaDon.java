@@ -25,8 +25,8 @@ public class ChiTietHoaDon {
     @Column(name = "MACTHD")
     private String maCTHD;
 
-    @Column(name = "TONGTIEN")
-    private String tongTien;
+    @Column(name = "GIASAUGIAM")
+    private String giaSauGiam;
 
     @Column(name = "SOLUONG")
     private int soLuong;
@@ -77,7 +77,7 @@ public class ChiTietHoaDon {
         return new ChiTietHoaDonRep(
                 id,
                 maCTHD,
-                tongTien,
+                giaSauGiam,
                 soLuong,
                 giaBan,
                 String.valueOf(tienGiam),
@@ -85,14 +85,13 @@ public class ChiTietHoaDon {
                 ngayTao,
                 ngaySua,
                 ghiChu,
-                chiTietSanPham != null && chiTietSanPham.getSanPham() != null ? chiTietSanPham.getSanPham().getTenSP()
-                        : null,
+                chiTietSanPham != null && chiTietSanPham.getSanPham() != null ? chiTietSanPham.getSanPham().getTenSP() : null,
                 chiTietSanPham != null ? chiTietSanPham.getGia() : null,
                 hoaDon != null ? hoaDon.getId() : null,
-                (chiTietSanPham != null && !chiTietSanPham.getAnhCTSP().isEmpty())
-                        ? chiTietSanPham.getAnhCTSP().get(0).getLink()
-                        : null,
-                chiTietSanPham != null ? chiTietSanPham.getSoNgaySuDung() : null);
+                (chiTietSanPham != null && !chiTietSanPham.getAnhCTSP().isEmpty()) ? chiTietSanPham.getAnhCTSP().get(0).getLink() : null,
+                chiTietSanPham != null ? chiTietSanPham.getSoNgaySuDung() : null,
+                chiTietSanPham != null ? chiTietSanPham.getSoLuong() : 0  // Make sure to handle null values for SoLuong
+        );
     }
 
 }

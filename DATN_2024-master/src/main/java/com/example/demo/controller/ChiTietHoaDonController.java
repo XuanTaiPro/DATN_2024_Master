@@ -65,20 +65,17 @@ public class ChiTietHoaDonController {
             // Nếu đã tồn tại, tăng số lượng của ChiTietHoaDon hiện có và trừ số lượng của
             // ChiTietSanPham
             chiTietHoaDonExisting.setSoLuong(chiTietHoaDonExisting.getSoLuong() + req.getSoLuong());
-            chiTietHoaDonExisting
-                    .setTongTien(String.valueOf(chiTietHoaDonExisting.getSoLuong() * Double.valueOf(req.getGiaBan())));
+
             chiTietHoaDonRepo.save(chiTietHoaDonExisting);
         } else {
             // Nếu chưa tồn tại, tạo mới ChiTietHoaDon
             ChiTietHoaDon chiTietHoaDons = new ChiTietHoaDon();
-            chiTietHoaDons.setTongTien(String.valueOf(req.getSoLuong() * Double.valueOf(req.getGiaBan())));
             chiTietHoaDons.setSoLuong(req.getSoLuong());
             chiTietHoaDons.setTrangThai(1);
             chiTietHoaDons.setNgayTao(LocalDateTime.now());
-            chiTietHoaDons.setGhiChu(req.getGhiChu());
             chiTietHoaDons.setHoaDon(hoaDonOptional.get());
             chiTietHoaDons.setChiTietSanPham(chiTietSanPham);
-            chiTietHoaDons.setGiaBan(req.getGiaBan());
+                chiTietHoaDons.setGiaBan(req.getGiaBan());
             chiTietHoaDonRepo.save(chiTietHoaDons);
         }
 
@@ -125,9 +122,6 @@ public class ChiTietHoaDonController {
         chiTietHoaDonExisting.setHoaDon(chiTietHoaDonExisting.getHoaDon());
         chiTietHoaDonExisting.setChiTietSanPham(chiTietHoaDonExisting.getChiTietSanPham());
         chiTietHoaDonExisting.setMaCTHD(chiTietHoaDonExisting.getMaCTHD());
-        chiTietHoaDonExisting.setTongTien(
-                String.valueOf(Double.valueOf(chiTietHoaDonExisting.getGiaBan()) * chiTietHoaDonExisting.getSoLuong()));
-        chiTietHoaDonExisting.setGhiChu(req.getGhiChu());
         chiTietHoaDonExisting.setNgayTao(chiTietHoaDonExisting.getNgayTao());
         chiTietHoaDonExisting.setNgaySua(LocalDateTime.now());
         chiTietHoaDonRepo.save(chiTietHoaDonExisting); // Save the updated entity
@@ -145,13 +139,11 @@ public class ChiTietHoaDonController {
         ChiTietHoaDon chiTietHoaDon = chiTietHoaDonOptional.get();
         double giaBan = Double.parseDouble(req.getGiaBan());
         int soLuong = req.getSoLuong();
-        double tongTien = giaBan * soLuong;
 
-        chiTietHoaDon.setTongTien(String.valueOf(Double.valueOf(tongTien)));
+
         chiTietHoaDon.setSoLuong(req.getSoLuong());
         chiTietHoaDon.setGiaBan(req.getGiaBan());
         chiTietHoaDon.setNgaySua(LocalDateTime.now());
-        chiTietHoaDon.setGhiChu(req.getGhiChu());
 
         Optional<ChiTietSanPham> chiTietSanPhamOptional = chiTietSanPhamRepo.findById(req.getIdCTSP());
         if (chiTietSanPhamOptional.isPresent()) {

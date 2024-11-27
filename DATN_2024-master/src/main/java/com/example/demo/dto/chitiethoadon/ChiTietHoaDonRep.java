@@ -25,4 +25,5 @@ public class ChiTietHoaDonRep {
     private String idHD;
     private String linkAnh;
     private String soNgaySuDung;
+    private int soLuongChiTietSanPham;
 }

@@ -9,22 +9,23 @@
             <button id="addInvoiceBtn" class="btn btn-primary" style="margin-left: 10px;" ng-click="confirmAddInvoice()">
                 + Tạo Hóa Đơn
             </button>
+            <button class="btn btn-danger" ng-click="test()" >Check xóa hóa đơn cũ</button>
         </div>
         <div class="modal fade" id="confirmAddInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="confirmAddInvoiceModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="confirmAddInvoiceModalLabel">Xác nhận</h4>
-                        <button type="button" class="btn close-btn"  aria-label="Close" ng-click="closeConfirmModalAddInvoice()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                       <h5> Bạn có chắc chắn muốn tạo hóa đơn mới không?</h5>
-                    </div>
-                    <div class="modal-footer">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="confirmAddInvoiceModalLabel">Xác nhận</h4>
+                                        <button type="button" class="btn close-btn"  aria-label="Close" ng-click="closeConfirmModalAddInvoice()">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5> Bạn có chắc chắn muốn tạo hóa đơn mới không?</h5>
+                                    </div>
+                                    <div class="modal-footer">
 
-                        <button type="button" class="btn btn-secondary" ng-click="closeConfirmModalAddInvoice()">Hủy</button>
+                                        <button type="button" class="btn btn-secondary" ng-click="closeConfirmModalAddInvoice()">Hủy</button>
                         <button type="button" class="btn btn-success" ng-click="addInvoiceTab()">Xác nhận</button>
                     </div>
                 </div>
@@ -102,8 +103,6 @@
                                 <div class="form-group">
                                     <label>Số lượng:</label>
                                     <input type="number"  class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}">
-                                    <label>Ghi chú:</label>
-                                    <input type="text"  class="form-control" ng-model="ctsp.ghiChuCTHD" />
                                     <button ng-click="confirmAddInvoiceDetail()">Thêm</button>
                                     <div class="modal fade" id="confirmAddInvoiceDetailModal" tabindex="-1" role="dialog" aria-labelledby="confirmAddInvoiceDetailModalLabel" >
                                         <div class="modal-dialog" role="document">
@@ -171,10 +170,20 @@
 
 <div class="tabcontent">
     <div ng-repeat="tab in tabs" ng-show="selectedTab === $index">
-        <h3>{{ tab.title }}</h3>
-        <button class="btn btn-primary btn-lg" style="border-radius: 5px; padding: 10px 20px;">
-            <a ng-href="#!/thanhtoan/{{tab.idHD}}" style="text-decoration: none; color: white;">Thanh toán</a>
-        </button>
+
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- Tiêu đề và Nút -->
+            <div class="d-flex flex-column align-items-center me-3">
+                <h3>{{ tab.title }}</h3>
+                <button class="btn btn-primary btn-lg" style="border-radius: 5px; padding: 10px 20px;">
+                    <a ng-href="#!/thanhtoan/{{tab.idHD}}" style="text-decoration: none; color: white;">Thanh toán</a>
+                </button>
+            </div>
+            <div style="padding-right:30px;padding-top: 5px">
+                <textarea ng-model="tab.ghiChu" ng-change="updateGhiChu(tab)" placeholder="Nhập ghi chú..." class="form-control" style="width: 300px; height: 100px; resize: both;" rows="4"></textarea>
+            </div>
+        </div>
+
         <h4 class="text-center">Thông tin chi tiết hóa đơn:</h4>
         <table class="table table-hover">
             <thead>
@@ -185,7 +194,6 @@
                 <th>Số ngày sử dụng</th>
                 <th>Giá bán</th>
                 <th>Số lượng</th>
-                <th>Ghi chú</th>
                 <th>Thành tiền</th>
                 <th colspan="2">Thao tác</th>
             </tr>
@@ -197,28 +205,33 @@
                 <td>{{cthd.tenSP}}</td>
                 <td>{{cthd.soNgaySuDung}}</td>
                 <td>
-                    {{ cthd.giaBan }} VND
+                    <span ng-if="cthd.giaSauGiam && cthd.giaSauGiam !== 0">
+                        {{ cthd.giaSauGiam }} VND
+                    </span>
+                    <span ng-if="!cthd.giaSauGiam || cthd.giaSauGiam === 0">
+                        {{ cthd.giaBan }} VND
+                    </span>
                     <span ng-if="cthd.tienGiam && cthd.tienGiam !== 0" class="text-danger">
                         (Giảm: {{ cthd.tienGiam }} VND)
                     </span>
                 </td>
                 <td>
                     <input type="hidden" ng-model="cthd.id">
-                    <input type="number" class="form-control" ng-model="cthd.soLuong"
+                    <input type="number" class="form-control" ng-model="cthd.soLuong" min="1" max="cthd.soLuongChiTietSanPham"
                             ng-change="updateTotal(cthd)" style="width: 90px"/>
                 </td>
-                <td>
-                    <input ng-model="cthd.ghiChu" ng-change="updateTotal(cthd)" style="width: 150px">
+                <td>{{ calculateTotalAmount(cthd)  }} VND
                 </td>
-                <td>{{cthd.tongTien}} VND</td>
                 <td>
-                    <button ng-click="deleteCTHD(cthd.id)" class="btn btn-danger">Xóa</button>
+                    <button ng-click="confirmDeleteCTHD(cthd.id)" class="btn btn-danger"><i class="fa fa-trash"></i> </button>
                 </td>
             </tr>
             </tbody>
         </table>
 
-        <div class="text-center">
+        <div style="text-align: right;">
+            <h4>Tổng tiền tất cả: {{ calculateTotalForList(cthds) }} VND</h4>
+        </div>        <div class="text-center">
             <ul class="pagination">
                 <li ng-class="{ 'disabled': currentPage === 0 }">
                     <button class="btn btn-outline-secondary" ng-click="previousPage()">Previous</button>
@@ -230,6 +243,23 @@
                     <button class="btn btn-outline-secondary" ng-click="nextPage()">Next</button>
                 </li>
             </ul>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmDeleteInvoiceDetailModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteInvoiceDetailModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="confirmDeleteInvoiceDetailModalLabel">Xác nhận xóa</h4>
+            </div>
+            <div class="modal-body">
+                <h5>Bạn có chắc chắn muốn xóa sản phẩm này không?</h5>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" ng-click="closeConfirmDeleteCTHD()">Hủy</button>
+                <button type="button" class="btn btn-danger" ng-click="deleteCTHD(idToDelete)">Xóa</button>
+            </div>
         </div>
     </div>
 </div>

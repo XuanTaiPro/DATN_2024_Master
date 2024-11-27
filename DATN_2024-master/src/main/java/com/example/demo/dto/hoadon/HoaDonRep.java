@@ -17,7 +17,7 @@ public class HoaDonRep {
     private String maVoucher;
     private LocalDateTime ngayTao;
     private LocalDateTime ngaySua;
-    private String thanhTien;
+    private String ghiChu;
     private LocalDateTime ngayThanhToan;
     private LocalDateTime ngayNhanHang;
     private int trangThai;

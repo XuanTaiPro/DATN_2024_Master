@@ -26,7 +26,7 @@ public class HoaDonReq {
 
     private LocalDateTime ngaySua;
 
-    private String thanhTien;
+    private String ghiChu;
 
     private LocalDateTime ngayThanhToan;
 
