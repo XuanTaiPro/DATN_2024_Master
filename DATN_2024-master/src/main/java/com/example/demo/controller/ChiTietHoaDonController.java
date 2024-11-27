@@ -141,9 +141,9 @@ public class ChiTietHoaDonController {
 
                 chiTietHoaDonExisting.setGiaSauGiam(String.valueOf(giaSauGiam));
             }
+        } else {
+            chiTietHoaDonExisting.setGiaSauGiam("0");
         }
-        chiTietHoaDonExisting.setGiaSauGiam("0");
-
         chiTietHoaDonExisting.setSoLuong(req.getSoLuong());
         chiTietHoaDonExisting.setHoaDon(chiTietHoaDonExisting.getHoaDon());
         chiTietHoaDonExisting.setChiTietSanPham(chiTietHoaDonExisting.getChiTietSanPham());
