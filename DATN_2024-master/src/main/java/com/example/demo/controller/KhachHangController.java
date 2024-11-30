@@ -104,7 +104,47 @@ public class KhachHangController {
         khRepo.save(khachHang);
         return ResponseEntity.ok("thêm thành công");
     }
+    @PostMapping("dangKy")
+    public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest, BindingResult bindingResult) {
+        // Kiểm tra lỗi trong BindingResult
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors()
+                    .stream()
+                    .map(error -> error.getDefaultMessage())
+                    .toList();
+            return ResponseEntity.badRequest().body(String.join("\n", errors));
+        }
 
+        // Gán ID nếu chưa có
+        khachHangRequest.setId(Optional.ofNullable(khachHangRequest.getId())
+                .filter(id -> !id.isEmpty())
+                .orElse(UUID.randomUUID().toString().substring(0, 8).toUpperCase()));
+
+        KhachHang khachHang = khachHangRequest.toEntity();
+        khachHang.setNgayTao(LocalDateTime.now());
+        khachHang.setMa(generateUniqueMa());
+        khachHang.setPassw(khachHangRequest.getPassw());
+        khachHang.setEmail(khachHangRequest.getEmail());
+        khachHang.setDiaChi(khachHangRequest.getDiaChi());
+        khachHang.setGioiTinh(khachHangRequest.getGioiTinh());
+        khachHang.setId(khachHangRequest.getId());
+        khachHang.setTrangThai(1);
+        khachHang.setSdt(khachHangRequest.getSdt());
+
+        // Lưu khách hàng vào cơ sở dữ liệu
+        khRepo.save(khachHang);
+        return ResponseEntity.ok("Thêm thành công");
+    }
+
+    // Hàm tạo mã khách hàng duy nhất
+    private String generateUniqueMa() {
+        String generatedMa;
+        do {
+            String randomString = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+            generatedMa = "KH" + randomString;
+        } while (khRepo.getByMa(generatedMa) != null);
+        return generatedMa;
+    }
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody KhachHangRequest khachHangRequest,
             BindingResult bindingResult) {

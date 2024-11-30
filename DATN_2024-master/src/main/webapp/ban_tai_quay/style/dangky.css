@@ -1,0 +1,210 @@
+/* Nền trang */
+.back-ground {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    filter: brightness(0.8);
+    background: url("https://png.pngtree.com/thumb_back/fw800/background/20190223/ourmid/pngtree-full-light-blue-line-wavy-diamond-background-image_68273.jpg"), no-repeat, center;
+    background-size: cover;
+    opacity: 0.7;
+    z-index: -1;
+}
+
+/* Form đăng ký */
+.form-register {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 500px;
+    height: 650px;  /* Thêm chiều cao cho form đăng ký */
+    top: 50%;
+    left: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    border-radius: 15px;
+    border: .5px solid rgb(200, 200, 200);
+    box-shadow: 0 0 10px 6px rgb(190, 215, 215);
+    background-color: rgb(220, 235, 235);
+    overflow: hidden;
+}
+
+/* Tiêu đề form */
+h3 {
+    text-align: center;
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Đường viền chuyển động trên cùng của form */
+.form-register::before {
+    content: "";
+    position: absolute;
+    width: 60px;
+    height: 2px;
+    border-radius: 10px;
+    background-color: lightblue;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    animation: run-border 10s linear infinite;
+}
+/*.gender-account {*/
+/*    margin-top: 15px;*/
+/*}*/
+
+/*.gender-account label {*/
+/*    font-size: 14px;*/
+/*    color: #333;*/
+/*    margin-right: 20px;*/
+/*}*/
+
+.gender-options {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+.gender-options div {
+    display: flex;
+    align-items: center;
+}
+
+.gender-options input[type="radio"] {
+    margin-right: 10px;
+    margin-left: 40px;
+}
+.gender-options label{
+    margin-left: 60px;
+
+}
+/* Hiệu ứng animation cho đường viền */
+@keyframes run-border {
+    0% {
+        top: 0;
+        left: -28px;
+        transform: rotate(0deg);
+    }
+    24.9% {
+        top: 0;
+        left: calc(100% - 32px);
+    }
+    25% {
+        top: 0;
+        left: calc(100% - 32px);
+        transform: rotate(90deg);
+    }
+    49.9% {
+        top: calc(100% - 4px);
+        left: calc(100% - 32px);
+        transform: rotate(90deg);
+    }
+    50% {
+        top: calc(100% - 4px);
+        left: calc(100% - 32px);
+        transform: rotate(180deg);
+    }
+    74.9% {
+        top: calc(100% - 4px);
+        left: 0;
+        transform: rotate(180deg);
+    }
+    75% {
+        top: calc(100% - 4px);
+        left: -28px;
+        transform: rotate(270deg);
+    }
+    99.9% {
+        top: 0;
+        left: -28px;
+        transform: rotate(270deg);
+    }
+    100% {
+        top: 0;
+        left: -28px;
+        transform: rotate(360deg);
+    }
+}
+
+/* Các trường nhập liệu */
+.form-register .form-user {
+    display: grid;
+    align-items: center;
+    width: 80%;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    transition: all 2s ease;
+}
+
+/* Các trường nhập liệu - Label và input */
+.name-account, .email-account, .gender-account, .phone-account, .address-account ,.password-account{
+    display: flex;
+    position: relative;
+    padding: 10px 0;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+input {
+    width: 100%;
+    height: 45px;
+    border: .5px solid rgb(75, 170, 255);
+    border-radius: 15px;
+    padding-left: 10px;
+    font: 18px 'Times New Roman';
+    outline: none;
+}
+
+label {
+    position: absolute;
+    background-color: transparent;
+    color: inherit;
+    font-size: 17px;
+    z-index: 1;
+    transition: all .4s ease-out;
+}
+
+/* Label thay đổi vị trí khi người dùng nhập */
+.active-label {
+    /*top: 50%;*/
+    left: 10%;
+    background-color: white;
+    /*transform: translate(-50%, -50%);*/
+}
+
+.no-active-label {
+    top: 0;
+    left: 15px;
+    background: linear-gradient(to top, white 50%, rgb(220, 235, 235) 50%);
+}
+
+/* Các nút submit */
+.submit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+button {
+    height: 45px;
+    outline: none;
+    border: .5px solid rgb(75, 170, 255);
+    border-radius: 10px;
+    font: 16px 'Times New Roman';
+    padding: 0 15px;
+    cursor: pointer;
+}
+
+/* Thêm hiệu ứng hover cho nút */
+button:hover {
+    background-color: rgb(75, 170, 255);
+    color: white;
+}
