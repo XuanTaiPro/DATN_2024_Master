@@ -21,14 +21,11 @@ window.banhangCtrl = function ($scope, $http, $document) {
     $scope.addInvoiceTab = function () {
         $('#confirmAddInvoiceModal').modal('hide');
 
-        const formData = new FormData();
-        formData.append('idNV', '40E70DA8'); // Thay đổi theo nhu cầu
+
 
         // Gọi API để thêm hóa đơn
-        $http.post('http://localhost:8083/hoadon/add', formData, {
-            transformRequest: angular.identity,
-            headers: { 'Content-Type': undefined }
-        })
+        $http.post('http://localhost:8083/hoadon/add'
+        )
             .then(function(response) {
                 // Kiểm tra xem hóa đơn đã được thêm thành công
                 $('#addInvoiceModal').modal('show'); // Hiển thị modal
@@ -140,7 +137,8 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $scope.currentPage = page || 0; // Mặc định trang 0 nếu không có trang nào được cung cấp
         $http.get('http://localhost:8083/chitiethoadon/getCTHD?page=' + $scope.currentPage + '&idHD=' + idHD)
             .then(function (response) {
-                $scope.cthds = response.data.cthds; // Dữ liệu chi tiết hóa đơn
+                $scope.cthds = response.data.cthds;
+                console.log(response.data.cthds)// Dữ liệu chi tiết hóa đơn
                 $scope.totalPages = response.data.totalPages; // Tổng số trang
                 $scope.pages = Array.from({ length: $scope.totalPages }, (v, i) => i); // Mảng trang
             })

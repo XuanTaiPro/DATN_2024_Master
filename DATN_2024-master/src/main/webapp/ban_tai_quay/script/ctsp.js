@@ -247,14 +247,14 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
                         // Thêm URL tạm thời vào selectedImages của product
                         $scope.product.selectedImages.push(e.target.result);
                         // Thêm đường dẫn vào linkAnhList của product
-                        $scope.product.linkAnhList.push('/Ban_tai_quay/img/' + file.name);
+                        $scope.product.linkAnhList.push('img/' + file.name);
 
                         // Nếu cần, bạn có thể thêm URL tạm thời vào imagePreviews của productDetail
                         $scope.productDetail.imagePreviews.push(e.target.result);
                         // Thêm vào selectedImages của productDetail nếu cần
                         $scope.productDetail.selectedImages.push(e.target.result);
                         // Thêm đường dẫn vào linkAnhList của productDetail
-                        $scope.productDetail.linkAnhList.push('/Ban_tai_quay/img/' + file.name);
+                        $scope.productDetail.linkAnhList.push('img/' + file.name);
                     });
                 };
                 reader.readAsDataURL(file);

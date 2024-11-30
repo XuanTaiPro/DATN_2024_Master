@@ -115,7 +115,7 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
     };
 
     $scope.loadPage = function (page) {
-        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=265C4B6C&page=0`)
+        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=${$scope.idHD}&page=0`)
             .then(function (response) {
                 let data = response.data;
                 $scope.listCTHD = response.data.cthds;
@@ -133,7 +133,7 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
                 // Tính tổng tiền
                 let tt = 0;
                 data.cthds.forEach(item => {
-                    tt += parseInt(item.tongTien);
+                    tt += parseInt(item.soLuong * item.giaSauGiam);
                 });
                 $scope.tongTien = tt;
             })
@@ -170,7 +170,7 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
     $scope.calculateTotalAmount = function () {
         let total = 0;
         $scope.listCTHD.forEach(item => {
-            total += parseInt(item.tongTien);
+            total += parseInt(item.soLuong * item.giaSauGiam);
         });
         $scope.tongTien = total;
     };
@@ -316,7 +316,7 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
             tongTien: $scope.tongTien,
             maVoucher: $scope.appliedVoucherId || null
         };
-        $http.put(`http://localhost:8083/hoadon/update/1C5331D3`, hoaDonData)
+        $http.put(`http://localhost:8083/hoadon/update/${$scope.idHD}`, hoaDonData)
             .then(function (response) {
                 alert("Thanh toán thành công!");
                 if ($scope.appliedVoucherId) {
