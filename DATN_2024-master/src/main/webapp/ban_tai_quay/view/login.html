@@ -9,7 +9,7 @@
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 
     <link rel="stylesheet" href="../style/login.css">
-<!--    <script src="../script/login.js"></script>-->
+<!--    <script src="./script/login.js"></script>-->
 </head>
 
 <body>
@@ -90,14 +90,7 @@
             lbPass.classList.add('active-label')
         }
     })
-    //
-    // var genOtp = function () {
-    //     let otp = '';
-    //     for (let i = 0; i < 6; i++) {
-    //         otp += Math.floor(Math.random() * 10); // Random số từ 0 đến 9
-    //     }
-    //     return otp;
-    // };
+
     btnNextStep.addEventListener('click', (e) => {
         e.preventDefault()
 
@@ -114,13 +107,6 @@
             errorPW.innerText= 'Vui lòng nhập mật khẩu'
         }
 
-        // if (inpUser.value.trim() !== '' && inpPass.value.trim() !== '') {
-        //     formUser.classList.add('active-form-user')
-        //     formConfirm.classList.add('active-form-confirm')
-        //     getData()
-        // }
-
-        // let otp = genOtp()
         if (email !== '' && password !== '') {
             fetch('http://localhost:8083/login/manager', {
                 method: 'POST',
@@ -189,6 +175,7 @@
             errorOTP.innerText = result.message || 'Mã OTP không chính xác';
         } else {
                 console.log(result)
+            sessionStorage.setItem('loginOk',true)
             window.location.href = result.redirectUrl
         }
 

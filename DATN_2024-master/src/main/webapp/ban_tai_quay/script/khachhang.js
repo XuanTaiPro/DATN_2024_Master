@@ -7,6 +7,46 @@ window.khachhangCtrl = function ($scope, $http) {
     $scope.pageSize = 3;
     $scope.emptyMessage = "";
 
+    $scope.search = {
+        ten: '',
+        gioiTinh: '',
+        diaChi: '',
+        trangThai: ''
+    }
+    $scope.searchAndFilter = function (page = 0) {
+        const params = {
+            ...$scope.search,
+            page: page,
+            size: $scope.pageSize
+        };
+
+        $http.get('http://localhost:8083/khachhang/search-filter', {params})
+            .then(function (response) {
+                $scope.listKhachHang = response.data.khachHangs;
+                $scope.currentPage = response.data.currentPage;
+                $scope.totalPages = response.data.totalPages;
+
+                if ($scope.listKhachHang.length === 0) {
+                    $scope.emptyMessage = response.data.message || "không tìm thấy khách hàng với tiêu chí lọc";
+                } else {
+                    $scope.emptyMessage = "";
+                }
+            }).catch(function (error) {
+            console.log("Lỗi khi tìm kiếm " + error)
+            alert(("Xảy ra lỗi khi tìm kiếm!!"))
+        });
+    };
+
+    $scope.resetFilters = function () {
+        $scope.search = {
+            ten: '',
+            gioiTinh: '',
+            diaChi: '',
+            trangThai: ''
+        }
+        $scope.loadPage(0);
+    }
+
     $scope.loadPage = function (page) {
         $http.get('http://localhost:8083/khachhang/page?page=' + page)
             .then(function (response) {
@@ -26,31 +66,35 @@ window.khachhangCtrl = function ($scope, $http) {
             });
     };
 
-    $scope.getSTT = function(index) {
+    $scope.getSTT = function (index) {
         return index + 1 + ($scope.currentPage * $scope.pageSize);
     };
-    $scope.range = function(n) {
+    $scope.range = function (n) {
         return new Array(n);
     };
 
-    $scope.setPage = function(page) {
+    $scope.setPage = function (page) {
         if (page >= 0 && page < $scope.totalPages) {
-            $scope.loadPage(page);
+          if($scope.search.ten || $scope.search.gioiTinh || $scope.search.diaChi || $scope.search.trangThai){
+              $scope.seacrhKH(page);
+          }else {
+              $scope.loadPage(page);
+          }
         }
     };
 
-    $scope.prevPage = function() {
+    $scope.prevPage = function () {
         if ($scope.currentPage > 0) {
             $scope.setPage($scope.currentPage - 1);
         }
     };
 
-    $scope.nextPage = function() {
+    $scope.nextPage = function () {
         if ($scope.currentPage < $scope.totalPages - 1) {
             $scope.setPage($scope.currentPage + 1);
         }
     };
-    $scope.range = function(n) {
+    $scope.range = function (n) {
         var arr = [];
         for (var i = 0; i < n; i++) {
             arr.push(i);
@@ -73,13 +117,11 @@ window.khachhangCtrl = function ($scope, $http) {
         $scope.selectedKhachHang = angular.copy(khachHang);
         $scope.selectedKhachHang.trangThai = khachHang.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động';
     }
-    $scope.openUpdateModal = function(khachHang) {
+    $scope.openUpdateModal = function (khachHang) {
         $scope.selectedKhachHang = angular.copy(khachHang);
         $scope.selectedKhachHang.trangThai = khachHang.trangThai.toString();
         console.log("Trạng thái hiện tại:", $scope.selectedKhachHang.trangThai);// Sao chép dữ liệu nhân viên cần cập nhật
     };
-
-
 
 
     $scope.addKhachHang = function () {
@@ -102,9 +144,7 @@ window.khachhangCtrl = function ($scope, $http) {
                 $scope.listKhachHang.push(response.data);
                 // Đóng modal
                 $('#productModal').modal('hide');
-                $scope.successMessage = "Khách hàng đã được thêm thành công!";
-                setTimeout(function() {
-                    $scope.successMessage = "";
+                setTimeout(function () {
                     location.reload();
                 }, 500);
             })
@@ -144,6 +184,7 @@ window.khachhangCtrl = function ($scope, $http) {
                 });
         }
     };
+
 //     // Reset form
     function resetForm() {
         $scope.ten = "";

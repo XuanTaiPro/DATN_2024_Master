@@ -1,6 +1,8 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +14,18 @@ public interface KhachHangRepository extends JpaRepository<KhachHang,String> {
 //    String findLastCustomerCode();
     boolean existsByMa(String ma);
     KhachHang getById(String id);
-    List<KhachHang> findByTenContainingIgnoreCase(String ten);
+
+    @Query("SELECT kh FROM KhachHang  kh WHERE " +
+            "(:ten IS NULL OR kh.ten LIKE %:ten%) AND " +
+            "(:gioiTinh IS NULL OR :gioiTinh = '' OR kh.gioiTinh = :gioiTinh) AND " +
+            "(:diaChi IS NULL OR :diaChi = '' OR kh.diaChi LIKE %:diaChi%) AND " +
+            "(:trangThai IS NULL OR kh.trangThai = :trangThai)")
+    Page<KhachHang> timKiemVaLocKhachHang(
+            @Param("ten") String ten,
+            @Param("gioiTinh") String gioiTinh,
+            @Param("diaChi") String diaChi,
+            @Param("trangThai") Integer trangThai,
+            Pageable pageable);
 
     KhachHang getKhachHangByTen(String ten);
 

@@ -1,5 +1,35 @@
 <section class="p-3">
     <h1>Quản lý khách hàng</h1>
+
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" ng-model="search.gioiTinh">
+                <option value="">-- Giới tính --</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Địa chỉ" ng-model="search.diaChi">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" ng-model="search.trangThai">
+                <option value="">-- Trạng thái --</option>
+                <option value="1">Hoạt động</option>
+                <option value="0">Ngưng hoạt động</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12 text-end">
+            <button class="btn btn-primary" ng-click="searchAndFilter()">Tìm kiếm</button>
+            <button class="btn btn-secondary" ng-click="resetFilters()">Xóa lọc</button>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
@@ -54,7 +84,7 @@
                 </tr>
                 </tbody>
             </table>
-            <p class="text-center text-muted" ng-if="listNhanVien.length === 0">{{ emptyMessage }}</p>
+            <p class="text-center text-muted" ng-if="listKhachHang.length === 0">{{ emptyMessage }}</p>
             <ul class="pagination justify-content-center">
                 <li class="page-item" ng-class="{disabled: currentPage == 0}">
                     <a class="page-link" href="" ng-click="prevPage()">«</a>
@@ -108,7 +138,7 @@
                         </div>
                         <div>
                             <label for="diaChi">Địa chỉ:</label>
-                            <input type="text" ng-model="diaChi" id="diaChi" minlength="11" maxlength="11" required>
+                            <input type="text" ng-model="diaChi" id="diaChi" required>
                         </div>
                         <div>
                             <label for="trangThai">Trạng thái:</label>
