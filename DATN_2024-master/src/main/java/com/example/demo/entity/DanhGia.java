@@ -1,6 +1,6 @@
 package com.example.demo.entity;
 
-
+import com.example.demo.dto.danhgia.DanhGiaRespOnline;
 import com.example.demo.dto.danhgia.DanhGiaRespone;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,11 +22,10 @@ public class DanhGia {
     private String id;
 
     @Column(name = "SAO")
-    private int sao;
+    private Integer sao;
 
     @Column(name = "NHANXET")
     private String nhanXet;
-
 
     @Column(name = "TRANGTHAI")
     private int trangThai;
@@ -51,7 +50,22 @@ public class DanhGia {
             this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         }
     }
-    public DanhGiaRespone toRespone(){
-        return new DanhGiaRespone(id, sao, nhanXet,trangThai, ngayDanhGia, ngaySua, chiTietSanPham != null ? chiTietSanPham.getMa() : null, khachHang.getMa());
+
+    public DanhGiaRespone toRespone() {
+        return new DanhGiaRespone(id, sao, nhanXet, trangThai, ngayDanhGia, ngaySua,
+                chiTietSanPham != null ? chiTietSanPham.getMa() : null, khachHang.getMa());
+    }
+
+    public DanhGiaRespOnline convertFromDanhGia() {
+        return new DanhGiaRespOnline(
+                id,
+                null,
+                null,
+                null,
+                ngayDanhGia,
+                null,
+                null,
+                chiTietSanPham,
+                khachHang);
     }
 }

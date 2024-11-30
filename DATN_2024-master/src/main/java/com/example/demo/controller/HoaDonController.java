@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -63,6 +64,9 @@ public class HoaDonController {
     @Autowired
     private ChiTietVoucherRepository ctvcRepo;
 
+    @Autowired
+    private DanhGiaRepository dgRepo;
+
     @GetMapping("/page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
@@ -89,6 +93,7 @@ public class HoaDonController {
         List<HoaDon> listHoaDon = hoaDonRepo.getHDTaiQuay(1);
         return ResponseEntity.ok(listHoaDon.stream().map(HoaDon::toResponse));
     }
+
     @GetMapping("/tuDongXoaHoaDon")
     @Transactional
     public ResponseEntity<?> tuDongXoaHD() {
@@ -124,6 +129,7 @@ public class HoaDonController {
         // Trả về phản hồi khi xóa thành công
         return ResponseEntity.ok("Đã xóa các hóa đơn cũ");
     }
+
     @GetMapping("/getHDNullKH")
     public ResponseEntity<?> nullKH() {
         List<HoaDon> listHoaDon = hoaDonRepo.getHDNullKH();
@@ -340,6 +346,22 @@ public class HoaDonController {
             HoaDon hoaDonExisting = hoaDonOptional.get();
             hoaDonExisting.setTrangThai(2);
             hoaDonRepo.save(hoaDonExisting);
+
+            KhachHang getKH = hoaDonExisting.getKhachHang();
+
+            List<ChiTietHoaDon> cthdList = chiTietHoaDonRepo.findByHoaDon(hoaDonExisting.getId());
+            for (ChiTietHoaDon cthd : cthdList) {
+                DanhGia dg = new DanhGia();
+                ChiTietSanPham getCTSP = chiTietSanPhamRepo.findById(cthd.getChiTietSanPham().getId()).get();
+                dg.setChiTietSanPham(getCTSP);
+
+                dg.setKhachHang(getKH);
+                dg.setNgayDanhGia(LocalDateTime.now());
+                dg.setTrangThai(0);
+
+                dgRepo.save(dg);
+            }
+
             return ResponseEntity.ok("Xác nhận hóa đơn thành công.");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
@@ -438,6 +460,7 @@ public class HoaDonController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PutMapping("/update-ghi-chu/{id}")
     public ResponseEntity<Void> updateGhiChu(@PathVariable String id, @RequestBody Map<String, String> payload) {
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(id);
@@ -461,6 +484,7 @@ public class HoaDonController {
             return ResponseEntity.notFound().build();
         }
     }
+
     // Delete
     @DeleteMapping("/delete")
     public ResponseEntity<Void> deleteHoaDon(@RequestBody Map<String, String> request) {
