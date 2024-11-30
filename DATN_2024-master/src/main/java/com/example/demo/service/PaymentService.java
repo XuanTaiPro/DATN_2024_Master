@@ -25,8 +25,8 @@ public class PaymentService {
             vnpParamsMap.put("vnp_BankCode", bankCode);
         }
 
-        // System.out.println("time: " +
-        // vnPayConfig.getVNPayConfig().get("vnp_ExpireDate"));
+        // // System.out.println("time: " +
+        // // vnPayConfig.getVNPayConfig().get("vnp_ExpireDate"));
 
         vnpParamsMap.put("vnp_IpAddr", VNPayUtil.getIpAddress(request));
         // build query url

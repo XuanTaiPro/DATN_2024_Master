@@ -17,12 +17,12 @@ public class HoaDonRep {
     private String maVoucher;
     private LocalDateTime ngayTao;
     private LocalDateTime ngaySua;
-    private String thanhTien;
+    private String ghiChu;
     private LocalDateTime ngayThanhToan;
     private LocalDateTime ngayNhanHang;
     private int trangThai;
     private int loaiHD;
-    private String phiVanChuyen;
+    private Integer thanhToan;
     private String tenNguoiNhan;
     private String sdtNguoiNhan;
     private String diaChiNguoiNhan;
@@ -31,6 +31,3 @@ public class HoaDonRep {
     private String email;
     private String tenNV;
 }
-
-
-

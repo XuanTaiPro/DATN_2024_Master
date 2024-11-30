@@ -11,18 +11,33 @@ import java.time.LocalDateTime;
 @Data
 public class ChiTietHoaDonRep {
     private String id;
+
     private String maCTHD;
-    private String tongTien;
+
+    private String giaSauGiam;
+
     private int soLuong;
+
     private String giaBan;
+
     private String tienGiam;
+
     private int trangThai;
+
     private LocalDateTime ngayTao;
+
     private LocalDateTime ngaySua;
+
     private String ghiChu;
+
     private String tenSP;
+
     private String gia;
+
     private String idHD;
+
     private String linkAnh;
+
     private String soNgaySuDung;
+    private int soLuongChiTietSanPham;
 }

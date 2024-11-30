@@ -81,25 +81,91 @@ window.hoaDonCtrl = function ($scope, $http) {
                 // Có thể làm gì đó với phản hồi thành công ở đây
                 alert("Xác nhận hóa đơn " + id + " thành công.");
                 // Tải lại hóa đơn hoặc cập nhật danh sách
-                $scope.getHoaDonsByTrangThai(2, 0);
+                $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage - 1);
             })
             .catch(function (error) {
-                $scope.getHoaDonsByTrangThai(2, 0);
+                $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage - 1);
+            });
+    };
+    $scope.updateGhiChu = function(hd) {
+        const payload = {
+            ghiChu: hd.ghiChu // Assuming `hd.ghiChu` contains the updated note
+        };
+        $http.put('http://localhost:8083/hoadon/update-ghi-chu/' + hd.id, payload)
+            .then(function(response) {
+                console.log("Update successful:", response);
+                $scope.detailHoaDon(hd.id);
+            })
+            .catch(function(error) {
+                console.log("Error:", error);
             });
     };
     $scope.detailHoaDon = function (id) {
-        // Gửi yêu cầu tới server để lấy thông tin chi tiết của hóa đơn theo id
         $http.get('http://localhost:8083/hoadon/detail', { params: { idHD: id } })
             .then(function (response) {
-                // Lưu thông tin chi tiết vào scope để hiển thị
-                $scope.hoaDonDetail = response.data;
-                // Hiển thị modal chi tiết
-                $('#readData').modal('show');
+                console.log("Full response data:", response.data); // Log toàn bộ dữ liệu phản hồi
+                // Lưu hoaDonRep và chiTietHoaDons vào scope
+                if (response.data) {
+                    $scope.hoaDonDetail = response.data.hoaDonRep; // Lưu thông tin hóa đơn
+                    $scope.chiTietHoaDons = response.data.chiTietHoaDons; // Lưu danh sách chi tiết hóa đơn
+
+                    console.log("hoaDonDetail:", $scope.hoaDonDetail);
+                    console.log("Chi tiết hóa đơn:", $scope.chiTietHoaDons);
+                }
+
+                $('#readData').modal('show'); // Hiển thị modal
             })
             .catch(function (error) {
                 console.error('Error fetching invoice details:', error);
                 alert('Không thể lấy thông tin chi tiết của hóa đơn.');
             });
     };
+    $scope.calculateTotalAmount = function(cthd) {
+        if (!cthd) return 0; // Kiểm tra nếu đối tượng không tồn tại
+
+        const gia = cthd.giaSauGiam || cthd.giaBan; // Lấy giá sau giảm, nếu không có thì dùng giá bán
+        const soLuong = cthd.soLuong || 0; // Lấy số lượng, mặc định là 0 nếu không có
+
+        return gia * soLuong; // Tính tổng tiền
+    };
+
+// Hàm tính tổng tiền cho tất cả chi tiết hóa đơn trong tab hiện tại
+    $scope.calculateTotalForList = function(chiTietHoaDons) {
+        if (!Array.isArray(chiTietHoaDons)) return 0; // Kiểm tra nếu không phải danh sách
+
+        return chiTietHoaDons.reduce(function(total, cthd) {
+            return total + $scope.calculateTotalAmount(cthd); // Sử dụng hàm tính tổng cho từng chi tiết
+        }, 0); // Tính tổng tiền bằng cách cộng dồn
+    };
+    $scope.getTotalAmount = function(items) {
+        let total = 0;
+        if (items) {
+            items.forEach(item => {
+                total += Number(item.tongTien); // Cộng dồn tổng tiền
+            });
+        }
+        return total; // Trả về tổng tiền
+    };
+    $scope.deleteInvoice = function (idHD) {
+        $http({
+            method: 'DELETE',
+            url: 'http://localhost:8083/hoadon/delete', // Đường dẫn tới API
+            data: { id: idHD }, // Gửi id hóa đơn qua request body
+            headers: { "Content-Type": "application/json;charset=utf-8" }
+        })
+            .then(function (response) {
+                $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage - 1);
+            })
+            .catch(function (error) {
+                // Xử lý lỗi
+                if (error.status === 404) {
+                    alert('Hóa đơn không tồn tại!');
+                } else {
+                    alert('Không thể xóa hóa đơn, vui lòng thử lại sau.');
+                }
+            });
+
+    };
+
     $scope.getHoaDonsByTrangThai(null, 0);
 };
