@@ -15,7 +15,6 @@ public class DanhGiaRespone {
 
     private String nhanXet;
 
-
     private int trangThai;
 
     private LocalDateTime ngayDanhGia;

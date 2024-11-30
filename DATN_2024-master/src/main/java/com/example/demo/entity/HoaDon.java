@@ -82,6 +82,15 @@ public class HoaDon {
     private List<ChiTietHoaDon> chiTietHoaDons;
 
     public HoaDonRep toResponse() {
+        // Initialize tongTien to 0.0 to avoid NullPointerException
+        Double tongTien = 0.0;
+
+        // Iterate through each chiTietHoaDon to calculate the total
+        for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
+            tongTien += Double.valueOf(chiTietHoaDon.getGiaSauGiam()) * chiTietHoaDon.getSoLuong();
+        }
+
+        // Return the HoaDonRep response with the calculated tongTien
         return new HoaDonRep(
                 id,
                 maHD,
@@ -100,7 +109,9 @@ public class HoaDon {
                 khachHang != null ? khachHang.getTen() : null,
                 khachHang != null ? khachHang.getSdt() : null,
                 khachHang != null ? khachHang.getEmail() : null,
-                nhanVien != null ? nhanVien.getTen() : null);
+                nhanVien != null ? nhanVien.getTen() : null,
+                String.valueOf(tongTien)
+        );
     }
 
 

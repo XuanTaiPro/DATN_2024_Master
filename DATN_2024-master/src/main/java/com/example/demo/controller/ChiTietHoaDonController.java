@@ -71,6 +71,9 @@ public class ChiTietHoaDonController {
         else{
             giaSauGiam=Double.parseDouble(chiTietSanPham.getGia());
         }
+        else{
+            giaSauGiam=Double.parseDouble(chiTietSanPham.getGia());
+        }
         // Tìm ChiTietHoaDon hiện có
         ChiTietHoaDon cTHDExisting = chiTietHoaDonRepo.trungCTHD(req.getIdHD(), req.getIdCTSP());
         if (cTHDExisting != null) {

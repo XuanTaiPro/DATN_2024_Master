@@ -1,17 +1,5 @@
 
 spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: tailxph32074@fpt.edu.vn
-    password: zhcrequkemdubzrn
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
   application:
     name: demo
 

@@ -20,7 +20,7 @@ window.hoaDonCtrl = function ($scope, $http) {
     $http.get('http://localhost:8083/hoadon/listNV').then(function (response) {
         $scope.nhanViens = response.data;
     });
-
+    // $scope.chiTietHoaDons=[];
     $scope.getHoaDonsByTrangThai = function (trangThai, page) {
         $scope.selectedTrangThai = trangThai; // Cập nhật trạng thái đã chọn
         $scope.currentPage = page || 0; // Mặc định trang 0 nếu không có trang nào được cung cấp
@@ -108,9 +108,6 @@ window.hoaDonCtrl = function ($scope, $http) {
                 if (response.data) {
                     $scope.hoaDonDetail = response.data.hoaDonRep; // Lưu thông tin hóa đơn
                     $scope.chiTietHoaDons = response.data.chiTietHoaDons; // Lưu danh sách chi tiết hóa đơn
-
-                    console.log("hoaDonDetail:", $scope.hoaDonDetail);
-                    console.log("Chi tiết hóa đơn:", $scope.chiTietHoaDons);
                 }
 
                 $('#readData').modal('show'); // Hiển thị modal
@@ -129,7 +126,21 @@ window.hoaDonCtrl = function ($scope, $http) {
         return gia * soLuong; // Tính tổng tiền
     };
 
-// Hàm tính tổng tiền cho tất cả chi tiết hóa đơn trong tab hiện tại
+    // $scope.calculateInvoiceTotal = function (idHD) {
+    //     let total = 0;
+    //     // Lọc chi tiết hóa đơn của hóa đơn này
+    //     $scope.chiTietHoaDons.forEach(hdct => {
+    //         if (hdct.idHD === idHD) {  // Kiểm tra nếu chi tiết hóa đơn thuộc về hóa đơn này
+    //             total += hdct.giaSauGiam * hdct.soLuong;  // Tính tổng tiền cho chi tiết
+    //         }
+    //     });
+    //     return total;
+    // };
+// Call calculateInvoiceTotal for each hoaDon in hoaDons array
+//     $scope.hoaDons.forEach(function(hoaDon) {
+//         $scope.detailHoaDon(hoaDon.id);
+//         console.log("Total for invoice ID " + hoaDon.id + ": " + total);
+//     });// Hàm tính tổng tiền cho tất cả chi tiết hóa đơn trong tab hiện tại
     $scope.calculateTotalForList = function(chiTietHoaDons) {
         if (!Array.isArray(chiTietHoaDons)) return 0; // Kiểm tra nếu không phải danh sách
 
@@ -141,11 +152,17 @@ window.hoaDonCtrl = function ($scope, $http) {
         let total = 0;
         if (items) {
             items.forEach(item => {
-                total += Number(item.tongTien); // Cộng dồn tổng tiền
+                // Ensure both giaSauGiam and giaBan are valid numbers before multiplying
+                const giaSauGiam = parseFloat(item.giaSauGiam);
+                const soLuong = parseFloat(item.soLuong);
+                if (!isNaN(giaSauGiam) && !isNaN(soLuong)) {
+                    total += giaSauGiam * soLuong; // Cộng dồn tổng tiền
+                }
             });
         }
         return total; // Trả về tổng tiền
     };
+
     $scope.deleteInvoice = function (idHD) {
         $http({
             method: 'DELETE',
