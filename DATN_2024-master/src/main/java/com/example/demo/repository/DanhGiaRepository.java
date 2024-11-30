@@ -16,7 +16,7 @@ public interface DanhGiaRepository extends JpaRepository<DanhGia, String> {
     @Query("DELETE FROM DanhGia dg WHERE dg.chiTietSanPham.id = :idCTSP")
     void deleteByIdCTSP(@Param("idCTSP") String idCTSP);
 
-    @Query("SELECT AVG(dg.soSao) FROM DanhGia dg WHERE dg.chiTietSanPham.id = :idCTSP")
+    @Query("SELECT AVG(dg.sao) FROM DanhGia dg WHERE dg.chiTietSanPham.id = :idCTSP")
     Double getAvgRatingByIdCTSP(@Param("idCTSP") String idCTSP);
 
     @Query("select d from DanhGia d where d.chiTietSanPham.id = :idCTSP and d.khachHang.id = :idKH")

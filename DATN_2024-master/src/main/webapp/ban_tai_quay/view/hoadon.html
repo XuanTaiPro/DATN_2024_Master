@@ -37,9 +37,9 @@
         <li class="nav-item">
             <a class="nav-link" ng-click="getHoaDonsByTrangThai(1, 0)" ng-class="{'active': selectedTrangThai === 1}">Chờ</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" ng-click="getHoaDonsByTrangThai(2, 0)" ng-class="{'active': selectedTrangThai === 2}">Đã xác nhận</a>
-        </li>
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link" ng-click="getHoaDonsByTrangThai(2, 0)" ng-class="{'active': selectedTrangThai === 2}">Đã xác nhận</a>-->
+<!--        </li>-->
         <li class="nav-item">
             <a class="nav-link" ng-click="getHoaDonsByTrangThai(3, 0)" ng-class="{'active': selectedTrangThai === 3}">Hoàn thành</a>
         </li>
@@ -68,8 +68,8 @@
             <td>{{hd.sdt}}</td>
             <td>{{hd.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
             <td>{{hd.loaiHD == 1 ? 'Online' : 'Tại quầy' }}</td>
-            <td>{{hd.thanhTien}} VND</td>
-            <td>
+            <td>{{ hd.tongTien }} VND</td>
+                <td>
                 <button class="btn btn-success" ng-click="detailHoaDon(hd.id)" data-bs-toggle="modal" data-bs-target="#readData">
                     <i class="bi bi-eye"></i>
                 </button>
@@ -88,7 +88,7 @@
                                         <tr>
                                             <th>STT</th>
                                             <th>Hình ảnh</th>
-                                            <th>Mã sản phẩm</th>
+                                            <th>Tên sản phẩm</th>
                                             <th>Giá</th>
                                             <th>Số lượng</th>
                                             <th>Tổng tiền</th>
@@ -101,7 +101,7 @@
                                                 <img ng-src="{{hdct.linkAnh}}" alt="Ảnh sản phẩm" class="img-fluid" width="100" height="100" />
                                             </td>
                                             <td>{{ hdct.tenSP }}</td>
-                                            <td>{{ hdct.gia }}</td>
+                                            <td>{{ hdct.giaSauGiam }}</td>
                                             <td>{{ hdct.soLuong }}</td>
                                             <td>{{ calculateTotalAmount(hdct) }} VND</td>
                                         </tr>

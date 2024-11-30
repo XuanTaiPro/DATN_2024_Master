@@ -1,0 +1,64 @@
+<div class="container mt-5">
+    <!-- Biểu đồ --><div ng-if="noDataMessage" class="alert alert-warning">
+    {{ noDataMessage }}
+</div>
+    <div ng-style="showChart ? {'width': '1500px', 'height': '600px'} : {'width': '0', 'height': '0', 'overflow': 'hidden'}">
+        <canvas id="salesChart" ng-show="showChart"></canvas>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="year">Năm:</label>
+                <select ng-model="selectedYear" ng-options="year for year in years" ng-change="updateChartData()" class="form-control">
+                    <option value="">Chọn năm</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="month">Tháng:</label>
+                <select ng-model="selectedMonth" ng-options="month for month in months" ng-change="updateChartData()" class="form-control">
+                    <option value="">Chọn tháng</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="week">Tuần:</label>
+                <select ng-model="selectedWeek" ng-options="week for week in weeks" ng-change="updateChartData()" class="form-control">
+                    <option value="">Chọn tuần</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="day">Ngày:</label>
+                <select ng-model="selectedDay" ng-options="day for day in days" ng-change="updateChartData()" class="form-control">
+                    <option value="">Chọn ngày</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label for="chartType">Chọn loại biểu đồ:</label>
+        <select ng-model="selectedChartType" ng-change="updateChartData()" class="form-control">
+            <option value="line">Đường</option>
+            <option value="bar">Cột</option>
+            <option value="pie">Tròn</option>
+            <option value="radar">Radar</option>
+        </select>
+    </div>
+    <!-- Table to show data -->
+    <div class="mt-4">
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Ngày thanh toán</th>
+                <th>Tổng số tiền</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in chartData">
+                <td>{{ item.ngayThanhToan | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                <td>{{ item.totalAmount }} VND</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

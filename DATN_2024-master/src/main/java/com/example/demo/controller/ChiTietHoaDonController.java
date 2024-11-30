@@ -67,6 +67,9 @@ public class ChiTietHoaDonController {
             giaSauGiam = Double.parseDouble(chiTietSanPham.getGia())
                     - Double.parseDouble(chiTietSanPham.getGia()) * Double.parseDouble(phanTramGiam) / 100;
         }
+        else{
+            giaSauGiam=Double.parseDouble(chiTietSanPham.getGia());
+        }
         // Tìm ChiTietHoaDon hiện có
         ChiTietHoaDon cTHDExisting = chiTietHoaDonRepo.trungCTHD(req.getIdHD(), req.getIdCTSP());
         if (cTHDExisting != null) {
@@ -142,7 +145,7 @@ public class ChiTietHoaDonController {
                 chiTietHoaDonExisting.setGiaSauGiam(String.valueOf(giaSauGiam));
             }
         } else {
-            chiTietHoaDonExisting.setGiaSauGiam("0");
+            chiTietHoaDonExisting.setGiaSauGiam(chiTietSanPham.getGia());
         }
 
         chiTietHoaDonExisting.setGiaBan(chiTietSanPham.getGia());
