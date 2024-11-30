@@ -72,6 +72,11 @@ public class NhanVienController {
 
     @PostMapping("add")
     public ResponseEntity<?> add(@Valid @RequestBody NhanVienRequest nhanVienRequest, BindingResult bindingResult) {
+//        if (LoginController.tenQuyen == null ||
+//                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+//            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ Admin mới có quyền Thêm!"));
+//        }
+
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
@@ -97,12 +102,17 @@ public class NhanVienController {
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody NhanVienRequest nhanVienRequest,
             BindingResult bindingResult) {
+
+//        if (LoginController.tenQuyen == null ||
+//                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+//            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ Admin mới có quyền cập nhật!"));
+//        }
+
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
-
         Optional<NhanVien> optionalNhanVien = nvRepo.findById(id);
 
         if (optionalNhanVien.isPresent()) {
@@ -126,6 +136,10 @@ public class NhanVienController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
+        if (LoginController.tenQuyen == null ||
+                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ có Admin mới có quyền xóa!"));
+        }
         if (nvRepo.findById(id).isPresent()) {
             nvRepo.deleteById(id);
             Map<String, String> response = new HashMap<>();
@@ -135,22 +149,34 @@ public class NhanVienController {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần xóa");
         }
     }
-
     @GetMapping("search-filter")
-    public ResponseEntity<?> searchAndFilterNhanVien(
-            @RequestParam String ten,
+    public ResponseEntity<?> searchAndFilterNhanVienWithPagination(
+            @RequestParam(required = false) String ten,
             @RequestParam(required = false) String gioiTinh,
             @RequestParam(required = false) String diaChi,
-            @RequestParam(required = false) Integer trangThai) {
+            @RequestParam(required = false) Integer trangThai,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
 
-        List<NhanVienResponse> list = new ArrayList<>();
-        nvRepo.timKiemVaLocNhanVien(ten, gioiTinh, diaChi, trangThai)
-                .forEach(nhanVien -> list.add(nhanVien.toResponse()));
+        Pageable pageable = PageRequest.of(page, size);
+        Page<NhanVien> nhanViens = nvRepo.timKiemVaLocNhanVien(ten, gioiTinh, diaChi, trangThai, pageable);
 
-        if (list.isEmpty()) {
-            return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với tiêu chí tìm kiếm và lọc đã cho.");
+        if (nhanViens.isEmpty()) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "Không tìm thấy nhân viên với tiêu chí tìm kiếm.",
+                    "nhanViens", Collections.emptyList(),
+                    "currentPage", page,
+                    "totalPages", 0
+            ));
         }
-        return ResponseEntity.ok(list);
+        List<NhanVienResponse> nhanVienResponses = nhanViens.stream().map(NhanVien::toResponse).toList();
+
+        return ResponseEntity.ok(Map.of(
+                "nhanViens", nhanVienResponses,
+                "currentPage", nhanViens.getNumber(),
+                "totalPages", nhanViens.getTotalPages()
+        ));
     }
+
 
 }

@@ -63,13 +63,6 @@ window.voucherCtrl = function ($scope, $http) {
     // Load initial page
     $scope.loadPage(0);
 
-    // $http.get(url).then(function (response) {
-    //     $scope.listVoucher = response.data;
-    //     console.log("Lấy dữ liệu thành công");
-    // }).catch((error) => {
-    //     console.error('Lỗi:', error);
-    // });
-
     $scope.listLVC = [];
     $http.get("http://localhost:8083/loaivoucher")
         .then(function (response) {
@@ -215,8 +208,6 @@ window.voucherCtrl = function ($scope, $http) {
         }).catch(function (er) {
             console.error(er)
         })
-
-
         //lấy khách hàng theo id voucher liên kết với chiTietVoucher
         fetch('http://localhost:8083/voucher/' + voucher.id + '/customers')
             .then(response => response.json())
@@ -282,8 +273,21 @@ window.voucherCtrl = function ($scope, $http) {
 
         $http.put('http://localhost:8083/voucher/update/' + $scope.selectedVoucher.id, updatedVoucher)
             .then(function (response) {
-                location.reload();
-                // Reload hoặc cập nhật lại dữ liệu nếu cần
+                $('#UpdateForm').modal('hide');
+
+                // Hiển thị alert với hiệu ứng slide down
+                const alertBox = document.getElementById('success-alert');
+                alertBox.style.display = 'block'; // Hiện alert
+                setTimeout(() => alertBox.classList.add('show'), 10); // Thêm hiệu ứng
+
+                // Tự động ẩn alert sau 3 giây
+                setTimeout(() => {
+                    alertBox.classList.remove('show'); // Ẩn hiệu ứng
+                    setTimeout(() => (alertBox.style.display = 'none'), 500); // Ẩn hoàn toàn
+                }, 3000);
+
+                // Reload danh sách
+                $scope.loadPage($scope.currentPage);
             })
             .catch(function (error) {
                 console.error("Lỗi khi cập nhật voucher:", error);
@@ -314,7 +318,6 @@ window.voucherCtrl = function ($scope, $http) {
     };
 
 
-    // Reset form
     // Reset form
     function resetForm() {
         $scope.ten = "";

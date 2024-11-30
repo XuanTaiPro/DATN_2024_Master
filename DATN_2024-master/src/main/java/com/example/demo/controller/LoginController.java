@@ -37,6 +37,8 @@ public class LoginController {
 
     private Map<String, String> otpCache = new ConcurrentHashMap<>();
 
+    public static String tenQuyen;
+
     @PostMapping("manager")
     public ResponseEntity<?> loginNV(@Valid @RequestBody Account tk, BindingResult bindingResult, HttpSession ses) {
         if (bindingResult.hasErrors()) {
@@ -54,6 +56,8 @@ public class LoginController {
             otpCache.put("maOtp", otp);
             sendOtp(email, otp);
 
+            tenQuyen = loginNV.getQuyen().getTen();
+
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "message", "OTP đã được gửi tới email của bạn"
@@ -61,31 +65,6 @@ public class LoginController {
         }
     }
 
-//
-//    @PostMapping("checkOtp")
-//    public ResponseEntity<?> checkOtp(@RequestBody Map<String, String> otpRequest,HttpSession ses) {
-//        String email = otpRequest.get("email");
-//        String otp = otpRequest.get("otp");
-//
-////        String sesOtp = (String) ses.getAttribute("otp");
-////        String sesEmail = (String) ses.getAttribute("email");
-////
-//        System.out.println("OTP từ session: " + ses.getAttribute("otp"));
-//
-////        if (sesOtp != null && sesEmail != null && otp.equals(sesOtp) && email.equals(sesEmail)) {
-////            ses.removeAttribute("otp");
-////            ses.removeAttribute("email");
-////            return ResponseEntity.ok(Map.of("success", true, "message", "Đăng nhập thành công"));
-////        } else {
-//////            System.out.println("Email từ session: " + sesEmail);
-//////            System.out.println("Email từ request: " + email);
-////            System.out.println("OTP từ session: " + sesOtp);
-//////            System.out.println("OTP từ request: " + otp);
-////            return ResponseEntity.ok(Map.of("success", false, "message", "Mã OTP không chính xác"));
-////        }
-//        return ResponseEntity.ok(Map.of("success", true, "message", "Đăng nhập thành công"));
-//
-//    }
 
     @PostMapping("checkOtp")
     public ResponseEntity<?> checkOtp(@RequestBody Map<String, String> otpRequest, HttpSession ses) {
@@ -96,20 +75,13 @@ public class LoginController {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Mã OTP không chính xác"));
         }
         otpCache.remove("maOtp");
-
         System.out.println("otp : " + otp);
+
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html?_ijt=j7t7n918fk6aakf4tscjpovsb0#!/sanpham"
         ));
     }
-
-
-//    @PostMapping("sendEmail")
-//    public ResponseEntity<?> sendEmail(@RequestParam(name = "email") String email) {
-//        emailService.sentEmail(email, "Mã xác nhận đăng nhập !!", "Mã xác nhận đăng nhập của bạn là : " + genOtp());
-//        return ResponseEntity.ok()
-//    }
 
     private String genOtp() {
         return String.format("%06d", (int) (Math.random() * 1000000));
@@ -129,7 +101,6 @@ public class LoginController {
         }
 
     }
-
 
     @PostMapping("onlineSale")
     public ResponseEntity<?> loginKH(@Valid @RequestBody Account tk, BindingResult bindingResult) {

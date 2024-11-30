@@ -3,7 +3,9 @@ package com.example.demo.controller;
 import com.example.demo.dto.khachhang.KhachHangRequest;
 import com.example.demo.dto.khachhang.KhachHangRequestOnline;
 import com.example.demo.dto.khachhang.KhachHangResponse;
+import com.example.demo.dto.nhanvien.NhanVienResponse;
 import com.example.demo.entity.KhachHang;
+import com.example.demo.entity.NhanVien;
 import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.service.GenerateCodeAll;
 import jakarta.validation.Valid;
@@ -205,13 +207,32 @@ public class KhachHangController {
         }
     }
 
-    @GetMapping("search")
-    public ResponseEntity<?> searchVoucher(@RequestParam String ten) {
-        List<KhachHangResponse> list = new ArrayList<>();
-        khRepo.findByTenContainingIgnoreCase(ten).forEach(voucher -> list.add(voucher.toResponse()));
-        if (list.isEmpty()) {
-            return ResponseEntity.badRequest().body("Không tìm thấy voucher với tên: " + ten);
+    @GetMapping("search-filter")
+    public ResponseEntity<?> searchAndFilterKhachHang(
+            @RequestParam(required = false) String ten,
+            @RequestParam(required = false) String gioiTinh,
+            @RequestParam(required = false) String diaChi,
+            @RequestParam(required = false) Integer trangThai,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<KhachHang> khachHangs = khRepo.timKiemVaLocKhachHang(ten, gioiTinh, diaChi, trangThai, pageable);
+
+        if (khachHangs.isEmpty()) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "Không tìm thấy khách hàng với tiêu chí tìm kiếm.",
+                    "khachHangs", Collections.emptyList(),
+                    "currentPage", page,
+                    "totalPages", 0
+            ));
         }
-        return ResponseEntity.ok(list);
+        List<KhachHangResponse> khachHangResponses = khachHangs.stream().map(KhachHang::toResponse).toList();
+
+        return ResponseEntity.ok(Map.of(
+                "khachHangs", khachHangResponses,
+                "currentPage", khachHangs.getNumber(),
+                "totalPages", khachHangs.getTotalPages()
+        ));
     }
 }

@@ -175,32 +175,26 @@ public class DanhGiaController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> update(@Valid @RequestBody DanhGiaRequest danhGiaRequest) {
-        String id = danhGiaRequest.getId();
-        if (id == null || id.isEmpty()) {
-            return ResponseEntity.badRequest().body("ID không được để trống.");
-        }
-        DanhGia existingDanhGia = danhGiaRepository.findById(id).orElse(null);
-        if (existingDanhGia == null) {
+    public ResponseEntity<?> update(@RequestBody Map<String, String> evalMap) {
+        String id = evalMap.get("idDG");
+
+        DanhGia existingDG = danhGiaRepository.findById(id).orElse(null);
+        if (existingDG == null) {
             return ResponseEntity.badRequest().body("Không tìm thấy đánh giá có id: " + id);
         }
 
-        ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(danhGiaRequest.getIdCTSP()).orElse(null);
-        if (chiTietSanPham == null) {
-            return ResponseEntity.badRequest()
-                    .body("Không tìm thấy chi tiết sản phẩm có id: " + danhGiaRequest.getIdCTSP());
-        }
-        KhachHang khachHang = khachHangRepository.findById(danhGiaRequest.getIdKH()).orElse(null);
-        if (khachHang == null) {
-            return ResponseEntity.badRequest().body("Không tìm thấy khách hàng có id: " + danhGiaRequest.getIdKH());
+        String sao = evalMap.get("sao");
+        existingDG.setSao(Integer.parseInt(sao));
 
-        }
-        BeanUtils.copyProperties(danhGiaRequest, existingDanhGia, "id", "ngayDanhGia");
-        existingDanhGia.setChiTietSanPham(chiTietSanPham);
-        existingDanhGia.setKhachHang(khachHang);
-        existingDanhGia.setNgaySua(LocalDateTime.now());
+        String nhanXet = evalMap.get("nhanXet");
+        existingDG.setNhanXet(nhanXet);
 
-        danhGiaRepository.save(existingDanhGia);
+        existingDG.setNgaySua(LocalDateTime.now());
+
+        existingDG.setTrangThai(1);
+
+        // danhGiaRepository.save(existingDG);
+
         return ResponseEntity.ok("Cập nhật đánh giá thành công!");
     }
 

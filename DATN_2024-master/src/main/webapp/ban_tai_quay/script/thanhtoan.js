@@ -115,7 +115,7 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
     };
 
     $scope.loadPage = function (page) {
-        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=${$scope.idHD}&page=0`)
+        $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=265C4B6C&page=0`)
             .then(function (response) {
                 let data = response.data;
                 $scope.listCTHD = response.data.cthds;

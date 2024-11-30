@@ -1,4 +1,4 @@
-window.nhansuCtrl= function($scope, $http) {
+window.nhansuCtrl = function ($scope, $http) {
 
 
     $scope.selectedNhanVien = {}; // Khởi tạo đối tượng nếu chưa có
@@ -9,6 +9,50 @@ window.nhansuCtrl= function($scope, $http) {
     $scope.totalPages = 1;
     $scope.pageSize = 3;
     $scope.emptyMessage = "";
+
+    // Tìm kiếm và lọc
+    $scope.searchParams = {
+        ten: '',
+        gioiTinh: '',
+        diaChi: '',
+        trangThai: ''
+    };
+
+    $scope.searchAndFilter = function (page = 0) {
+        const params = {
+            ...$scope.searchParams,
+            page: page,
+            size: $scope.pageSize
+        };
+
+        $http.get('http://localhost:8083/nhanvien/search-filter', { params })
+            .then(function (response) {
+                $scope.listNhanVien = response.data.nhanViens;
+                $scope.currentPage = response.data.currentPage;
+                $scope.totalPages = response.data.totalPages;
+
+                if ($scope.listNhanVien.length === 0) {
+                    $scope.emptyMessage = response.data.message || "Không tìm thấy nhân viên!";
+                } else {
+                    $scope.emptyMessage = ""; // Reset lại thông báo
+                }
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi tìm kiếm:", error);
+                alert("Đã xảy ra lỗi. Vui lòng thử lại.");
+            });
+    };
+
+    $scope.resetFilters = function () {
+        $scope.searchParams = {
+            ten: '',
+            gioiTinh: '',
+            diaChi: '',
+            trangThai: ''
+        };
+        $scope.loadPage(0);
+    };
+
 
     $scope.loadPage = function (page) {
         $http.get('http://localhost:8083/nhanvien/page?page=' + page)
@@ -29,32 +73,36 @@ window.nhansuCtrl= function($scope, $http) {
             });
     };
 
-    $scope.getSTT = function(index) {
+    $scope.getSTT = function (index) {
         return index + 1 + ($scope.currentPage * $scope.pageSize);
     };
 
-    $scope.range = function(n) {
+    $scope.range = function (n) {
         return new Array(n);
     };
 
-    $scope.setPage = function(page) {
+    $scope.setPage = function (page) {
         if (page >= 0 && page < $scope.totalPages) {
-            $scope.loadPage(page);
+            if ($scope.searchParams.ten || $scope.searchParams.gioiTinh || $scope.searchParams.diaChi || $scope.searchParams.trangThai) {
+                $scope.searchAndFilter(page);
+            } else {
+                $scope.loadPage(page);
+            }
         }
     };
 
-    $scope.prevPage = function() {
+    $scope.prevPage = function () {
         if ($scope.currentPage > 0) {
             $scope.setPage($scope.currentPage - 1);
         }
     };
 
-    $scope.nextPage = function() {
+    $scope.nextPage = function () {
         if ($scope.currentPage < $scope.totalPages - 1) {
             $scope.setPage($scope.currentPage + 1);
         }
     };
-    $scope.range = function(n) {
+    $scope.range = function (n) {
         var arr = [];
         for (var i = 0; i < n; i++) {
             arr.push(i);
@@ -73,12 +121,12 @@ window.nhansuCtrl= function($scope, $http) {
     //     console.error('Lỗi:', error);
     // });
     $scope.listQuyen = [];
-    $http.get( "http://localhost:8083/quyen")
-        .then(function(response) {
+    $http.get("http://localhost:8083/quyen")
+        .then(function (response) {
             $scope.listQuyen = response.data;
             console.log("Lấy danh sách quyền thành công", $scope.listQuyen);
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error("Lỗi khi lấy danh sách quyền:", error);
         });
 
@@ -106,19 +154,19 @@ window.nhansuCtrl= function($scope, $http) {
         $scope.img = nhanVien.img;
         $scope.selectedNhanVien.trangThai = nhanVien.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động';
     }
-    $scope.openUpdateModal = function(nhanVien) {
+    $scope.openUpdateModal = function (nhanVien) {
         $scope.selectedNhanVien = angular.copy(nhanVien);
         $scope.selectedQuyen = $scope.selectedNhanVien.tenQuyen
         $scope.idQuyen = null
-        console.log( $scope.selectedQuyen)
-        fetch('http://localhost:8083/quyen/getId?ten=' +$scope.selectedQuyen).then(function (response){
-            return  response.text()
-        }).then(function(data) {
-            $scope.$apply(function() {
+        console.log($scope.selectedQuyen)
+        fetch('http://localhost:8083/quyen/getId?ten=' + $scope.selectedQuyen).then(function (response) {
+            return response.text()
+        }).then(function (data) {
+            $scope.$apply(function () {
                 $scope.idQuyen = data;  // Gán giá trị trả về vào $scope.idQuyen
                 console.log($scope.idQuyen);
             });
-        }).catch(function (er){
+        }).catch(function (er) {
             console.error(er)
         })
         $scope.selectedNhanVien.trangThai = nhanVien.trangThai.toString();
@@ -127,6 +175,7 @@ window.nhansuCtrl= function($scope, $http) {
 
     $scope.errorMessages = {};
     $scope.addNhanVien = function () {
+        $scope.errorMessages = {};
         if (!$scope.gioiTinh) {
             $scope.gioiTinh = "Nam";
         }
@@ -149,20 +198,21 @@ window.nhansuCtrl= function($scope, $http) {
 
                 // Đóng modal
                 $('#productModal').modal('hide');
-                setTimeout(function() {
-                    location.reload();
+                setTimeout(function () {
+                    $scope.loadPage($scope.currentPage);
                 }, 500);
                 resetForm();
             })
             .catch(function (error) {
-                if (error.status === 400) {
-                    $scope.errorMessages = error.data;
-                } else {
-                    $scope.errorMessage = "Thêm thất bại";
-                }
+                // if (error.status === 400) {
+                //     $scope.errorMessages = error.data;
+                // } else if (error.status === 403) {
+                //     alert(error.data.message || "Bạn không có quyền thực hiện thao tác này!");
+                // } else {
+                //     alert(error.data.message || "Thêm thất bại. Vui lòng thử lại sau.");
+                // }
             });
     };
-
 
 
     $scope.updateNhanVien = function () {
@@ -174,19 +224,38 @@ window.nhansuCtrl= function($scope, $http) {
         $scope.selectedNhanVien.idQuyen = $scope.idQuyen;
         $http.put('http://localhost:8083/nhanvien/update/' + $scope.selectedNhanVien.id, $scope.selectedNhanVien)
             .then(function (response) {
-               location.reload()
+                // Ẩn modal
+                $('#UpdateForm').modal('hide');
+
+                // Hiển thị alert với hiệu ứng slide down
+                const alertBox = document.getElementById('success-alert');
+                alertBox.style.display = 'block'; // Hiện alert
+                setTimeout(() => alertBox.classList.add('show'), 10); // Thêm hiệu ứng
+
+                // Tự động ẩn alert sau 3 giây
+                setTimeout(() => {
+                    alertBox.classList.remove('show'); // Ẩn hiệu ứng
+                    setTimeout(() => (alertBox.style.display = 'none'), 500); // Ẩn hoàn toàn
+                }, 3000);
+
+                // Reload danh sách nhân viên
+                $scope.loadPage($scope.currentPage);
             })
-            .catch(function () {
+            .catch(function (error) {
+                console.error("Lỗi khi cập nhật nhân viên:", error);
+                if (error.status === 403) {
+                    alert(error.data.message || "Bạn không có quyền thực hiện thao tác này!");
+                } else {
+                    alert(error.data.message || "Xóa thất bại. Vui lòng thử lại sau.");
+                }
             });
     };
-
-
 
 
 // Xóa nhân viên
     $scope.deleteNhanVien = function (id) {
         console.log("Xóa");
-        if (confirm('Bạn có chắc chắn muốn xóa nhân viên này?')) {
+        $('#deleteNhanSuModal').modal('hide');
             $http.delete('http://localhost:8083/nhanvien/delete/' + id)
                 .then(function (response) {
                     // Kiểm tra phản hồi server
@@ -194,16 +263,29 @@ window.nhansuCtrl= function($scope, $http) {
                     const index = $scope.listNhanVien.findIndex(nv => nv.id === id);
                     if (index !== -1) {
                         $scope.listNhanVien.splice(index, 1);
+                        $('#deleteSuccessModal').modal('show');
                     }
-                    alert(response.data.message || 'Xóa thành công!!');  // Sử dụng thông điệp từ server
                 })
                 .catch(function (error) {
                     console.error("Lỗi khi xóa nhân viên:", error);
-                    alert("Xóa thất bại. Vui lòng thử lại sau.");
+                    if (error.status === 403) {
+                        alert(error.data.message || "Bạn không có quyền thực hiện thao tác này!");
+                    } else {
+                        alert(error.data.message || "Xóa thất bại. Vui lòng thử lại sau.");
+                    }
                 });
-        }
     };
 
+    $scope.confirmDeleteNhanSu = function (){
+        $('#deleteNhanSuModal').modal('show');
+    }
+    $scope.closeModalDeleteSuccess = function (){
+        $('#deleteSuccessModal').modal('hide');
+        console.log("ok")
+    }
+    $scope.closeDeleteNhanSuModal = function (){
+        $('#deleteNhanSuModal').modal('hide');
+    }
     function resetForm() {
         $scope.name = "";
         $scope.email = "";
