@@ -300,7 +300,7 @@ public class HoaDonController {
             }
 
             cthd.setHoaDon(getHD);
-            Integer soLuongTrongGio = Integer.valueOf((String) prod.get("soLuongTrongGio"));
+            Integer soLuongTrongGio = (Integer) prod.get("soLuongTrongGio");
 
             cthd.setSoLuong(soLuongTrongGio);
             cthd.setNgayTao(LocalDateTime.now());
