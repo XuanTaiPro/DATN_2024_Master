@@ -20,7 +20,7 @@ public class ChiTietHoaDon {
 
     @Id
     @Column(name = "ID")
-    private String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    private String id;
 
     @Column(name = "MACTHD")
     private String maCTHD;
@@ -46,24 +46,13 @@ public class ChiTietHoaDon {
     @Column(name = "GHICHU")
     private String ghiChu;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IDHOADON")
     private HoaDon hoaDon;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IDCTSP")
     private ChiTietSanPham chiTietSanPham;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        }
-        if (this.getMaCTHD() == null) {
-            // Tạo mã hóa đơn tự động
-            this.maCTHD = "CTHD" + UUID.randomUUID().toString().replace("-", "").substring(0, 6).toUpperCase();
-        }
-    }
 
     public ChiTietHoaDonRep toResponse() {
         double tienGiam = 0;
@@ -86,12 +75,15 @@ public class ChiTietHoaDon {
                 ngayTao,
                 ngaySua,
                 ghiChu,
-                chiTietSanPham != null && chiTietSanPham.getSanPham() != null ? chiTietSanPham.getSanPham().getTenSP() : null,
+                chiTietSanPham != null && chiTietSanPham.getSanPham() != null ? chiTietSanPham.getSanPham().getTenSP()
+                        : null,
                 chiTietSanPham != null ? chiTietSanPham.getGia() : null,
                 hoaDon != null ? hoaDon.getId() : null,
-                (chiTietSanPham != null && !chiTietSanPham.getAnhCTSP().isEmpty()) ? chiTietSanPham.getAnhCTSP().get(0).getLink() : null,
+                (chiTietSanPham != null && !chiTietSanPham.getAnhCTSP().isEmpty())
+                        ? chiTietSanPham.getAnhCTSP().get(0).getLink()
+                        : null,
                 chiTietSanPham != null ? chiTietSanPham.getSoNgaySuDung() : null,
-                chiTietSanPham != null ? chiTietSanPham.getSoLuong() : 0  // Make sure to handle null values for SoLuong
+                chiTietSanPham != null ? chiTietSanPham.getSoLuong() : 0 // Make sure to handle null values for SoLuong
         );
     }
 

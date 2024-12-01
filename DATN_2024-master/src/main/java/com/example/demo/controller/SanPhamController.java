@@ -53,15 +53,11 @@ public class SanPhamController {
     }
 
     @GetMapping("/getSanPham-online")
-    public Map<String, Object> getAllProductsWithMinPrice(@RequestParam(defaultValue = "0") Integer page) {
+    public ResponseEntity<?> getAllProductsWithMinPrice(@RequestParam(defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, 8);
-        List<SanPhamOnlineResponse> products = sanPhamRepository.findAllWithDetails(pageable);
+        Page<SanPhamOnlineResponse> products = sanPhamRepository.findSanPhamWithMinPrice(pageable);
 
-        Map<String, Object> result = new HashMap<String, Object>();
-        result.put("data", products);
-        int pageSize = (products.size() % 5 == 0) ? (products.size() / 5) : (products.size() / 5) + 1;
-        result.put("total", pageSize);
-        return result;
+        return ResponseEntity.ok().body(products);
     }
 
     @GetMapping("/phanTrang")

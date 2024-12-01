@@ -1,5 +1,7 @@
 package com.example.demo.dto.sanpham;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +14,13 @@ public class SanPhamOnlineResponse {
 
     private String tenSP;
 
-    private float gia;
+    private String gia;
 
-    private String giamgia;
+    private String giaGiam;
+
+    private LocalDateTime ngayBatDau;
+
+    private LocalDateTime ngayKetThuc;
+
+    private String linkAnh;
 }

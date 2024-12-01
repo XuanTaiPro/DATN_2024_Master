@@ -64,7 +64,7 @@ public class DanhGiaController {
         List<DanhGia> danhGiasNoDone = danhGias.stream().filter(dg -> dg.getTrangThai() == 0).toList();
 
         if (danhGiasNoDone.isEmpty()) {
-            return ResponseEntity.ok().body(danhGiasNoDone);
+            return ResponseEntity.ok().body(null);
         }
 
         List<DanhGiaRespOnline> listDGO = new ArrayList<>();
@@ -193,9 +193,29 @@ public class DanhGiaController {
 
         existingDG.setTrangThai(1);
 
-        // danhGiaRepository.save(existingDG);
+        danhGiaRepository.save(existingDG);
 
-        return ResponseEntity.ok("Cập nhật đánh giá thành công!");
+        List<DanhGia> danhGias = danhGiaRepository.getByIdKH(existingDG.getKhachHang().getId());
+
+        List<DanhGia> danhGiasNoDone = danhGias.stream().filter(dg -> dg.getTrangThai() == 0).toList();
+
+        if (danhGiasNoDone.isEmpty()) {
+            return ResponseEntity.ok().body(null);
+        }
+
+        List<DanhGiaRespOnline> listDGO = new ArrayList<>();
+
+        for (DanhGia dg : danhGiasNoDone) {
+            DanhGiaRespOnline dgOnline = dg.convertFromDanhGia();
+            dgOnline.setTrangThai(0);
+
+            SanPham getSP = spRepo.findById(dg.getChiTietSanPham().getSanPham().getId()).get();
+            dgOnline.setSp(getSP);
+
+            listDGO.add(dgOnline);
+        }
+
+        return ResponseEntity.ok().body(listDGO);
     }
 
     @DeleteMapping("/delete")

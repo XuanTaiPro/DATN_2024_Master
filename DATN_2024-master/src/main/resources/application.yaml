@@ -29,6 +29,17 @@ spring:
       allowed-origin-patterns: http://localhost:3000
       allow-credentials: true
       allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tailxph32074@fpt.edu.vn
+    password: zhcrequkemdubzrn
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 logging:
   level:
