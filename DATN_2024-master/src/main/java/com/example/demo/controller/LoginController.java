@@ -9,11 +9,9 @@ import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.repository.NhanVienRepository;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.GenerateCodeAll;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +54,8 @@ public class LoginController {
         String email = tk.getEmail();
         NhanVien loginNV = nvRepo.loginNV(email, tk.getPassw());
         if (loginNV == null) {
-            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Tài khoản hoặc mật khẩu không đúng"));
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "Tài khoản hoặc mật khẩu không đúng"));
         } else {
             String otp = genOtp(); // Sinh OTP
             otpCache.put("maOtp", otp);
@@ -65,18 +64,15 @@ public class LoginController {
             tenQuyen = loginNV.getQuyen().getTen();
             getIdNV = loginNV.getId();
 
-
-
             return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "message", "OTP đã được gửi tới email của bạn"
-            ));
+                    "message", "OTP đã được gửi tới email của bạn"));
         }
     }
 
     @GetMapping("getIdNV")
-    public String getIdNV(){
-        if(getIdNV != null){
+    public String getIdNV() {
+        if (getIdNV != null) {
             return getIdNV;
         }
         return null;
@@ -95,8 +91,8 @@ public class LoginController {
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
-                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html?_ijt=j7t7n918fk6aakf4tscjpovsb0#!/sanpham"
-        ));
+                "redirectUrl",
+                "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html?_ijt=j7t7n918fk6aakf4tscjpovsb0#!/sanpham"));
     }
 
     @PostMapping("checkOtpOl")
@@ -112,8 +108,7 @@ public class LoginController {
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
-                "redirectUrl", "https://youtube.com"
-        ));
+                "redirectUrl", "https://youtube.com"));
     }
 
     private String genOtp() {
@@ -145,7 +140,8 @@ public class LoginController {
         String email = tk.getEmail();
         KhachHang loginKH = khRepo.loginKH(email, tk.getPassw());
         if (loginKH == null) {
-            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Tài khoản hoặc mật khẩu không đúng"));
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "Tài khoản hoặc mật khẩu không đúng"));
         } else {
 
             String otp = genOtp(); // Sinh OTP
@@ -154,13 +150,13 @@ public class LoginController {
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "message", "OTP đã được gửi tới email của bạn"
-            ));
+                    "message", "OTP đã được gửi tới email của bạn"));
         }
     }
 
     @PostMapping("dangKy")
-    public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
                     .stream()

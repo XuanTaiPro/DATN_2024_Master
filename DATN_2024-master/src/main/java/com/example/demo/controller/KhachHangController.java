@@ -3,9 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.khachhang.KhachHangRequest;
 import com.example.demo.dto.khachhang.KhachHangRequestOnline;
 import com.example.demo.dto.khachhang.KhachHangResponse;
-import com.example.demo.dto.nhanvien.NhanVienResponse;
 import com.example.demo.entity.KhachHang;
-import com.example.demo.entity.NhanVien;
 import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.service.GenerateCodeAll;
 import jakarta.validation.Valid;
@@ -106,8 +104,10 @@ public class KhachHangController {
         khRepo.save(khachHang);
         return ResponseEntity.ok("thêm thành công");
     }
+
     @PostMapping("dangKy")
-    public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest,
+            BindingResult bindingResult) {
         // Kiểm tra lỗi trong BindingResult
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
@@ -147,6 +147,7 @@ public class KhachHangController {
         } while (khRepo.getByMa(generatedMa) != null);
         return generatedMa;
     }
+
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody KhachHangRequest khachHangRequest,
             BindingResult bindingResult) {
@@ -224,15 +225,13 @@ public class KhachHangController {
                     "message", "Không tìm thấy khách hàng với tiêu chí tìm kiếm.",
                     "khachHangs", Collections.emptyList(),
                     "currentPage", page,
-                    "totalPages", 0
-            ));
+                    "totalPages", 0));
         }
         List<KhachHangResponse> khachHangResponses = khachHangs.stream().map(KhachHang::toResponse).toList();
 
         return ResponseEntity.ok(Map.of(
                 "khachHangs", khachHangResponses,
                 "currentPage", khachHangs.getNumber(),
-                "totalPages", khachHangs.getTotalPages()
-        ));
+                "totalPages", khachHangs.getTotalPages()));
     }
 }

@@ -97,7 +97,7 @@ public class GioHangChiTietController {
 
         GioHangChiTiet gioHangChiTiet = gioHangChiTietRequest.toEntity();
         gioHangChiTiet.setKhachHang(khRepo.getById(gioHangChiTietRequest.getIdKH()));
-        gioHangChiTiet.setChiTietSanPham(ctspRepo.getById(gioHangChiTietRequest.getIdCTSP()));
+        gioHangChiTiet.setChiTietSanPham(ctspRepo.findById(gioHangChiTietRequest.getIdCTSP()).get());
         ghRepo.save(gioHangChiTiet);
         return ResponseEntity.ok("thêm thành công");
     }
@@ -149,7 +149,7 @@ public class GioHangChiTietController {
             GioHangChiTiet gioHangChiTiet = gioHangChiTietRequest.toEntity();
             gioHangChiTiet.setId(id);
             gioHangChiTiet.setKhachHang(khRepo.getById(gioHangChiTietRequest.getIdKH()));
-            gioHangChiTiet.setChiTietSanPham(ctspRepo.getById(gioHangChiTietRequest.getIdCTSP()));
+            gioHangChiTiet.setChiTietSanPham(ctspRepo.findById(gioHangChiTietRequest.getIdCTSP()).get());
             ghRepo.save(gioHangChiTiet);
             return ResponseEntity.ok("Update thành công ");
         } else {

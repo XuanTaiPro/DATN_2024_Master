@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.ChiTietVoucher;
 import com.example.demo.entity.Voucher;
 import com.example.demo.repository.ChiTietVoucherRepository;
 

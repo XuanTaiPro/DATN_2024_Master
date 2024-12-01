@@ -142,10 +142,10 @@ public class SanPhamController {
         sanPham.setMaSP(maSanPham);
         sanPham.setNgayTao(LocalDateTime.now());
         sanPham.setNgaySua(null);
-        sanPham.setDanhMuc(danhMucRepository.getById(sanPhamRequest.getIdDanhMuc().trim()));
-        sanPham.setThuongHieu(thuongHieuRepository.getById(sanPhamRequest.getIdThuongHieu().trim()));
+        sanPham.setDanhMuc(danhMucRepository.findById(sanPhamRequest.getIdDanhMuc().trim()).get());
+        sanPham.setThuongHieu(thuongHieuRepository.findById(sanPhamRequest.getIdThuongHieu().trim()).get());
         if (sanPhamRequest.getIdGiamGia() != null) {
-            sanPham.setGiamGia(giamGiaRepository.getById(sanPhamRequest.getIdGiamGia().trim()));
+            sanPham.setGiamGia(giamGiaRepository.findById(sanPhamRequest.getIdGiamGia().trim()).get());
         }
         sanPhamRepository.save(sanPham);
         return ResponseEntity.ok("Thêm sản phẩm thành công!");
@@ -187,10 +187,10 @@ public class SanPhamController {
         SanPham existingSanPham = optionalSanPham.get();
         BeanUtils.copyProperties(sanPhamRequest, existingSanPham, "id", "ngayTao", "maSP");
         existingSanPham.setNgaySua(LocalDateTime.now());
-        existingSanPham.setDanhMuc(danhMucRepository.getById(sanPhamRequest.getIdDanhMuc().trim()));
-        existingSanPham.setThuongHieu(thuongHieuRepository.getById(sanPhamRequest.getIdThuongHieu().trim()));
+        existingSanPham.setDanhMuc(danhMucRepository.findById(sanPhamRequest.getIdDanhMuc().trim()).get());
+        existingSanPham.setThuongHieu(thuongHieuRepository.findById(sanPhamRequest.getIdThuongHieu().trim()).get());
         if (sanPhamRequest.getIdGiamGia() != null) {
-            existingSanPham.setGiamGia(giamGiaRepository.getById(sanPhamRequest.getIdGiamGia().trim()));
+            existingSanPham.setGiamGia(giamGiaRepository.findById(sanPhamRequest.getIdGiamGia().trim()).get());
         }
 
         sanPhamRepository.save(existingSanPham);
