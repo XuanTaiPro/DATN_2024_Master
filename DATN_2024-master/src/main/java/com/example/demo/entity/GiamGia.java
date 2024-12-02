@@ -21,7 +21,7 @@ import java.util.UUID;
 public class GiamGia {
     @Id
     @Column(name = "id")
-    private String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    private String id;
 
     @Size(max = 10, message = "Mã giảm giá không được vượt quá 10 ký tự")
     @Column(name = "ma")

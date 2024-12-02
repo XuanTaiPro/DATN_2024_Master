@@ -58,16 +58,16 @@ public class SanPham {
     @Column(name = "moTa")
     private String moTa;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JsonBackReference // Bỏ qua trường này khi tuần tự hóa JSON để tránh vòng lặp
     @JoinColumn(name = "idDanhMuc")
     private DanhMuc danhMuc;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "idThuongHieu")
     private ThuongHieu thuongHieu;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "idGiamGia")
     @JsonBackReference // Ngăn chặn việc serialize ngược lại
     private GiamGia giamGia;

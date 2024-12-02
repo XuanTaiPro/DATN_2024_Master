@@ -47,7 +47,7 @@ public class ChiTietSanPham {
     @Column(name = "ngaySua")
     private LocalDateTime ngaySua;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "idSP")
     @JsonIgnore // Bỏ qua tham chiếu này khi serialize
     private SanPham sanPham;

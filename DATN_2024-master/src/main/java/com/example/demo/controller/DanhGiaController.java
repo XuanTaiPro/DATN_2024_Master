@@ -97,7 +97,7 @@ public class DanhGiaController {
         List<DanhGia> danhGiasDone = danhGias.stream().filter(dg -> dg.getTrangThai() == 1).toList();
 
         if (danhGiasDone.isEmpty()) {
-            return ResponseEntity.ok().body(danhGiasDone);
+            return ResponseEntity.ok().body(null);
         }
 
         List<DanhGiaRespOnline> listDGO = new ArrayList<>();

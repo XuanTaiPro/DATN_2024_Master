@@ -34,7 +34,7 @@ public class AnhCTSP {
     @Column(name = "NGAYSUA")
     private LocalDateTime ngaySua;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "IDCTSP")
     private ChiTietSanPham chiTietSanPham;
 
