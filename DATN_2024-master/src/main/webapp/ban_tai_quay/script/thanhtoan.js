@@ -65,6 +65,7 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
         }
         $http.get(`http://localhost:8083/voucher/VCkhachHang/${$scope.selectedCustomerId}?page=${$scope.currentPageVC}&size=${$scope.pageSizeVC}`)
             .then(function (response) {
+
                 $scope.appliedVoucherId == null;
                 // Cập nhật dữ liệu voucher và thông tin phân trang
                 $scope.vouchers = response.data.vouchers;

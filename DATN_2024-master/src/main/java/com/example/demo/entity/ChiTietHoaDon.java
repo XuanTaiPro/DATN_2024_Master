@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -53,6 +54,13 @@ public class ChiTietHoaDon {
         @JoinColumn(name = "IDCTSP")
         private ChiTietSanPham chiTietSanPham;
 
+        @PrePersist
+        public void prePersist() {
+                if (this.id == null) {
+                        this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+                }
+        }
+
         public ChiTietHoaDonRep toResponse() {
                 double tienGiam = 0;
                 double giaGiam = 0;
@@ -89,5 +97,6 @@ public class ChiTietHoaDon {
                                                                                          // values for SoLuong
                 );
         }
+
 
 }

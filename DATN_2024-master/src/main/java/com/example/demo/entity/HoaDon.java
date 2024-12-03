@@ -17,7 +17,7 @@ import java.util.UUID;
 public class HoaDon {
     @Id
     @Column(name = "ID")
-    private String id;
+    private String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
     @Column(name = "MAHD", length = 10)
     private String maHD;

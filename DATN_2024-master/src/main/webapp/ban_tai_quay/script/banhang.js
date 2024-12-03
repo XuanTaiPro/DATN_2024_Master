@@ -20,9 +20,6 @@ window.banhangCtrl = function ($scope, $http, $document) {
     };
     $scope.addInvoiceTab = function () {
         $('#confirmAddInvoiceModal').modal('hide');
-
-
-
         // Gọi API để thêm hóa đơn
         $http.post('http://localhost:8083/hoadon/add'
         )

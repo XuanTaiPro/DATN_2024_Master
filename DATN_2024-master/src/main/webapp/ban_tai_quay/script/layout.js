@@ -60,10 +60,10 @@ app.config(function ($routeProvider) {
 })
 
 app.controller('myCtrl', function ($scope, $http) {
-    // const login = sessionStorage.getItem('loginOk')
-    // if(!login){
-    //     window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html?_ijt=rgqkbr1cvcf8at1kk6v46lmcv4'
-    // }
+    const login = sessionStorage.getItem('loginOk')
+    if(!login){
+        window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html?_ijt=rgqkbr1cvcf8at1kk6v46lmcv4'
+    }
 
     $scope.modalMessage = ""; // Nội dung thông báo
 
