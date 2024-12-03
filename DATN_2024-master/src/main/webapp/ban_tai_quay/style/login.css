@@ -135,14 +135,13 @@ h3 {
     transition: all 2s ease;
 }
 
+.active-form-confirm {
+    right: -50%;
+}
+
 p {
     text-align: center;
     margin-bottom: 40px;
-}
-
-
-.active-form-confirm {
-    right: -50%;
 }
 
 .user-account,
@@ -205,41 +204,9 @@ button {
     padding: 0 15px;
     cursor: pointer;
 }
-
-
-/* .confirm-account {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    width: 500px;
-    margin-bottom: 20px;
-
-    #passconfirm {
-        width: 200px;
-        height: 35px;
-        border: .5px solid rgb(75, 170, 255);
-        border-radius: 10px;
-        box-sizing: border-box;
-        padding-left: 10px;
-        outline: none;
-        filter: blur(0);
-        font: 18px 'Times New Roman';
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
+.error-message {
+    color: red;
+    font-size: 18px;
+    margin-left: 5px;
+    display: block;
 }
-
-.button-login {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.btn-login {
-    border: .5px solid rgb(75, 170, 255);
-    border-radius: 10px;
-    padding: 10px 15px;
-    font: 16px 'Times New Roman';
-    cursor: pointer;
-} */

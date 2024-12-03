@@ -53,35 +53,34 @@ h3 {
     z-index: 1;
     animation: run-border 10s linear infinite;
 }
-/*.gender-account {*/
-/*    margin-top: 15px;*/
-/*}*/
 
-/*.gender-account label {*/
-/*    font-size: 14px;*/
-/*    color: #333;*/
-/*    margin-right: 20px;*/
-/*}*/
-
+/* Chỉnh sửa CSS để đảm bảo radio button không bị chồng lên và dễ click */
 .gender-options {
     display: flex;
     gap: 40px;
     align-items: center;
+    position: relative;
+    z-index: 1;  /* Đảm bảo các radio button không bị chồng lên bởi các phần tử khác */
 }
 
 .gender-options div {
     display: flex;
     align-items: center;
+    z-index: 2;  /* Đảm bảo phần tử chứa radio button nằm trên các phần tử khác */
 }
 
 .gender-options input[type="radio"] {
-    margin-right: 10px;
-    margin-left: 40px;
+    margin-right: 10px; /* Giảm khoảng cách, không nên có khoảng cách quá lớn */
+    z-index: 3; /* Đảm bảo radio button có z-index cao hơn so với các phần tử xung quanh */
 }
-.gender-options label{
-    margin-left: 60px;
 
+
+/* Đảm bảo label có độ ưu tiên hiển thị khi hover hoặc khi click */
+.gender-options label {
+    margin-left: 10px;
+    z-index: 2; /* Đảm bảo label có độ ưu tiên cao hơn so với các phần tử khác */
 }
+
 /* Hiệu ứng animation cho đường viền */
 @keyframes run-border {
     0% {
@@ -130,8 +129,7 @@ h3 {
     }
 }
 
-/* Các trường nhập liệu */
-.form-register .form-user {
+.form-user {
     display: grid;
     align-items: center;
     width: 80%;
@@ -142,7 +140,27 @@ h3 {
     transition: all 2s ease;
 }
 
-/* Các trường nhập liệu - Label và input */
+.active-form-user {
+    left: -100%;
+}
+
+.form-confirm {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    top: 50%;
+    right: -150%;
+    transform: translateX(-50%);
+    position: absolute;
+    transition: all 2s ease;
+}
+
+.active-form-confirm {
+    right: -50%;
+}
+
+
 .name-account, .email-account, .gender-account, .phone-account, .address-account ,.password-account{
     display: flex;
     position: relative;
@@ -186,7 +204,7 @@ label {
 }
 
 /* Các nút submit */
-.submit-button {
+.button-next-step {
     display: flex;
     justify-content: center;
     align-items: center;

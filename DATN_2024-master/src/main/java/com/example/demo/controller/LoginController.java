@@ -9,11 +9,9 @@ import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.repository.NhanVienRepository;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.GenerateCodeAll;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -95,7 +93,7 @@ public class LoginController {
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
-                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html?_ijt=j7t7n918fk6aakf4tscjpovsb0#!/sanpham"
+                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html#!/sanpham"
         ));
     }
 
@@ -168,6 +166,7 @@ public class LoginController {
                     .toList();
             return ResponseEntity.badRequest().body(String.join("\n", errors));
         }
+
         khachHangRequest.setId(Optional.ofNullable(khachHangRequest.getId())
                 .filter(id -> !id.isEmpty())
                 .orElse(UUID.randomUUID().toString().substring(0, 8).toUpperCase()));
@@ -175,15 +174,39 @@ public class LoginController {
         KhachHang khachHang = khachHangRequest.toEntity();
         khachHang.setNgayTao(LocalDateTime.now());
         khachHang.setMa(generateCodeAll.generateMaKhachHang());
-        khachHang.setPassw(khachHangRequest.getPassw());
-        khachHang.setEmail(khachHangRequest.getEmail());
-        khachHang.setDiaChi(khachHangRequest.getDiaChi());
-        khachHang.setGioiTinh(khachHangRequest.getGioiTinh());
-        khachHang.setId(khachHangRequest.getId());
         khachHang.setTrangThai(1);
-        khachHang.setSdt(khachHangRequest.getSdt());
 
         khRepo.save(khachHang);
-        return ResponseEntity.ok("Thêm thành công");
+
+        String otp = genOtp();
+        otpCache.put(khachHang.getEmail(), otp);
+        try {
+            sendOtp(khachHang.getEmail(), otp);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Lỗi khi gửi email: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Đăng ký thành công! OTP đã được gửi tới email của bạn"
+        ));
     }
+
+    @PostMapping("checkOtpDK")
+    public ResponseEntity<?> checkOtpDK(@RequestBody Map<String, String> otpRequest, HttpSession ses) {
+        String otp = otpRequest.get("otp");
+        System.out.println(otpCache.get("maOtp") + " và " + otp);
+
+        if (!otpCache.get("maOtp").equals(otp)) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Mã OTP không chính xác"));
+        }
+        otpCache.remove("maOtp");
+        System.out.println("otp : " + otp);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/loginOnline.html"
+        ));
+    }
+
 }

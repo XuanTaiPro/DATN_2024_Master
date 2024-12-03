@@ -28,7 +28,7 @@ public class KhachHangRequest {
     @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
     private String passw;
 
-    @NotBlank(message = "Giới tính không được để trống")
+//    @NotBlank(message = "Giới tính không được để trống")
     private String gioiTinh;
 
     @NotBlank(message = "Số điện thoại không được để trống")

@@ -25,7 +25,7 @@ public class KhachHangRequestOnline {
     @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
     private String passw;
 
-    @NotBlank(message = "Giới tính không được để trống")
+//    @NotBlank(message = "Giới tính không được để trống")
     private String gioiTinh;
 
     @NotBlank(message = "Số điện thoại không được để trống")
@@ -39,6 +39,6 @@ public class KhachHangRequestOnline {
         if (this.id == null || this.id.isEmpty()) {
             this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         }
-        return new KhachHang(id, null, ten, email, null, gioiTinh, sdt, diaChi, null, null, null);
+        return new KhachHang(id, null, ten, email, passw, gioiTinh, sdt, diaChi, null, null, null);
     }
 }
