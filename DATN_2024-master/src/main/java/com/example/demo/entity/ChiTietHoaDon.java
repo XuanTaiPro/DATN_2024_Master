@@ -3,18 +3,17 @@ package com.example.demo.entity;
 import com.example.demo.dto.chitiethoadon.ChiTietHoaDonRep;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 @Entity
 @Table(name = "CHITIETHOADON")
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class ChiTietHoaDon {
 
         @Id
@@ -52,6 +51,13 @@ public class ChiTietHoaDon {
         @ManyToOne
         @JoinColumn(name = "IDCTSP")
         private ChiTietSanPham chiTietSanPham;
+
+        @PrePersist
+        public void prePersist() {
+                if (this.id == null) {
+                        this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+                }
+        }
 
         public ChiTietHoaDonRep toResponse() {
                 double tienGiam = 0;

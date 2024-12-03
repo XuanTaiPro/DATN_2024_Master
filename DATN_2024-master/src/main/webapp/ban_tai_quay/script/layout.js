@@ -88,7 +88,10 @@ app.controller('myCtrl', function ($scope, $http) {
     $scope.closeNotificationModal = function () {
         setTimeout(function () {
             $('#notificationModal').modal('hide');
-        }, 0);    };
+        }, 0);
+        const backdrop_model = document.querySelector('.modal-backdrop')
+        backdrop_model.style.display = 'none'
+    };
 
     $scope.inspection();
 })
