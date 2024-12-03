@@ -54,7 +54,7 @@ public class SanPhamController {
 
     @GetMapping("/getSanPham-online")
     public ResponseEntity<?> getAllProductsWithMinPrice(@RequestParam(defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page, 8);
+        Pageable pageable = PageRequest.of(page, 2);
         Page<SanPhamOnlineResponse> products = sanPhamRepository.findSanPhamWithMinPrice(pageable);
 
         return ResponseEntity.ok().body(products);

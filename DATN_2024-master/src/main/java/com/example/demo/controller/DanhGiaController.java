@@ -127,6 +127,17 @@ public class DanhGiaController {
         return ResponseEntity.ok().body(list);
     }
 
+    @GetMapping("/detailByCTSP")
+    public ResponseEntity<?> detailByCTSP(@RequestParam String idCTSP) {
+        if (chiTietSanPhamRepository.findById(idCTSP).isEmpty()) {
+            return ResponseEntity.badRequest().body("Không tìm thấy chi tiết sản phẩm.");
+        }
+
+        List<DanhGia> list = danhGiaRepository.getByIdCTSP(idCTSP);
+
+        return ResponseEntity.ok().body(list);
+    }
+
     @PostMapping("/detail")
     public ResponseEntity<?> detail(@RequestBody Map<String, String> request) {
         String id = request.get("id");
