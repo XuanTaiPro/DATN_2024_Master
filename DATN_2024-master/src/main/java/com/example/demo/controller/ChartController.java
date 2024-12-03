@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.SanPham;
 import com.example.demo.repository.HoaDonRepo;
-import com.example.demo.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +18,7 @@ public class ChartController {
 
     @Autowired
     HoaDonRepo hoaDonRepo;
+
     @GetMapping("duLieu")
     public ResponseEntity<List<Map<String, Object>>> getTotalAmountAndNgayThanhToan(
             @RequestParam(required = false) Integer year,
@@ -41,13 +40,15 @@ public class ChartController {
         System.out.println("Data returned: " + response); // Debug dữ liệu
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/filters")
     public ResponseEntity<Map<String, List<Integer>>> getFilters() {
         // Lấy năm hiện tại
         int currentYear = LocalDate.now().getYear();
 
         // Danh sách các năm (giả sử bạn muốn lấy 5 năm gần nhất và năm tiếp theo)
-        List<Integer> years = Arrays.asList(currentYear - 2, currentYear - 1, currentYear, currentYear + 1, currentYear + 2);
+        List<Integer> years = Arrays.asList(currentYear - 2, currentYear - 1, currentYear, currentYear + 1,
+                currentYear + 2);
 
         // Danh sách các tháng (từ 1 đến 12)
         List<Integer> months = Arrays.stream(Month.values())
@@ -62,7 +63,7 @@ public class ChartController {
         }
 
         // Danh sách các ngày trong tuần (1 đến 7)
-        List<Integer> days = Arrays.asList(1, 2, 3, 4, 5, 6, 7);  // Chủ nhật đến thứ bảy
+        List<Integer> days = Arrays.asList(1, 2, 3, 4, 5, 6, 7); // Chủ nhật đến thứ bảy
 
         // Tạo Map chứa các bộ lọc
         Map<String, List<Integer>> filters = new HashMap<>();

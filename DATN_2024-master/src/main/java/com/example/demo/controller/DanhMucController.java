@@ -32,23 +32,26 @@ public class DanhMucController {
         List<DanhMuc> danhMucList = danhMucRepository.findAll(sort);
         return ResponseEntity.ok(danhMucList);
     }
+
     @GetMapping("/phanTrang")
-    public ResponseEntity<?> phanTrang(@RequestParam(name = "page",defaultValue = "0")Integer page) {
+    public ResponseEntity<?> phanTrang(@RequestParam(name = "page", defaultValue = "0") Integer page) {
         PageRequest pageRequest = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "ngayTao"));
         return ResponseEntity.ok(danhMucRepository.findAll(pageRequest));
     }
+
     @PostMapping("/detail")
     public ResponseEntity<?> detail(@RequestBody Map<String, String> request) {
         String id = request.get("id");
         if (id == null || id.isEmpty()) {
             return ResponseEntity.badRequest().body("ID không được để trống.");
         }
-        DanhMuc danhMuc = danhMucRepository.getById(id);
+        DanhMuc danhMuc = danhMucRepository.findById(id).get();
         if (danhMuc == null) {
             return ResponseEntity.badRequest().body("Không tìm thấy danh mục có id: " + id);
         }
         return ResponseEntity.ok(danhMuc);
     }
+
     @PostMapping("/detailByMa")
     public ResponseEntity<?> detailByMa(@RequestBody Map<String, String> request) {
         String ma = request.get("ma");

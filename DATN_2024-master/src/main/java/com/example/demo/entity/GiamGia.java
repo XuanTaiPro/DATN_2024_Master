@@ -1,6 +1,5 @@
 package com.example.demo.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -18,11 +17,11 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Bỏ qua proxy của Hibernate
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" }) // Bỏ qua proxy của Hibernate
 public class GiamGia {
     @Id
     @Column(name = "id")
-    private String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    private String id;
 
     @Size(max = 10, message = "Mã giảm giá không được vượt quá 10 ký tự")
     @Column(name = "ma")
@@ -39,22 +38,22 @@ public class GiamGia {
     private LocalDateTime ngaySua;
 
     @NotNull(message = "Ngày bắt đầu không được để trống")
-//    @FutureOrPresent(message = "Ngày bắt đầu phải là ngày hiện tại hoặc tương lai")
+    // @FutureOrPresent(message = "Ngày bắt đầu phải là ngày hiện tại hoặc tương
+    // lai")
     @Column(name = "ngayBatDau")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")  // Định dạng cho ngày bắt đầu
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // Định dạng cho ngày bắt đầu
     private LocalDateTime ngayBatDau;
 
     @NotNull(message = "Ngày kết thúc không được để trống")
-//    @Future(message = "Ngày kết thúc phải là ngày trong tương lai")
+    // @Future(message = "Ngày kết thúc phải là ngày trong tương lai")
     @Column(name = "ngayKetThuc")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")  // Định dạng cho ngày kết thúc
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // Định dạng cho ngày kết thúc
     private LocalDateTime ngayKetThuc;
 
     @NotBlank(message = "Giá giảm không được để trống")
     @Pattern(regexp = "^[0-9]+(\\.[0-9]{1,2})?%?$", message = "Giá giảm phải là số dương, có thể có tối đa hai chữ số thập phân và có thể có ký tự '%' ở cuối")
     @Column(name = "giaGiam")
     private String giaGiam;
-
 
     @NotNull(message = "Trạng thái không được để trống")
     @Min(value = 0, message = "Trạng thái không hợp lệ")
@@ -67,14 +66,6 @@ public class GiamGia {
     private String moTa;
 
     @OneToMany(mappedBy = "giamGia", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonIgnore
+    // @JsonIgnore
     private List<SanPham> listSanPham = new ArrayList<>();
-    @PrePersist
-    public void prePersist() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        }
-    }
-
-
 }

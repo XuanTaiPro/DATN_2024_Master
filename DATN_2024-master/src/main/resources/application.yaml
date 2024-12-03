@@ -1,18 +1,4 @@
-
 spring:
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: tailxph32074@fpt.edu.vn
-    password: zhcrequkemdubzrn
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
   application:
     name: demo
 
@@ -42,6 +28,17 @@ spring:
       allowed-origin-patterns: http://localhost:3000
       allow-credentials: true
       allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tailxph32074@fpt.edu.vn
+    password: zhcrequkemdubzrn
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 logging:
   level:
@@ -64,7 +61,7 @@ payment:
     tmnCode: ${TMN_CODE:4080EH9K}
     secretKey: ${SECRET_KEY:QH5J1MGJDD2XDEN25WFYEL9UHYF1HONH}
     returnUrl: ${RETURN_URL:http://127.0.0.1:5500/ban_online/layout.html#!/pay}
-    version: ${VERSION:2.1.0} 
+    version: ${VERSION:2.1.0}
     command: ${COMMAND:pay}
     orderType: ${ORDER_TYPE:other}
 

@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
@@ -51,17 +50,10 @@ public class ChiTietSanPham {
     @ManyToOne
     @JoinColumn(name = "idSP")
     @JsonIgnore // Bỏ qua tham chiếu này khi serialize
-    SanPham sanPham;
+    private SanPham sanPham;
 
     @OneToMany(mappedBy = "chiTietSanPham", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnhCTSP> anhCTSP = new ArrayList<>(); // Danh sách ảnh liên kết
-
-    @PrePersist
-    public void prePersist() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        }
-    }
 
     public ChiTietSanPhamResponse toChiTietSanPhamResponse() {
         double tienGiam = 0;

@@ -1,6 +1,5 @@
 package com.example.demo.entity;
 
-
 import com.example.demo.dto.anhCTSP.AnhCTSPResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,14 +17,13 @@ import java.util.UUID;
 public class AnhCTSP {
     @Id
     @Column(name = "ID")
-    private String id ;
+    private String id;
 
     @Column(name = "LINK")
     private String link;
 
     @Column(name = "TEN")
     private String ten;
-
 
     @Column(name = "TRANGTHAI")
     private int trangThai;
@@ -46,6 +44,7 @@ public class AnhCTSP {
             this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         }
     }
+
     public AnhCTSPResponse toAnhSPResponse() {
         return new AnhCTSPResponse(
                 id,
@@ -54,7 +53,6 @@ public class AnhCTSP {
                 trangThai,
                 ngayTao,
                 ngaySua,
-                chiTietSanPham != null ? chiTietSanPham.getMa() : null
-        );
+                chiTietSanPham != null ? chiTietSanPham.getMa() : null);
     }
 }

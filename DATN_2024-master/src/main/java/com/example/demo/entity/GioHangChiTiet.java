@@ -46,7 +46,8 @@ public class GioHangChiTiet {
     }
 
     public GioHangChiTietOnline toOnline() {
-        return new GioHangChiTietOnline(id, ma, chiTietSanPham.getSoLuong(), soLuong, chiTietSanPham.sanPham.getTenSP(),
+        return new GioHangChiTietOnline(id, ma, chiTietSanPham.getSoLuong(), soLuong,
+                chiTietSanPham.getSanPham().getTenSP(),
                 chiTietSanPham.getSoNgaySuDung(), chiTietSanPham.getGia());
     }
 }

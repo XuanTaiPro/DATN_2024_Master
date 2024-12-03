@@ -2,7 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.dto.sanpham.SanPhamOnlineResponse;
 import com.example.demo.entity.SanPham;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,10 +33,13 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
     @Query("SELECT sp FROM SanPham sp WHERE sp.giamGia.id=:id")
     List<SanPham> findByGiamGiaId(@Param("id") String id);
 
-    @Query("SELECT new com.example.demo.dto.sanpham.SanPhamOnlineResponse(p.id, p.tenSP, MIN(CAST(pd.gia AS float)), COALESCE(gg.giaGiam, 0)) "
-            +
-            "FROM SanPham p JOIN p.listCTSP pd " +
-            "LEFT JOIN p.giamGia gg " +
-            "GROUP BY p.id, p.tenSP, gg.giaGiam")
-    List<SanPhamOnlineResponse> findAllWithDetails(Pageable pageable);
+    @Query("SELECT new com.example.demo.dto.sanpham.SanPhamOnlineResponse(" +
+            "sp.id, sp.tenSP, ctp.gia, gg.giaGiam, gg.ngayBatDau, gg.ngayKetThuc, ac.link) " +
+            "FROM SanPham sp " +
+            "LEFT JOIN sp.giamGia gg " +
+            "LEFT JOIN sp.listCTSP ctp " +
+            "LEFT JOIN ctp.anhCTSP ac " +
+            "WHERE ctp.gia = (SELECT MIN(ctp2.gia) FROM ChiTietSanPham ctp2 WHERE ctp2.sanPham.id = sp.id)")
+    Page<SanPhamOnlineResponse> findSanPhamWithMinPrice(Pageable pageable);
+
 }
