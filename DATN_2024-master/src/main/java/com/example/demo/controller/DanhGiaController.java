@@ -195,10 +195,25 @@ public class DanhGiaController {
         }
 
         String sao = evalMap.get("sao");
+
+        try {
+            int soSao = Integer.parseInt(sao);
+            if (soSao < 1 || soSao > 5) {
+                return ResponseEntity.badRequest().body("Đánh giá phải trong khoảng từ 1 đến 5");
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Đánh giá phải là số");
+        }
+
         existingDG.setSao(Integer.parseInt(sao));
 
         String nhanXet = evalMap.get("nhanXet");
-        existingDG.setNhanXet(nhanXet);
+
+        if (nhanXet.length() > 255) {
+            return ResponseEntity.badRequest().body("Nhận xét quá 255 ký tự");
+        }
+
+        existingDG.setNhanXet(nhanXet.trim());
 
         existingDG.setNgaySua(LocalDateTime.now());
 
