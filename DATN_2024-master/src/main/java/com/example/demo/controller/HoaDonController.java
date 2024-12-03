@@ -344,6 +344,8 @@ public class HoaDonController {
     public ResponseEntity<String> xacNhanHD(@RequestParam(name = "idHD") String idHD) {
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(idHD);
         boolean checkSL = true;
+        // tạo biến để get tên sản phẩm ko đạt số lượng
+        String tenSPCheck = null;
 
         if (hoaDonOptional.isPresent()) {
             HoaDon hoaDonExisting = hoaDonOptional.get();
@@ -358,6 +360,7 @@ public class HoaDonController {
                 ChiTietSanPham getCheckCTSP = chiTietSanPhamRepo.findById(cthd.getChiTietSanPham().getId()).get();
                 if (cthd.getSoLuong() > getCheckCTSP.getSoLuong()) {
                     checkSL = false;
+                    tenSPCheck = getCheckCTSP.getSanPham().getTenSP();
                     break;
                 }
             }
@@ -377,9 +380,12 @@ public class HoaDonController {
                     chiTietSanPhamRepo.save(getCTSP);
                     dgRepo.save(dg);
                 }
+                return ResponseEntity.ok("Xác nhận hóa đơn thành công.");
+            } else {
+                return ResponseEntity.badRequest()
+                        .body("Sản phẩm '" + tenSPCheck + "' trong hóa đơn quá lượng trong kho.");
             }
 
-            return ResponseEntity.ok("Xác nhận hóa đơn thành công.");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
         }
