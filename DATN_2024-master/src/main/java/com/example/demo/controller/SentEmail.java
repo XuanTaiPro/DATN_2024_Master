@@ -1,11 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.email.EmailRequest;
-import com.example.demo.dto.khachhang.KhachHangRequest;
-import com.example.demo.entity.KhachHang;
 import com.example.demo.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +25,7 @@ public class SentEmail {
             emailService.sentEmail(
                     emailRequest.getEmailNguoiNhan(),
                     emailRequest.getTieuDe(),
-                    emailRequest.getNoiDung()
-            );
+                    emailRequest.getNoiDung());
             response.put("message", "Email đã gửi thành công!");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -38,6 +34,4 @@ public class SentEmail {
         }
     }
 
-
 }
-

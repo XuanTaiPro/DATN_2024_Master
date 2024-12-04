@@ -5,7 +5,7 @@
             <thead>
             <tr>
                 <td>Tên Sản Phẩm</td>
-                <td>Đơn giá</td>
+                <td>Giá bán</td>
                 <td>Số lượng</td>
                 <td>Tổng tiền</td>
             </tr>
@@ -13,9 +13,9 @@
             <tbody>
             <tr ng-repeat="cthds in listCTHD">
                 <td>{{cthds.tenSP}}</td>
-                <td>{{cthds.giaBan}}</td>
+                <td>{{cthds.giaSauGiam}}</td>
                 <td>{{cthds.soLuong}}</td>
-                <td>{{cthds.tongTien}} VND</td>
+                <td>{{cthds.giaSauGiam * cthds.soLuong}} VND</td>
             </tr>
             </tbody>
         </table>

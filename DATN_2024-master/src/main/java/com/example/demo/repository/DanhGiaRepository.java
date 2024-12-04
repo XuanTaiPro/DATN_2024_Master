@@ -24,4 +24,7 @@ public interface DanhGiaRepository extends JpaRepository<DanhGia, String> {
 
     @Query("SELECT d FROM DanhGia d WHERE d.khachHang.id = :idKH")
     List<DanhGia> getByIdKH(@Param("idKH") String idkh);
+
+    @Query("SELECT d FROM DanhGia d WHERE d.chiTietSanPham.id = :idCTSP AND d.trangThai = 1 ORDER BY d.sao DESC")
+    List<DanhGia> getByIdCTSP(@Param("idCTSP") String idCTSP);
 }

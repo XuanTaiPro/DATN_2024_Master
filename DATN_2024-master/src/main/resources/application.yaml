@@ -1,4 +1,3 @@
-
 spring:
   application:
     name: demo
@@ -62,7 +61,7 @@ payment:
     tmnCode: ${TMN_CODE:4080EH9K}
     secretKey: ${SECRET_KEY:QH5J1MGJDD2XDEN25WFYEL9UHYF1HONH}
     returnUrl: ${RETURN_URL:http://127.0.0.1:5500/ban_online/layout.html#!/pay}
-    version: ${VERSION:2.1.0} 
+    version: ${VERSION:2.1.0}
     command: ${COMMAND:pay}
     orderType: ${ORDER_TYPE:other}
 

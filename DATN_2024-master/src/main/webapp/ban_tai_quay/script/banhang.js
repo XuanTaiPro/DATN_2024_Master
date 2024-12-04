@@ -477,7 +477,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
             headers: {
                 'Content-Type': undefined
             }}
-            )
+        )
             .then(function(response) {
                 console.log(response.data);
                 // $('#addInvoiceModal').modal('show'); // Hiển thị modal
@@ -496,20 +496,20 @@ window.banhangCtrl = function ($scope, $http, $document) {
     $scope.deleteCTHD=function (idCTHD){
         const selectedTab = $scope.tabs[$scope.selectedTab];
         const selectedIdHD = selectedTab.idHD;
-            $http({
-                method: 'DELETE',
-                url: 'http://localhost:8083/chitiethoadon/delete', // Đường dẫn đến API
-                data: { id: idCTHD }, // Gửi id sản phẩm qua request body
-                headers: { "Content-Type": "application/json;charset=utf-8" }
-            }).then(function (response) {
-                console.log(response.data);
-                $('#confirmDeleteInvoiceDetailModal').modal('hide');
-                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
-            }, function (error) {
-                $('#confirmDeleteInvoiceDetailModal').modal('hide');
-                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
-                // alert(response.data); // Hiển thị thông báo thành công
-            });
+        $http({
+            method: 'DELETE',
+            url: 'http://localhost:8083/chitiethoadon/delete', // Đường dẫn đến API
+            data: { id: idCTHD }, // Gửi id sản phẩm qua request body
+            headers: { "Content-Type": "application/json;charset=utf-8" }
+        }).then(function (response) {
+            console.log(response.data);
+            $('#confirmDeleteInvoiceDetailModal').modal('hide');
+            $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+        }, function (error) {
+            $('#confirmDeleteInvoiceDetailModal').modal('hide');
+            $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+            // alert(response.data); // Hiển thị thông báo thành công
+        });
 
     }
     $scope.selectedTabIndex = 0; // Chỉ số tab hiện tại
@@ -543,29 +543,29 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $('#addInvoiceModal').modal('hide');  // Đóng modal khi nhấn "Hủy"
     };
     $scope.deleteInvoice = function (idHD, index) {
-            const selectedTab = $scope.tabs[$scope.selectedTab];
-            const selectedIdHD = selectedTab.idHD;
+        const selectedTab = $scope.tabs[$scope.selectedTab];
+        const selectedIdHD = selectedTab.idHD;
 
-            // Gửi yêu cầu DELETE tới API với id của hóa đơn
-            $http({
-                method: 'DELETE',
-                url: 'http://localhost:8083/hoadon/delete', // Đường dẫn tới API
-                data: { id: selectedIdHD }, // Gửi id hóa đơn qua request body
-                headers: { "Content-Type": "application/json;charset=utf-8" }
+        // Gửi yêu cầu DELETE tới API với id của hóa đơn
+        $http({
+            method: 'DELETE',
+            url: 'http://localhost:8083/hoadon/delete', // Đường dẫn tới API
+            data: { id: selectedIdHD }, // Gửi id hóa đơn qua request body
+            headers: { "Content-Type": "application/json;charset=utf-8" }
+        })
+            .then(function (response) {
+                // Xử lý khi xóa thành công
+                $scope.closeTab(index); // Đóng tab của hóa đơn
+                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Lấy lại danh sách sản phẩm cho tab hiện tại
             })
-                .then(function (response) {
-                    // Xử lý khi xóa thành công
-                    $scope.closeTab(index); // Đóng tab của hóa đơn
-                    $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Lấy lại danh sách sản phẩm cho tab hiện tại
-                })
-                .catch(function (error) {
-                    // Xử lý lỗi
-                    if (error.status === 404) {
-                        alert('Hóa đơn không tồn tại!');
-                    } else {
-                        alert('Không thể xóa hóa đơn, vui lòng thử lại sau.');
-                    }
-                });
+            .catch(function (error) {
+                // Xử lý lỗi
+                if (error.status === 404) {
+                    alert('Hóa đơn không tồn tại!');
+                } else {
+                    alert('Không thể xóa hóa đơn, vui lòng thử lại sau.');
+                }
+            });
 
     };
     $scope.test = function() {

@@ -6,7 +6,6 @@ import com.example.demo.entity.ChiTietHoaDon;
 import com.example.demo.entity.ChiTietSanPham;
 import com.example.demo.entity.GiamGia;
 import com.example.demo.entity.HoaDon;
-import com.example.demo.entity.SanPham;
 import com.example.demo.repository.ChiTietHoaDonRepo;
 import com.example.demo.repository.ChiTietSanPhamRepository;
 import com.example.demo.repository.HoaDonRepo;
@@ -66,10 +65,12 @@ public class ChiTietHoaDonController {
             String phanTramGiam = getGiamGia.getGiaGiam();
             giaSauGiam = Double.parseDouble(chiTietSanPham.getGia())
                     - Double.parseDouble(chiTietSanPham.getGia()) * Double.parseDouble(phanTramGiam) / 100;
+
         }
         else{
             giaSauGiam=Double.parseDouble(chiTietSanPham.getGia());
         }
+
         // Tìm ChiTietHoaDon hiện có
         ChiTietHoaDon cTHDExisting = chiTietHoaDonRepo.trungCTHD(req.getIdHD(), req.getIdCTSP());
         if (cTHDExisting != null) {
@@ -110,7 +111,7 @@ public class ChiTietHoaDonController {
     @PutMapping("/updateSoLuong")
     public ResponseEntity<?> updateCTHDSoLuong(@RequestParam(name = "id") String id,
             @Validated @ModelAttribute ChiTietHoaDon req) {
-        ChiTietHoaDon chiTietHoaDonExisting = chiTietHoaDonRepo.getById(id);
+        ChiTietHoaDon chiTietHoaDonExisting = chiTietHoaDonRepo.findById(id).get();
 
         if (chiTietHoaDonExisting == null) {
             return ResponseEntity.badRequest().body("Chi tiết hóa đơn không tồn tại");
@@ -159,63 +160,6 @@ public class ChiTietHoaDonController {
 
         return ResponseEntity.ok("Update Done!");
     }
-
-    // @PutMapping("/update")
-    // public ResponseEntity<?> updateChiTietHoaDon(@RequestParam(name = "id")
-    // String id,
-    // @Validated @ModelAttribute ChiTietHoaDonReq req) {
-    // Optional<ChiTietHoaDon> chiTietHoaDonOptional =
-    // chiTietHoaDonRepo.findById(id);
-    // if (chiTietHoaDonOptional.isEmpty()) {
-    // return ResponseEntity.status(404).body("Không tìm thấy chi tiết hóa đơn với
-    // ID: " + id);
-    // }
-    // ChiTietHoaDon chiTietHoaDon = chiTietHoaDonOptional.get();
-    // <<<<<<< HEAD
-    // double giaBan = Double.parseDouble(req.getGiaBan());
-    // int soLuong = req.getSoLuong();
-    //
-    // =======
-    //
-    // ChiTietSanPham ctSP = chiTietSanPhamRepo.findById(req.getIdCTSP()).get();
-    // SanPham sp = sPRepo.findById(ctSP.getSanPham().getId()).get();
-    // GiamGia giamGia = sp.getGiamGia();
-    //
-    // int giaSauGiam = 0;
-    //
-    // if (giamGia != null) {
-    // if (Integer.parseInt(giamGia.getGiaGiam()) < 100) {
-    // giaSauGiam = Integer.parseInt(ctSP.getGia())
-    // - Integer.parseInt(ctSP.getGia()) * Integer.parseInt(giamGia.getGiaGiam()) /
-    // 100;
-    // }
-    // }
-    //
-    // chiTietHoaDon.setGiaSauGiam(String.valueOf(giaSauGiam));
-    // >>>>>>> 3748b3f12bafbb8e0a2715e0eef64972cf0b4aab
-    //
-    // chiTietHoaDon.setSoLuong(req.getSoLuong());
-    // chiTietHoaDon.setGiaBan(req.getGiaBan());
-    // chiTietHoaDon.setNgaySua(LocalDateTime.now());
-    //
-    // Optional<ChiTietSanPham> chiTietSanPhamOptional =
-    // chiTietSanPhamRepo.findById(req.getIdCTSP());
-    // if (chiTietSanPhamOptional.isPresent()) {
-    // chiTietHoaDon.setChiTietSanPham(chiTietSanPhamOptional.get());
-    // } else {
-    // return ResponseEntity.badRequest().body("Chi tiết sản phẩm không tồn tại.");
-    // }
-    //
-    // Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(req.getIdHD());
-    // if (hoaDonOptional.isPresent()) {
-    // chiTietHoaDon.setHoaDon(hoaDonOptional.get());
-    // } else {
-    // return ResponseEntity.badRequest().body("Hóa đơn không tồn tại.");
-    // }
-    // System.out.println("Yêu cầu cập nhật:" + req);
-    // chiTietHoaDonRepo.save(chiTietHoaDon);
-    // return ResponseEntity.ok("Cập nhật chi tiết hóa đơn thành công.");
-    // }
 
     @GetMapping("/getCTHD")
     public ResponseEntity<?> getChiTietHoaDonByIdHD(

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,7 +35,7 @@
             <div class="gender-options">
                 <div>
                     <input type="radio" id="male" name="gender" value="Nam" checked>
-                    <label for="male">Nam</label>
+                    <label for="male" >Nam</label>
                 </div>
                 <div>
                     <input type="radio" id="female" name="gender" value="Nữ">
@@ -53,9 +54,18 @@
             <input type="text" id="address" name="address">
             <span class="error-message" id="error-ADDRESS"></span>
         </div>
-        <div class="submit-button">
-            <button type="submit">Đăng ký</button>
+        <div class="button-next-step">
+            <button class="btn-next-step">Tiếp tục</button>
         </div>
+    </form>
+    <form class="form-confirm">
+        <p>Chúng tôi đã gửi cho bạn mã xác nhận. Vui lòng hãy kiểm tra email của bạn.</p>
+        <div class="otp-input">
+            <label for="otp">Mã OTP</label>
+            <input type="text" id="otp" name="otp">
+            <span class="error-message" id="error-OTP"></span>
+        </div>
+        <button class="btn-submit-otp">Xác nhận OTP</button>
     </form>
 </div>
 
@@ -74,6 +84,15 @@
 
     const inpAddress = document.querySelector('#address');
     const lbAddress = document.querySelector('label[for="address"]');
+
+    const btnNextStep = document.querySelector('.btn-next-step')
+    const formUser = document.querySelector('.form-user')
+    const formConfirm = document.querySelector('.form-confirm')
+
+
+    const inpOtp = document.querySelector('#otp');
+    const btnSubmitOtp = document.querySelector('.btn-submit-otp');
+    const errorOTP = document.querySelector('#error-OTP');
 
     // Thêm class cho các label khi trang tải
     lbName.classList.add('active-label');
@@ -138,114 +157,88 @@
         }
     });
 
-    document.getElementById('registerForm')?.addEventListener('submit', function (event) {
-        event.preventDefault(); // Ngăn chặn form gửi đi
+    btnNextStep.addEventListener('click', async (e) => {
+        e.preventDefault();
 
-        // Reset các lỗi trước đó
-        resetErrors();
+        const name = inpName.value.trim();
+        const email = inpEmail.value.trim();
+        const password = inpPassword.value.trim();
+        const phone = inpPhone.value.trim();
+        const address = inpAddress.value.trim();
+        const gender = document.querySelector('input[name="gender"]:checked')?.value;
 
-        // Lấy giá trị từ các trường
-        var name = document.getElementById('name')?.value.trim();
-        var email = document.getElementById('email')?.value.trim();
-        var phone = document.getElementById('phone')?.value.trim();
-        var address = document.getElementById('address')?.value.trim();
-        var gender = document.querySelector('input[name="gender"]:checked')?.value;
-        var passw = document.getElementById('password')?.value.trim();
-
-        // Kiểm tra tính hợp lệ của các trường
-        var isValid = true;
-
-        // Kiểm tra tên
-        if (!name) {
-            showError('NAME', 'Họ và tên không được để trống');
-            isValid = false;
+        if (!name || !email || !password || !phone || !address || !gender) {
+            alert('Vui lòng điền đầy đủ thông tin!');
+            return;
         }
 
-        // Kiểm tra email
-        if (!email || !validateEmail(email)) {
-            showError('EMAIL', 'Email không hợp lệ');
-            isValid = false;
-        }
+        const requestData = {
+            ten: name,
+            email: email,
+            passw: password,
+            sdt: phone,
+            diaChi: address,
+            gioiTinh: gender
+        };
 
-        // Kiểm tra số điện thoại
-        if (!phone || !validatePhone(phone)) {
-            showError('PHONE', 'Số điện thoại không hợp lệ');
-            isValid = false;
-        }
-
-        // Kiểm tra địa chỉ
-        if (!address) {
-            showError('ADDRESS', 'Địa chỉ không được để trống');
-            isValid = false;
-        }
-
-        // Kiểm tra mật khẩu
-        if (!passw || passw.length < 6) {
-            showError('PASSWORD', 'Mật khẩu phải từ 6 ký tự trở lên');
-            isValid = false;
-        }
-
-        // Nếu tất cả hợp lệ, gửi dữ liệu đến server
-        if (isValid) {
-            var khachHang = {
-                ten: name,
-                email: email,
-                sdt: phone,
-                diaChi: address,
-                gioiTinh: gender,
-                passw: passw,
-            };
-
-            // Gửi dữ liệu đến server qua API
-            fetch('http://localhost:8083/khachhang/dangKy', {
+        try {
+            const response = await fetch('http://localhost:8083/login/dangKy', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(khachHang),
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('Lỗi: ' + response.status);
-                    }
-                })
-                .then(data => {
-                    console.log("Dữ liệu gửi đi: ", JSON.stringify(khachHang));
-                    alert('Đăng ký thành công!');
-                    document.getElementById('registerForm')?.reset();
-                })
-                .catch(error => alert('Lỗi đăng ký: ' + error.message))
-                .finally(() => {
-                    console.log('Đăng ký hoàn tất.');
-                });
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            // Xử lý phản hồi
+            if (response.ok) {
+                const data = await response.json();
+                alert(data.message || 'Đăng ký thành công! Vui lòng kiểm tra email để nhận OTP.');
+
+                // Chuyển sang bước xác nhận OTP
+                formUser.classList.add('active-form-user');
+                formConfirm.classList.add('active-form-confirm');
+            } else {
+                const error = await response.text();
+                alert(error);
+            }
+        } catch (err) {
+            console.error('Lỗi khi gọi API:', err);
+            alert('Đã xảy ra lỗi. Vui lòng thử lại sau.');
         }
     });
 
-    function showError(field, message) {
-        var errorElement = document.getElementById('error-' + field);
-        if (errorElement) {
-            errorElement.textContent = message;
-            errorElement.style.color = 'red'; // Thêm CSS tô đỏ
+
+    btnSubmitOtp.addEventListener('click', async (e) => {
+        e.preventDefault();
+        errorOTP.innerText = '';
+        const otpValue = inpOtp.value.trim();
+        if (otpValue === '') {
+            errorOTP.innerText = 'Vui lòng nhập mã OTP';
+            return;
         }
-    }
 
-    function resetErrors() {
-        var errorMessages = document.querySelectorAll('.error-message');
-        errorMessages.forEach(function (msg) {
-            msg.textContent = '';
-            msg.style.color = ''; // Xóa màu khi reset
+        // Lấy thông tin email từ session hoặc từ form trước đó
+        const email = inpEmail.value;
+
+        // Gửi yêu cầu kiểm tra OTP
+        const otpRequest = { email: email, otp: otpValue };
+        const response = await fetch('http://localhost:8083/login/checkOtpDK', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(otpRequest)
         });
-    }
 
-    function validateEmail(email) {
-        var re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        return re.test(email);
-    }
+        const result = await response.json();
+        if (result.success === false) {
+            errorOTP.innerText = result.message || 'Mã OTP không chính xác';
+        } else {
+            console.log(result)
+            window.location.href = result.redirectUrl
+        }
 
-    function validatePhone(phone) {
-        var re = /^[0-9]{10,15}$/;
-        return re.test(phone);
-    }
+    });
+
 </script>
 </body>
 </html>

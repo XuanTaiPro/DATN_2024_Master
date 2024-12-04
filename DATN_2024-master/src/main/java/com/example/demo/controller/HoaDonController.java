@@ -67,6 +67,9 @@ public class HoaDonController {
     @Autowired
     private DanhGiaRepository dgRepo;
 
+    @Autowired
+    private LoginController loginController;
+
     @GetMapping("/page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
@@ -85,6 +88,7 @@ public class HoaDonController {
                 "totalPages", hoaDonPage.getTotalPages(),
                 "totalElements", hoaDonPage.getTotalElements());
 
+        System.out.println(LoginController.tenQuyen);
         return ResponseEntity.ok(response);
     }
 
@@ -159,13 +163,11 @@ public class HoaDonController {
 
     @PostMapping("/add")
     public ResponseEntity<?> createHoaDon(@ModelAttribute HoaDonReq req) {
-        if (req.getIdNV() == null || req.getIdNV().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("ID nhân viên không được để trống.");
-        }
         HoaDon hoaDon = new HoaDon();
 
         // Sao chép các thuộc tính khác từ req
         BeanUtils.copyProperties(req, hoaDon);
+        hoaDon.setMaHD(generateCodeAll.generateMa("HD-", 7));
         hoaDon.setNgayTao(LocalDateTime.now());
         hoaDon.setNgaySua(null);
         hoaDon.setTrangThai(1);
@@ -177,11 +179,11 @@ public class HoaDonController {
         hoaDon.setSdtNguoiNhan(null);
 
         // Xử lý nhân viên
-        Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById(req.getIdNV());
+        Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById(loginController.getIdNV);
         if (nhanVienOptional.isPresent()) {
             hoaDon.setNhanVien(nhanVienOptional.get());
         } else {
-            return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + req.getIdNV());
+            return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + loginController.getIdNV);
         }
         try {
             hoaDonRepo.save(hoaDon);
@@ -341,28 +343,49 @@ public class HoaDonController {
     @PutMapping("/xacNhanHD")
     public ResponseEntity<String> xacNhanHD(@RequestParam(name = "idHD") String idHD) {
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(idHD);
+        boolean checkSL = true;
+        // tạo biến để get tên sản phẩm ko đạt số lượng
+        String tenSPCheck = null;
 
         if (hoaDonOptional.isPresent()) {
             HoaDon hoaDonExisting = hoaDonOptional.get();
-            hoaDonExisting.setTrangThai(2);
+            hoaDonExisting.setTrangThai(3);
             hoaDonRepo.save(hoaDonExisting);
 
             KhachHang getKH = hoaDonExisting.getKhachHang();
 
             List<ChiTietHoaDon> cthdList = chiTietHoaDonRepo.findByHoaDon(hoaDonExisting.getId());
+
             for (ChiTietHoaDon cthd : cthdList) {
-                DanhGia dg = new DanhGia();
-                ChiTietSanPham getCTSP = chiTietSanPhamRepo.findById(cthd.getChiTietSanPham().getId()).get();
-                dg.setChiTietSanPham(getCTSP);
-
-                dg.setKhachHang(getKH);
-                dg.setNgayDanhGia(LocalDateTime.now());
-                dg.setTrangThai(0);
-
-                dgRepo.save(dg);
+                ChiTietSanPham getCheckCTSP = chiTietSanPhamRepo.findById(cthd.getChiTietSanPham().getId()).get();
+                if (cthd.getSoLuong() > getCheckCTSP.getSoLuong()) {
+                    checkSL = false;
+                    tenSPCheck = getCheckCTSP.getSanPham().getTenSP();
+                    break;
+                }
             }
 
-            return ResponseEntity.ok("Xác nhận hóa đơn thành công.");
+            if (checkSL) {
+                for (ChiTietHoaDon cthd : cthdList) {
+                    DanhGia dg = new DanhGia();
+                    ChiTietSanPham getCTSP = chiTietSanPhamRepo.findById(cthd.getChiTietSanPham().getId()).get();
+                    dg.setChiTietSanPham(getCTSP);
+
+                    getCTSP.setSoLuong(getCTSP.getSoLuong() - cthd.getSoLuong());
+
+                    dg.setKhachHang(getKH);
+                    dg.setNgayDanhGia(LocalDateTime.now());
+                    dg.setTrangThai(0);
+
+                    chiTietSanPhamRepo.save(getCTSP);
+                    dgRepo.save(dg);
+                }
+                return ResponseEntity.ok("Xác nhận hóa đơn thành công.");
+            } else {
+                return ResponseEntity.badRequest()
+                        .body("Sản phẩm '" + tenSPCheck + "' trong hóa đơn quá lượng trong kho.");
+            }
+
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
         }
@@ -439,16 +462,17 @@ public class HoaDonController {
                 hoaDon.setSdtNguoiNhan(req.getSdtNguoiNhan());
             }
             // Cập nhật các thông tin khác
-            hoaDon.setMaHD(req.getMaHD());
+            hoaDon.setMaHD(hoaDon.getMaHD());
             hoaDon.setMaVoucher(req.getMaVoucher());
-            hoaDon.setNgayThanhToan(req.getNgayThanhToan());
-            hoaDon.setNgayNhanHang(req.getNgayNhanHang());
-            hoaDon.setTrangThai(req.getTrangThai());
+            hoaDon.setNgayThanhToan(LocalDateTime.now());
+            // hoaDon.setNgayNhanHang(req.getNgayNhanHang());
+            hoaDon.setTrangThai(3);
             hoaDon.setLoaiHD(req.getLoaiHD());
+            hoaDon.setThanhtoan(0);
             hoaDon.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
             hoaDon.setNgaySua(LocalDateTime.now());
-            hoaDon.setGhiChu(req.getGhiChu());
-
+            // hoaDon.setGhiChu(req.getGhiChu());
+            System.out.println("Mã Hóa đơn : " + hoaDon.getMaHD());
             try {
                 hoaDonRepo.save(hoaDon);
                 return ResponseEntity.ok().build();

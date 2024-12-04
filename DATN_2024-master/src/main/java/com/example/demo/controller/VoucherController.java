@@ -20,7 +20,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,7 +60,7 @@ public class VoucherController {
             @RequestParam(defaultValue = "2") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<ChiTietVoucher> chiTietVoucherPage = ctvcRepo.findByKhachHang_Id(idKH, pageable);
+        Page<ChiTietVoucher> chiTietVoucherPage = ctvcRepo.findByIdKH(idKH, pageable);
 
         List<VoucherThanhToan> vouchers = chiTietVoucherPage.getContent().stream()
                 .filter(ctv -> ctv.getVoucher() != null)
@@ -120,7 +123,15 @@ public class VoucherController {
             @RequestParam(defaultValue = "3") Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Voucher> voucherPage = vcRepo.findAll(pageable);
-
+        LocalDate dateNow = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        for (Voucher vc : voucherPage) {
+            LocalDate dateHH = LocalDate.parse(vc.getNgayKetThuc(), formatter);
+            if (dateNow.isAfter(dateHH) && vc.getTrangThai() != 0) {
+                vc.setTrangThai(0);
+                vcRepo.save(vc);
+            }
+        }
         List<VoucherResponse> list = new ArrayList<>();
         voucherPage.forEach(c -> list.add(c.toResponse()));
 
@@ -153,7 +164,7 @@ public class VoucherController {
             voucherRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
         if (voucherRequest.getMa() == null || voucherRequest.getMa().isEmpty()) {// nếu mã chưa đc điền thì tự động thêm
-                                                                                 // mã
+            // mã
             voucherRequest.setMa(generateCodeAll.generateMaVoucher());
         }
         Voucher voucher = voucherRequest.toEntity();
@@ -180,7 +191,7 @@ public class VoucherController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody VoucherRequest voucherRequest,
-            BindingResult bindingResult) {
+                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));

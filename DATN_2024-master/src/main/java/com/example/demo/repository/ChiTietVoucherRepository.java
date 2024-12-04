@@ -12,9 +12,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ChiTietVoucherRepository extends JpaRepository<ChiTietVoucher, String> {
-    Page<ChiTietVoucher> findByKhachHang_Id(String idKH, Pageable pageable);
 
-    // List<ChiTietVoucher> findByVoucher_Id(String voucherId);
+    @Query("select c from ChiTietVoucher c where c.khachHang.id = :idKH and c.voucher.trangThai = 1")
+    Page<ChiTietVoucher> findByIdKH(String idKH, Pageable pageable);
 
     @Modifying
     @Transactional

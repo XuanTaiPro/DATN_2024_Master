@@ -10,8 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-
 public interface ChiTietHoaDonRepo extends JpaRepository<ChiTietHoaDon, String> {
 
     @Query("SELECT cthd FROM ChiTietHoaDon cthd WHERE  cthd.hoaDon.id = :idHD")
@@ -21,7 +19,7 @@ public interface ChiTietHoaDonRepo extends JpaRepository<ChiTietHoaDon, String> 
     List<ChiTietHoaDon> findByHoaDon(@Param("idHD") String idHD);
 
     @Query("SELECT cthd FROM ChiTietHoaDon cthd WHERE cthd.hoaDon.id=:idHD AND cthd.chiTietSanPham.id=:idCTSP")
-    ChiTietHoaDon trungCTHD(@Param("idHD") String idHD,@Param("idCTSP") String idCTSP);
+    ChiTietHoaDon trungCTHD(@Param("idHD") String idHD, @Param("idCTSP") String idCTSP);
 
     @Query("SELECT cthd FROM ChiTietHoaDon cthd WHERE  cthd.hoaDon.id = :idHD")
     List<ChiTietHoaDon> getByIdHD(@Param("idHD") String idHD);
