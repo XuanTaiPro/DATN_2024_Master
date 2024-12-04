@@ -87,6 +87,7 @@ public class HoaDon {
 
         // Iterate through each chiTietHoaDon to calculate the total
         for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
+            if (maVoucher!=null){}
             tongTien += Double.valueOf(chiTietHoaDon.getGiaSauGiam()) * chiTietHoaDon.getSoLuong();
         }
 

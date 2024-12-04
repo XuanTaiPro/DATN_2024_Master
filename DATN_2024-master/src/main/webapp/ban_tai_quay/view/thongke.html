@@ -1,4 +1,7 @@
+
 <div class="container mt-5">
+    <h3 class="text-center" style="padding-bottom: 20px">Thống kê doanh thu</h3>
+
     <!-- Biểu đồ --><div ng-if="noDataMessage" class="alert alert-warning">
     {{ noDataMessage }}
 </div>
@@ -42,6 +45,8 @@
             <option value="bar">Cột</option>
             <option value="pie">Tròn</option>
             <option value="radar">Radar</option>
+            <option value="doughnut">Bánh rỗng</option>
+            <option value="polarArea">Khu vực tròn</option>
         </select>
     </div>
     <!-- Table to show data -->
@@ -55,7 +60,7 @@
             </thead>
             <tbody>
             <tr ng-repeat="item in chartData">
-                <td>{{ item.ngayThanhToan | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                <td>{{ item.ngayThanhToan | date:'yyyy-MM-dd ' }}</td>
                 <td>{{ item.totalAmount }} VND</td>
             </tr>
             </tbody>

@@ -9,15 +9,216 @@ window.banhangCtrl = function ($scope, $http, $document) {
     $scope.totalPages = 0;
     $scope.sanPhams = []; // Nếu không có từ khóa tìm kiếm, xóa danh sách sản phẩm
     $scope.searchResultsVisible = false;
+    $scope.qrData = '';
+    $scope.isScanning = false;
 
-    $scope.test = function() {
-        $http.get('http://localhost:8083/hoadon/tuDongXoaHoaDon')
+    // Hàm bắt đầu quét mã QR khi nút được nhấn
+    $scope.startQRCodeScan = function() {
+        $scope.isScanning = true;
+
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    var videoElement = document.getElementById('videoElement');
+                    videoElement.srcObject = stream;
+
+                    // Đảm bảo video đã load và có kích thước hợp lệ
+                    videoElement.onloadedmetadata = function() {
+                        videoElement.play();
+                        // Bắt đầu quét mã QR khi video đã sẵn sàng
+                        $scope.scanQRCode(videoElement, stream); // Chuyển stream vào hàm scanQRCode
+                    };
+                })
+                .catch(function(err) {
+                    console.log('Lỗi khi truy cập camera: ', err);
+                });
+        } else {
+            console.log('Trình duyệt không hỗ trợ API getUserMedia');
+        }
+    };
+    $scope.stopQRCodeScan = function() {
+        $scope.isScanning = false;
+        let video = document.getElementById('videoElement');
+        let stream = video.srcObject;
+        if (stream) {
+            let tracks = stream.getTracks();
+            tracks.forEach(function(track) {
+                track.stop();
+            });
+        }
+        video.srcObject = null;
+    };
+    $scope.scanQRCode = function(videoElement, stream) {
+        // Kiểm tra video đã có chiều rộng hợp lệ chưa
+        if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
+            // Nếu chưa có kích thước, chờ 100ms rồi thử lại
+            setTimeout(function() {
+                $scope.scanQRCode(videoElement, stream);
+            }, 100);
+            return;
+        }
+
+        // Lấy bức ảnh từ video
+        var canvas = document.createElement("canvas");
+        var context = canvas.getContext("2d");
+        canvas.height = videoElement.videoHeight;
+        canvas.width = videoElement.videoWidth;
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+        // Dùng thư viện jsQR để quét mã QR từ ảnh
+        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        var qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+        if (qrCode) {
+            // Nếu quét được mã QR, hiển thị dữ liệu
+            $scope.$apply(async function() {
+                $scope.qrData = qrCode.data; // Lưu dữ liệu quét được vào $scope
+                console.log('Dữ liệu mã QR: ', $scope.qrData);
+
+                // Tạo formData để gửi API
+                const formData = new FormData();
+                formData.append('soLuong', 1);
+                const selectedTab = $scope.tabs[$scope.selectedTab];
+                const selectedIdHD = selectedTab ? selectedTab.idHD : null;
+                // console.log('selectedIdHD: ', selectedIdHD);
+                formData.append('idCTSP', $scope.qrData);
+                formData.append('idHD', selectedIdHD);
+
+                // In ra key và value trong formData
+                for (let [key, value] of formData.entries()) {
+                    console.log(`${key}: ${value}`);
+                }
+
+                if (selectedIdHD != null) {
+                    // Nếu idHD hợp lệ, gọi API để thêm chi tiết hóa đơn
+                    $http.post('http://localhost:8083/chitiethoadon/add', formData, {
+                        headers: { 'Content-Type': undefined }
+                    })
+                        .then(function(response) {
+                            console.log('Chi tiết hóa đơn đã được thêm thành công');
+                            // Cập nhật lại danh sách sản phẩm
+                            $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
+                        })
+                        .catch(function(error) {
+                            console.error('Lỗi khi thêm chi tiết hóa đơn:', error.message);
+                            $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
+                        });
+
+                    // Ngừng quét mã QR và dừng video stream
+                    stream.getTracks().forEach(track => track.stop());
+                    $scope.isScanning = false;
+                    videoElement.srcObject = null; // Hủy kết nối video
+                } else {
+                    const formData = new FormData();
+                    formData.append('idNV', '40E70DA8'); // Thay đổi theo nhu cầu
+
+                    // Gọi API để thêm hóa đơn mới
+                    $http.post('http://localhost:8083/hoadon/add', formData, {
+                        transformRequest: angular.identity,
+                        headers: { 'Content-Type': undefined }
+                    })
+                        .then(function(response) {
+                            $scope.getHDTaiQuayAndAddCTHD($scope.qrData); // Lấy lại danh sách hóa đơn mới nhất
+                        })
+                        .catch(function(error) {
+                            console.error('Lỗi:', error);
+                            alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
+                        });
+                }
+            });
+        } else {
+            // Nếu không quét được, tiếp tục quét sau 100ms
+            setTimeout(function() {
+                $scope.scanQRCode(videoElement, stream);
+            }, 100);
+        }
+    };
+
+// Hàm thêm hóa đơn
+//     $scope.addInvoiceTabInScanQR = function (idCTSP) {
+//         // $scope.getHDTaiQuay();
+//         const selectedTab = $scope.tabs[$scope.selectedTab];
+//         if (selectedTab && selectedTab.idHD) {
+//             const selectedIdHD = selectedTab.idHD;
+//             console.log(selectedTab);
+//             console.log('Selected idHD:', selectedIdHD);
+//             const formData = new FormData();
+//             formData.append('soLuong', 1);
+//             formData.append('idHD', selectedIdHD);
+//             formData.append('idCTSP', idCTSP);
+//
+//             // Thêm chi tiết hóa đơn sau khi tạo hóa đơn mới
+//             $http.post('http://localhost:8083/chitiethoadon/add', formData, {
+//                 headers: { 'Content-Type': undefined }
+//             })
+//                 .then(function(response) {
+//                     console.log('Chi tiết hóa đơn đã được thêm thành công');
+//                     $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
+//                 })
+//                 .catch(function(error) {
+//                     console.log('Lỗi khi thêm chi tiết hóa đơn:', error.message);
+//                 });
+//         } else {
+//             console.log('selectedTab or idHD is undefined');
+//         }
+//     };
+
+    $scope.getHDTaiQuayAndAddCTHD = function (idCTSP) {
+        $http.get('http://localhost:8083/hoadon/getHDTaiQuay')
             .then(function(response) {
-                console.log('Xóa hóa đơn thành công', response);
-            }, function(error) {
-                console.error('Có lỗi xảy ra khi xóa hóa đơn', error);
+                console.log(response.data); // Kiểm tra dữ liệu trả về
+                response.data.forEach((hoaDon) => {
+                    const newTabTitle = 'Hóa Đơn ' + hoaDon.maHD; // Tạo tên tab cho mỗi hóa đơn
+                    const newTab = {
+                        title: newTabTitle,
+                        hoaDons: hoaDon.items,
+                        ghiChu: hoaDon.ghiChu || '', // Đảm bảo giá trị ghiChu được gán đúng
+                        idHD: hoaDon.id || [] // Sử dụng idHD thay vì $scope.idHD
+                    };
+                    // Kiểm tra xem tab đã tồn tại hay chưa
+                    if (!$scope.tabs.find(tab => tab.title === newTabTitle)) {
+                        $scope.tabs.push(newTab); // Thêm tab mới vào mảng nếu chưa tồn tại
+                    }
+                });
+                // Tự động chọn tab mới nhất được thêm
+                if ($scope.tabs.length > 0) {
+                    $scope.selectedTab = $scope.tabs.length - 1; // Chọn tab cuối cùng
+                    const selectedTab = $scope.tabs[$scope.selectedTab];
+                    const selectedIdHD = selectedTab.idHD;
+                    console.log(selectedIdHD);
+                    // $scope.getCTSPByIdHD(selectedIdHD, 0);
+                    if (selectedTab && selectedTab.idHD) {
+                        const selectedIdHD = selectedTab.idHD;
+                        console.log(selectedTab);
+                        console.log('Selected add idHD:', selectedIdHD);
+                        const formData = new FormData();
+                        formData.append('soLuong', 1);
+                        formData.append('idHD', selectedIdHD);
+                        formData.append('idCTSP', idCTSP);
+
+                        // Thêm chi tiết hóa đơn sau khi tạo hóa đơn mới
+                        $http.post('http://localhost:8083/chitiethoadon/add', formData, {
+                            headers: { 'Content-Type': undefined }
+                        })
+                            .then(function(response) {
+                                console.log('Chi tiết hóa đơn đã được thêm thành công');
+                                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
+                            })
+                            .catch(function(error) {
+                                console.log('Lỗi khi thêm chi tiết hóa đơn:', error.message);
+                                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
+
+                            });
+                    } else {
+                        console.log('selectedTab or idHD is undefined');
+                    }// Gọi API để lấy chi tiết hóa đơn của tab cuối cùng
+                }
+            })
+            .catch(function(error) {
+                console.error('Lỗi khi lấy hóa đơn tại quầy:', error.data);
             });
     };
+
     $scope.addInvoiceTab = function () {
         $('#confirmAddInvoiceModal').modal('hide');
 
@@ -30,10 +231,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
             headers: { 'Content-Type': undefined }
         })
             .then(function(response) {
-                // Kiểm tra xem hóa đơn đã được thêm thành công
                 $('#addInvoiceModal').modal('show'); // Hiển thị modal
-
-                // Gọi lại API để lấy danh sách hóa đơn đã được sắp xếp
                 $scope.getHDTaiQuay(); // Lấy lại danh sách hóa đơn mới nhất
             })
             .catch(function(error) {
@@ -370,7 +568,14 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 });
 
     };
-
+    $scope.test = function() {
+        $http.get('http://localhost:8083/hoadon/tuDongXoaHoaDon')
+            .then(function(response) {
+                console.log('Xóa hóa đơn thành công', response);
+            }, function(error) {
+                console.error('Có lỗi xảy ra khi xóa hóa đơn', error);
+            });
+    };
     // Gọi hàm lấy hóa đơn khi khởi tạo controller
     $scope.getHDTaiQuay();
 

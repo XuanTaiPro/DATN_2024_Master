@@ -10,7 +10,16 @@
                 + Tạo Hóa Đơn
             </button>
             <button class="btn btn-danger" ng-click="test()" >Check xóa hóa đơn cũ</button>
+            <button ng-click="startQRCodeScan()">Bắt đầu Quét Mã QR</button>
+            <video id="videoElement" width="auto" height="auto" style="position: fixed;top: 20%;right: -1%; transform: translate(-10%, -55%);z-index: 99;"></video>
+            <button ng-if="isScanning" ng-click="stopQRCodeScan()" style="position: fixed;top: 7%;right: 3%; z-index: 100; background-color: red; color: white; border: none; font-size: 20px; border-radius: 50%; width: 50px; height: 50px; text-align: center; line-height: 30px; cursor: pointer;">X</button>
+
+            <!--            <div id="qr-reader" style="width: 500px; height: 500px;"></div>  &lt;!&ndash; Vùng quét mã QR &ndash;&gt;-->
+            <div>
+                <p>Thông tin mã QR: {{qrData}}</p>
+            </div>
         </div>
+
         <div class="modal fade" id="confirmAddInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="confirmAddInvoiceModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -263,4 +272,3 @@
         </div>
     </div>
 </div>
-

@@ -37,7 +37,7 @@ public interface HoaDonRepo extends JpaRepository<HoaDon, String> {
     List<HoaDon> getHDTaiQuay(@Param("trangThai") Integer trangThai);
     @Query(value = "SELECT SUM(CAST(COALESCE(TRY_CAST(c.giaSauGiam AS decimal(18, 2)), 0) AS decimal(18, 2)) * " +
             "CAST(COALESCE(TRY_CAST(c.soLuong AS int), 0) AS int)) AS totalAmount, " +
-            "h.ngayThanhToan " +
+            "CAST(h.ngayThanhToan AS DATE) AS ngayThanhToan " +
             "FROM HOADON h " +
             "JOIN CHITIETHOADON c ON h.id = c.idHoaDon " +
             "WHERE h.trangThai = 3 " +
@@ -45,7 +45,7 @@ public interface HoaDonRepo extends JpaRepository<HoaDon, String> {
             "AND (:month IS NULL OR MONTH(h.ngayThanhToan) = :month) " +
             "AND (:week IS NULL OR DATEPART(WEEK, h.ngayThanhToan) = :week) " +
             "AND (:day IS NULL OR DAY(h.ngayThanhToan) = :day) " +
-            "GROUP BY h.ngayThanhToan", nativeQuery = true)
+            "GROUP BY CAST(h.ngayThanhToan AS DATE)", nativeQuery = true)
     List<Object[]> getTotalAmountAndNgayThanhToan(@Param("year") Integer year,
                                                   @Param("month") Integer month,
                                                   @Param("week") Integer week,
