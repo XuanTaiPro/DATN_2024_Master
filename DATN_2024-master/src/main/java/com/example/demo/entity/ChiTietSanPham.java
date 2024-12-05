@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
@@ -47,6 +48,12 @@ public class ChiTietSanPham {
     @Column(name = "ngaySua")
     private LocalDateTime ngaySua;
 
+    @PrePersist
+    public void prePersist() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        }
+    }
     @ManyToOne
     @JoinColumn(name = "idSP")
     @JsonIgnore // Bỏ qua tham chiếu này khi serialize
@@ -54,6 +61,9 @@ public class ChiTietSanPham {
 
     @OneToMany(mappedBy = "chiTietSanPham", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnhCTSP> anhCTSP = new ArrayList<>(); // Danh sách ảnh liên kết
+
+    @OneToMany(mappedBy = "ctsp", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LoHang> listLoHang = new ArrayList<>();
 
     public ChiTietSanPhamResponse toChiTietSanPhamResponse() {
         double tienGiam = 0;
@@ -67,6 +77,10 @@ public class ChiTietSanPham {
             tienGiam = Double.valueOf(sanPham.getGiamGia().getGiaGiam()) / 100 * Double.valueOf(this.gia);
             gia = String.valueOf(Double.valueOf(this.gia) * (1 - giaGiam));
         }
+        int soLuongCTSPByLH=0;
+        for (LoHang loHang:listLoHang) {
+            soLuongCTSPByLH+=loHang.getSoLuong();
+        }
         return new ChiTietSanPhamResponse(
                 id,
                 ma,
@@ -74,13 +88,13 @@ public class ChiTietSanPham {
                 String.valueOf(tienGiam),
                 soNgaySuDung,
                 ngayNhap,
-                soLuong,
+                soLuongCTSPByLH,
                 trangThai,
                 ngayTao,
                 ngaySua,
                 sanPham.getMaSP(),
                 sanPham.getId(),
-                linkAnhList // Include the image link in the response
+                linkAnhList, listLoHang
         );
     }
 }

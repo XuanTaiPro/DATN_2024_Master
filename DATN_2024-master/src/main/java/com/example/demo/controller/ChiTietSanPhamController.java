@@ -103,6 +103,7 @@ public class ChiTietSanPhamController {
         if (chiTietSanPhamRepository.findById(id).isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy CTSP có id: " + id);
         }
+//        List<LoHang> listLoHang=lHRepo.fByIdCTSP(id);
         return ResponseEntity.ok(chiTietSanPhamRepository.findById(id)
                 .stream().map(ChiTietSanPham::toChiTietSanPhamResponse).findFirst().orElse(null));
     }
@@ -126,7 +127,7 @@ public class ChiTietSanPhamController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Valid @ModelAttribute ChiTietSanPhamRequest chiTietSanPhamRequest) {
+    public ResponseEntity<?> add(@Valid @RequestBody ChiTietSanPhamRequest chiTietSanPhamRequest) {
         // Chuẩn hóa số ngày sử dụng
         chiTietSanPhamRequest.setSoNgaySuDung(chiTietSanPhamRequest.getSoNgaySuDung().trim());
 
