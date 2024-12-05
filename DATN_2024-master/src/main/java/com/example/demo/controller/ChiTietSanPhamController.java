@@ -4,8 +4,12 @@ import com.example.demo.dto.chitietsanpham.ChiTietSanPhamRequest;
 import com.example.demo.dto.chitietsanpham.ChiTietSanPhamResponse;
 import com.example.demo.entity.AnhCTSP;
 import com.example.demo.entity.ChiTietSanPham;
+import com.example.demo.entity.LoHang;
 import com.example.demo.entity.SanPham;
 import com.example.demo.repository.*;
+import com.example.demo.service.ChiTietSanPhamService;
+import com.example.demo.service.GenerateCodeAll;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +35,27 @@ import java.util.stream.Collectors;
 public class ChiTietSanPhamController {
     @Autowired
     SanPhamRepository sanPhamRepository;
+
     @Autowired
     GiamGiaRepository giamGiaRepository;
+
     @Autowired
     ChiTietSanPhamRepository chiTietSanPhamRepository;
+
     @Autowired
     AnhCTSPRepository anhCTSPRepository;
+
     @Autowired
     DanhGiaRepository danhGiaRepository;
+
+    @Autowired
+    LoHangRepository lHRepo;
+
+    @Autowired
+    GenerateCodeAll genMa;
+
+    @Autowired
+    ChiTietSanPhamService ctspService;
 
     @GetMapping()
     public ResponseEntity<?> getAll() {
@@ -111,10 +129,16 @@ public class ChiTietSanPhamController {
         // Chuẩn hóa số ngày sử dụng
         chiTietSanPhamRequest.setSoNgaySuDung(chiTietSanPhamRequest.getSoNgaySuDung().trim());
 
+        LocalDateTime dateNow = LocalDateTime.now();
+
+        String validationError = ctspService.validateRequest(chiTietSanPhamRequest, dateNow);
+        if (validationError != null) {
+            return ResponseEntity.badRequest().body(validationError);
+        }
+
         String generatedMa;
         do {
-            String randomString = UUID.randomUUID().toString().replace("-", "").substring(0, 6).toUpperCase();
-            generatedMa = "CTSP" + randomString;
+            generatedMa = genMa.generateMa("CTSP-", 5);
         } while (chiTietSanPhamRepository.getByMa(generatedMa) != null);
 
         // Kiểm tra sản phẩm đã tồn tại
@@ -124,38 +148,24 @@ public class ChiTietSanPhamController {
 
         // Cập nhật số lượng nếu sản phẩm đã tồn tại
         if (existingChiTietSanPham != null) {
-            existingChiTietSanPham.setSoLuong(existingChiTietSanPham.getSoLuong() + chiTietSanPhamRequest.getSoLuong());
-            chiTietSanPhamRepository.save(existingChiTietSanPham);
+            ctspService.updateExistingProduct(existingChiTietSanPham, chiTietSanPhamRequest);
             return ResponseEntity.ok("Sản phẩm đã tồn tại, số lượng đã được cập nhật!");
         }
 
         // Tạo mới chi tiết sản phẩm
-        ChiTietSanPham chiTietSanPham = new ChiTietSanPham();
-        BeanUtils.copyProperties(chiTietSanPhamRequest, chiTietSanPham);
-        chiTietSanPham.setMa(generatedMa);
-        chiTietSanPham.setNgayTao(LocalDateTime.now());
-        chiTietSanPham.setNgaySua(null);
+        ChiTietSanPham newChiTietSanPham = ctspService.createNewProduct(generatedMa, chiTietSanPhamRequest);
+        chiTietSanPhamRepository.save(newChiTietSanPham);
 
-        // Kiểm tra và thiết lập sản phẩm
-        if (chiTietSanPhamRequest.getIdSP() != null) {
-            SanPham sanPham = sanPhamRepository.findById(chiTietSanPhamRequest.getIdSP()).orElse(null);
-            if (sanPham == null) {
-                return ResponseEntity.badRequest()
-                        .body("Không tìm thấy sản phẩm với id: " + chiTietSanPhamRequest.getIdSP());
-            }
-            chiTietSanPham.setSanPham(sanPham);
-        }
+        ctspService.createNewLoHang(newChiTietSanPham, chiTietSanPhamRequest);
 
-        // Lưu chi tiết sản phẩm vào repository
-        chiTietSanPhamRepository.save(chiTietSanPham);
         if (chiTietSanPhamRequest.getLinkAnhList() != null && !chiTietSanPhamRequest.getLinkAnhList().isEmpty()) {
             for (String link : chiTietSanPhamRequest.getLinkAnhList()) {
                 AnhCTSP anhCTSP = new AnhCTSP();
                 anhCTSP.setLink(link);
                 anhCTSP.setTrangThai(1);
                 anhCTSP.setNgayTao(LocalDateTime.now());
-                anhCTSP.setTen("Ảnh của" + chiTietSanPham.getMa());
-                anhCTSP.setChiTietSanPham(chiTietSanPham); // Thiết lập liên kết với chi tiết sản phẩm
+                anhCTSP.setTen("Ảnh của" + newChiTietSanPham.getMa());
+                anhCTSP.setChiTietSanPham(newChiTietSanPham); // Thiết lập liên kết với chi tiết sản phẩm
                 anhCTSPRepository.save(anhCTSP); // Lưu ảnh vào repository
             }
         }
@@ -174,6 +184,61 @@ public class ChiTietSanPhamController {
             return ResponseEntity.badRequest().body("Không tìm thấy chi tiết sản phẩm có id: " + id);
         }
 
+        LocalDateTime dateNow = LocalDateTime.now();
+
+        String validationError = ctspService.validateRequest(chiTietSanPhamRequest, dateNow);
+        if (validationError != null) {
+            return ResponseEntity.badRequest().body(validationError);
+        }
+
+        if (chiTietSanPhamRequest.getListLoHang() != null) {
+            List<Map<String, Object>> listLH = chiTietSanPhamRequest.getListLoHang();
+
+            for (Map<String, Object> loHang : listLH) {
+
+                LoHang getLoHang = lHRepo.findById((String) loHang.get("idLoHang")).get();
+
+                // check số lượng để update
+                Object sLuong = loHang.get("soLuong");
+                Integer sLuongInt;
+                if (sLuong instanceof Integer) {
+                    sLuongInt = (Integer) sLuong;
+                } else {
+                    try {
+                        sLuongInt = Integer.parseInt((String) loHang.get("soLuong"));
+                    } catch (NumberFormatException e) {
+                        return ResponseEntity.badRequest().body("Số lượng phải là số.");
+                    }
+                }
+
+                boolean checkDifferentSL = getLoHang.getSoLuong() != sLuongInt;
+
+                if (checkDifferentSL) {
+                    getLoHang.setSoLuong(sLuongInt);
+                }
+
+                // check hsd và nsx
+
+                LocalDateTime hsdRequest = LocalDateTime.parse((String) loHang.get("hsd")).truncatedTo(ChronoUnit.DAYS);
+                LocalDateTime hsdGetDataBase = getLoHang.getHsd().truncatedTo(ChronoUnit.DAYS);
+                boolean checkDifferentHSD = hsdRequest.isEqual(hsdGetDataBase);
+
+                if (checkDifferentHSD) {
+                    getLoHang.setHsd(LocalDateTime.parse((String) loHang.get("hsd")));
+                }
+
+                LocalDateTime nsxRequest = LocalDateTime.parse((String) loHang.get("nsx")).truncatedTo(ChronoUnit.DAYS);
+                LocalDateTime nsxGetDataBase = getLoHang.getNsx().truncatedTo(ChronoUnit.DAYS);
+                boolean checkDifferentNSX = nsxRequest.isEqual(nsxGetDataBase);
+
+                if (checkDifferentNSX) {
+                    getLoHang.setNsx(LocalDateTime.parse((String) loHang.get("nsx")));
+                }
+
+                lHRepo.save(getLoHang);
+            }
+        }
+
         // Xóa tất cả ảnh cũ nếu có yêu cầu thay đổi
         if (chiTietSanPhamRequest.getLinkAnhList() != null && !chiTietSanPhamRequest.getLinkAnhList().isEmpty()) {
             existingChiTietSanPham.getAnhCTSP().clear(); // Xóa ảnh cũ
@@ -188,6 +253,7 @@ public class ChiTietSanPhamController {
                 existingChiTietSanPham.getAnhCTSP().add(anhCTSP);
             }
         }
+
         if (chiTietSanPhamRequest.getLinkAnhList() == null) {
             existingChiTietSanPham.getAnhCTSP().clear(); // Xóa ảnh cũ
         }
