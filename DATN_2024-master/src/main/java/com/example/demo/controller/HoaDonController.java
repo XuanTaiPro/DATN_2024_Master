@@ -302,9 +302,21 @@ public class HoaDonController {
             }
 
             cthd.setHoaDon(getHD);
-            Integer soLuongTrongGio = (Integer) prod.get("soLuongTrongGio");
 
-            cthd.setSoLuong(soLuongTrongGio);
+            Object soLuongObj = prod.get("soLuongTrongGio");
+            Integer sL;
+
+            if (soLuongObj instanceof Integer) {
+                sL = (Integer) soLuongObj;
+            } else {
+                try {
+                    sL = Integer.valueOf((String) prod.get("soLuongTrongGio"));
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException();
+                }
+            }
+
+            cthd.setSoLuong(sL);
             cthd.setNgayTao(LocalDateTime.now());
 
             String idCTSP = (String) prod.get("id");
