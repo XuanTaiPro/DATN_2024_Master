@@ -25,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -271,12 +272,17 @@ public class ChiTietSanPhamController {
         if (id == null || id.isEmpty()) {
             return ResponseEntity.badRequest().body("ID không được để trống.");
         }
-        if (id == null || chiTietSanPhamRepository.findById(id).isEmpty()) {
+
+        Optional<ChiTietSanPham> ctspObj = chiTietSanPhamRepository.findById(id);
+
+        if (chiTietSanPhamRepository.findById(id).isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy CTSP có id: " + id);
         }
-        anhCTSPRepository.deleteByIdCTSP(id);
-        danhGiaRepository.deleteByIdCTSP(id);
-        chiTietSanPhamRepository.deleteById(id);
+
+        ChiTietSanPham ctsp = ctspObj.get();
+        ctsp.setTrangThai(0);
+        chiTietSanPhamRepository.save(ctsp);
+
         return ResponseEntity.ok("Xóa thành công");
     }
 
