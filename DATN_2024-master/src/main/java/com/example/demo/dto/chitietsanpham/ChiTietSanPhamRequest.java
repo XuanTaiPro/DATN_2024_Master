@@ -8,8 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import com.example.demo.entity.LoHang;
-
 @Getter
 @Setter
 public class ChiTietSanPhamRequest {

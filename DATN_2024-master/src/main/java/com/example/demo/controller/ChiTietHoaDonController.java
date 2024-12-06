@@ -66,9 +66,8 @@ public class ChiTietHoaDonController {
             giaSauGiam = Double.parseDouble(chiTietSanPham.getGia())
                     - Double.parseDouble(chiTietSanPham.getGia()) * Double.parseDouble(phanTramGiam) / 100;
 
-        }
-        else{
-            giaSauGiam=Double.parseDouble(chiTietSanPham.getGia());
+        } else {
+            giaSauGiam = Double.parseDouble(chiTietSanPham.getGia());
         }
 
         // Tìm ChiTietHoaDon hiện có
