@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -41,6 +42,7 @@ public class LoHang {
 
     @ManyToOne
     @JoinColumn(name = "IDCTSP")
+    @JsonIgnore // Bỏ qua tham chiếu này khi serialize
     private ChiTietSanPham ctsp;
 
     @PrePersist
