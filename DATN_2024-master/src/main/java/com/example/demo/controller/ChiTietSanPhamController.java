@@ -103,7 +103,7 @@ public class ChiTietSanPhamController {
         if (chiTietSanPhamRepository.findById(id).isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy CTSP có id: " + id);
         }
-//        List<LoHang> listLoHang=lHRepo.fByIdCTSP(id);
+        // List<LoHang> listLoHang=lHRepo.fByIdCTSP(id);
         return ResponseEntity.ok(chiTietSanPhamRepository.findById(id)
                 .stream().map(ChiTietSanPham::toChiTietSanPhamResponse).findFirst().orElse(null));
     }
@@ -224,8 +224,7 @@ public class ChiTietSanPhamController {
                 LocalDateTime hsdRequest = LocalDateTime.parse((String) loHang.get("hsd")).truncatedTo(ChronoUnit.DAYS);
                 LocalDateTime hsdGetDataBase = getLoHang.getHsd().truncatedTo(ChronoUnit.DAYS);
                 boolean checkDifferentHSD = hsdRequest.isEqual(hsdGetDataBase);
-
-                if (checkDifferentHSD) {
+                if (!checkDifferentHSD) {
                     getLoHang.setHsd(LocalDateTime.parse((String) loHang.get("hsd")));
                 }
 
@@ -233,11 +232,13 @@ public class ChiTietSanPhamController {
                 LocalDateTime nsxGetDataBase = getLoHang.getNsx().truncatedTo(ChronoUnit.DAYS);
                 boolean checkDifferentNSX = nsxRequest.isEqual(nsxGetDataBase);
 
-                if (checkDifferentNSX) {
+                if (!checkDifferentNSX) {
                     getLoHang.setNsx(LocalDateTime.parse((String) loHang.get("nsx")));
                 }
 
-                lHRepo.save(getLoHang);
+                if (!checkDifferentSL || checkDifferentHSD || checkDifferentNSX) {
+                    lHRepo.save(getLoHang);
+                }
             }
         }
 
