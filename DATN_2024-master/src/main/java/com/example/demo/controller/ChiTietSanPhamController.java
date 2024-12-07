@@ -185,6 +185,16 @@ public class ChiTietSanPhamController {
         LocalDateTime hsdRequest = lHRequest.getHsd();
         LocalDateTime nsxRequest = lHRequest.getNsx();
 
+        LocalDateTime dateNow = LocalDateTime.now();
+
+        if (!nsxRequest.isBefore(dateNow)) {
+            return ResponseEntity.badRequest().body("Ngày sản xuất phải trước ngày hiện tại");
+        }
+
+        if (!hsdRequest.isAfter(dateNow)) {
+            return ResponseEntity.badRequest().body("Hạn sử dụng phải sau ngày hiện tại");
+        }
+
         Optional<LoHang> existingLoHang = lHRepo.fByIdCTSP(lHRequest.getIdCTSP())
                 .stream()
                 .filter(loHang -> loHang.getHsd().truncatedTo(ChronoUnit.DAYS)
@@ -305,6 +315,52 @@ public class ChiTietSanPhamController {
         chiTietSanPhamRepository.save(existingChiTietSanPham);
 
         return ResponseEntity.ok("Cập nhật chi tiết sản phẩm thành công!");
+    }
+
+    @PutMapping("update-loHang")
+    public ResponseEntity<?> updateLoHang(@RequestBody LoHangRequest lHRequest) {
+
+        String idCTSP = lHRequest.getIdCTSP();
+
+        if (chiTietSanPhamRepository.findById(idCTSP) == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy CTSP có id: " + idCTSP);
+        }
+
+        LocalDateTime hsdRequest = lHRequest.getHsd();
+        LocalDateTime nsxRequest = lHRequest.getNsx();
+
+        LocalDateTime dateNow = LocalDateTime.now();
+
+        if (!nsxRequest.isBefore(dateNow)) {
+            return ResponseEntity.badRequest().body("Ngày sản xuất phải trước ngày hiện tại");
+        }
+
+        if (!hsdRequest.isAfter(dateNow)) {
+            return ResponseEntity.badRequest().body("Hạn sử dụng phải sau ngày hiện tại");
+        }
+
+        LoHang lh = lHRepo.findById(lHRequest.getId()).get();
+        boolean checkChange = false;
+        if (!hsdRequest.isEqual(lh.getHsd())) {
+            lh.setHsd(lHRequest.getHsd());
+            checkChange = true;
+        }
+        if (!nsxRequest.isEqual(lh.getNsx())) {
+            lh.setNsx(lHRequest.getNsx());
+            checkChange = true;
+        }
+        if (lHRequest.getSoLuong() != lh.getSoLuong()) {
+            lh.setSoLuong(lHRequest.getSoLuong());
+            checkChange = true;
+        }
+
+        if (checkChange) {
+            lHRepo.save(lh);
+            return ResponseEntity.ok().body("Cập nhật lô hàng thành công");
+        } else {
+            return ResponseEntity.ok("Không có thay đổi nào để cập nhật.");
+        }
+
     }
 
     @DeleteMapping("/delete")
