@@ -35,6 +35,7 @@ public class GiamGiaController {
         List<GiamGia> giamGiaList = giamGiaRepository.findAll(sort);
         return ResponseEntity.ok(giamGiaList);
     }
+
     @GetMapping("/inspection")
     public ResponseEntity<?> getGG() {
         List<GiamGia> giamGiaList = giamGiaRepository.findAll();
@@ -108,7 +109,7 @@ public class GiamGiaController {
 
     @PostMapping("/add")
     public ResponseEntity<?> add(@Valid @ModelAttribute GiamGia giamGia,
-            @RequestParam("selectedProducts") List<String> selectedProducts) {
+                                 @RequestParam("selectedProducts") List<String> selectedProducts) {
         giamGia.setNgayTao(LocalDateTime.now());
         giamGia.setNgaySua(null);
 
@@ -185,7 +186,7 @@ public class GiamGiaController {
 
     @PutMapping("/update")
     public ResponseEntity<?> update(@Valid @ModelAttribute GiamGia giamGia,
-            @RequestParam("selectedProducts") List<String> selectedProducts) {
+                                    @RequestParam("selectedProducts") List<String> selectedProducts) {
         String id = giamGia.getId();
         if (id == null || id.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("ID không được để trống.");

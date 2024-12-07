@@ -210,7 +210,8 @@ public class HoaDonController {
         hd.setNgayTao(LocalDateTime.now());
         hd.setNgaySua(null);
         hd.setTrangThai(0);
-        hd.setLoaiHD(0);
+        hd.setNhanVien(nhanVienRepo.findById("CEC76A2E").get());
+        hd.setLoaiHD(1);
         hd.setThanhtoan(Integer.parseInt(payment));
 
         if (Integer.parseInt(payment) == 2) {
@@ -302,9 +303,20 @@ public class HoaDonController {
             }
 
             cthd.setHoaDon(getHD);
-            Integer soLuongTrongGio = (Integer) prod.get("soLuongTrongGio");
+            Object soLuongObj = prod.get("soLuongTrongGio");
+            Integer sL;
 
-            cthd.setSoLuong(soLuongTrongGio);
+            if (soLuongObj instanceof Integer) {
+                sL = (Integer) soLuongObj;
+            } else {
+                try {
+                    sL = Integer.valueOf((String) prod.get("soLuongTrongGio"));
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException();
+                }
+            }
+
+            cthd.setSoLuong(sL);
             cthd.setNgayTao(LocalDateTime.now());
 
             String idCTSP = (String) prod.get("id");

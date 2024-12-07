@@ -34,6 +34,7 @@ body {
     padding: 10px; /* Thêm khoảng cách bên trong các ô */
     word-wrap: break-word; /* Bọc nội dung trong ô để không bị tràn */
 }
+
 .nav-link.active {
     background-color: #007bff; /* Màu nền cho tab đang hoạt động */
     color: white; /* Màu chữ cho tab đang hoạt động */

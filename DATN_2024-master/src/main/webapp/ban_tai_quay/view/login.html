@@ -9,7 +9,7 @@
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 
     <link rel="stylesheet" href="../style/login.css">
-<!--    <script src="./script/login.js"></script>-->
+    <!--    <script src="./script/login.js"></script>-->
 </head>
 
 <body>
@@ -100,18 +100,18 @@
         const email = inpUser.value.trim(); // Lấy giá trị từ input
         const password = inpPass.value.trim();
 
-        if(inpUser.value.trim()===''){
-            errorTK.innerText= 'Vui lòng nhập tài khoản'
+        if (inpUser.value.trim() === '') {
+            errorTK.innerText = 'Vui lòng nhập tài khoản'
         }
-        if(inpPass.value.trim()===''){
-            errorPW.innerText= 'Vui lòng nhập mật khẩu'
+        if (inpPass.value.trim() === '') {
+            errorPW.innerText = 'Vui lòng nhập mật khẩu'
         }
 
         if (email !== '' && password !== '') {
             fetch('http://localhost:8083/login/manager', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, passw: password ,otp : otp })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: email, passw: password, otp: otp})
             })
                 .then(response => response.json())
                 .then(data => {
@@ -133,18 +133,18 @@
 
     let dataFetch
 
-    const getData = async () =>{
+    const getData = async () => {
         let account = {
-            email : inpUser.value,
-            passw : inpPass.value
+            email: inpUser.value,
+            passw: inpPass.value
         }
         const loginNV = await fetch('http://localhost:8083/login/manager',
-            { method : 'POST', headers :{ 'Content-Type' : 'application/json'}, body: JSON.stringify(account)})
+            {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(account)})
             .then((resp) => {
                 return resp.text()
             })
-            .then(data =>  {
-                sessionStorage.setItem("otp",data)
+            .then(data => {
+                sessionStorage.setItem("otp", data)
                 console.log(data)
             })
 
@@ -163,10 +163,10 @@
         const email = inpUser.value;
 
         // Gửi yêu cầu kiểm tra OTP
-        const otpRequest = { email: email, otp: otpValue };
+        const otpRequest = {email: email, otp: otpValue};
         const response = await fetch('http://localhost:8083/login/checkOtp', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(otpRequest)
         });
 
@@ -174,8 +174,8 @@
         if (result.success === false) {
             errorOTP.innerText = result.message || 'Mã OTP không chính xác';
         } else {
-                console.log(result)
-            sessionStorage.setItem('loginOk',true)
+            console.log(result)
+            sessionStorage.setItem('loginOk', true)
             window.location.href = result.redirectUrl
         }
 

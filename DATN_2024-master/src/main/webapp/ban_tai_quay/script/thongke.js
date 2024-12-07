@@ -17,7 +17,7 @@ window.thongkeCtrl = function ($scope, $http) {
         if (day) params.day = day;
 
         // Gửi yêu cầu đến API để lấy dữ liệu
-        $http.get('http://localhost:8083/chart/duLieu', { params: params })
+        $http.get('http://localhost:8083/chart/duLieu', {params: params})
             .then(function (response) {
                 $scope.chartData = response.data; // Lưu dữ liệu nhận được vào $scope.chartData
                 console.log($scope.chartData);

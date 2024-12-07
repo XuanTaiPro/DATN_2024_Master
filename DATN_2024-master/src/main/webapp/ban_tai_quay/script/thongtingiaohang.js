@@ -27,7 +27,7 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
     };
 
 
-    $scope.getSTT = function(index) {
+    $scope.getSTT = function (index) {
         return index + 1 + ($scope.currentPage * $scope.pageSize);
     };
     $scope.range = function (n) {

@@ -23,6 +23,7 @@
     font-size: 14px; /* Kích thước chữ */
     z-index: 1; /* Đảm bảo nút ở trên cùng */
 }
+
 .pagination {
     display: flex;
     align-items: center;

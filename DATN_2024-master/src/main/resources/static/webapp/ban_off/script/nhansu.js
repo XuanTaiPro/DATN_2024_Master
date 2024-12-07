@@ -3,11 +3,11 @@ var form = document.getElementById("myForm"),
     file = document.getElementById("imgInput"),
     submitBtn = document.querySelector(".submit");
 
-file.onchange = function() {
+file.onchange = function () {
     if (file.files[0].size < 1000000) {
         var fileReader = new FileReader();
 
-        fileReader.onload = function(e) {
+        fileReader.onload = function (e) {
             imgUrl = e.target.result;
             imgInput.src = imgUrl;
         }
@@ -19,20 +19,19 @@ file.onchange = function() {
 }
 
 
-
 window.nhanvienCtrl = function ($scope) {
     const apiNhanVien = "http://localhost:8080/nhanvien";
 
     $scope.listNhanVien = [];
     $scope.nhanVien = {};
     $scope.selectedNhanVien = {};
-    $scope.loadNhanVien = function() {
+    $scope.loadNhanVien = function () {
         $http.get(apiNhanVien)
-            .then(function(response) {
+            .then(function (response) {
                 $scope.listNhanVien = response.data;
                 console.log('oke rồi')
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error("Error loading employee data:", error);
             });
     };

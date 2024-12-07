@@ -62,7 +62,7 @@ public class ChiTietSanPhamController {
 
     @GetMapping("/page")
     public ResponseEntity<?> page(@RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestParam(name = "idSP", required = false) String idSP) {
+                                  @RequestParam(name = "idSP", required = false) String idSP) {
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("ngayTao")));
         Page<ChiTietSanPham> chiTietSanPhamPage = chiTietSanPhamRepository.getAllByIdSP(idSP, pageRequest);
         List<ChiTietSanPhamResponse> responseList = chiTietSanPhamPage.stream()

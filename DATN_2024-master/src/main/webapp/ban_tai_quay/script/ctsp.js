@@ -1,4 +1,4 @@
-window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
+window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
     $scope.idSP = $routeParams.idSP;
     // Khởi tạo sản phẩm
     $scope.product = {
@@ -26,54 +26,53 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
     $scope.totalPages = 0; // Tổng số trang
     $scope.totalElements = 0; //
     // Lấy tất cả chi tiết sản phẩm
-    $scope.getAllProducts = function(page) {
+    $scope.getAllProducts = function (page) {
         $scope.currentPage = page || 0; // Nếu không có page được truyền vào, dùng trang 0
         $http.get(`http://localhost:8083/chi-tiet-san-pham/page?page=${$scope.currentPage}&idSP=${$scope.idSP}`)
-            .then(function(response) {
+            .then(function (response) {
                 console.log(response.data); // Kiểm tra dữ liệu trả về
                 $scope.products = response.data.content; // Gán danh sách sản phẩm từ dữ liệu trả về
                 $scope.uniqueSoNgaySuDung = [...new Set($scope.products.map(p => p.soNgaySuDung))];
                 $scope.totalPages = response.data.totalPages; // Lưu tổng số trang
-                $scope.pages = Array.from({ length: $scope.totalPages}, (v, i) => i); // Tạo danh sách các số trang
+                $scope.pages = Array.from({length: $scope.totalPages}, (v, i) => i); // Tạo danh sách các số trang
                 console.log($scope.pages);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 $scope.errorMessage = 'Lỗi khi lấy sản phẩm: ' + error.data;
                 console.error($scope.errorMessage);
             });
     };
     // Chuyển sang trang trước
-    $scope.previousPage = function() {
+    $scope.previousPage = function () {
         if ($scope.currentPage > 0) {
             $scope.getAllProducts($scope.currentPage - 1);
         }
     };
 
     // Chuyển sang trang sau
-    $scope.nextPage = function() {
+    $scope.nextPage = function () {
         if ($scope.currentPage < $scope.totalPages - 1) {
             $scope.getAllProducts($scope.currentPage + 1);
         }
     };
 
-    $scope.addProduct = function(product) {
+    $scope.addProduct = function (product) {
         const formData = new FormData();
         // Thêm thông tin sản phẩm vào FormData
         formData.append('gia', product.gia);
-        if(product.soNgaySuDung!=null){
+        if (product.soNgaySuDung != null) {
             formData.append('soNgaySuDung', product.soNgaySuDung);
-        }
-        else if(product.soNgaySuDung==null){
+        } else if (product.soNgaySuDung == null) {
             formData.append('soNgaySuDung', product.soNgaySuDungInput);
         }
         formData.append('ngayNhap', moment(product.ngayNhap).format('YYYY-MM-DDTHH:mm:ss'));
         formData.append('soLuong', product.soLuong);
         formData.append('trangThai', 1);
-        formData.append('idSP',$scope.idSP);
+        formData.append('idSP', $scope.idSP);
         console.log('Thông tin sản phẩm:', product);
         // Gửi danh sách linkAnhList
         if (product.linkAnhList) {
-            product.linkAnhList.forEach(function(link) {
+            product.linkAnhList.forEach(function (link) {
                 formData.append('linkAnhList', link); // Thêm đường dẫn vào FormData
             });
         }
@@ -83,16 +82,16 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
         // Gửi FormData lên server
         $http.post('http://localhost:8083/chi-tiet-san-pham/add', formData, {
             transformRequest: angular.identity,
-            headers: { 'Content-Type': undefined }
+            headers: {'Content-Type': undefined}
         })
-            .then(function(response) {
+            .then(function (response) {
                 $('#productModal').modal('hide');
                 $scope.product = {};
                 $scope.getAllProducts();
                 alert('Thêm thành công!');
 
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 // Kiểm tra nội dung của đối tượng lỗi
                 $scope.getAllProducts($scope.currentPage); // Gọi lại hàm với trang hiện tại
 
@@ -116,8 +115,8 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
             $http({
                 method: 'DELETE',
                 url: 'http://localhost:8083/chi-tiet-san-pham/delete', // Đường dẫn đến API
-                data: { id: productId }, // Gửi id sản phẩm qua request body
-                headers: { "Content-Type": "application/json;charset=utf-8" }
+                data: {id: productId}, // Gửi id sản phẩm qua request body
+                headers: {"Content-Type": "application/json;charset=utf-8"}
             }).then(function (response) {
                 alert(response.data); // Hiển thị thông báo thành công
                 // Cập nhật lại danh sách sản phẩm
@@ -131,25 +130,24 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
         }
     };
 
-    $scope.updateProduct = function() {
+    $scope.updateProduct = function () {
         const formData = new FormData();
         // Thêm thông tin sản phẩm vào FormData
         formData.append('id', $scope.productDetail.id); // Lưu ID của sản phẩm
         formData.append('gia', $scope.productDetail.gia);
-        if( $scope.productDetail.soNgaySuDung!=null){
-            formData.append('soNgaySuDung',  $scope.productDetail.soNgaySuDung);
-        }
-        else if($scope.productDetail.soNgaySuDung==null){
-            formData.append('soNgaySuDung',  $scope.productDetail.soNgaySuDungInput);
+        if ($scope.productDetail.soNgaySuDung != null) {
+            formData.append('soNgaySuDung', $scope.productDetail.soNgaySuDung);
+        } else if ($scope.productDetail.soNgaySuDung == null) {
+            formData.append('soNgaySuDung', $scope.productDetail.soNgaySuDungInput);
         }
         formData.append('ngayNhap', moment($scope.productDetail.ngayNhap).format('YYYY-MM-DDTHH:mm:ss'));
         formData.append('soLuong', $scope.productDetail.soLuong);
         formData.append('trangThai', $scope.productDetail.trangThai);
-        formData.append('idSP',"1AB2B600");
+        formData.append('idSP', "1AB2B600");
 
 
         // Gửi danh sách linkAnhList
-        $scope.productDetail.linkAnhList.forEach(function(link) {
+        $scope.productDetail.linkAnhList.forEach(function (link) {
             formData.append('linkAnhList', link);
         });
 
@@ -163,14 +161,14 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
                 'Content-Type': undefined
             }
         })
-            .then(function(response) {
+            .then(function (response) {
                 console.log('Cập nhật sản phẩm thành công: ', response.data);
                 // Cập nhật lại danh sách sản phẩm
                 $scope.getAllProducts(); // Tải lại danh sách sản phẩm
                 $('#userForm').modal('hide'); // Đóng modal
                 alert('Cập nhật thành công!'); // Thông báo thành công
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 // console.log(productDetail);
                 console.error('Lỗi:', error);
                 $scope.getAllProducts($scope.currentPage); // Gọi lại hàm với trang hiện tại
@@ -183,7 +181,7 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
                 }
             });
     };
-    $scope.clearForm = function() {
+    $scope.clearForm = function () {
         // Xóa mọi dữ liệu trong product
         $scope.productDetail = {}; // Xóa dữ liệu chi tiết sản phẩm
         $scope.product = {
@@ -195,8 +193,8 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
         $('#productModal').modal('hide'); // Đóng modal
     };
     // Xem chi tiết sản phẩm
-    $scope.viewDetail = function(productId) {
-        const product = $scope.products.find(function(p) {
+    $scope.viewDetail = function (productId) {
+        const product = $scope.products.find(function (p) {
             return p.id === productId;
         });
 
@@ -228,7 +226,7 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
     // Khởi tạo
     $scope.getAllProducts();
 
-    $scope.selectImages = function(element) {
+    $scope.selectImages = function (element) {
         const files = element.files; // Lấy tất cả các tệp
         $scope.product.imagePreviews = []; // Reset danh sách hình ảnh trong product
         $scope.productDetail.imagePreviews = []; // Reset danh sách hình ảnh trong productDetail
@@ -238,10 +236,10 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
         $scope.productDetail.linkAnhList = []; // Danh sách lưu trữ đường dẫn trong productDetail
 
         if (files.length > 0) {
-            Array.from(files).forEach(function(file) {
+            Array.from(files).forEach(function (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    $scope.$apply(function() {
+                reader.onload = function (e) {
+                    $scope.$apply(function () {
                         // Thêm URL tạm thời để hiển thị ảnh vào danh sách hình ảnh của product
                         $scope.product.imagePreviews.push(e.target.result);
                         // Thêm URL tạm thời vào selectedImages của product
@@ -263,7 +261,7 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
     };
 
 
-    $scope.removeImage = function(index, isDetail) {
+    $scope.removeImage = function (index, isDetail) {
         if (isDetail) {
             // Xóa hình ảnh trong productDetail
             if (index >= 0 && index < $scope.productDetail.imagePreviews.length) {

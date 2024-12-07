@@ -74,7 +74,7 @@ public class ThongTinGiaoHangController {
 
     @PostMapping("add")
     public ResponseEntity<?> add(@Valid @RequestBody ThongTinGiaoHangRequest thongTinGiaoHangRequest,
-            BindingResult bindingResult) {
+                                 BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -96,7 +96,7 @@ public class ThongTinGiaoHangController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id,
-            @Valid @RequestBody ThongTinGiaoHangRequest thongTinGiaoHangRequest, BindingResult bindingResult) {
+                                    @Valid @RequestBody ThongTinGiaoHangRequest thongTinGiaoHangRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -127,7 +127,7 @@ public class ThongTinGiaoHangController {
             thongTinGiaoHangUpdate.setNgayTao(optionalThongTinGiaoHang.get().getNgayTao());
             thongTinGiaoHangUpdate.setNgaySua(LocalDateTime.now());
             ThongTinGiaoHang saveThongTinGiaoHang = ttghRepo.save(thongTinGiaoHangUpdate); // Lưu thay đổi và lấy đối
-                                                                                           // tượng đã lưu
+            // tượng đã lưu
             return ResponseEntity.ok(saveThongTinGiaoHang); // Trả về đối tượng đã cập nhật
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần update");

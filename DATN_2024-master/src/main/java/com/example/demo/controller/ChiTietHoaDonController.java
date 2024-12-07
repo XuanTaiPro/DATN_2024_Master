@@ -37,6 +37,7 @@ public class ChiTietHoaDonController {
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepo;
 
+
     @PostMapping("/add")
     public ResponseEntity<String> createChiTietHoaDon(@Validated @ModelAttribute ChiTietHoaDonReq req) {
 
@@ -66,9 +67,8 @@ public class ChiTietHoaDonController {
             giaSauGiam = Double.parseDouble(chiTietSanPham.getGia())
                     - Double.parseDouble(chiTietSanPham.getGia()) * Double.parseDouble(phanTramGiam) / 100;
 
-        }
-        else{
-            giaSauGiam=Double.parseDouble(chiTietSanPham.getGia());
+        } else {
+            giaSauGiam = Double.parseDouble(chiTietSanPham.getGia());
         }
 
         // Tìm ChiTietHoaDon hiện có
@@ -110,7 +110,7 @@ public class ChiTietHoaDonController {
 
     @PutMapping("/updateSoLuong")
     public ResponseEntity<?> updateCTHDSoLuong(@RequestParam(name = "id") String id,
-            @Validated @ModelAttribute ChiTietHoaDon req) {
+                                               @Validated @ModelAttribute ChiTietHoaDon req) {
         ChiTietHoaDon chiTietHoaDonExisting = chiTietHoaDonRepo.findById(id).get();
 
         if (chiTietHoaDonExisting == null) {

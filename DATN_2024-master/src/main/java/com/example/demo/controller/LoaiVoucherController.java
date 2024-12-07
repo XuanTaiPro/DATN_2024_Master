@@ -81,7 +81,7 @@ public class LoaiVoucherController {
 
     @PostMapping("add")
     public ResponseEntity<?> add(@Valid @RequestBody LoaiVoucherRequest loaiVoucherRequest,
-            BindingResult bindingResult) {
+                                 BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -92,7 +92,7 @@ public class LoaiVoucherController {
             loaiVoucherRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
         if (loaiVoucherRequest.getMa() == null || loaiVoucherRequest.getMa().isEmpty()) {// nếu mã chưa đc điền thì tự
-                                                                                         // động thêm mã
+            // động thêm mã
             loaiVoucherRequest.setMa(generateCodeAll.generateMaLVC());
         }
         LoaiVoucher loaiVoucher = loaiVoucherRequest.toEntity();
@@ -103,7 +103,7 @@ public class LoaiVoucherController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody LoaiVoucherRequest loaiVoucherRequest,
-            BindingResult bindingResult) {
+                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));

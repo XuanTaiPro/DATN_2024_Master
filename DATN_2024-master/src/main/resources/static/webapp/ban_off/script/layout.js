@@ -31,7 +31,8 @@ app.config(function ($routeProvider) {
         })
 })
 
-app.controller('myCtrl', function ($scope, $http) { })
+app.controller('myCtrl', function ($scope, $http) {
+})
 
 document.addEventListener('DOMContentLoaded', function () {
     const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a')

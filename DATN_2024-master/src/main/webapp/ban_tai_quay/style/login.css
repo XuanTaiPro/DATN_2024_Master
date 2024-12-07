@@ -204,6 +204,7 @@ button {
     padding: 0 15px;
     cursor: pointer;
 }
+
 .error-message {
     color: red;
     font-size: 18px;

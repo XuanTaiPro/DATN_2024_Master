@@ -24,7 +24,7 @@ public class ChiTietSanPhamRequest {
     @NotBlank(message = "Số ngày sử dụng không được để trống")
     @Size(max = 255, message = "Số ngày sử dụng không được vượt quá 255 ký tự")
     private String soNgaySuDung;
-    
+
     @NotNull(message = "Ngày nhập không được để trống")
     @PastOrPresent(message = "Ngày nhập phải là ngày hiện tại hoặc trong quá khứ")
     private LocalDateTime ngayNhap;
@@ -42,7 +42,6 @@ public class ChiTietSanPhamRequest {
     private String idSP;
 
     private List<String> linkAnhList; // Danh sách các liên kết hình ảnh
-
 
 
 }

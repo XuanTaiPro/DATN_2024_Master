@@ -1,4 +1,4 @@
-window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
+window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     $scope.idHD = $routeParams.idHD;
 
     $scope.listCTHD = [];
@@ -13,6 +13,30 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
     $scope.previousTotal = 0; // Thêm biến để lưu tổng tiền trước đó
 
 
+    $scope.search = {
+        ten: '',
+        gioiTinh: '',
+        sdt: ''
+    }
+    $scope.searchKH = function (){
+        const params = {
+            ten: $scope.search.ten || null,
+            gioiTinh: $scope.search.gioiTinh || null,
+            sdt: $scope.search.sdt || null
+        }
+        $http.get('http://localhost:8083/khachhang/search', {params})
+            .then(function (response){
+                $scope.listKhachHang = response.data
+                if($scope.listKhachHang == null){
+                    $scope.emptyMessage = response.data.message || "Danh sách trống"
+                }else {
+                    $scope.emptyMessage = ""
+                }
+            })
+            .catch(function (error){
+                console.log("lỗi khi tìm kiếm" + error)
+            })
+    }
     $http.get('http://localhost:8083/khachhang').then(function (response) {
         $scope.listKhachHang = response.data;
         console.log("Lấy dữ liệu thành công");
@@ -41,18 +65,17 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
         $scope.selectedCustomerPhone = sdt;
         $scope.selectedCustomerId = id; // Lưu ID khách hàng
 
+        // Khôi phục tổng tiền về giá trị gốc
+        if ($scope.previousTotal) {
+            $scope.tongTien = $scope.previousTotal; // Đặt lại tổng tiền chưa giảm
+        }
+
+        // Xóa trạng thái voucher cũ
+        $scope.appliedVoucherId = null;
+        $scope.suggestedVoucher = null;
+
         // Gọi API để lấy voucher của khách hàng
         $scope.loadPageVC(0);
-
-        // Nếu không có voucher đã áp dụng, thì cập nhật lại tổng tiền
-        if (!$scope.appliedVoucherId) {
-            $scope.previousTotal = $scope.tongTien; // Lưu tổng tiền hiện tại
-            $scope.calculateTotalAmount(); // Cập nhật tổng tiền về như cũ
-        } else {
-            // Khôi phục tổng tiền đã giảm
-            $scope.tongTien = $scope.previousTotal;
-            $scope.appliedVoucherId = null;
-        }
     };
 
     $scope.currentPageVC = 0;
@@ -65,12 +88,14 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
         }
         $http.get(`http://localhost:8083/voucher/VCkhachHang/${$scope.selectedCustomerId}?page=${$scope.currentPageVC}&size=${$scope.pageSizeVC}`)
             .then(function (response) {
-
-                $scope.appliedVoucherId == null;
                 // Cập nhật dữ liệu voucher và thông tin phân trang
                 $scope.vouchers = response.data.vouchers;
                 $scope.totalPagesVC = response.data.totalPagesVC;
                 $scope.totalItemsVC = response.data.totalItemsVC;
+
+                if($scope.appliedVoucherId == null) {
+                    $scope.showSuggestedVoucher();
+                }
             })
             .catch(function (error) {
                 console.error("Lỗi khi lấy voucher:", error);
@@ -79,7 +104,7 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
 
 // Hàm để tạo dãy số trang cho phân trang
     $scope.range = function (totalPagesVC) {
-        return Array.from({ length: totalPagesVC }, (_, i) => i);
+        return Array.from({length: totalPagesVC}, (_, i) => i);
     };
 
 // Gọi lần đầu để tải trang đầu tiên (nếu có khách hàng được chọn)
@@ -108,11 +133,38 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
         $scope.loadPageVC(page);
     };
 
+    //tìm voucher tốt nhất
+    $scope.getBestVoucher = function (vouchers) {
+        return vouchers
+            .filter(voucher => voucher.trangThai === 1 && voucher.soLuong > 0) // Voucher hoạt động và còn số lượng
+            .sort((a, b) => parseFloat(b.giamGia.replace('%', '')) - parseFloat(a.giamGia.replace('%', '')))[0]; // Sắp xếp giảm dần theo giảm giá
+    };
+    $scope.showSuggestedVoucher = function () {//show form gợi ý voucher
+        if (!$scope.vouchers || $scope.vouchers.length === 0) {
+            $scope.suggestedVoucher = null; // Không có voucher nào
+        } else {
+            $scope.suggestedVoucher = $scope.getBestVoucher($scope.vouchers);
+        }
+        const modalElement = document.getElementById('suggestedVoucherModal');
+        const modalInstance = new bootstrap.Modal(modalElement);
+        modalInstance.show();
+    };
+
+    $scope.applySuggestedVoucher = function () {// áp dụng voucher gợi ý
+        if ($scope.suggestedVoucher) {
+            $scope.applyVoucher($scope.suggestedVoucher);
+        }
+        const modalElement = document.getElementById('suggestedVoucherModal');
+        modalElement.style.display = 'none'
+        const overlay = document.getElementsByClassName('modal-backdrop')
+        Array.from(overlay).forEach(item => item.style.display = 'none')
+    };
+
 
 //phân trang cthd
     $scope.currentPage = 0;
     $scope.range = function (totalPages) {
-        return Array.from({ length: totalPages }, (_, i) => i);
+        return Array.from({length: totalPages}, (_, i) => i);
     };
 
     $scope.loadPage = function (page) {
@@ -166,7 +218,6 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
     };
 
 
-
 //cập nhật lại tổng tiền về ban đầu khi đổi khách hàng
     $scope.calculateTotalAmount = function () {
         let total = 0;
@@ -176,31 +227,34 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
         $scope.tongTien = total;
     };
 
-        $scope.calculateChange = function () {
-            const totalAmount = $scope.tongTien; // Tổng tiền cần thanh toán
-            const amountPattern = /^[0-9]+$/; // Chỉ cho phép số nguyên dương
+    $scope.fillTongTien = function () {
+        $scope.amountPaid = $scope.tongTien
+        $scope.calculateChange()
+    }
+    $scope.calculateChange = function () {
+        const totalAmount = $scope.tongTien; // Tổng tiền cần thanh toán
+        const amountPattern = /^[0-9]+$/; // Chỉ cho phép số nguyên dương
 
-            // Kiểm tra tính hợp lệ
-            if (!amountPattern.test($scope.amountPaid)) {
-                $scope.changeAmount = ""; // Không hiển thị tiền thừa
-                $scope.showError = false; // Không hiển thị lỗi tiền không đủ
-                $scope.invalidAmount = true; // Hiển thị lỗi số tiền không hợp lệ
-                return;
-            }
+        // Kiểm tra tính hợp lệ
+        if (!amountPattern.test($scope.amountPaid)) {
+            $scope.changeAmount = ""; // Không hiển thị tiền thừa
+            $scope.showError = false; // Không hiển thị lỗi tiền không đủ
+            $scope.invalidAmount = true; // Hiển thị lỗi số tiền không hợp lệ
+            return;
+        }
 
-            $scope.invalidAmount = false; // Ẩn lỗi số tiền không hợp lệ nếu hợp lệ
-            const amountPaid = parseInt($scope.amountPaid, 10); // Chuyển chuỗi thành số nguyên
+        $scope.invalidAmount = false; // Ẩn lỗi số tiền không hợp lệ nếu hợp lệ
+        const amountPaid = parseInt($scope.amountPaid, 10); // Chuyển chuỗi thành số nguyên
 
-            // Kiểm tra tiền không đủ
-            if (amountPaid < totalAmount) {
-                $scope.changeAmount = ""; // Không hiển thị tiền thừa
-                $scope.showError = true; // Hiển thị lỗi số tiền không đủ
-            } else {
-                $scope.changeAmount = (amountPaid - totalAmount).toLocaleString(); // Tính tiền thừa
-                $scope.showError = false; // Ẩn lỗi số tiền không đủ
-            }
-        };
-
+        // Kiểm tra tiền không đủ
+        if (amountPaid < totalAmount) {
+            $scope.changeAmount = ""; // Không hiển thị tiền thừa
+            $scope.showError = true; // Hiển thị lỗi số tiền không đủ
+        } else {
+            $scope.changeAmount = (amountPaid - totalAmount).toLocaleString(); // Tính tiền thừa
+            $scope.showError = false; // Ẩn lỗi số tiền không đủ
+        }
+    };
 
 
     $scope.isSubmitted = false;
@@ -240,17 +294,17 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
 
 
     // Hoàn tất thanh toán tiền mặt
-        $scope.completePayment = function () {
-            if ($scope.amountPaid < $scope.tongTien) {
-                alert("Không thể hoàn tất thanh toán vì số tiền không đủ.");
-                return;
-            }
-            console.log("Thanh toán hoàn tất cho khách hàng:", $scope.selectedCustomerName);
-            alert("Thanh toán thành công!");
-            new bootstrap.Modal(document.getElementById('confirmModal')).hide();
-            location.reload();
+    $scope.completePayment = function () {
+        if ($scope.amountPaid < $scope.tongTien) {
+            alert("Không thể hoàn tất thanh toán vì số tiền không đủ.");
+            return;
+        }
+        console.log("Thanh toán hoàn tất cho khách hàng:", $scope.selectedCustomerName);
+        alert("Thanh toán thành công!");
+        new bootstrap.Modal(document.getElementById('confirmModal')).hide();
+        location.reload();
 
-        };
+    };
     // Hoàn tất thanh toán chuyển khoản
     $scope.completePaymentCK = function () {
 
@@ -279,6 +333,7 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
             return;
         }
 
+
         // Kiểm tra tổng tiền và điều kiện áp dụng voucher
         let totalAmount = $scope.tongTien;
         let discountRate = parseFloat(voucher.giamGia.replace('%', '')) / 100;
@@ -295,9 +350,10 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
             discountAmount = maxDiscount;
         }
 
-        $scope.previousTotal = totalAmount;
-        $scope.tongTien = totalAmount - discountAmount;
-        alert("Đã áp dụng voucher, số tiền được giảm là: " + discountAmount + " VNĐ");
+        if ($scope.appliedVoucherId == null || $scope.appliedVoucherId == '') {
+            $scope.previousTotal = totalAmount;
+            $scope.tongTien = totalAmount - discountAmount;
+        }
 
         // Lưu ID của voucher đã áp dụng để ngăn việc áp dụng lại
         $scope.appliedVoucherId = voucher.id;
@@ -321,7 +377,7 @@ window.thanhtoanCtrl = function ($scope, $http,$routeParams) {
             .then(function (response) {
                 alert("Thanh toán thành công!");
                 if ($scope.appliedVoucherId) {
-                    $http.post(`http://localhost:8083/voucher/apply`, { id: $scope.appliedVoucherId })
+                    $http.post(`http://localhost:8083/voucher/apply`, {id: $scope.appliedVoucherId})
                         .then(function () {
                             console.log("Voucher đã được trừ số lượng.");
                         })

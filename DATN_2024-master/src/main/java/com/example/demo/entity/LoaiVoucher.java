@@ -39,7 +39,7 @@ public class LoaiVoucher {
     @Column(name = "MOTA")
     private String moTa;
 
-    public LoaiVoucherResponse toResponse(){
-        return new LoaiVoucherResponse(id,ma,ten,ngayTao,ngaySua,trangThai,moTa);
+    public LoaiVoucherResponse toResponse() {
+        return new LoaiVoucherResponse(id, ma, ten, ngayTao, ngaySua, trangThai, moTa);
     }
 }

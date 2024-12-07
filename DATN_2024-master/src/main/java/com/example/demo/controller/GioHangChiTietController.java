@@ -68,7 +68,7 @@ public class GioHangChiTietController {
 
     @GetMapping("updateQuantity")
     public ResponseEntity<?> updateQuantity(@RequestParam(name = "id") String id,
-            @RequestParam(name = "quantity") Integer quantity) {
+                                            @RequestParam(name = "quantity") Integer quantity) {
 
         if (ghRepo.findById(id).isPresent()) {
             GioHangChiTiet gioHangChiTiet = ghRepo.findById(id).get();
@@ -84,14 +84,14 @@ public class GioHangChiTietController {
 
     @PostMapping("add")
     public ResponseEntity<?> add(@Valid @RequestBody GioHangChiTietRequest gioHangChiTietRequest,
-            BindingResult bindingResult) {
+                                 BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
         if (gioHangChiTietRequest.getMa() == null || gioHangChiTietRequest.getMa().isEmpty()) {// nếu mã chưa đc điền
-                                                                                               // thì tự động thêm mã
+            // thì tự động thêm mã
             gioHangChiTietRequest.setMa(generateCodeAll.generateMaGHCT());
         }
 
@@ -139,7 +139,7 @@ public class GioHangChiTietController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id,
-            @Valid @RequestBody GioHangChiTietRequest gioHangChiTietRequest, BindingResult bindingResult) {
+                                    @Valid @RequestBody GioHangChiTietRequest gioHangChiTietRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));

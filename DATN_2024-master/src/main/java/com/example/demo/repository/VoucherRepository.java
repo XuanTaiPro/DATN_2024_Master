@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface VoucherRepository extends JpaRepository<Voucher, String> {
     boolean existsByMa(String ma);
+
     List<Voucher> findByTenContainingIgnoreCase(String ten);
 
     @Query("SELECT v FROM Voucher v WHERE " +

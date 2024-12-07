@@ -41,7 +41,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
         const selectedIdHD = selectedTab.idHD;
 
         $http.put('http://localhost:8083/hoadon/update-ghi-chu' + selectedIdHD, formData, {
-            headers: { 'Content-Type': undefined }
+            headers: {'Content-Type': undefined}
         })
             .then(function (response) {
                 console.log("Update successful:", response);
@@ -137,7 +137,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 $scope.cthds = response.data.cthds;
                 console.log(response.data.cthds)// Dữ liệu chi tiết hóa đơn
                 $scope.totalPages = response.data.totalPages; // Tổng số trang
-                $scope.pages = Array.from({ length: $scope.totalPages }, (v, i) => i); // Mảng trang
+                $scope.pages = Array.from({length: $scope.totalPages}, (v, i) => i); // Mảng trang
             })
             .catch(function (error) {
                 $scope.errorMessage = 'Lỗi khi lấy chi tiết hóa đơn: ' + (error.data?.message || JSON.stringify(error.data));
@@ -206,7 +206,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
         formData.append('soLuong', cthd.soLuong);
 
         $http.put('http://localhost:8083/chitiethoadon/updateSoLuong?id=' + cthd.id, formData, {
-            headers: { 'Content-Type': undefined }
+            headers: {'Content-Type': undefined}
         })
             .then(function (response) {
                 console.log("Update successful:", response);
@@ -272,10 +272,10 @@ window.banhangCtrl = function ($scope, $http, $document) {
             console.log(`${key}: ${value}`); // In ra key và value
         }
         $http.post('http://localhost:8083/chitiethoadon/add', formData, {
-            headers: {
-                'Content-Type': undefined
+                headers: {
+                    'Content-Type': undefined
+                }
             }
-        }
         )
             .then(function (response) {
                 console.log(response.data);
@@ -298,8 +298,8 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $http({
             method: 'DELETE',
             url: 'http://localhost:8083/chitiethoadon/delete', // Đường dẫn đến API
-            data: { id: idCTHD }, // Gửi id sản phẩm qua request body
-            headers: { "Content-Type": "application/json;charset=utf-8" }
+            data: {id: idCTHD}, // Gửi id sản phẩm qua request body
+            headers: {"Content-Type": "application/json;charset=utf-8"}
         }).then(function (response) {
             console.log(response.data);
             $('#confirmDeleteInvoiceDetailModal').modal('hide');
@@ -349,8 +349,8 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $http({
             method: 'DELETE',
             url: 'http://localhost:8083/hoadon/delete', // Đường dẫn tới API
-            data: { id: selectedIdHD }, // Gửi id hóa đơn qua request body
-            headers: { "Content-Type": "application/json;charset=utf-8" }
+            data: {id: selectedIdHD}, // Gửi id hóa đơn qua request body
+            headers: {"Content-Type": "application/json;charset=utf-8"}
         })
             .then(function (response) {
                 // Xử lý khi xóa thành công

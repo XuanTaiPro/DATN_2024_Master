@@ -1,4 +1,4 @@
-window.sanPhamCtrl= function($scope, $http) {
+window.sanPhamCtrl = function ($scope, $http) {
 
     // Khởi tạo sản phẩm
     $scope.product = {};
@@ -8,45 +8,45 @@ window.sanPhamCtrl= function($scope, $http) {
     $scope.itemsPerPage = 10; // Số sản phẩm trên mỗi trang
     $scope.totalPages = 0;
     // Lấy tất cả chi tiết sản phẩm
-    $scope.getAllProducts = function(page) {
+    $scope.getAllProducts = function (page) {
         $scope.currentPage = page || 0; // Nếu không có page được truyền vào, dùng trang 0
         $http.get('http://localhost:8083/san-pham/phanTrang?page=' + $scope.currentPage)
-            .then(function(response) {
+            .then(function (response) {
                 $scope.products = response.data.products; // Gán dữ liệu sản phẩm
                 $scope.totalPages = response.data.totalPages; // Lưu tổng số trang
-                $scope.pages = Array.from({ length: $scope.totalPages }, (v, i) => i); // Tạo danh sách các số trang
+                $scope.pages = Array.from({length: $scope.totalPages}, (v, i) => i); // Tạo danh sách các số trang
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 $scope.errorMessage = 'Lỗi khi lấy sản phẩm: ' + error.data;
                 console.error($scope.errorMessage);
             });
     };
 
     // Chuyển sang trang trước
-    $scope.previousPage = function() {
+    $scope.previousPage = function () {
         if ($scope.currentPage > 0) {
             $scope.getAllProducts($scope.currentPage - 1);
         }
     };
 
     // Chuyển sang trang sau
-    $scope.nextPage = function() {
+    $scope.nextPage = function () {
         if ($scope.currentPage < $scope.totalPages - 1) {
             $scope.getAllProducts($scope.currentPage + 1);
         }
     };
-    $scope.getAllDanhMuc=function(){
+    $scope.getAllDanhMuc = function () {
         $http.get('http://localhost:8083/danh-muc')
-            .then(function(response) {
-                $scope.listDanhMuc=response.data;
+            .then(function (response) {
+                $scope.listDanhMuc = response.data;
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 $scope.errorMessage = 'Lỗi khi lấy danh mục: ' + error.data;
                 console.error($scope.errorMessage);
             });
     };
 
-    $scope.addProduct = function(product) {
+    $scope.addProduct = function (product) {
         const formData = new FormData();
         // Thêm thông tin sản phẩm vào FormData
         formData.append('tenSP', product.tenSP || '');
@@ -71,13 +71,13 @@ window.sanPhamCtrl= function($scope, $http) {
                 'Content-Type': undefined // Cho phép browser tự động thiết lập boundary
             }
         })
-            .then(function(response) {
+            .then(function (response) {
                 $('#productModal').modal('hide');
                 $scope.product = {};
                 $scope.getAllProducts();
                 alert('Thêm sản phẩm thành công!');
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 $scope.getAllProducts();
                 console.error('Lỗi:', error);
                 if (error.data && error.data.message) {
@@ -92,8 +92,8 @@ window.sanPhamCtrl= function($scope, $http) {
             $http({
                 method: 'DELETE',
                 url: 'http://localhost:8083/san-pham/delete', // Đường dẫn đến API
-                data: { id: productId }, // Gửi id sản phẩm qua request body
-                headers: { "Content-Type": "application/json;charset=utf-8" }
+                data: {id: productId}, // Gửi id sản phẩm qua request body
+                headers: {"Content-Type": "application/json;charset=utf-8"}
             }).then(function (response) {
                 alert(response.data); // Hiển thị thông báo thành công
                 // Cập nhật lại danh sách sản phẩm
@@ -107,7 +107,7 @@ window.sanPhamCtrl= function($scope, $http) {
         }
     };
 
-    $scope.updateProduct = function() {
+    $scope.updateProduct = function () {
         const formData = new FormData();
         formData.append('id', $scope.productDetail.id || '');
         formData.append('tenSP', $scope.productDetail.tenSP || '');
@@ -117,7 +117,7 @@ window.sanPhamCtrl= function($scope, $http) {
         formData.append('tuoiMax', $scope.productDetail.tuoiMax || 0);
         formData.append('hdsd', $scope.productDetail.hdsd);
         formData.append('moTa', $scope.productDetail.moTa || '');
-        formData.append('idDanhMuc',  $scope.productDetail.idDanhMuc || '');
+        formData.append('idDanhMuc', $scope.productDetail.idDanhMuc || '');
         formData.append('trangThai', 1);
         formData.append('idThuongHieu', "95B16137");
 
@@ -128,25 +128,25 @@ window.sanPhamCtrl= function($scope, $http) {
                 'Content-Type': undefined // Cho phép browser tự động thiết lập boundary
             }
         })
-            .then(function(response) {
+            .then(function (response) {
                 $scope.getAllProducts(); // Tải lại danh sách sản phẩm
                 $('#userForm').modal('hide'); // Đóng modal sau khi cập nhật
                 alert('Cập nhật thành công!');
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 $scope.getAllProducts(); // Tải lại danh sách sản phẩm
                 $scope.errorMessage = error.data && error.data.message ? 'Lỗi khi cập nhật sản phẩm: ' + error.data.message : 'Lỗi không xác định: ' + JSON.stringify(error);
             });
     };
-    $scope.clearForm = function() {
+    $scope.clearForm = function () {
         $scope.productDetail = {}; // Xóa dữ liệu chi tiết sản phẩm
-        $scope.product={};
+        $scope.product = {};
         $('#userForm').modal('hide'); // Đóng modal
         $('#productModal').modal('hide'); // Đóng modal
     };
     // Xem chi tiết sản phẩm
-    $scope.viewDetail = function(productId) {
-        const product = $scope.products.find(function(p) {
+    $scope.viewDetail = function (productId) {
+        const product = $scope.products.find(function (p) {
             return p.id === productId;
         });
 

@@ -81,7 +81,7 @@ public class ThongBaoController {
             thongBaoRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
         if (thongBaoRequest.getMa() == null || thongBaoRequest.getMa().isEmpty()) {// nếu mã chưa đc điền thì tự động
-                                                                                   // thêm mã
+            // thêm mã
             thongBaoRequest.setMa(generateCodeAll.generateMaThongBao());
         }
         ThongBao thongBao = thongBaoRequest.toEntity();
@@ -94,7 +94,7 @@ public class ThongBaoController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody ThongBaoRequest thongBaoRequest,
-            BindingResult bindingResult) {
+                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));

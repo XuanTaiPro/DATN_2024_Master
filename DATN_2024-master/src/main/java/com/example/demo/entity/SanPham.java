@@ -19,7 +19,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties({ "danhMuc" })
+@JsonIgnoreProperties({"danhMuc"})
 public class SanPham {
     @Id
     @Column(name = "id")

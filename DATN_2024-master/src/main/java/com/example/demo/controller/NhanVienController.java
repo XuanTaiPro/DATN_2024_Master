@@ -101,7 +101,7 @@ public class NhanVienController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody NhanVienRequest nhanVienRequest,
-            BindingResult bindingResult) {
+                                    BindingResult bindingResult) {
 
 //        if (LoginController.tenQuyen == null ||
 //                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
@@ -149,6 +149,7 @@ public class NhanVienController {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần xóa");
         }
     }
+
     @GetMapping("search-filter")
     public ResponseEntity<?> searchAndFilterNhanVienWithPagination(
             @RequestParam(required = false) String ten,

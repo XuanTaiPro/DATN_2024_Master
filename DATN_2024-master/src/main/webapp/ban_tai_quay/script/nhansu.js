@@ -25,7 +25,7 @@ window.nhansuCtrl = function ($scope, $http) {
             size: $scope.pageSize
         };
 
-        $http.get('http://localhost:8083/nhanvien/search-filter', { params })
+        $http.get('http://localhost:8083/nhanvien/search-filter', {params})
             .then(function (response) {
                 $scope.listNhanVien = response.data.nhanViens;
                 $scope.currentPage = response.data.currentPage;
@@ -256,36 +256,37 @@ window.nhansuCtrl = function ($scope, $http) {
     $scope.deleteNhanVien = function (id) {
         console.log("Xóa");
         $('#deleteNhanSuModal').modal('hide');
-            $http.delete('http://localhost:8083/nhanvien/delete/' + id)
-                .then(function (response) {
-                    // Kiểm tra phản hồi server
-                    console.log(response.data);
-                    const index = $scope.listNhanVien.findIndex(nv => nv.id === id);
-                    if (index !== -1) {
-                        $scope.listNhanVien.splice(index, 1);
-                        $('#deleteSuccessModal').modal('show');
-                    }
-                })
-                .catch(function (error) {
-                    console.error("Lỗi khi xóa nhân viên:", error);
-                    if (error.status === 403) {
-                        alert(error.data.message || "Bạn không có quyền thực hiện thao tác này!");
-                    } else {
-                        alert(error.data.message || "Xóa thất bại. Vui lòng thử lại sau.");
-                    }
-                });
+        $http.delete('http://localhost:8083/nhanvien/delete/' + id)
+            .then(function (response) {
+                // Kiểm tra phản hồi server
+                console.log(response.data);
+                const index = $scope.listNhanVien.findIndex(nv => nv.id === id);
+                if (index !== -1) {
+                    $scope.listNhanVien.splice(index, 1);
+                    $('#deleteSuccessModal').modal('show');
+                }
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi xóa nhân viên:", error);
+                if (error.status === 403) {
+                    alert(error.data.message || "Bạn không có quyền thực hiện thao tác này!");
+                } else {
+                    alert(error.data.message || "Xóa thất bại. Vui lòng thử lại sau.");
+                }
+            });
     };
 
-    $scope.confirmDeleteNhanSu = function (){
+    $scope.confirmDeleteNhanSu = function () {
         $('#deleteNhanSuModal').modal('show');
     }
-    $scope.closeModalDeleteSuccess = function (){
+    $scope.closeModalDeleteSuccess = function () {
         $('#deleteSuccessModal').modal('hide');
         console.log("ok")
     }
-    $scope.closeDeleteNhanSuModal = function (){
+    $scope.closeDeleteNhanSuModal = function () {
         $('#deleteNhanSuModal').modal('hide');
     }
+
     function resetForm() {
         $scope.name = "";
         $scope.email = "";

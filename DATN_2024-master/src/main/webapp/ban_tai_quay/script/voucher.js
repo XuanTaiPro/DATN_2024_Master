@@ -27,7 +27,7 @@ window.voucherCtrl = function ($scope, $http) {
             });
     };
 
-    $scope.getSTT = function(index) {
+    $scope.getSTT = function (index) {
         return index + 1 + ($scope.currentPage * $scope.pageSize);
     };
 
@@ -86,7 +86,7 @@ window.voucherCtrl = function ($scope, $http) {
     $scope.selectAllUpdate = false;
 
 // Hàm toggle cho từng khách hàng
-    $scope.toggleCustomerSelection = function(khachHang) {
+    $scope.toggleCustomerSelection = function (khachHang) {
         if (khachHang.selected) {
             $scope.selectedCustomers.push(khachHang);
         } else {
@@ -98,7 +98,7 @@ window.voucherCtrl = function ($scope, $http) {
         // Cập nhật trạng thái của selectAll
         $scope.selectAll = $scope.listKhachHang.length > 0 && $scope.selectedCustomers.length === $scope.listKhachHang.length;
     };
-    $scope.toggleCustomerSelectionUpdate = function(khachHang) {
+    $scope.toggleCustomerSelectionUpdate = function (khachHang) {
         if (khachHang.selectedUpdate) {
             $scope.selectedCustomersUpdate.push(khachHang);
         } else {
@@ -112,20 +112,20 @@ window.voucherCtrl = function ($scope, $http) {
     };
 
 // Hàm chọn tất cả hoặc bỏ chọn tất cả
-    $scope.toggleAllCheckboxes = function() {
+    $scope.toggleAllCheckboxes = function () {
         $scope.selectAll = !$scope.selectAll; // Đảo ngược trạng thái của selectAll
         $scope.selectedCustomers = []; // Reset danh sách selectedCustomers
-        angular.forEach($scope.listKhachHang, function(khachHang) {
+        angular.forEach($scope.listKhachHang, function (khachHang) {
             khachHang.selected = $scope.selectAll; // Đặt trạng thái selected cho từng khách hàng
             if ($scope.selectAll) {
                 $scope.selectedCustomers.push(khachHang); // Nếu chọn tất cả, thêm vào danh sách
             }
         });
     };
-    $scope.toggleAllCheckboxesUpdate = function() {
+    $scope.toggleAllCheckboxesUpdate = function () {
         $scope.selectAllUpdate = !$scope.selectAllUpdate; // Đảo ngược trạng thái của selectAll
         $scope.selectedCustomersUpdate = []; // Reset danh sách selectedCustomers
-        angular.forEach($scope.listKhachHang, function(khachHang) {
+        angular.forEach($scope.listKhachHang, function (khachHang) {
             khachHang.selectedUpdate = $scope.selectAllUpdate; // Đặt trạng thái selected cho từng khách hàng
             if ($scope.selectAllUpdate) {
                 $scope.selectedCustomersUpdate.push(khachHang); // Nếu chọn tất cả, thêm vào danh sách
@@ -133,20 +133,20 @@ window.voucherCtrl = function ($scope, $http) {
         });
     };
 
-    $scope.openCustomerModal = function() {
+    $scope.openCustomerModal = function () {
         $('#customerModal').modal('show');
     };
-    $scope.openCustomerModalUpdate = function() {
+    $scope.openCustomerModalUpdate = function () {
         $('#customerModalUpdate').modal('show');
     };
 
-    $scope.confirmSelection = function() {
+    $scope.confirmSelection = function () {
         // Đóng modal "Chọn khách hàng" sau khi xác nhận
         $('#customerModal').modal('hide');
         // Giữ modal "Thêm Voucher" mở
         $('#productModal').modal('show');
     };
-    $scope.confirmSelectionUpdate = function() {
+    $scope.confirmSelectionUpdate = function () {
         $('#customerModalUpdate').modal('hide');
 //cập nhật khách đã chọn
         $scope.selectedCustomersUpdate = $scope.listKhachHang.filter(kh => kh.selectedUpdate);
@@ -176,7 +176,6 @@ window.voucherCtrl = function ($scope, $http) {
             }
         }
     };
-
 
 
     $scope.viewDetail = function (voucher) {
@@ -225,7 +224,6 @@ window.voucherCtrl = function ($scope, $http) {
         $scope.selectedVoucher.trangThai = voucher.trangThai.toString();
         console.log("Trạng thái hiện tại:", $scope.selectedVoucher.trangThai);
     };
-
 
 
     $scope.addVoucher = function (e) {
@@ -293,7 +291,6 @@ window.voucherCtrl = function ($scope, $http) {
                 console.error("Lỗi khi cập nhật voucher:", error);
             });
     };
-
 
 
     $scope.deleteVoucher = function (id) {

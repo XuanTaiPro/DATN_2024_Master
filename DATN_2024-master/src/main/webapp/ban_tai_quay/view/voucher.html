@@ -134,7 +134,9 @@
                             <label>Khách hàng:</label>
                             <select ng-model="selectedCustomer" class="short-select">
                                 <option value="" disabled selected>Khách hàng đã chọn</option>
-                                <option ng-repeat="customer in selectedCustomers" value="{{customer.id}}">{{customer.ten}}</option>
+                                <option ng-repeat="customer in selectedCustomers" value="{{customer.id}}">
+                                    {{customer.ten}}
+                                </option>
                             </select>
                         </div>
                         <div>
@@ -180,7 +182,8 @@
                         <tbody>
                         <tr ng-repeat="khachHang in listKhachHang">
                             <td>
-                                <input type="checkbox" ng-model="khachHang.selected" ng-change="toggleCustomerSelection(khachHang)">
+                                <input type="checkbox" ng-model="khachHang.selected"
+                                       ng-change="toggleCustomerSelection(khachHang)">
                             </td>
                             <td>{{ khachHang.ten }}</td>
                             <td>{{ khachHang.email }}</td>
@@ -253,7 +256,9 @@
                             <label>Khách hàng:</label>
                             <select ng-model="selectedCustomerUpdate" class="short-select">
                                 <option value="" disabled>Khách hàng đã chọn</option>
-                                <option ng-repeat="customer in selectedCustomersUpdate" value="{{customer.id}}">{{customer.ten}}</option>
+                                <option ng-repeat="customer in selectedCustomersUpdate" value="{{customer.id}}">
+                                    {{customer.ten}}
+                                </option>
                             </select>
                         </div>
                         <div>
@@ -277,7 +282,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="customerModalUpdate" tabindex="-1" aria-labelledby="customerModalLabelUpdate" aria-hidden="true">
+<div class="modal fade" id="customerModalUpdate" tabindex="-1" aria-labelledby="customerModalLabelUpdate"
+     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -290,7 +296,8 @@
                         <thead class="thead-light">
                         <tr>
                             <th>
-                                <input type="checkbox" ng-model="selectAllUpdate" ng-click="toggleAllCheckboxesUpdate()">
+                                <input type="checkbox" ng-model="selectAllUpdate"
+                                       ng-click="toggleAllCheckboxesUpdate()">
                             </th>
                             <th>Tên</th>
                             <th>Email</th>
@@ -301,7 +308,8 @@
                         <tbody>
                         <tr ng-repeat="khachHang in listKhachHang">
                             <td>
-                                <input type="checkbox" ng-model="khachHang.selectedUpdate" ng-change="toggleCustomerSelectionUpdate(khachHang, 'update')">
+                                <input type="checkbox" ng-model="khachHang.selectedUpdate"
+                                       ng-change="toggleCustomerSelectionUpdate(khachHang, 'update')">
                             </td>
                             <td>{{ khachHang.ten }}</td>
                             <td>{{ khachHang.email }}</td>
@@ -587,20 +595,20 @@
         max-width: 370px;
     }
 
-    table tr td{
+    table tr td {
         vertical-align: middle;
     }
 
-    td button{
+    td button {
         margin: 5px;
     }
 
-    td button i{
+    td button i {
         font-size: 20px;
     }
 
 
-    .modal-header{
+    .modal-header {
         background: #0d6efd;
         color: #fff;
     }
@@ -612,7 +620,7 @@
         padding: 0;
     }
 
-    .modal-body form .imgholder{
+    .modal-body form .imgholder {
         width: 200px;
         height: 200px;
         position: relative;
@@ -620,39 +628,39 @@
         overflow: hidden;
     }
 
-    .imgholder .upload{
+    .imgholder .upload {
         position: absolute;
         bottom: 0;
         left: 10;
         width: 100%;
         height: 100px;
-        background: rgba(0,0,0,0.3);
+        background: rgba(0, 0, 0, 0.3);
         display: none;
         justify-content: center;
         align-items: center;
         cursor: pointer;
     }
 
-    .upload i{
+    .upload i {
         color: #fff;
         font-size: 35px;
     }
 
-    .imgholder:hover .upload{
+    .imgholder:hover .upload {
         display: flex;
     }
 
-    .imgholder .upload input{
+    .imgholder .upload input {
         display: none;
     }
 
-    .modal-body form .inputField{
+    .modal-body form .inputField {
         flex-basis: 68%;
         border-left: 5px groove blue;
         padding-left: 20px;
     }
 
-    form .inputField > div{
+    form .inputField > div {
         width: 100%;
         display: flex;
         justify-content: space-between;
@@ -660,17 +668,17 @@
         margin-bottom: 20px;
     }
 
-    form .inputField > div label{
+    form .inputField > div label {
         font-size: 20px;
         font-weight: 500;
     }
 
-    #userForm form .inputField > div label::after{
+    #userForm form .inputField > div label::after {
         content: "*";
         color: red;
     }
 
-    form .inputField > div input{
+    form .inputField > div input {
         width: 75%;
         padding: 10px;
         border: none;
@@ -679,14 +687,15 @@
         border-bottom: 2px solid blue;
     }
 
-    .modal-footer .submit{
+    .modal-footer .submit {
         font-size: 18px;
     }
 
 
-    #readData form .inputField > div input{
+    #readData form .inputField > div input {
         color: #000;
         font-size: 18px;
     }
+
     /*bảng trong form detail*/
 </style>

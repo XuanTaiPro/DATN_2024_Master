@@ -44,7 +44,7 @@ public class AnhCTSPController {
     }
 
     @GetMapping("/phanTrang")
-    public ResponseEntity<?> phanTrang(@RequestParam(name = "page",defaultValue = "0") Integer page) {
+    public ResponseEntity<?> phanTrang(@RequestParam(name = "page", defaultValue = "0") Integer page) {
         PageRequest pageRequest = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "ngayTao"));
         Page<AnhCTSP> anhCTSPPage = anhCTSPRepository.findAll(pageRequest);
         List<AnhCTSPResponse> responseList = anhCTSPPage.stream()
@@ -65,6 +65,7 @@ public class AnhCTSPController {
         }
         return ResponseEntity.badRequest().body("Không tìm thấy ảnh có id: " + id);
     }
+
     @PostMapping("/add")
     public ResponseEntity<?> add(@Valid @RequestBody AnhCTSPRequest anhSPRequest) {
         ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(anhSPRequest.getIdCTSP()).orElse(null);
@@ -125,7 +126,6 @@ public class AnhCTSPController {
         anhCTSPRepository.deleteById(id);
         return ResponseEntity.ok("Xóa ảnh thành công!");
     }
-
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

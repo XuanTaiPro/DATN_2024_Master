@@ -89,6 +89,7 @@
 .nav-link.active .close-btn:hover i {
     color: white; /* Đổi màu icon thành trắng khi hover vào icon */
 }
+
 .pagination {
     display: flex;
     justify-content: center;
@@ -126,10 +127,11 @@
     background-color: #007bff; /* Màu nền cho trang đang hoạt động */
     color: white; /* Màu chữ cho trang đang hoạt động */
 }
+
 .search-results {
     max-height: 300px;
-    width: 1000px;/* Giới hạn chiều cao */
-    overflow-y: auto;  /* Thêm thanh cuộn khi kết quả dài */
+    width: 1000px; /* Giới hạn chiều cao */
+    overflow-y: auto; /* Thêm thanh cuộn khi kết quả dài */
     position: absolute;
     /*background-color: white;*/
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng mờ */
@@ -141,7 +143,7 @@
 .list-group-item {
     display: flex;
     justify-content: space-between; /* Căn chỉnh nội dung */
-    align-items: center;  /* Giữa dọc */
+    align-items: center; /* Giữa dọc */
     padding: 10px; /* Padding */
     transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
     cursor: pointer; /* Con trỏ chuột dạng tay */

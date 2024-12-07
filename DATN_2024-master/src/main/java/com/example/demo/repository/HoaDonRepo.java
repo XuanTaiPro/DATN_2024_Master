@@ -16,7 +16,7 @@ public interface HoaDonRepo extends JpaRepository<HoaDon, String> {
 
     @Query("SELECT hd FROM HoaDon hd WHERE (:trangThai IS NULL OR hd.trangThai = :trangThai) " +
             "AND (:loaiHD IS NULL OR hd.loaiHD = :loaiHD) " +
-            "AND (:nhanVien IS NULL OR hd.nhanVien.ten = :nhanVien) " +
+            "AND (:nhanVien IS NULL OR :nhanVien ='' OR hd.nhanVien.ten = :nhanVien) " +
             "AND (:tenKH IS NULL OR hd.khachHang.ten LIKE %:tenKH% OR hd.khachHang.sdt LIKE %:tenKH%) " +
             "AND (hd.khachHang IS NULL OR hd.khachHang IS NOT NULL)")
     Page<HoaDon> findHDByFilters(@Param("trangThai") Integer trangThai,
@@ -30,11 +30,13 @@ public interface HoaDonRepo extends JpaRepository<HoaDon, String> {
             "AND (:nhanVien IS NULL OR hd.nhanVien.ten = :nhanVien) " +
             "AND (hd.khachHang IS NULL OR hd.khachHang IS NOT NULL)")
     Page<HoaDon> findHDByFiltersNullTenKH(@Param("trangThai") Integer trangThai,
-                                 @Param("loaiHD") Integer loaiHD,
-                                 @Param("nhanVien") String nhanVien,
-                                 Pageable pageable);
+                                          @Param("loaiHD") Integer loaiHD,
+                                          @Param("nhanVien") String nhanVien,
+                                          Pageable pageable);
+
     @Query("SELECT hd FROM HoaDon hd WHERE hd.trangThai = :trangThai ORDER BY hd.ngayTao DESC")
     List<HoaDon> getHDTaiQuay(@Param("trangThai") Integer trangThai);
+
     @Query(value = "SELECT SUM(CAST(COALESCE(TRY_CAST(c.giaSauGiam AS decimal(18, 2)), 0) AS decimal(18, 2)) * " +
             "CAST(COALESCE(TRY_CAST(c.soLuong AS int), 0) AS int)) AS totalAmount, " +
             "h.ngayThanhToan " +
@@ -50,6 +52,7 @@ public interface HoaDonRepo extends JpaRepository<HoaDon, String> {
                                                   @Param("month") Integer month,
                                                   @Param("week") Integer week,
                                                   @Param("day") Integer day);
+
     @Query("SELECT hd FROM HoaDon hd WHERE hd.khachHang IS NULL")
     List<HoaDon> getHDNullKH();
 

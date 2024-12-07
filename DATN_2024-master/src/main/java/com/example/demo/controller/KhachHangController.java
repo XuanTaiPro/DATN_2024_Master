@@ -107,7 +107,7 @@ public class KhachHangController {
 
     @PostMapping("dangKy")
     public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest,
-            BindingResult bindingResult) {
+                                    BindingResult bindingResult) {
         // Kiểm tra lỗi trong BindingResult
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
@@ -150,7 +150,7 @@ public class KhachHangController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody KhachHangRequest khachHangRequest,
-            BindingResult bindingResult) {
+                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -173,7 +173,7 @@ public class KhachHangController {
 
     @PutMapping("updateOnline/{id}")
     public ResponseEntity<?> updateOnline(@PathVariable String id,
-            @Valid @RequestBody KhachHangRequestOnline kHRequestOnline, BindingResult result) {
+                                          @Valid @RequestBody KhachHangRequestOnline kHRequestOnline, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             result.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -233,5 +233,16 @@ public class KhachHangController {
                 "khachHangs", khachHangResponses,
                 "currentPage", khachHangs.getNumber(),
                 "totalPages", khachHangs.getTotalPages()));
+    }
+
+    @GetMapping("search")
+    public ResponseEntity<?> tkVaLocKH(
+            @RequestParam(required = false) String ten,
+            @RequestParam(required = false) String gioiTinh,
+            @RequestParam(required = false) String sdt
+    ){
+        List<KhachHang> khachHangList = khRepo.tkVaLocKhachHang(ten,gioiTinh,sdt);
+        List<KhachHangResponse> khachHangResponses = khachHangList.stream().map(KhachHang::toResponse).toList();
+        return ResponseEntity.ok(khachHangResponses);
     }
 }

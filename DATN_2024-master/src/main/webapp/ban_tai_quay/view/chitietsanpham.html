@@ -1,4 +1,3 @@
-
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
     Thêm Sản Phẩm
 </button>
@@ -19,15 +18,17 @@
                     <div class="mb-3 row">
                         <div class="col-md-6">
                             <label class="form-label">Số ngày sử dụng:</label>
-                            <select class="form-control" ng-model="product.soNgaySuDung" ng-disabled="product.soNgaySuDungInput" required>
-                                <option value=""  selected>Vui lòng chọn số ngày</option>
+                            <select class="form-control" ng-model="product.soNgaySuDung"
+                                    ng-disabled="product.soNgaySuDungInput" required>
+                                <option value="" selected>Vui lòng chọn số ngày</option>
                                 <option ng-repeat="soNgay in uniqueSoNgaySuDung" value="{{soNgay}}">{{soNgay}}</option>
                             </select>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Nhập số ngày sử dụng khác:</label>
-                            <input type="number" class="form-control" ng-model="product.soNgaySuDungInput" ng-disabled="product.soNgaySuDung">
+                            <input type="number" class="form-control" ng-model="product.soNgaySuDungInput"
+                                   ng-disabled="product.soNgaySuDung">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -40,12 +41,14 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Chọn ảnh:</label>
-                        <input type="file" class="form-control" accept="image/*" multiple onchange="angular.element(this).scope().selectImages(this)">
+                        <input type="file" class="form-control" accept="image/*" multiple
+                               onchange="angular.element(this).scope().selectImages(this)">
                     </div>
                     <div class="mb-3" ng-if="product.imagePreviews.length > 0">
                         <h5>Hình ảnh đã chọn:</h5>
                         <div class="image-wrapper" ng-repeat="image in product.imagePreviews">
-                            <img ng-src="{{image}}" alt="Hình ảnh sản phẩm" class="product-image" width="100" height="100">
+                            <img ng-src="{{image}}" alt="Hình ảnh sản phẩm" class="product-image" width="100"
+                                 height="100">
                             <a class="btn btn-danger remove-button" ng-click="removeImage($index, false)">X</a>
                         </div>
                     </div>
@@ -79,7 +82,8 @@
     <tr ng-repeat="ctsp in products">
         <td>{{$index + 1}}</td>
         <td>
-            <img ng-if="ctsp.linkAnhList.length > 0" ng-src="{{ctsp.linkAnhList[0]}}" alt="{{ctsp.ma}}" width="60" height="60" class="me-1">
+            <img ng-if="ctsp.linkAnhList.length > 0" ng-src="{{ctsp.linkAnhList[0]}}" alt="{{ctsp.ma}}" width="60"
+                 height="60" class="me-1">
             <span ng-if="ctsp.linkAnhList.length === 0">Không có ảnh</span>
         </td>
         <td>{{ctsp.id}}</td>
@@ -89,17 +93,20 @@
             <span ng-if="ctsp.tienGiam && ctsp.tienGiam !== 0" class="text-danger">
     (Giảm: {{ ctsp.tienGiam }} VND)
   </span>
-        </td>        <td>{{ctsp.soNgaySuDung}} ngày</td>
+        </td>
+        <td>{{ctsp.soNgaySuDung}} ngày</td>
         <td>{{ctsp.ngayNhap | date:'yyyy-MM-dd'}}</td>
         <td>{{ctsp.soLuong}}</td>
         <td>
-            {{ ctsp.trangThai === 1 ? 'Đang hoạt động' : (ctsp.trangThai === 0 ? 'Không hoạt động' : (ctsp.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định')) }}
+            {{ ctsp.trangThai === 1 ? 'Đang hoạt động' : (ctsp.trangThai === 0 ? 'Không hoạt động' : (ctsp.trangThai ===
+            2 ? 'Sắp hết hàng' : 'Trạng thái không xác định')) }}
         </td>
         <td>{{ctsp.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{ctsp.ngaySua | date:'yyyy-MM-dd HH:mm:ss'}}</td>
 
         <td>
-            <button class="btn btn-success" ng-click="viewDetail(ctsp.id)" data-bs-toggle="modal" data-bs-target="#readData">
+            <button class="btn btn-success" ng-click="viewDetail(ctsp.id)" data-bs-toggle="modal"
+                    data-bs-target="#readData">
                 <i class="bi bi-eye"></i>
             </button>
             <div class="modal fade" id="readData" tabindex="-1" aria-labelledby="readDataLabel" aria-hidden="true">
@@ -120,10 +127,13 @@
                                     <p><strong>Trạng thái:</strong>
                                         {{ productDetail.trangThai == 1 ? 'Đang hoạt động' :
                                         (productDetail.trangThai === 0 ? 'Không hoạt động' :
-                                        (productDetail.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định')) }}
+                                        (productDetail.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định'))
+                                        }}
                                     </p>
-                                    <p><strong>Ngày tạo:</strong> {{ productDetail.ngayTao | date:'yyyy-MM-dd HH:mm:ss' }}</p>
-                                    <p><strong>Ngày sửa:</strong> {{ productDetail.ngaySua | date:'yyyy-MM-dd HH:mm:ss' }}</p>
+                                    <p><strong>Ngày tạo:</strong> {{ productDetail.ngayTao | date:'yyyy-MM-dd HH:mm:ss'
+                                        }}</p>
+                                    <p><strong>Ngày sửa:</strong> {{ productDetail.ngaySua | date:'yyyy-MM-dd HH:mm:ss'
+                                        }}</p>
                                 </div>
                                 <!-- Cột cho hình ảnh sản phẩm -->
                                 <div class="col-md-6">
@@ -131,7 +141,8 @@
                                         <strong>Hình ảnh:</strong>
                                         <div class="d-flex flex-wrap">
                                             <div ng-repeat="link in productDetail.linkAnhList" class="me-2 mb-2">
-                                                <img ng-src="{{ link }}" alt="Ảnh sản phẩm" class="img-fluid" width="150" height="150" />
+                                                <img ng-src="{{ link }}" alt="Ảnh sản phẩm" class="img-fluid"
+                                                     width="150" height="150"/>
                                             </div>
                                         </div>
                                     </div>
@@ -145,7 +156,8 @@
                 </div>
             </div>
 
-            <button class="btn btn-primary" ng-click="viewDetail(ctsp.id)" data-bs-toggle="modal" data-bs-target="#userForm"><i class="bi bi-pencil-square"></i></button>
+            <button class="btn btn-primary" ng-click="viewDetail(ctsp.id)" data-bs-toggle="modal"
+                    data-bs-target="#userForm"><i class="bi bi-pencil-square"></i></button>
             <!-- Modal Cập Nhật Sản Phẩm -->
             <div class="modal fade" id="userForm" tabindex="-1" aria-labelledby="userFormLabel" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
@@ -165,19 +177,25 @@
                                 <div class="mb-3 row">
                                     <div class="col-md-6">
                                         <label class="form-label">Số ngày sử dụng:</label>
-                                        <select class="form-control" ng-model="productDetail.soNgaySuDung" ng-disabled="productDetail.soNgaySuDungInput" required>
-                                            <option value=""  selected>Vui lòng chọn số ngày</option>
-                                            <option ng-repeat="soNgay in uniqueSoNgaySuDung" value="{{soNgay}}">{{soNgay}}</option>
+                                        <select class="form-control" ng-model="productDetail.soNgaySuDung"
+                                                ng-disabled="productDetail.soNgaySuDungInput" required>
+                                            <option value="" selected>Vui lòng chọn số ngày</option>
+                                            <option ng-repeat="soNgay in uniqueSoNgaySuDung" value="{{soNgay}}">
+                                                {{soNgay}}
+                                            </option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Nhập số ngày sử dụng khác:</label>
-                                        <input type="number" class="form-control" ng-model="productDetail.soNgaySuDungInput" ng-disabled="productDetail.soNgaySuDung">
+                                        <input type="number" class="form-control"
+                                               ng-model="productDetail.soNgaySuDungInput"
+                                               ng-disabled="productDetail.soNgaySuDung">
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Ngày nhập:</label>
-                                    <input type="datetime-local" class="form-control" ng-model="productDetail.ngayNhap" required>
+                                    <input type="datetime-local" class="form-control" ng-model="productDetail.ngayNhap"
+                                           required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Số lượng:</label>
@@ -185,22 +203,28 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Chọn ảnh:</label>
-                                    <input type="file" class="form-control" accept="image/*" multiple onchange="angular.element(this).scope().selectImages(this)">
+                                    <input type="file" class="form-control" accept="image/*" multiple
+                                           onchange="angular.element(this).scope().selectImages(this)">
                                 </div>
                                 <div class="mb-3" ng-if="productDetail.imagePreviews.length > 0">
                                     <h5>Hình ảnh hiện tại:</h5>
-                                    <div class="image-wrapper" ng-repeat="(index, image) in productDetail.imagePreviews">
-                                        <img ng-src="{{image}}" alt="Hình ảnh sản phẩm" width="100" height="100" class="mt-2 me-2">
-                                        <a class="btn btn-danger remove-button" ng-click="removeImage($index, true)">X</a> <!-- Nút xóa cho productDetail -->
+                                    <div class="image-wrapper"
+                                         ng-repeat="(index, image) in productDetail.imagePreviews">
+                                        <img ng-src="{{image}}" alt="Hình ảnh sản phẩm" width="100" height="100"
+                                             class="mt-2 me-2">
+                                        <a class="btn btn-danger remove-button"
+                                           ng-click="removeImage($index, true)">X</a> <!-- Nút xóa cho productDetail -->
                                     </div>
                                 </div>
                                 <label class="form-label">Trạng thái:</label>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" ng-model="productDetail.trangThai" ng-value="1">
+                                    <input class="form-check-input" type="radio" ng-model="productDetail.trangThai"
+                                           ng-value="1">
                                     <label class="form-check-label">Active</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" ng-model="productDetail.trangThai" ng-value="0">
+                                    <input class="form-check-input" type="radio" ng-model="productDetail.trangThai"
+                                           ng-value="0">
                                     <label class="form-check-label">Inactive</label>
                                 </div>
                                 <button type="submit" class="btn btn-outline-success">Cập Nhật</button>
