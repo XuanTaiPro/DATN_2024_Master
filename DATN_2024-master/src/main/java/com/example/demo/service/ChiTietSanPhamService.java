@@ -48,7 +48,6 @@ public class ChiTietSanPhamService {
     }
 
     public void updateExistingProduct(ChiTietSanPham existingProduct, ChiTietSanPhamRequest request) {
-        existingProduct.setSoLuong(existingProduct.getSoLuong() + request.getSoLuong());
 
         List<LoHang> loForCTSP = lHRepo.fByIdCTSP(existingProduct.getId());
         if (loForCTSP.isEmpty()) {
@@ -68,7 +67,6 @@ public class ChiTietSanPhamService {
                 lHRepo.save(lH);
             }
         }
-        chiTietSanPhamRepository.save(existingProduct);
     }
 
     public ChiTietSanPham createNewProduct(String generatedMa, ChiTietSanPhamRequest request) {
@@ -97,6 +95,7 @@ public class ChiTietSanPhamService {
         LoHang loHang = new LoHang();
         loHang.setMa(genMaLo);
         loHang.setSoLuong(request.getSoLuong());
+        loHang.setNgayNhap(request.getNgayNhap());
         loHang.setHsd(request.getHsd());
         loHang.setNsx(request.getNsx());
         loHang.setTrangThai(1);

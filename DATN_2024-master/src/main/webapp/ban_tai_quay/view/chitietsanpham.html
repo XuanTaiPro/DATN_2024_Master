@@ -35,6 +35,14 @@
                         <input type="datetime-local" class="form-control" ng-model="product.ngayNhap" required>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Ngày sản xuất:</label>
+                        <input type="datetime-local" class="form-control" ng-model="product.nsx" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Hạn sử dụng:</label>
+                        <input type="datetime-local" class="form-control" ng-model="product.hsd" required>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Số lượng:</label>
                         <input type="number" class="form-control" ng-model="product.soLuong" required>
                     </div>
@@ -115,7 +123,6 @@
                                 <div class="col-md-6">
                                     <p><strong>Giá:</strong> {{ productDetail.gia }} VND</p>
                                     <p><strong>Số ngày sử dụng:</strong> {{ productDetail.soNgaySuDung }} Ngày</p>
-                                    <p><strong>Ngày nhập:</strong> {{ productDetail.ngayNhap | date:'yyyy-MM-dd' }}</p>
                                     <p><strong>Số lượng:</strong> {{ productDetail.soLuong }}</p>
                                     <p><strong>Trạng thái:</strong>
                                         {{ productDetail.trangThai == 1 ? 'Đang hoạt động' :
@@ -133,6 +140,14 @@
                                             <div ng-repeat="link in productDetail.linkAnhList" class="me-2 mb-2">
                                                 <img ng-src="{{ link }}" alt="Ảnh sản phẩm" class="img-fluid" width="150" height="150" />
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" style="text-align: center">
+                                    <strong>Lô hàng:</strong>
+                                    <div ng-if="productDetail.loHangList.length > 0">
+                                        <div ng-repeat="loHang in productDetail.loHangList" style="max-height: 300px; overflow-y: auto;border: 1px solid #ccc;padding: 10px;text-align: center">
+                                           Ngày nhập: {{ loHang.ngayNhap | date:'yyyy-MM-dd' }}-Ngày sản xuất: {{ loHang.nsx | date:'yyyy-MM-dd' }}-Hạn sử dụng: {{ loHang.hsd | date:'yyyy-MM-dd' }}-Số lượng: {{ loHang.soLuong }}
                                         </div>
                                     </div>
                                 </div>
@@ -180,10 +195,6 @@
                                     <input type="datetime-local" class="form-control" ng-model="productDetail.ngayNhap" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Số lượng:</label>
-                                    <input type="number" class="form-control" ng-model="productDetail.soLuong" required>
-                                </div>
-                                <div class="mb-3">
                                     <label class="form-label">Chọn ảnh:</label>
                                     <input type="file" class="form-control" accept="image/*" multiple onchange="angular.element(this).scope().selectImages(this)">
                                 </div>
@@ -194,15 +205,58 @@
                                         <a class="btn btn-danger remove-button" ng-click="removeImage($index, true)">X</a> <!-- Nút xóa cho productDetail -->
                                     </div>
                                 </div>
-                                <label class="form-label">Trạng thái:</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" ng-model="productDetail.trangThai" ng-value="1">
-                                    <label class="form-check-label">Active</label>
+                                <div class="mb-12">
+                                    <h5>Lô hàng hiện có:</h5>
+                                    <!-- Container chứa danh sách lô hàng với thanh cuộn -->
+                                    <div class="loHang-scroll-container" style="max-height: 400px; /* Đặt chiều cao tối đa cho container */
+    overflow-y: auto; /* Thêm thanh cuộn dọc khi cần */
+    padding-right: 10px;">
+                                        <div ng-repeat="(index, loHang) in productDetail.loHangList">
+                                            <!-- Tạo khung phân biệt cho mỗi lô hàng -->
+                                            <fieldset class="border p-3 mb-3">
+                                                <legend class="w-auto">Lô hàng {{index + 1}}</legend>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Ngày nhập:</label>
+                                                    <input
+                                                            ng-model="loHang.ngayNhap"
+                                                            ng-change="loHang.ngayNhap = loHang.ngayNhap ? new Date(loHang.ngayNhap) : null"
+                                                            type="datetime-local"
+                                                            class="form-control">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Ngày sản xuất:</label>
+                                                    <input
+                                                            ng-model="loHang.nsx"
+                                                            ng-change="loHang.nsx = loHang.nsx ? new Date(loHang.nsx) : null"
+                                                            type="datetime-local"
+                                                            class="form-control">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Hạn sử dụng:</label>
+                                                    <input
+                                                            ng-model="loHang.hsd"
+                                                            ng-change="loHang.hsd = loHang.hsd ? new Date(loHang.hsd) : null"
+                                                            type="datetime-local"
+                                                            class="form-control">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Số lượng:</label>
+                                                    <input ng-model="loHang.soLuong" type="number" class="form-control">
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" ng-model="productDetail.trangThai" ng-value="0">
-                                    <label class="form-check-label">Inactive</label>
-                                </div>
+<!--                                <label class="form-label">Trạng thái:</label>-->
+<!--                                <div class="form-check">-->
+<!--                                    <input class="form-check-input" type="radio" ng-model="productDetail.trangThai" ng-value="1">-->
+<!--                                    <label class="form-check-label">Active</label>-->
+<!--                                </div>-->
+<!--                                <div class="form-check">-->
+<!--                                    <input class="form-check-input" type="radio" ng-model="productDetail.trangThai" ng-value="0">-->
+<!--                                    <label class="form-check-label">Inactive</label>-->
+<!--                                </div>-->
                                 <button type="submit" class="btn btn-outline-success">Cập Nhật</button>
                             </form>
                         </div>

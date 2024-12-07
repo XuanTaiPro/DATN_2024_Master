@@ -127,7 +127,7 @@ public class ChiTietSanPhamController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Valid @RequestBody ChiTietSanPhamRequest chiTietSanPhamRequest) {
+    public ResponseEntity<?> add(@Valid @ModelAttribute ChiTietSanPhamRequest chiTietSanPhamRequest) {
         // Chuẩn hóa số ngày sử dụng
         chiTietSanPhamRequest.setSoNgaySuDung(chiTietSanPhamRequest.getSoNgaySuDung().trim());
 

@@ -4,7 +4,8 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
     $scope.product = {
         imagePreviews: [], // Khởi tạo danh sách hình ảnh hiện tại
         selectedImages: [], // Khởi tạo danh sách các hình ảnh đã chọn
-        linkAnhList: [] // Khởi tạo danh sách đường dẫn hình ảnh
+        linkAnhList: [], // Khởi tạo danh sách đường dẫn hình ảnh
+        loHangListUpdate:[]
     };
     $scope.successMessage = "";
     $scope.errorMessage = "";
@@ -70,6 +71,8 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
         formData.append('soLuong', product.soLuong);
         formData.append('trangThai', 1);
         formData.append('idSP',$scope.idSP);
+        formData.append('nsx',product.nsx);
+        formData.append('hsd',product.hsd);
         console.log('Thông tin sản phẩm:', product);
         // Gửi danh sách linkAnhList
         if (product.linkAnhList) {
@@ -134,7 +137,7 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
     $scope.updateProduct = function() {
         const formData = new FormData();
         // Thêm thông tin sản phẩm vào FormData
-        formData.append('id', $scope.productDetail.id); // Lưu ID của sản phẩm
+        formData.append('id', $scope.productDetail.id);
         formData.append('gia', $scope.productDetail.gia);
         if( $scope.productDetail.soNgaySuDung!=null){
             formData.append('soNgaySuDung',  $scope.productDetail.soNgaySuDung);
@@ -208,12 +211,20 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
                 soNgaySuDung: product.soNgaySuDung, // Gán soNgaySuDung vào productDetail
                 soLuong: Number(product.soLuong), // Đảm bảo là số
                 // Chuyển đổi các trường khác nếu cần
-                ngaySanXuat: new Date(product.ngaySanXuat),
-                hsd: new Date(product.hsd),
+                // ngaySanXuat: new Date(product.ngaySanXuat),
+                // hsd: new Date(product.hsd),
                 ngayNhap: new Date(product.ngayNhap),
-                trangThai: product.trangThai // Gán giá trị trangThai
-
+                trangThai: product.trangThai, // Gán giá trị trangThai
+                loHangList:product.listLoHang
             };
+            if ($scope.productDetail && $scope.productDetail.loHangList) {
+                $scope.productDetail.loHangList.forEach(function(loHang) {
+                    loHang.ngayNhap = loHang.ngayNhap ? new Date(loHang.ngayNhap) : null;
+                    loHang.nsx = loHang.nsx ? new Date(loHang.nsx) : null;
+                    loHang.hsd = loHang.hsd ? new Date(loHang.hsd) : null;
+                    loHang.soLuong=loHang.soLuong;
+                });
+            }
             if ($scope.productDetail.linkAnhList) {
                 $scope.productDetail.imagePreviews = $scope.productDetail.linkAnhList;
             } else {
