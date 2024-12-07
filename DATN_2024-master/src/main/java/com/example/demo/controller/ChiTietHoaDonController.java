@@ -6,10 +6,16 @@ import com.example.demo.entity.ChiTietHoaDon;
 import com.example.demo.entity.ChiTietSanPham;
 import com.example.demo.entity.GiamGia;
 import com.example.demo.entity.HoaDon;
+import com.example.demo.entity.LoHang;
+import com.example.demo.entity.LoHangWithHoaDon;
 import com.example.demo.repository.ChiTietHoaDonRepo;
 import com.example.demo.repository.ChiTietSanPhamRepository;
 import com.example.demo.repository.HoaDonRepo;
+import com.example.demo.repository.LHwithHDrepository;
+import com.example.demo.repository.LoHangRepository;
 import com.example.demo.repository.SanPhamRepository;
+import com.example.demo.service.ChiTietHoaDonService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,21 +38,56 @@ public class ChiTietHoaDonController {
 
     @Autowired
     private HoaDonRepo hoaDonRepo;
+
     @Autowired
     private SanPhamRepository sPRepo;
+
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepo;
+
+    @Autowired
+    private ChiTietHoaDonService cthdService;
+
+    @Autowired
+    private LoHangRepository lHRepo;
+
+    @Autowired
+    private LHwithHDrepository lhhdRepo;
+
+    @PostMapping("/checkSoLuong")
+    public ResponseEntity<?> checkSoLuong(@RequestBody Map<String, Object> mapCTHD) {
+
+        String idCTSP = (String) mapCTHD.get("idCTSP");
+
+        Object soLuongObj = mapCTHD.get("soLuong");
+        Integer sL;
+
+        if (soLuongObj instanceof Integer) {
+            sL = (Integer) soLuongObj;
+        } else {
+            try {
+                sL = Integer.valueOf((String) mapCTHD.get("soLuong"));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        if (!cthdService.checkSL(idCTSP, sL)) {
+            // status = 204
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok().body(null);
+    }
 
     @PostMapping("/add")
     public ResponseEntity<String> createChiTietHoaDon(@Validated @ModelAttribute ChiTietHoaDonReq req) {
 
-        // Kiểm tra tồn tại của hóa đơn
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(req.getIdHD());
         if (hoaDonOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("Hóa đơn không tồn tại.");
         }
 
-        // Kiểm tra tồn tại của chi tiết sản phẩm
         Optional<ChiTietSanPham> chiTietSanPhamOptional = chiTietSanPhamRepo.findById(req.getIdCTSP());
         if (chiTietSanPhamOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("Chi tiết sản phẩm không tồn tại.");
@@ -54,48 +95,51 @@ public class ChiTietHoaDonController {
 
         ChiTietSanPham chiTietSanPham = chiTietSanPhamOptional.get();
 
-        // Kiểm tra số lượng sản phẩm đủ để trừ hay không
-        if (chiTietSanPham.getSoLuong() < req.getSoLuong()) {
-            return ResponseEntity.badRequest().body("Số lượng sản phẩm không đủ.");
+        String idCtsp = chiTietSanPham.getId();
+
+        Integer soLuong = req.getSoLuong();
+        if (soLuong > cthdService.getTotalSoLuong(idCtsp)) {
+            return ResponseEntity.badRequest().body("Sản phẩm không đủ để cung cấp.");
         }
 
-        GiamGia getGiamGia = sPRepo.findById(chiTietSanPham.getSanPham().getId()).get().getGiamGia();
-        double giaSauGiam = 0;
-        if (getGiamGia != null) {
-            String phanTramGiam = getGiamGia.getGiaGiam();
-            giaSauGiam = Double.parseDouble(chiTietSanPham.getGia())
-                    - Double.parseDouble(chiTietSanPham.getGia()) * Double.parseDouble(phanTramGiam) / 100;
+        List<LoHang> listLo = lHRepo.fByIdCTSP(idCtsp);
+        listLo.sort(Comparator.comparing(LoHang::getHsd));
 
-        }
-        else{
-            giaSauGiam=Double.parseDouble(chiTietSanPham.getGia());
-        }
+        List<LoHangWithHoaDon> listLH = new ArrayList<>();
 
-        // Tìm ChiTietHoaDon hiện có
-        ChiTietHoaDon cTHDExisting = chiTietHoaDonRepo.trungCTHD(req.getIdHD(), req.getIdCTSP());
-        if (cTHDExisting != null) {
-            // Nếu đã tồn tại, tăng số lượng của ChiTietHoaDon hiện có và trừ số lượng của
-            // ChiTietSanPham
-            cTHDExisting.setSoLuong(cTHDExisting.getSoLuong() + req.getSoLuong());
-            cTHDExisting.setGiaSauGiam(String.valueOf(giaSauGiam));
-            chiTietHoaDonRepo.save(cTHDExisting);
-        } else {
-            // Nếu chưa tồn tại, tạo mới ChiTietHoaDon
-            ChiTietHoaDon chiTietHoaDons = new ChiTietHoaDon();
-            chiTietHoaDons.setGiaSauGiam(String.valueOf(giaSauGiam));
-            chiTietHoaDons.setSoLuong(req.getSoLuong());
-            chiTietHoaDons.setTrangThai(1);
-            chiTietHoaDons.setNgayTao(LocalDateTime.now());
-            chiTietHoaDons.setGhiChu(req.getGhiChu());
-            chiTietHoaDons.setHoaDon(hoaDonOptional.get());
-            chiTietHoaDons.setChiTietSanPham(chiTietSanPham);
-            chiTietHoaDons.setGiaBan(req.getGiaBan());
-            chiTietHoaDonRepo.save(chiTietHoaDons);
+        for (LoHang lo : listLo) {
+            if (soLuong <= 0)
+                break;
+
+            int usedQuantity = Math.min(soLuong, lo.getSoLuong());
+            soLuong -= usedQuantity;
+
+            LoHangWithHoaDon lhhd = new LoHangWithHoaDon();
+            lhhd.setSoLuong(usedQuantity);
+            lhhd.setLoHang(lo);
+            listLH.add(lhhd);
         }
 
-        // Trừ số lượng sản phẩm
-        chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - req.getSoLuong());
-        chiTietSanPhamRepo.save(chiTietSanPham);
+        GiamGia gg = chiTietSanPham.getSanPham().getGiamGia();
+        double gia = Double.parseDouble(chiTietSanPham.getGia());
+
+        double giaSauGiamFinal = gia;
+
+        if (gg != null) {
+            double phanTramGiam = Double.parseDouble(gg.getGiaGiam());
+            giaSauGiamFinal = Math.max(0, gia - gia * phanTramGiam / 100);
+        }
+
+        ChiTietHoaDon ctHoaDon = cthdService.creatNewCTHD(hoaDonOptional.get(), chiTietSanPham);
+        ctHoaDon.setGiaSauGiam(String.valueOf(giaSauGiamFinal));
+        ctHoaDon.setGiaBan(chiTietSanPham.getGia());
+
+        chiTietHoaDonRepo.save(ctHoaDon);
+
+        for (LoHangWithHoaDon lhhd : listLH) {
+            lhhd.setCthd(ctHoaDon);
+        }
+        lhhdRepo.saveAll(listLH);
 
         return ResponseEntity.ok("Thêm chi tiết hóa đơn thành công.");
     }

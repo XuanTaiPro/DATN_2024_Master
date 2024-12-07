@@ -2,10 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.chitietsanpham.ChiTietSanPhamRequest;
 import com.example.demo.dto.chitietsanpham.ChiTietSanPhamResponse;
+import com.example.demo.dto.lohang.LoHangRequest;
 import com.example.demo.entity.AnhCTSP;
 import com.example.demo.entity.ChiTietSanPham;
 import com.example.demo.entity.LoHang;
-import com.example.demo.entity.SanPham;
 import com.example.demo.repository.*;
 import com.example.demo.service.ChiTietSanPhamService;
 import com.example.demo.service.GenerateCodeAll;
@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -103,7 +102,7 @@ public class ChiTietSanPhamController {
         if (chiTietSanPhamRepository.findById(id).isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy CTSP có id: " + id);
         }
-//        List<LoHang> listLoHang=lHRepo.fByIdCTSP(id);
+        // List<LoHang> listLoHang=lHRepo.fByIdCTSP(id);
         return ResponseEntity.ok(chiTietSanPhamRepository.findById(id)
                 .stream().map(ChiTietSanPham::toChiTietSanPhamResponse).findFirst().orElse(null));
     }
@@ -175,6 +174,42 @@ public class ChiTietSanPhamController {
         return ResponseEntity.ok("Thêm mới chi tiết sản phẩm và hình ảnh thành công!");
     }
 
+    @PostMapping("add-lohang")
+    public ResponseEntity<?> addLoHang(@RequestBody LoHangRequest lHRequest) {
+        String idCTSP = lHRequest.getIdCTSP();
+
+        if (chiTietSanPhamRepository.findById(idCTSP) == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy CTSP có id: " + idCTSP);
+        }
+
+        LocalDateTime hsdRequest = lHRequest.getHsd();
+        LocalDateTime nsxRequest = lHRequest.getNsx();
+
+        Optional<LoHang> existingLoHang = lHRepo.fByIdCTSP(lHRequest.getIdCTSP())
+                .stream()
+                .filter(loHang -> loHang.getHsd().truncatedTo(ChronoUnit.DAYS)
+                        .isEqual(hsdRequest.truncatedTo(ChronoUnit.DAYS)) &&
+                        loHang.getNsx().truncatedTo(ChronoUnit.DAYS).isEqual(nsxRequest.truncatedTo(ChronoUnit.DAYS)))
+                .findFirst();
+
+        if (existingLoHang.isPresent()) {
+            LoHang lh = existingLoHang.get();
+            lh.setSoLuong(lh.getSoLuong() + lHRequest.getSoLuong());
+            lHRepo.save(lh);
+            return ResponseEntity.ok().body("Cập nhật thành công lô hàng");
+        } else {
+            LoHang newLoHang = new LoHang();
+            newLoHang.setMa(genMa.generateMa("LH-", 7));
+            newLoHang.setHsd(hsdRequest);
+            newLoHang.setNsx(nsxRequest);
+            newLoHang.setSoLuong(lHRequest.getSoLuong());
+            newLoHang.setCtsp(chiTietSanPhamRepository.findById(idCTSP).get());
+            lHRepo.save(newLoHang);
+        }
+
+        return ResponseEntity.ok().body("Thêm thành công lô hàng");
+    }
+
     @PutMapping("/update")
     public ResponseEntity<?> update(@Valid @ModelAttribute ChiTietSanPhamRequest chiTietSanPhamRequest) {
         String id = chiTietSanPhamRequest.getId();
@@ -224,8 +259,7 @@ public class ChiTietSanPhamController {
                 LocalDateTime hsdRequest = LocalDateTime.parse((String) loHang.get("hsd")).truncatedTo(ChronoUnit.DAYS);
                 LocalDateTime hsdGetDataBase = getLoHang.getHsd().truncatedTo(ChronoUnit.DAYS);
                 boolean checkDifferentHSD = hsdRequest.isEqual(hsdGetDataBase);
-
-                if (checkDifferentHSD) {
+                if (!checkDifferentHSD) {
                     getLoHang.setHsd(LocalDateTime.parse((String) loHang.get("hsd")));
                 }
 
@@ -233,11 +267,13 @@ public class ChiTietSanPhamController {
                 LocalDateTime nsxGetDataBase = getLoHang.getNsx().truncatedTo(ChronoUnit.DAYS);
                 boolean checkDifferentNSX = nsxRequest.isEqual(nsxGetDataBase);
 
-                if (checkDifferentNSX) {
+                if (!checkDifferentNSX) {
                     getLoHang.setNsx(LocalDateTime.parse((String) loHang.get("nsx")));
                 }
 
-                lHRepo.save(getLoHang);
+                if (!checkDifferentSL || checkDifferentHSD || checkDifferentNSX) {
+                    lHRepo.save(getLoHang);
+                }
             }
         }
 
