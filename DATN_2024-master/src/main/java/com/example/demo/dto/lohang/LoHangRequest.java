@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoHangRequest {
+
+    private String id;
+
     private Integer soLuong;
 
     private LocalDateTime hsd;
