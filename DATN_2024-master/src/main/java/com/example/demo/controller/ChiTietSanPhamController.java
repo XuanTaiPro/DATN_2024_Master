@@ -209,6 +209,10 @@ public class ChiTietSanPhamController {
 
         return ResponseEntity.ok().body("Thêm thành công lô hàng");
     }
+//    @PutMapping("/update-lo-hang")
+//    public ResponseEntity<?>updateLoHang(@ModelAttribute LoHangRequest loHangRequest){
+//
+//    }
 
     @PutMapping("/update")
     public ResponseEntity<?> update(@Valid @ModelAttribute ChiTietSanPhamRequest chiTietSanPhamRequest) {

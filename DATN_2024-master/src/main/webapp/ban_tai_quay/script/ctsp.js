@@ -299,6 +299,37 @@ window.chiTietSanPhamCtrl=function($scope, $routeParams, $http) {
             }
         }
     };
+    $scope.showAddLoHangForm = false; // Ẩn form thêm lô hàng mặc định
 
+// Toggle hiển thị form thêm lô hàng
+    $scope.toggleAddLoHangForm = function () {
+        $scope.showAddLoHangForm = !$scope.showAddLoHangForm;
+    };
+
+// Thêm lô hàng mới
+    $scope.newLoHang = {}; // Biến chứa thông tin lô hàng mới
+    $scope.addLoHang = function () {
+        if (!$scope.newLoHang.ngayNhap || !$scope.newLoHang.nsx || !$scope.newLoHang.hsd || !$scope.newLoHang.soLuong) {
+            alert("Vui lòng nhập đầy đủ thông tin lô hàng!");
+            return;
+        }
+
+        // Thêm lô hàng vào danh sách
+        $scope.productDetail.loHangList.push({
+            ngayNhap: new Date($scope.newLoHang.ngayNhap),
+            nsx: new Date($scope.newLoHang.nsx),
+            hsd: new Date($scope.newLoHang.hsd),
+            soLuong: $scope.newLoHang.soLuong
+        });
+
+        // Reset form
+        $scope.newLoHang = {};
+        $scope.showAddLoHangForm = false; // Ẩn form sau khi thêm
+    };
+    $scope.updateLoHang = function(loHang) {
+        // Xử lý cập nhật thông tin lô hàng tại đây
+        console.log('Cập nhật lô hàng:', loHang);
+        // Ví dụ gửi thông tin qua API hoặc lưu trữ trong cơ sở dữ liệu
+    };
 
 };

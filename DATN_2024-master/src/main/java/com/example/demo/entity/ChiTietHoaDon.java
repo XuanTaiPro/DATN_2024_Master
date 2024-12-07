@@ -52,6 +52,7 @@ public class ChiTietHoaDon {
         @JoinColumn(name = "IDCTSP")
         private ChiTietSanPham chiTietSanPham;
 
+
         @PrePersist
         public void prePersist() {
                 if (this.id == null) {
