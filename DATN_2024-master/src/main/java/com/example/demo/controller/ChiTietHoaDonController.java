@@ -8,7 +8,6 @@ import com.example.demo.entity.GiamGia;
 import com.example.demo.entity.HoaDon;
 import com.example.demo.entity.LoHang;
 import com.example.demo.entity.LoHangWithHoaDon;
-import com.example.demo.entity.SanPham;
 import com.example.demo.repository.ChiTietHoaDonRepo;
 import com.example.demo.repository.ChiTietSanPhamRepository;
 import com.example.demo.repository.HoaDonRepo;
@@ -16,7 +15,6 @@ import com.example.demo.repository.LHwithHDrepository;
 import com.example.demo.repository.LoHangRepository;
 import com.example.demo.repository.SanPhamRepository;
 import com.example.demo.service.ChiTietHoaDonService;
-import com.example.demo.service.GenerateCodeAll;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

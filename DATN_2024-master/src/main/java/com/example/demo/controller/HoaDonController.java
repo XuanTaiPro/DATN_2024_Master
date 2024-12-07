@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -179,11 +178,11 @@ public class HoaDonController {
         hoaDon.setSdtNguoiNhan(null);
 
         // Xử lý nhân viên
-        Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById(loginController.getIdNV);
+        Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById(loginController.returnIDNV());
         if (nhanVienOptional.isPresent()) {
             hoaDon.setNhanVien(nhanVienOptional.get());
         } else {
-            return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + loginController.getIdNV);
+            return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + loginController.returnIDNV());
         }
         try {
             hoaDonRepo.save(hoaDon);
