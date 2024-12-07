@@ -302,16 +302,9 @@ public class HoaDonController {
             }
 
             cthd.setHoaDon(getHD);
-<<<<<<< HEAD
             Object soLuongObj = prod.get("soLuongTrongGio");
             Integer sL;
 
-=======
-
-            Object soLuongObj = prod.get("soLuongTrongGio");
-            Integer sL;
-
->>>>>>> 9f34d0937d006436e6db71eabd3bc05fbf64fb59
             if (soLuongObj instanceof Integer) {
                 sL = (Integer) soLuongObj;
             } else {

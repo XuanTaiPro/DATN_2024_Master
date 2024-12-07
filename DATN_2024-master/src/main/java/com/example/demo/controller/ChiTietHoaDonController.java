@@ -45,8 +45,6 @@ public class ChiTietHoaDonController {
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepo;
 
-<<<<<<< HEAD
-=======
     @Autowired
     private ChiTietHoaDonService cthdService;
 
@@ -81,7 +79,6 @@ public class ChiTietHoaDonController {
 
         return ResponseEntity.ok().body(null);
     }
->>>>>>> 9f34d0937d006436e6db71eabd3bc05fbf64fb59
 
     @PostMapping("/add")
     public ResponseEntity<String> createChiTietHoaDon(@Validated @ModelAttribute ChiTietHoaDonReq req) {
@@ -108,10 +105,6 @@ public class ChiTietHoaDonController {
         List<LoHang> listLo = lHRepo.fByIdCTSP(idCtsp);
         listLo.sort(Comparator.comparing(LoHang::getHsd));
 
-<<<<<<< HEAD
-        } else {
-            giaSauGiam = Double.parseDouble(chiTietSanPham.getGia());
-=======
         List<LoHangWithHoaDon> listLH = new ArrayList<>();
 
         for (LoHang lo : listLo) {
@@ -125,7 +118,6 @@ public class ChiTietHoaDonController {
             lhhd.setSoLuong(usedQuantity);
             lhhd.setLoHang(lo);
             listLH.add(lhhd);
->>>>>>> 9f34d0937d006436e6db71eabd3bc05fbf64fb59
         }
 
         GiamGia gg = chiTietSanPham.getSanPham().getGiamGia();
@@ -151,7 +143,6 @@ public class ChiTietHoaDonController {
 
         return ResponseEntity.ok("Thêm chi tiết hóa đơn thành công.");
     }
-
     @GetMapping("/list")
     public ResponseEntity<List<ChiTietHoaDonRep>> getAllChiTietHoaDon() {
         List<ChiTietHoaDonRep> chiTietHoaDons = chiTietHoaDonRepo.findAll().stream()

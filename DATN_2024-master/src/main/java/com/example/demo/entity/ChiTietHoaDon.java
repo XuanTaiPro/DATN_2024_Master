@@ -52,19 +52,11 @@ public class ChiTietHoaDon {
     @JoinColumn(name = "IDCTSP")
     private ChiTietSanPham chiTietSanPham;
 
-<<<<<<< HEAD
+
     @PrePersist
     public void prePersist() {
         if (this.id == null) {
             this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-=======
-
-        @PrePersist
-        public void prePersist() {
-                if (this.id == null) {
-                        this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-                }
->>>>>>> 9f34d0937d006436e6db71eabd3bc05fbf64fb59
         }
     }
 
