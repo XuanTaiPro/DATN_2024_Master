@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-
 import com.example.demo.dto.anhCTSP.AnhCTSPRequest;
 import com.example.demo.dto.anhCTSP.AnhCTSPResponse;
 import com.example.demo.entity.AnhCTSP;
@@ -89,7 +88,6 @@ public class AnhCTSPController {
         return ResponseEntity.ok("Thêm ảnh thành công!");
     }
 
-
     @PutMapping("/update")
     public ResponseEntity<?> update(@Valid @RequestBody AnhCTSPRequest anhSPRequest) {
         String id = anhSPRequest.getId();
@@ -102,7 +100,8 @@ public class AnhCTSPController {
         if (chiTietSanPham == null) {
             return ResponseEntity.badRequest().body("Không tìm thấy ChiTietSanPham có id: " + anhSPRequest.getIdCTSP());
         }
-        AnhCTSP duplicate = anhCTSPRepository.checkTrungUpdate(anhSPRequest.getLink().trim(), anhSPRequest.getIdCTSP(), id);
+        AnhCTSP duplicate = anhCTSPRepository.checkTrungUpdate(anhSPRequest.getLink().trim(), anhSPRequest.getIdCTSP(),
+                id);
         if (duplicate != null) {
             return ResponseEntity.badRequest().body("Ảnh đã tồn tại với liên kết này trong chi tiết sản phẩm.");
         }
@@ -120,14 +119,17 @@ public class AnhCTSPController {
         if (id == null || id.isEmpty()) {
             return ResponseEntity.badRequest().body("ID không được để trống.");
         }
-        if (anhCTSPRepository.getById(id) == null) {
+        if (anhCTSPRepository.findById(id) == null) {
             return ResponseEntity.badRequest().body("Không tìm thấy ảnh có id: " + id);
         }
         anhCTSPRepository.deleteById(id);
         return ResponseEntity.ok("Xóa ảnh thành công!");
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9f34d0937d006436e6db71eabd3bc05fbf64fb59
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();

@@ -92,8 +92,7 @@ public class LoginController {
         return ResponseEntity.ok(Map.of(
                 "success", true,
 
-                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html#!/sanpham"
-        ));
+                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html#!/sanpham"));
     }
 
     @PostMapping("checkOtpOl")
@@ -187,8 +186,7 @@ public class LoginController {
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
-                "message", "Đăng ký thành công! OTP đã được gửi tới email của bạn"
-        ));
+                "message", "Đăng ký thành công! OTP đã được gửi tới email của bạn"));
     }
 
     @PostMapping("checkOtpDK")
@@ -204,8 +202,11 @@ public class LoginController {
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
-                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/loginOnline.html"
-        ));
+                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/loginOnline.html"));
+    }
+
+    public String returnIDNV() {
+        return getIdNV;
     }
 
 }

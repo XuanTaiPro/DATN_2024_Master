@@ -1,5 +1,6 @@
 package com.example.demo.dto.chitietsanpham;
 
+import com.example.demo.entity.LoHang;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +24,7 @@ public class ChiTietSanPhamResponse {
     private LocalDateTime ngaySua;
     private String maSP;
     private String idSP;
-    private List<String> linkAnhList; // Danh sách liên kết hình ảnh
+    private List<String> linkAnhList;
+    private List<LoHang> listLoHang;
 
 }

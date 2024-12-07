@@ -65,6 +65,13 @@ public class GiamGia {
     @Column(name = "moTa")
     private String moTa;
 
+    @PrePersist
+    public void prePersist() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        }
+    }
+
     @OneToMany(mappedBy = "giamGia", cascade = CascadeType.ALL, orphanRemoval = true)
     // @JsonIgnore
     private List<SanPham> listSanPham = new ArrayList<>();

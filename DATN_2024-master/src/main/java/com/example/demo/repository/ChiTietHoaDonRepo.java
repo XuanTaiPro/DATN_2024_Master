@@ -24,4 +24,6 @@ public interface ChiTietHoaDonRepo extends JpaRepository<ChiTietHoaDon, String> 
     @Query("SELECT cthd FROM ChiTietHoaDon cthd WHERE  cthd.hoaDon.id = :idHD")
     List<ChiTietHoaDon> getByIdHD(@Param("idHD") String idHD);
 
+    @Query("Select c from ChiTietHoaDon c where c.maCTHD = :ma")
+    ChiTietHoaDon findByMa(@Param("ma") String ma);
 }

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "SANPHAM")
@@ -88,10 +89,13 @@ public class SanPham {
         String giaDuocGiam = giamGia != null ? giamGia.getGiaGiam() : "0";
         // Calculate total quantity where trangThai = 1
         int tongSoLuong = listCTSP.stream()
-                .filter(ctsp -> ctsp.getTrangThai() == 1) // Only include items with trangThai = 1
-                .mapToInt(ChiTietSanPham::getSoLuong)
+                .filter(ctsp -> ctsp.getTrangThai() == 1) // Chỉ lấy ChiTietSanPham có trangThai = 1
+                .flatMap(ctsp -> ctsp.getListLoHang() != null
+                        ? ctsp.getListLoHang().stream() // Lấy stream từ danh sách LoHang
+                        : Stream.empty()) // Nếu danh sách LoHang là null, trả về stream rỗng
+                .filter(loHang -> loHang.getTrangThai() == 1) // Chỉ lấy LoHang có trangThai = 1
+                .mapToInt(LoHang::getSoLuong) // Lấy số lượng từ mỗi LoHang
                 .sum();
-
         // Check if listCTSP and AnhCTSP are not empty before accessing
         String anhLink = null;
         if (!listCTSP.isEmpty()) {

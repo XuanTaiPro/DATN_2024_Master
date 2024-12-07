@@ -4,7 +4,8 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
     $scope.product = {
         imagePreviews: [], // Khởi tạo danh sách hình ảnh hiện tại
         selectedImages: [], // Khởi tạo danh sách các hình ảnh đã chọn
-        linkAnhList: [] // Khởi tạo danh sách đường dẫn hình ảnh
+        linkAnhList: [], // Khởi tạo danh sách đường dẫn hình ảnh
+        loHangListUpdate:[]
     };
     $scope.successMessage = "";
     $scope.errorMessage = "";
@@ -68,7 +69,13 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
         formData.append('ngayNhap', moment(product.ngayNhap).format('YYYY-MM-DDTHH:mm:ss'));
         formData.append('soLuong', product.soLuong);
         formData.append('trangThai', 1);
+<<<<<<< HEAD
         formData.append('idSP', $scope.idSP);
+=======
+        formData.append('idSP',$scope.idSP);
+        formData.append('nsx',product.nsx);
+        formData.append('hsd',product.hsd);
+>>>>>>> 9f34d0937d006436e6db71eabd3bc05fbf64fb59
         console.log('Thông tin sản phẩm:', product);
         // Gửi danh sách linkAnhList
         if (product.linkAnhList) {
@@ -133,7 +140,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
     $scope.updateProduct = function () {
         const formData = new FormData();
         // Thêm thông tin sản phẩm vào FormData
-        formData.append('id', $scope.productDetail.id); // Lưu ID của sản phẩm
+        formData.append('id', $scope.productDetail.id);
         formData.append('gia', $scope.productDetail.gia);
         if ($scope.productDetail.soNgaySuDung != null) {
             formData.append('soNgaySuDung', $scope.productDetail.soNgaySuDung);
@@ -206,12 +213,20 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
                 soNgaySuDung: product.soNgaySuDung, // Gán soNgaySuDung vào productDetail
                 soLuong: Number(product.soLuong), // Đảm bảo là số
                 // Chuyển đổi các trường khác nếu cần
-                ngaySanXuat: new Date(product.ngaySanXuat),
-                hsd: new Date(product.hsd),
+                // ngaySanXuat: new Date(product.ngaySanXuat),
+                // hsd: new Date(product.hsd),
                 ngayNhap: new Date(product.ngayNhap),
-                trangThai: product.trangThai // Gán giá trị trangThai
-
+                trangThai: product.trangThai, // Gán giá trị trangThai
+                loHangList:product.listLoHang
             };
+            if ($scope.productDetail && $scope.productDetail.loHangList) {
+                $scope.productDetail.loHangList.forEach(function(loHang) {
+                    loHang.ngayNhap = loHang.ngayNhap ? new Date(loHang.ngayNhap) : null;
+                    loHang.nsx = loHang.nsx ? new Date(loHang.nsx) : null;
+                    loHang.hsd = loHang.hsd ? new Date(loHang.hsd) : null;
+                    loHang.soLuong=loHang.soLuong;
+                });
+            }
             if ($scope.productDetail.linkAnhList) {
                 $scope.productDetail.imagePreviews = $scope.productDetail.linkAnhList;
             } else {
@@ -286,6 +301,37 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
             }
         }
     };
+    $scope.showAddLoHangForm = false; // Ẩn form thêm lô hàng mặc định
 
+// Toggle hiển thị form thêm lô hàng
+    $scope.toggleAddLoHangForm = function () {
+        $scope.showAddLoHangForm = !$scope.showAddLoHangForm;
+    };
+
+// Thêm lô hàng mới
+    $scope.newLoHang = {}; // Biến chứa thông tin lô hàng mới
+    $scope.addLoHang = function () {
+        if (!$scope.newLoHang.ngayNhap || !$scope.newLoHang.nsx || !$scope.newLoHang.hsd || !$scope.newLoHang.soLuong) {
+            alert("Vui lòng nhập đầy đủ thông tin lô hàng!");
+            return;
+        }
+
+        // Thêm lô hàng vào danh sách
+        $scope.productDetail.loHangList.push({
+            ngayNhap: new Date($scope.newLoHang.ngayNhap),
+            nsx: new Date($scope.newLoHang.nsx),
+            hsd: new Date($scope.newLoHang.hsd),
+            soLuong: $scope.newLoHang.soLuong
+        });
+
+        // Reset form
+        $scope.newLoHang = {};
+        $scope.showAddLoHangForm = false; // Ẩn form sau khi thêm
+    };
+    $scope.updateLoHang = function(loHang) {
+        // Xử lý cập nhật thông tin lô hàng tại đây
+        console.log('Cập nhật lô hàng:', loHang);
+        // Ví dụ gửi thông tin qua API hoặc lưu trữ trong cơ sở dữ liệu
+    };
 
 };
