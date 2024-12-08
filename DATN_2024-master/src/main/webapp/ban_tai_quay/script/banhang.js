@@ -349,7 +349,22 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 $scope.errorMessage = 'Lỗi khi lấy chi tiết hóa đơn: ' + (error.data?.message || JSON.stringify(error.data));
             });
     };
+    $scope.filterSanPham = function () {
+        if ($scope.searchText) {
+            $http.get('http://localhost:8083/san-pham/getByTenSP?tenSP=' + $scope.searchText)
+                .then(function (response) {
+                    $scope.sanPhams = response.data;
+                    $scope.searchResultsVisible = true; // Hiện kết quả tìm kiếm
+                    console.log($scope.sanPhams);
 
+                })
+                .catch(function (error) {
+                    console.error("Lỗi khi tìm kiếm sản phẩm:", error);
+                });
+        } else {
+            $scope.sanPhams = []; // Nếu không có từ khóa tìm kiếm, xóa danh sách sản phẩm
+        }
+    };
     $scope.selectTab = function (index) {
         $scope.selectedTab = index;
         const selectedTab = $scope.tabs[index];
@@ -449,19 +464,19 @@ window.banhangCtrl = function ($scope, $http, $document) {
             });
         $('#productModal').modal('show');  // Hiển thị modal
     };
+
     $scope.addCTHD = function () {
         // Lấy đối tượng ctsp đã chọn từ biến selectedCTSP
         var ctsp = $scope.selectedCTSP;
         console.log("Thêm sản phẩm:", ctsp);
 
-        // Tiến hành xử lý thêm chi tiết hóa đơn với ctsp
         const formData = new FormData();
         formData.append('soLuong', ctsp.soLuongCTHD);
         formData.append('giaBan', ctsp.gia);
         formData.append('idCTSP', ctsp.id);
-
-        // Kiểm tra xem selectedTab có tồn tại không và lấy idHD
         const selectedTab = $scope.tabs[$scope.selectedTab];
+        const selectedIdHD = selectedTab.idHD;
+
         if (selectedTab) {
             const selectedIdHD = selectedTab.idHD;
             formData.append('idHD', selectedIdHD);
@@ -469,13 +484,9 @@ window.banhangCtrl = function ($scope, $http, $document) {
             console.log("Không có tab đã chọn hoặc idHD không tồn tại");
             return;
         }
-
-        // In ra formData để kiểm tra
         for (let [key, value] of formData.entries()) {
             console.log(`${key}: ${value}`); // In ra key và value
         }
-
-        // Gửi request đến server
         $http.post('http://localhost:8083/chitiethoadon/add', formData, {
 
             headers: {
@@ -497,6 +508,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 console.log('Lỗi:', error.data);
                 $scope.selectSanPham($scope.selectedSanPham);
             });
+        $('#confirmAddInvoiceDetailModal').modal('hide');
     }
     $scope.deleteCTHD = function (idCTHD) {
         const selectedTab = $scope.tabs[$scope.selectedTab];
