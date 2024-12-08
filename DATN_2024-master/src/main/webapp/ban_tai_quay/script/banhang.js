@@ -282,14 +282,12 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $('#confirmAddInvoiceModal').modal('show');
     };
 
-    $scope.confirmAddInvoiceDetail = function(ctsp) {
+    $scope.confirmAddInvoiceDetail = function (ctsp) {
         // Lưu đối tượng ctsp vào biến khi nhấn "Thêm"
         $scope.selectedCTSP = ctsp;
         // Hiển thị modal xác nhận
         $('#confirmAddInvoiceDetailModal').modal('show');
     };
-    $scope.closeConfirmModalAddInvoice=function (){
-
 
     $scope.closeConfirmModalAddInvoice = function () {
         $('#confirmAddInvoiceModal').modal('hide');
@@ -451,7 +449,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
             });
         $('#productModal').modal('show');  // Hiển thị modal
     };
-    $scope.addCTHD = function() {
+    $scope.addCTHD = function () {
         // Lấy đối tượng ctsp đã chọn từ biến selectedCTSP
         var ctsp = $scope.selectedCTSP;
         console.log("Thêm sản phẩm:", ctsp);
