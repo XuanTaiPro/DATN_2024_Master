@@ -178,7 +178,7 @@ public class HoaDonController {
         hoaDon.setSdtNguoiNhan(null);
 
         // Xử lý nhân viên
-        Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById(loginController.returnIDNV());
+        Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById("C1ED6E69");
         if (nhanVienOptional.isPresent()) {
             hoaDon.setNhanVien(nhanVienOptional.get());
         } else {

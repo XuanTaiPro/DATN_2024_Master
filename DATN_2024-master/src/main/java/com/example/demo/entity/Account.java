@@ -2,12 +2,14 @@ package com.example.demo.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Account {
 
     @NotBlank(message = "Tài khoản không được để trống")

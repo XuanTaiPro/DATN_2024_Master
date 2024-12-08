@@ -1,19 +1,20 @@
 package com.example.demo.entity;
 
-
 import com.example.demo.dto.voucher.VoucherResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "VOUCHER")
 public class Voucher {
     @Id
@@ -59,6 +60,7 @@ public class Voucher {
     private LoaiVoucher loaiVoucher;
 
     public VoucherResponse toResponse() {
-        return new VoucherResponse(id, ma, ten, giamGia, ngayTao, ngaySua, giamMin, giamMax, dieuKien, ngayKetThuc, soLuong, trangThai, loaiVoucher.getTen());
+        return new VoucherResponse(id, ma, ten, giamGia, ngayTao, ngaySua, giamMin, giamMax, dieuKien, ngayKetThuc,
+                soLuong, trangThai, loaiVoucher.getTen());
     }
 }
