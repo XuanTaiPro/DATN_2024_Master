@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface KhachHangRepository extends JpaRepository<KhachHang, String> {
     // @Query("SELECT k.ma FROM KhachHang k ORDER BY k.id DESC LIMIT 1")
     // String findLastCustomerCode();
@@ -25,6 +27,17 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, String> {
             @Param("diaChi") String diaChi,
             @Param("trangThai") Integer trangThai,
             Pageable pageable);
+
+    @Query("SELECT kh FROM KhachHang kh WHERE " +
+            "(:ten IS NULL OR kh.ten LIKE %:ten%) AND" +
+            "(:gioiTinh IS NULL OR :gioiTinh = '' OR kh.gioiTinh = :gioiTinh ) AND " +
+            "(:sdt IS NULL OR :sdt = '' OR kh.sdt LIKE %:sdt%) "
+           )
+    List<KhachHang> tkVaLocKhachHang(
+            @Param("ten") String ten,
+            @Param("gioiTinh") String gioiTinh,
+            @Param("sdt") String sdt
+    );
 
     KhachHang getKhachHangByTen(String ten);
 

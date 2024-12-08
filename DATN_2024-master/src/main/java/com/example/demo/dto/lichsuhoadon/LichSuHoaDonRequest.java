@@ -21,7 +21,7 @@ public class LichSuHoaDonRequest {
     @NotNull(message = "Trạng thái không được để trống")
     @Max(value = 4, message = "Trạng thái không hợp lệ")
     private int trangThai;
-//    @NotNull(message = "Nhân Viên không được để trống")
+    //    @NotNull(message = "Nhân Viên không được để trống")
 //    private String idNV;
     @NotNull(message = "Hóa đơn không được để trống")
     private String idHD;

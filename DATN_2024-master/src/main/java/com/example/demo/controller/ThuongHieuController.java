@@ -41,6 +41,7 @@ public class ThuongHieuController {
         }
         return ResponseEntity.ok(existingThuonHieu.get().toResponse());
     }
+
     @PostMapping("/detailByMa")
     public ResponseEntity<?> detailByMa(@RequestBody Map<String, String> body) {
         String ma = body.get("ma");
@@ -51,11 +52,12 @@ public class ThuongHieuController {
             return ResponseEntity.badRequest().body("Mã thương hiệu phải có định dạng THXXXXXXXX (X là chữ cái hoặc số)!");
         }
         ThuongHieu thuongHieu = thuongHieuRepository.getByMa(ma);
-        if (thuongHieu==null) {
+        if (thuongHieu == null) {
             return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm có mã: " + ma);
         }
         return ResponseEntity.ok(thuongHieu.toResponse());
     }
+
     @PostMapping("/add")
     public ResponseEntity<?> add(@Valid @RequestBody ThuongHieuRequest thuongHieuRequest) {
         if (thuongHieuRepository.getByName(thuongHieuRequest.getTen().trim()) != null) {

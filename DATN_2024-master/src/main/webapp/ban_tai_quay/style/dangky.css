@@ -19,7 +19,7 @@
     justify-content: center;
     align-items: center;
     width: 500px;
-    height: 650px;  /* Thêm chiều cao cho form đăng ký */
+    height: 650px; /* Thêm chiều cao cho form đăng ký */
     top: 50%;
     left: 50%;
     position: fixed;
@@ -60,13 +60,13 @@ h3 {
     gap: 40px;
     align-items: center;
     position: relative;
-    z-index: 1;  /* Đảm bảo các radio button không bị chồng lên bởi các phần tử khác */
+    z-index: 1; /* Đảm bảo các radio button không bị chồng lên bởi các phần tử khác */
 }
 
 .gender-options div {
     display: flex;
     align-items: center;
-    z-index: 2;  /* Đảm bảo phần tử chứa radio button nằm trên các phần tử khác */
+    z-index: 2; /* Đảm bảo phần tử chứa radio button nằm trên các phần tử khác */
 }
 
 .gender-options input[type="radio"] {
@@ -161,7 +161,7 @@ h3 {
 }
 
 
-.name-account, .email-account, .gender-account, .phone-account, .address-account ,.password-account{
+.name-account, .email-account, .gender-account, .phone-account, .address-account, .password-account {
     display: flex;
     position: relative;
     padding: 10px 0;

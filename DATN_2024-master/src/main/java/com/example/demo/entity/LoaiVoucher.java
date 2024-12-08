@@ -6,15 +6,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "LOAIVOUCHER")
 public class LoaiVoucher {
     @Id
@@ -39,7 +41,7 @@ public class LoaiVoucher {
     @Column(name = "MOTA")
     private String moTa;
 
-    public LoaiVoucherResponse toResponse(){
-        return new LoaiVoucherResponse(id,ma,ten,ngayTao,ngaySua,trangThai,moTa);
+    public LoaiVoucherResponse toResponse() {
+        return new LoaiVoucherResponse(id, ma, ten, ngayTao, ngaySua, trangThai, moTa);
     }
 }

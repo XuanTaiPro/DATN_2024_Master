@@ -12,7 +12,7 @@ public class AnhCTSPRequest {
 
     @NotBlank(message = "Link ảnh không được để trống")
     @Size(max = 255, message = "Link ảnh không được vượt quá 255 ký tự")
-    private String   link;
+    private String link;
 
     @NotBlank(message = "Tên ảnh không được để trống")
     @Size(max = 255, message = "Tên ảnh không được vượt quá 255 ký tự")

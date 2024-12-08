@@ -13,46 +13,46 @@ window.banhangCtrl = function ($scope, $http, $document) {
     $scope.isScanning = false;
 
     // Hàm bắt đầu quét mã QR khi nút được nhấn
-    $scope.startQRCodeScan = function() {
+    $scope.startQRCodeScan = function () {
         $scope.isScanning = true;
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function(stream) {
+                .then(function (stream) {
                     var videoElement = document.getElementById('videoElement');
                     videoElement.srcObject = stream;
 
                     // Đảm bảo video đã load và có kích thước hợp lệ
-                    videoElement.onloadedmetadata = function() {
+                    videoElement.onloadedmetadata = function () {
                         videoElement.play();
                         // Bắt đầu quét mã QR khi video đã sẵn sàng
                         $scope.scanQRCode(videoElement, stream); // Chuyển stream vào hàm scanQRCode
                     };
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     console.log('Lỗi khi truy cập camera: ', err);
                 });
         } else {
             console.log('Trình duyệt không hỗ trợ API getUserMedia');
         }
     };
-    $scope.stopQRCodeScan = function() {
+    $scope.stopQRCodeScan = function () {
         $scope.isScanning = false;
         let video = document.getElementById('videoElement');
         let stream = video.srcObject;
         if (stream) {
             let tracks = stream.getTracks();
-            tracks.forEach(function(track) {
+            tracks.forEach(function (track) {
                 track.stop();
             });
         }
         video.srcObject = null;
     };
-    $scope.scanQRCode = function(videoElement, stream) {
+    $scope.scanQRCode = function (videoElement, stream) {
         // Kiểm tra video đã có chiều rộng hợp lệ chưa
         if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
             // Nếu chưa có kích thước, chờ 100ms rồi thử lại
-            setTimeout(function() {
+            setTimeout(function () {
                 $scope.scanQRCode(videoElement, stream);
             }, 100);
             return;
@@ -71,7 +71,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
 
         if (qrCode) {
             // Nếu quét được mã QR, hiển thị dữ liệu
-            $scope.$apply(async function() {
+            $scope.$apply(async function () {
                 $scope.qrData = qrCode.data; // Lưu dữ liệu quét được vào $scope
                 console.log('Dữ liệu mã QR: ', $scope.qrData);
 
@@ -94,12 +94,12 @@ window.banhangCtrl = function ($scope, $http, $document) {
                     $http.post('http://localhost:8083/chitiethoadon/add', formData, {
                         headers: { 'Content-Type': undefined }
                     })
-                        .then(function(response) {
+                        .then(function (response) {
                             console.log('Chi tiết hóa đơn đã được thêm thành công');
                             // Cập nhật lại danh sách sản phẩm
                             $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
                         })
-                        .catch(function(error) {
+                        .catch(function (error) {
                             console.error('Lỗi khi thêm chi tiết hóa đơn:', error.message);
                             $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
                         });
@@ -117,10 +117,10 @@ window.banhangCtrl = function ($scope, $http, $document) {
                         transformRequest: angular.identity,
                         headers: { 'Content-Type': undefined }
                     })
-                        .then(function(response) {
+                        .then(function (response) {
                             $scope.getHDTaiQuayAndAddCTHD($scope.qrData); // Lấy lại danh sách hóa đơn mới nhất
                         })
-                        .catch(function(error) {
+                        .catch(function (error) {
                             console.error('Lỗi:', error);
                             alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
                         });
@@ -128,44 +128,44 @@ window.banhangCtrl = function ($scope, $http, $document) {
             });
         } else {
             // Nếu không quét được, tiếp tục quét sau 100ms
-            setTimeout(function() {
+            setTimeout(function () {
                 $scope.scanQRCode(videoElement, stream);
             }, 100);
         }
     };
 
-// Hàm thêm hóa đơn
-//     $scope.addInvoiceTabInScanQR = function (idCTSP) {
-//         // $scope.getHDTaiQuay();
-//         const selectedTab = $scope.tabs[$scope.selectedTab];
-//         if (selectedTab && selectedTab.idHD) {
-//             const selectedIdHD = selectedTab.idHD;
-//             console.log(selectedTab);
-//             console.log('Selected idHD:', selectedIdHD);
-//             const formData = new FormData();
-//             formData.append('soLuong', 1);
-//             formData.append('idHD', selectedIdHD);
-//             formData.append('idCTSP', idCTSP);
-//
-//             // Thêm chi tiết hóa đơn sau khi tạo hóa đơn mới
-//             $http.post('http://localhost:8083/chitiethoadon/add', formData, {
-//                 headers: { 'Content-Type': undefined }
-//             })
-//                 .then(function(response) {
-//                     console.log('Chi tiết hóa đơn đã được thêm thành công');
-//                     $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
-//                 })
-//                 .catch(function(error) {
-//                     console.log('Lỗi khi thêm chi tiết hóa đơn:', error.message);
-//                 });
-//         } else {
-//             console.log('selectedTab or idHD is undefined');
-//         }
-//     };
+    // Hàm thêm hóa đơn
+    //     $scope.addInvoiceTabInScanQR = function (idCTSP) {
+    //         // $scope.getHDTaiQuay();
+    //         const selectedTab = $scope.tabs[$scope.selectedTab];
+    //         if (selectedTab && selectedTab.idHD) {
+    //             const selectedIdHD = selectedTab.idHD;
+    //             console.log(selectedTab);
+    //             console.log('Selected idHD:', selectedIdHD);
+    //             const formData = new FormData();
+    //             formData.append('soLuong', 1);
+    //             formData.append('idHD', selectedIdHD);
+    //             formData.append('idCTSP', idCTSP);
+    //
+    //             // Thêm chi tiết hóa đơn sau khi tạo hóa đơn mới
+    //             $http.post('http://localhost:8083/chitiethoadon/add', formData, {
+    //                 headers: { 'Content-Type': undefined }
+    //             })
+    //                 .then(function(response) {
+    //                     console.log('Chi tiết hóa đơn đã được thêm thành công');
+    //                     $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
+    //                 })
+    //                 .catch(function(error) {
+    //                     console.log('Lỗi khi thêm chi tiết hóa đơn:', error.message);
+    //                 });
+    //         } else {
+    //             console.log('selectedTab or idHD is undefined');
+    //         }
+    //     };
 
     $scope.getHDTaiQuayAndAddCTHD = function (idCTSP) {
         $http.get('http://localhost:8083/hoadon/getHDTaiQuay')
-            .then(function(response) {
+            .then(function (response) {
                 console.log(response.data); // Kiểm tra dữ liệu trả về
                 response.data.forEach((hoaDon) => {
                     const newTabTitle = 'Hóa Đơn ' + hoaDon.maHD; // Tạo tên tab cho mỗi hóa đơn
@@ -200,11 +200,11 @@ window.banhangCtrl = function ($scope, $http, $document) {
                         $http.post('http://localhost:8083/chitiethoadon/add', formData, {
                             headers: { 'Content-Type': undefined }
                         })
-                            .then(function(response) {
+                            .then(function (response) {
                                 console.log('Chi tiết hóa đơn đã được thêm thành công');
                                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
                             })
-                            .catch(function(error) {
+                            .catch(function (error) {
                                 console.log('Lỗi khi thêm chi tiết hóa đơn:', error.message);
                                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
 
@@ -214,7 +214,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
                     }// Gọi API để lấy chi tiết hóa đơn của tab cuối cùng
                 }
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error('Lỗi khi lấy hóa đơn tại quầy:', error.data);
             });
     };
@@ -230,16 +230,16 @@ window.banhangCtrl = function ($scope, $http, $document) {
             transformRequest: angular.identity,
             headers: { 'Content-Type': undefined }
         })
-            .then(function(response) {
+            .then(function (response) {
                 $('#addInvoiceModal').modal('show'); // Hiển thị modal
                 $scope.getHDTaiQuay(); // Lấy lại danh sách hóa đơn mới nhất
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error('Lỗi:', error);
                 alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
             });
     };
-    $scope.updateGhiChu = function(hd) {
+    $scope.updateGhiChu = function (hd) {
         const formData = new FormData();
         const selectedTab = $scope.tabs[$scope.selectedTab];
         const selectedIdHD = selectedTab.idHD;
@@ -247,7 +247,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $http.put('http://localhost:8083/hoadon/update-ghi-chu' + selectedIdHD, formData, {
             headers: { 'Content-Type': undefined }
         })
-            .then(function(response) {
+            .then(function (response) {
                 console.log("Update successful:", response);
 
                 // Gọi lại hàm để load lại danh sách chi tiết hóa đơn của tab hiện tại
@@ -255,30 +255,30 @@ window.banhangCtrl = function ($scope, $http, $document) {
 
                 // alert("Cập nhật thành công!");
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 const selectedTab = $scope.tabs[$scope.selectedTab];
                 const selectedIdHD = selectedTab.idHD;
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
             });
     };
-    $scope.closeProductModal=function (){
+    $scope.closeProductModal = function () {
         $('#productModal').modal('toggle');
         $('#confirmAddInvoiceModal').modal('hide');
         $('#confirmAddInvoiceDetailModal').modal('hide');
         $('#actionModal').modal('hide'); // Hiển thị modal
         $('#notificationModal').modal('hide');
-        let setOff=document.querySelector(".modal-backdrop")
+        let setOff = document.querySelector(".modal-backdrop")
         setOff.classList.remove('show');
         setOff.classList.add('hide');
-        setOff.style.display='none';
-        setOff.style.width='0px';
-        setOff.style.height='0px'
+        setOff.style.display = 'none';
+        setOff.style.width = '0px';
+        setOff.style.height = '0px'
         $('#productModal').on('hidden.bs.modal', function () {
             $('.modal-backdrop').remove();
         });
     }
 
-    $scope.confirmAddInvoice = function() {
+    $scope.confirmAddInvoice = function () {
         $('#confirmAddInvoiceModal').modal('show');
     };
 
@@ -289,10 +289,13 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $('#confirmAddInvoiceDetailModal').modal('show');
     };
     $scope.closeConfirmModalAddInvoice=function (){
+
+
+    $scope.closeConfirmModalAddInvoice = function () {
         $('#confirmAddInvoiceModal').modal('hide');
     }
 
-    $scope.closeConfirmModalAddInvoiceDetail=function (){
+    $scope.closeConfirmModalAddInvoiceDetail = function () {
         $('#confirmAddInvoiceDetailModal').modal('hide');
     }
     $scope.confirmDeleteCTHD = function (idCTHD) {
@@ -302,13 +305,13 @@ window.banhangCtrl = function ($scope, $http, $document) {
         console.log(idCTHD);
         $('#confirmDeleteInvoiceDetailModal').modal('show');
     }
-    $scope.closeConfirmDeleteCTHD=function (){
+    $scope.closeConfirmDeleteCTHD = function () {
         $('#confirmDeleteInvoiceDetailModal').modal('hide');
     }
     // Hàm lấy hóa đơn (gọi khi khởi tạo controller)
     $scope.getHDTaiQuay = function () {
         $http.get('http://localhost:8083/hoadon/getHDTaiQuay')
-            .then(function(response) {
+            .then(function (response) {
                 console.log(response.data); // Kiểm tra dữ liệu trả về
                 response.data.forEach((hoaDon) => {
                     const newTabTitle = 'Hóa Đơn ' + hoaDon.maHD; // Tạo tên tab cho mỗi hóa đơn
@@ -331,7 +334,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
                     $scope.getCTSPByIdHD(selectedIdHD, 0); // Gọi API để lấy chi tiết hóa đơn của tab cuối cùng
                 }
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error('Lỗi khi lấy hóa đơn tại quầy:', error.data);
             });
     };
@@ -349,7 +352,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
             });
     };
 
-    $scope.selectTab = function(index) {
+    $scope.selectTab = function (index) {
         $scope.selectedTab = index;
         const selectedTab = $scope.tabs[index];
         const selectedIdHD = selectedTab.idHD;
@@ -358,35 +361,19 @@ window.banhangCtrl = function ($scope, $http, $document) {
         selectedTab.currentPage = 0; // Đặt lại trang khi chọn lại tab
     };
 
-    // Hàm đóng tab
-    $scope.filterSanPham = function () {
-        if ($scope.searchText) {
-            $http.get('http://localhost:8083/san-pham/getByTenSP?tenSP=' + $scope.searchText)
-                .then(function (response) {
-                    $scope.sanPhams = response.data;
-                    $scope.searchResultsVisible = true; // Hiện kết quả tìm kiếm
-                    console.log($scope.sanPhams);
 
-                })
-                .catch(function (error) {
-                    console.error("Lỗi khi tìm kiếm sản phẩm:", error);
-                });
-        } else {
-            $scope.sanPhams = []; // Nếu không có từ khóa tìm kiếm, xóa danh sách sản phẩm
-        }
-    };
     $document.on('click', function (event) {
         var searchResultsElement = angular.element(document.querySelector('.search-results'));
         var inputElement = angular.element(document.querySelector('input[ng-model="searchText"]'));
 
         // Kiểm tra xem click có phải ngoài div kết quả tìm kiếm hoặc ngoài ô tìm kiếm không
         if (!searchResultsElement[0].contains(event.target) && !inputElement[0].contains(event.target)) {
-            $scope.$apply(function() {
+            $scope.$apply(function () {
                 $scope.searchResultsVisible = false; // Ẩn kết quả tìm kiếm
             });
         }
     });
-    $scope.updateGhiChu = function(hd) {
+    $scope.updateGhiChu = function (hd) {
         const selectedTab = $scope.tabs[$scope.selectedTab];
         const selectedIdHD = selectedTab.idHD;
 
@@ -395,25 +382,25 @@ window.banhangCtrl = function ($scope, $http, $document) {
         };
 
         $http.put('http://localhost:8083/hoadon/update-ghi-chu/' + selectedIdHD, payload)
-            .then(function(response) {
+            .then(function (response) {
                 console.log("Update successful:", response);
                 // Gọi lại hàm để load danh sách chi tiết hóa đơn của tab hiện tại
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error("Update failed:", error);
                 // Xử lý lỗi hoặc gọi lại hàm load danh sách
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
             });
     };
-    $scope.updateTotal = function(cthd) {
+    $scope.updateTotal = function (cthd) {
         const formData = new FormData();
         formData.append('soLuong', cthd.soLuong);
 
         $http.put('http://localhost:8083/chitiethoadon/updateSoLuong?id=' + cthd.id, formData, {
             headers: { 'Content-Type': undefined }
         })
-            .then(function(response) {
+            .then(function (response) {
                 console.log("Update successful:", response);
 
                 // Lấy idHD của tab hiện tại
@@ -425,13 +412,13 @@ window.banhangCtrl = function ($scope, $http, $document) {
 
                 // alert("Cập nhật thành công!");
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 const selectedTab = $scope.tabs[$scope.selectedTab];
                 const selectedIdHD = selectedTab.idHD;
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
             });
     };
-    $scope.calculateTotalAmount = function(cthd) {
+    $scope.calculateTotalAmount = function (cthd) {
         if (!cthd) return 0; // Kiểm tra nếu đối tượng không tồn tại
 
         const gia = cthd.giaSauGiam || cthd.giaBan; // Lấy giá sau giảm, nếu không có thì dùng giá bán
@@ -440,24 +427,25 @@ window.banhangCtrl = function ($scope, $http, $document) {
         return gia * soLuong; // Tính tổng tiền
     };
 
-// Hàm tính tổng tiền cho tất cả chi tiết hóa đơn trong tab hiện tại
-    $scope.calculateTotalForList = function(chiTietHoaDons) {
+    // Hàm tính tổng tiền cho tất cả chi tiết hóa đơn trong tab hiện tại
+    $scope.calculateTotalForList = function (chiTietHoaDons) {
         if (!Array.isArray(chiTietHoaDons)) return 0; // Kiểm tra nếu không phải danh sách
 
-        return chiTietHoaDons.reduce(function(total, cthd) {
+        return chiTietHoaDons.reduce(function (total, cthd) {
             return total + $scope.calculateTotalAmount(cthd); // Sử dụng hàm tính tổng cho từng chi tiết
         }, 0); // Tính tổng tiền bằng cách cộng dồn
     };
-    $scope.selectSanPham = function(sanPham) {
+    $scope.selectSanPham = function (sanPham) {
         $scope.selectedSanPham = sanPham;  // Lưu sản phẩm đã chọn
         $scope.soLuong = 1; // Đặt lại số lượng
         $scope.currentPage = 0; // Nếu không có page được truyền vào, dùng trang 0
         $http.get(`http://localhost:8083/chi-tiet-san-pham/getAllCTSP?idSP=${sanPham.id}`)
-            .then(function(response) {
+            .then(function (response) {
                 console.log(response);
                 $scope.products = response.data; // Gán danh sách sản phẩm từ dữ liệu trả về
             })
-            .catch(function(error) {data
+            .catch(function (error) {
+                data
                 $scope.errorMessage = 'Lỗi khi lấy sản phẩm: ' + error.data;
                 console.error($scope.errorMessage);
             });
@@ -491,9 +479,13 @@ window.banhangCtrl = function ($scope, $http, $document) {
 
         // Gửi request đến server
         $http.post('http://localhost:8083/chitiethoadon/add', formData, {
-            headers: { 'Content-Type': undefined }  // Không cần chỉ định Content-Type, Angular sẽ xử lý multipart/form-data
-        })
-            .then(function(response) {
+
+            headers: {
+                'Content-Type': undefined
+            }
+        }
+        )
+            .then(function (response) {
                 console.log(response.data);
                 // Cập nhật dữ liệu hoặc thực hiện hành động sau khi thêm thành công
                 if (selectedTab && selectedTab.idHD) {
@@ -501,19 +493,14 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 }
                 $scope.selectSanPham($scope.selectedSanPham);
             })
-            .catch(function(error) {
-                console.log('Lỗi:', error.message);
-                if (selectedTab && selectedTab.idHD) {
-                    $scope.getCTSPByIdHD(selectedTab.idHD, selectedTab.currentPage);
-                }
+
+            .catch(function (error) {
+                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+                console.log('Lỗi:', error.data);
                 $scope.selectSanPham($scope.selectedSanPham);
             });
-
-        // Đóng modal sau khi thêm
-        $('#confirmAddInvoiceDetailModal').modal('hide');
-    };
-
-    $scope.deleteCTHD=function (idCTHD){
+    }
+    $scope.deleteCTHD = function (idCTHD) {
         const selectedTab = $scope.tabs[$scope.selectedTab];
         const selectedIdHD = selectedTab.idHD;
         $http({
@@ -536,7 +523,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
     $scope.selectedInvoiceId = null; // ID hóa đơn đang chọn
 
     // Hàm mở modal khi click vào button
-    $scope.showActionModal = function(tabIndex) {
+    $scope.showActionModal = function (tabIndex) {
         $scope.selectedTabIndex = tabIndex; // Lưu chỉ số tab hiện tại
         $scope.selectedInvoiceId = $scope.tabs[tabIndex].invoiceId || null; // Lưu ID hóa đơn, nếu có
         $('#actionModal').modal('show'); // Hiển thị modal
@@ -556,10 +543,10 @@ window.banhangCtrl = function ($scope, $http, $document) {
 
         }
     };
-    $scope.closeModal = function() {
+    $scope.closeModal = function () {
         $('#actionModal').modal('hide');  // Đóng modal khi nhấn "Hủy"
     };
-    $scope.closeModalAddInvoice = function() {
+    $scope.closeModalAddInvoice = function () {
         $('#addInvoiceModal').modal('hide');  // Đóng modal khi nhấn "Hủy"
     };
     $scope.deleteInvoice = function (idHD, index) {
@@ -588,11 +575,11 @@ window.banhangCtrl = function ($scope, $http, $document) {
             });
 
     };
-    $scope.test = function() {
+    $scope.test = function () {
         $http.get('http://localhost:8083/hoadon/tuDongXoaHoaDon')
-            .then(function(response) {
+            .then(function (response) {
                 console.log('Xóa hóa đơn thành công', response);
-            }, function(error) {
+            }, function (error) {
                 console.error('Có lỗi xảy ra khi xóa hóa đơn', error);
             });
     };

@@ -40,7 +40,11 @@ public class ChiTietHoaDonService {
 
     public Integer getTotalSoLuong(String idCTSP) {
         List<LoHang> listLo = lHRepo.fByIdCTSP(idCTSP);
-        return listLo.stream().mapToInt(LoHang::getSoLuong).sum();
+        int totalSoLuong = 0;
+        for (LoHang lo : listLo) {
+            totalSoLuong += lo.getSoLuong();
+        }
+        return totalSoLuong;
     }
 
     public String genCodeCTHD() {

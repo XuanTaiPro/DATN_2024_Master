@@ -15,6 +15,8 @@ public class LoHangRequest {
 
     private Integer soLuong;
 
+    private LocalDateTime ngayNhap;
+
     private LocalDateTime hsd;
 
     private LocalDateTime nsx;

@@ -59,7 +59,7 @@ document.getElementById('registerForm')?.addEventListener('submit', function (ev
         // Gửi dữ liệu đến server qua API
         fetch('http://localhost:8083/khachhang/dangKy', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(khachHang),
         })
             .then(response => {

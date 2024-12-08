@@ -19,7 +19,7 @@ public class GioHangChiTietResponse {
 
     private String ngayTao;
 
-    private String  tenKH;
+    private String tenKH;
 
     private String maCTSP;
 

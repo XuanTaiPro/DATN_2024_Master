@@ -8,23 +8,23 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface NhanVienRepository extends JpaRepository<NhanVien, String> {
-        boolean existsByMa(String ma);
+    boolean existsByMa(String ma);
 
-        boolean existsByMaAndIdNot(String ma, String id);
+    boolean existsByMaAndIdNot(String ma, String id);
 
-        @Query("SELECT nv FROM NhanVien nv WHERE " +
-                        "(:ten IS NULL OR nv.ten LIKE %:ten%) AND " +
-                        "(:gioiTinh IS NULL OR :gioiTinh = '' OR nv.gioiTinh = :gioiTinh) AND " +
-                        "(:diaChi IS NULL OR :diaChi = '' OR nv.diaChi LIKE %:diaChi%) AND " +
-                        "(:trangThai IS NULL OR nv.trangThai = :trangThai)")
-        Page<NhanVien> timKiemVaLocNhanVien(
-                        @Param("ten") String ten,
-                        @Param("gioiTinh") String gioiTinh,
-                        @Param("diaChi") String diaChi,
-                        @Param("trangThai") Integer trangThai,
-                        Pageable pageable);
+    @Query("SELECT nv FROM NhanVien nv WHERE " +
+            "(:ten IS NULL OR nv.ten LIKE %:ten%) AND " +
+            "(:gioiTinh IS NULL OR :gioiTinh = '' OR nv.gioiTinh = :gioiTinh) AND " +
+            "(:diaChi IS NULL OR :diaChi = '' OR nv.diaChi LIKE %:diaChi%) AND " +
+            "(:trangThai IS NULL OR nv.trangThai = :trangThai)")
+    Page<NhanVien> timKiemVaLocNhanVien(
+            @Param("ten") String ten,
+            @Param("gioiTinh") String gioiTinh,
+            @Param("diaChi") String diaChi,
+            @Param("trangThai") Integer trangThai,
+            Pageable pageable);
 
-        @Query("SELECT nv FROM NhanVien nv WHERE nv.email = :email AND nv.passw = :passw ")
-        NhanVien loginNV(@Param("email") String email, @Param("passw") String passw);
+    @Query("SELECT nv FROM NhanVien nv WHERE nv.email = :email AND nv.passw = :passw ")
+    NhanVien loginNV(@Param("email") String email, @Param("passw") String passw);
 
 }

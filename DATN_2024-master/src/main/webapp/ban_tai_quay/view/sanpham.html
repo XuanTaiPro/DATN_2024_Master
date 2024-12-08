@@ -121,7 +121,9 @@
         <td>{{sp.moTa}}</td>
         <td>{{sp.tenDanhMuc}}</td>
         <td>{{sp.tenThuongHieu}}</td>
-        <td>{{sp.trangThai === 1 ? 'Đang hoạt động' : (sp.trangThai === 0 ? 'Không hoạt động' : (sp.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định')) }}</td>
+        <td>{{sp.trangThai === 1 ? 'Đang hoạt động' : (sp.trangThai === 0 ? 'Không hoạt động' : (sp.trangThai === 2 ?
+            'Sắp hết hàng' : 'Trạng thái không xác định')) }}
+        </td>
         <td>{{sp.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{sp.ngaySua | date:'yyyy-MM-dd HH:mm:ss'}}</td>
 
@@ -129,7 +131,8 @@
             <a ng-href="#!/chitietsanpham/{{sp.id}}" class="btn" style="background-color: #3498db; color: white;">
                 <i class="fa fa-list"></i>
             </a>
-            <button class="btn btn-success" ng-click="viewDetail(sp.id)" data-bs-toggle="modal" data-bs-target="#readData">
+            <button class="btn btn-success" ng-click="viewDetail(sp.id)" data-bs-toggle="modal"
+                    data-bs-target="#readData">
                 <i class="bi bi-eye"></i>
             </button>
             <div class="modal fade" id="readData" tabindex="-1" aria-labelledby="readDataLabel" aria-hidden="true">
@@ -148,16 +151,19 @@
                                     <p><strong>Thành phần:</strong> {{ productDetail.thanhPhan }}</p>
                                     <p><strong>Công dụng:</strong> {{ productDetail.congDung }}</p>
                                     <p><strong>Hướng dẫn sử dụng:</strong> {{ productDetail.hdsd }}</p>
-                                    <p><strong>Tuổi tối thiểu:</strong> {{ productDetail.tuoiMin  }} tuổi</p>
+                                    <p><strong>Tuổi tối thiểu:</strong> {{ productDetail.tuoiMin }} tuổi</p>
                                     <p><strong>Tuôi tối đa:</strong> {{ productDetail.tuoiMax }} tuổi</p>
                                     <p><strong>Số lượng:</strong> {{ productDetail.tongSoLuong }}</p>
                                     <p><strong>Trạng thái:</strong>
                                         {{ productDetail.trangThai == 1 ? 'Đang hoạt động' :
                                         (productDetail.trangThai === 0 ? 'Không hoạt động' :
-                                        (productDetail.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định')) }}
+                                        (productDetail.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định'))
+                                        }}
                                     </p>
-                                    <p><strong>Ngày tạo:</strong> {{ productDetail.ngayTao | date:'yyyy-MM-dd HH:mm:ss' }}</p>
-                                    <p><strong>Ngày sửa:</strong> {{ productDetail.ngaySua | date:'yyyy-MM-dd HH:mm:ss' }}</p>
+                                    <p><strong>Ngày tạo:</strong> {{ productDetail.ngayTao | date:'yyyy-MM-dd HH:mm:ss'
+                                        }}</p>
+                                    <p><strong>Ngày sửa:</strong> {{ productDetail.ngaySua | date:'yyyy-MM-dd HH:mm:ss'
+                                        }}</p>
                                 </div>
                                 <!-- Cột cho hình ảnh sản phẩm -->
                                 <div class="col-md-6">
@@ -165,7 +171,8 @@
                                         <strong>Hình ảnh:</strong>
                                         <div class="d-flex flex-wrap">
                                             <div ng-repeat="link in productDetail.linkAnhList" class="me-2 mb-2">
-                                                <img ng-src="{{ link }}" alt="Ảnh sản phẩm" class="img-fluid" width="150" height="150" />
+                                                <img ng-src="{{ link }}" alt="Ảnh sản phẩm" class="img-fluid"
+                                                     width="150" height="150"/>
                                             </div>
                                         </div>
                                     </div>
@@ -178,7 +185,8 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-primary" ng-click="viewDetail(sp.id)" data-bs-toggle="modal" data-bs-target="#userForm">
+            <button class="btn btn-primary" ng-click="viewDetail(sp.id)" data-bs-toggle="modal"
+                    data-bs-target="#userForm">
                 <i class="bi bi-pencil-square">
 
                 </i></button>
@@ -220,7 +228,9 @@
                                     <label class="form-label">Danh mục:</label>
                                     <select class="form-control" ng-model="productDetail.idDanhMuc" required>
                                         <option value="" disabled selected>Vui lòng chọn danh mục</option>
-                                        <option ng-repeat="danhMuc in listDanhMuc" value="{{danhMuc.id}}">{{danhMuc.ten}}</option>
+                                        <option ng-repeat="danhMuc in listDanhMuc" value="{{danhMuc.id}}">
+                                            {{danhMuc.ten}}
+                                        </option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -257,5 +267,7 @@
     </ul>
 </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 

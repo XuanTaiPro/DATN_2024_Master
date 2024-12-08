@@ -17,4 +17,7 @@ public interface LoHangRepository extends JpaRepository<LoHang, String> {
 
     @Query("SELECT l FROM LoHang l WHERE l.ma = :ma")
     LoHang findByMa(@Param("ma") String ma);
+
+    @Query("Select l from LoHang l where l.ctsp.id = :idCTSP and l.soLuong > 0")
+    List<LoHang> findBySoLuongGreaterThanZero(@Param("idCTSP") String idCTSP);
 }

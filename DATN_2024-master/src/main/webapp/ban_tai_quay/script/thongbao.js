@@ -26,7 +26,7 @@ window.thongbaoCtrl = function ($scope, $http) {
             });
     };
 
-    $scope.getSTT = function(index) {
+    $scope.getSTT = function (index) {
         return index + 1 + ($scope.currentPage * $scope.pageSize);
     };
 
@@ -73,7 +73,7 @@ window.thongbaoCtrl = function ($scope, $http) {
             console.error("Lỗi khi lấy danh sách LVC:", error);
         });
 
-    $scope.formatDate = function(dateString) {
+    $scope.formatDate = function (dateString) {
         // Kiểm tra nếu dateString là null hoặc rỗng
         if (!dateString) {
             return ''; // Trả về chuỗi rỗng nếu không có ngày
@@ -208,7 +208,6 @@ window.thongbaoCtrl = function ($scope, $http) {
         $scope.idKH = "";
         $scope.trangThai = "";
     }
-
 
 
 };

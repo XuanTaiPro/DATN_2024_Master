@@ -75,11 +75,11 @@ window.khachhangCtrl = function ($scope, $http) {
 
     $scope.setPage = function (page) {
         if (page >= 0 && page < $scope.totalPages) {
-          if($scope.search.ten || $scope.search.gioiTinh || $scope.search.diaChi || $scope.search.trangThai){
-              $scope.seacrhKH(page);
-          }else {
-              $scope.loadPage(page);
-          }
+            if ($scope.search.ten || $scope.search.gioiTinh || $scope.search.diaChi || $scope.search.trangThai) {
+                $scope.seacrhKH(page);
+            } else {
+                $scope.loadPage(page);
+            }
         }
     };
 

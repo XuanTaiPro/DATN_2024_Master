@@ -3,8 +3,9 @@ package com.example.demo.entity;
 import com.example.demo.dto.chitiethoadon.ChiTietHoaDonRep;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,7 +14,8 @@ import java.util.UUID;
 @Table(name = "CHITIETHOADON")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class ChiTietHoaDon {
 
         @Id
@@ -51,7 +53,6 @@ public class ChiTietHoaDon {
         @ManyToOne
         @JoinColumn(name = "IDCTSP")
         private ChiTietSanPham chiTietSanPham;
-
 
         @PrePersist
         public void prePersist() {
@@ -93,9 +94,8 @@ public class ChiTietHoaDon {
                                                 : null,
                                 chiTietSanPham != null ? chiTietSanPham.getSoNgaySuDung() : null,
                                 chiTietSanPham != null ? chiTietSanPham.getSoLuong() : 0 // Make sure to handle null
-                                                                                         // values for SoLuong
+                // values for SoLuong
                 );
         }
-
 
 }

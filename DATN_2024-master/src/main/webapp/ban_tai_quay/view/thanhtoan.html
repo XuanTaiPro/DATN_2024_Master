@@ -38,19 +38,22 @@
                 <form>
                     <div class="form-group mt-3">
                         <label for="customerName">Tên khách hàng:</label>
-                        <input type="text" class="form-control" id="customerName" name="customerName" ng-model="selectedCustomerName" >
+                        <input type="text" class="form-control" id="customerName" name="customerName"
+                               ng-model="selectedCustomerName">
                         <div style="color: red;" ng-show="isSubmitted && !selectedCustomerName">
                             Tên khách hàng không được để trống.
                         </div>
                     </div>
                     <div class="form-group mt-3">
                         <label for="customerPhone">Số điện thoại:</label>
-                        <input type="text" class="form-control" id="customerPhone" name="customerPhone" ng-model="selectedCustomerPhone" >
+                        <input type="text" class="form-control" id="customerPhone" name="customerPhone"
+                               ng-model="selectedCustomerPhone">
                         <div style="color: red;" ng-show="isSubmitted && !selectedCustomerPhone">
                             Số điện thoại không được để trống.
                         </div>
                     </div>
-                    <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#customerModal">
+                    <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal"
+                            data-bs-target="#customerModal">
                         Chọn khách hàng
                     </button>
                     <button type="button" class="btn btn-secondary mt-3" ng-click="khachVangLai()">
@@ -72,7 +75,6 @@
                         <th>Đơn tối thiểu</th>
                         <th>Giảm tối đa</th>
                         <th>Hạn sử dụng</th>
-                        <th>Số lượng</th>
                         <th>Chọn</th>
                     </tr>
                     </thead>
@@ -90,7 +92,6 @@
                      Hết hạn
                 </span>
                         </td>
-                        <td>{{ voucher.soLuong }}</td>
                         <td>
                             <button class="btn btn-primary" ng-click="applyVoucher(voucher)"
                                     ng-disabled="voucher.trangThai === 0 || voucher.soLuong === 0 || getDaysLeft(voucher.ngayKetThuc) <= 0">
@@ -131,7 +132,7 @@
             <label>Hình thức thanh toán:</label><br>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="paymentMethod" id="cash" value="cash"
-                       data-bs-toggle="modal" data-bs-target="#cashModal">
+                       data-bs-toggle="modal" data-bs-target="#cashModal" ng-click="fillTongTien()">
                 <label class="form-check-label" for="cash">Tiền mặt</label>
             </div>
             <div class="form-check form-check-inline">
@@ -156,7 +157,8 @@
                              alt="QR Code" class="img-fluid">
                     </div>
                     <div class="ck">
-                        <button type="button" class="btn btn-success btn-custom-complete" ng-click="completePaymentCK()">Hoàn tất thanh toán
+                        <button type="button" class="btn btn-success btn-custom-complete"
+                                ng-click="completePaymentCK()">Hoàn tất thanh toán
                         </button>
                     </div>
                 </div>
@@ -238,13 +240,31 @@
 
         <!--        <button class="btn btn-success mt-3" onclick="submitThanhtoan()" id="xacnhan">Xác nhận</button>-->
 
-        <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+        <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel"
+             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="customerModalLabel">Chọn khách hàng</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+                   <div class="search">
+                       <div class="row mb-3">
+                           <div class="col-md-3">
+                               <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten" ng-change="searchKH()">
+                           </div>
+                           <div class="col-md-3">
+                               <select class="form-select" ng-model="search.gioiTinh" ng-change="searchKH()">
+                                   <option value="">-- Giới tính --</option>
+                                   <option value="Nam">Nam</option>
+                                   <option value="Nữ">Nữ</option>
+                               </select>
+                           </div>
+                           <div class="col-md-3">
+                               <input type="text" class="form-control" placeholder="Số điện thoại" ng-model="search.sdt" ng-change="searchKH()">
+                           </div>
+                       </div>
+                   </div>
                     <div class="modal-body">
                         <div class="table-responsive">
                             <table class="table table-hover">
@@ -257,22 +277,29 @@
                                     <th>Chọn</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr ng-repeat="khachHang in listKhachHang">
-                                    <td>{{ khachHang.ten }}</td>
-                                    <td>{{ khachHang.email }}</td>
-                                    <td>{{ khachHang.gioiTinh }}</td>
-                                    <td>{{ khachHang.sdt }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary"
-                                                ng-click="selectCustomer(khachHang.ten, khachHang.sdt, khachHang.id)"
-                                                data-bs-dismiss="modal">
-                                            Chọn
-                                        </button>
-                                    </td>
-                                </tr>
-                                </tbody>
                             </table>
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-hover">
+                                    <tbody>
+                                    <tr ng-repeat="khachHang in listKhachHang">
+                                        <td>{{ khachHang.ten }}</td>
+                                        <td>{{ khachHang.email }}</td>
+                                        <td>{{ khachHang.gioiTinh }}</td>
+                                        <td>{{ khachHang.sdt }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary"
+                                                    ng-click="selectCustomer(khachHang.ten, khachHang.sdt, khachHang.id)"
+                                                    data-bs-dismiss="modal">
+                                                Chọn
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div ng-if="listKhachHang.length === 0" class="text-center mt-3">
+                                    Danh sách trống
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -281,11 +308,64 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="suggestedVoucherModal" tabindex="-1" aria-labelledby="suggestedVoucherModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="suggestedVoucherModalLabel">Voucher tối ưu nhất cho bạn</h5>
+                        <button type="button" id="" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div ng-if="suggestedVoucher">
+                            <p><strong>Tên Voucher:</strong> {{ suggestedVoucher.ten }}</p>
+                            <p><strong>Giá giảm:</strong> {{ suggestedVoucher.giamGia }}</p>
+                            <p><strong>Đơn tối thiểu:</strong> {{ suggestedVoucher.giamMin }}</p>
+                            <p><strong>Giảm tối đa:</strong> {{ suggestedVoucher.giamMax }}</p>
+                        </div>
+                        <div ng-if="!suggestedVoucher">
+                            <p>Không có voucher nào phù hợp để gợi ý.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" ng-click="applySuggestedVoucher()"
+                                data-bs-dismiss="modal" ng-disabled="!suggestedVoucher">
+                            Áp dụng
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 <div id="overlay" class="overlay" onclick="closeForm()"></div>
 
 <style>
+    /* Căn chỉnh phần tìm kiếm */
+    .search {
+        padding: 15px;
+        background-color: #f8f9fa; /* Màu nền nhạt */
+        border-bottom: 1px solid #dee2e6; /* Đường viền ngăn cách */
+        border-radius: 4px;
+        margin-bottom: 15px; /* Khoảng cách dưới */
+    }
+
+    /* Khoảng cách giữa các input trong hàng */
+    .search .row.mb-3 .col-md-3 {
+        margin-bottom: 10px;
+    }
+    /* Styling cho input và select */
+    .search input.form-control,
+    .search select.form-select {
+        border-radius: 4px;
+        border: 1px solid #ced4da; /* Màu viền nhạt */
+        font-size: 14px;
+    }
+
     /*thành tiền*/
     .amount-container {
         display: flex; /* Đặt các phần tử con nằm trên cùng một hàng */
@@ -359,7 +439,7 @@
 
     /* Đảm bảo các cột có chiều rộng đều nhau */
     .table th, .table td {
-        width: calc(100% / 7); /* Chia đều chiều rộng cho các cột */
+        width: calc(100% / 5.2); /* Chia đều chiều rộng cho các cột */
     }
 
     .table td:last-child {
@@ -489,9 +569,10 @@
 
     /*khách hàng và voucher*/
 
-    .bordered-form{
+    .bordered-form {
         margin-top: 20px;
     }
+
     .customer-voucher-container {
         display: flex;
         align-items: flex-start; /* Căn chỉnh phần tử theo chiều dọc */
@@ -527,7 +608,8 @@
         right: 10px; /* Căn sát mép phải của modal */
         border-radius: 5px; /* Bo góc nút */
     }
-    .ck{
+
+    .ck {
         margin-top: 25px;
     }
 </style>

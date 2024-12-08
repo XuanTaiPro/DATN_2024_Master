@@ -4,15 +4,17 @@ import com.example.demo.dto.thongtingiaohang.ThongTinGiaoHangResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "THONGTINGIAOHANG")
 public class ThongTinGiaoHang {
     @Id

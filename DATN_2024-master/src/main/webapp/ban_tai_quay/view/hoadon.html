@@ -29,22 +29,26 @@
 <div class="container mt-5">
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link" ng-click="getHoaDonsByTrangThai(null, 0)" ng-class="{'active': selectedTrangThai === null}">Tất cả</a>
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(null, 0)"
+               ng-class="{'active': selectedTrangThai === null}">Tất cả</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" ng-click="getHoaDonsByTrangThai(0, 0)" ng-class="{'active': selectedTrangThai === 0}">Chờ xác nhận</a>
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(0, 0)" ng-class="{'active': selectedTrangThai === 0}">Chờ
+                xác nhận</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" ng-click="getHoaDonsByTrangThai(1, 0)" ng-class="{'active': selectedTrangThai === 1}">Chờ</a>
         </li>
-<!--        <li class="nav-item">-->
-<!--            <a class="nav-link" ng-click="getHoaDonsByTrangThai(2, 0)" ng-class="{'active': selectedTrangThai === 2}">Đã xác nhận</a>-->
-<!--        </li>-->
+        <!--        <li class="nav-item">-->
+        <!--            <a class="nav-link" ng-click="getHoaDonsByTrangThai(2, 0)" ng-class="{'active': selectedTrangThai === 2}">Đã xác nhận</a>-->
+        <!--        </li>-->
         <li class="nav-item">
-            <a class="nav-link" ng-click="getHoaDonsByTrangThai(3, 0)" ng-class="{'active': selectedTrangThai === 3}">Hoàn thành</a>
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(3, 0)" ng-class="{'active': selectedTrangThai === 3}">Hoàn
+                thành</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" ng-click="getHoaDonsByTrangThai(4, 0)" ng-class="{'active': selectedTrangThai === 4}">Đã hủy</a>
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(4, 0)" ng-class="{'active': selectedTrangThai === 4}">Đã
+                hủy</a>
         </li>
     </ul>
     <table class="table table-hover">
@@ -69,8 +73,9 @@
             <td>{{hd.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
             <td>{{hd.loaiHD == 1 ? 'Online' : 'Tại quầy' }}</td>
             <td>{{ hd.tongTien }} VND</td>
-                <td>
-                <button class="btn btn-success" ng-click="detailHoaDon(hd.id)" data-bs-toggle="modal" data-bs-target="#readData">
+            <td>
+                <button class="btn btn-success" ng-click="detailHoaDon(hd.id)" data-bs-toggle="modal"
+                        data-bs-target="#readData">
                     <i class="bi bi-eye"></i>
                 </button>
                 <div class="modal fade" id="readData" tabindex="-1" aria-labelledby="readDataLabel" aria-hidden="true">
@@ -78,7 +83,8 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="readDataLabel">Chi tiết hóa đơn</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <h5 class="title">Thông tin các sản phẩm</h5>
@@ -98,7 +104,8 @@
                                         <tr ng-repeat="hdct in chiTietHoaDons">
                                             <td>{{$index + 1}}</td>
                                             <td>
-                                                <img ng-src="{{hdct.linkAnh}}" alt="Ảnh sản phẩm" class="img-fluid" width="100" height="100" />
+                                                <img ng-src="{{hdct.linkAnh}}" alt="Ảnh sản phẩm" class="img-fluid"
+                                                     width="100" height="100"/>
                                             </td>
                                             <td>{{ hdct.tenSP }}</td>
                                             <td>{{ hdct.giaSauGiam }}</td>
@@ -111,7 +118,9 @@
                                         </tr>
                                         <tr>
                                             <td colspan="4">
-                                                <input type="text" class="form-control" ng-model="hoaDonDetail.ghiChu" ng-change="updateGhiChu(hoaDonDetail)" placeholder="Nhập ghi chú...">
+                                                <input type="text" class="form-control" ng-model="hoaDonDetail.ghiChu"
+                                                       ng-change="updateGhiChu(hoaDonDetail)"
+                                                       placeholder="Nhập ghi chú...">
                                             </td>
                                             <td colspan="3" class="text-center">
                                                 {{ getTotalAmount(chiTietHoaDons) }} VND
@@ -130,7 +139,8 @@
                                         <p><strong>Số điện thoại:</strong> {{hoaDonDetail.sdt}}</p>
                                     </div>
                                     <div class="col-md-3">
-                                        <p><strong>Loại hóa đơn:</strong> {{hoaDonDetail.loaiHD == 1 ? 'Online' : 'Tại quầy' }} </p>
+                                        <p><strong>Loại hóa đơn:</strong> {{hoaDonDetail.loaiHD == 1 ? 'Online' : 'Tại
+                                            quầy' }} </p>
                                         <p><strong>Tổng tiền:</strong> {{ hoaDonDetail.thanhTien }} </p>
                                         <p><strong>Trạng thái:</strong>
                                             {{ hoaDonDetail.trangThai == 0 ? 'Chờ xác nhận' :
@@ -154,28 +164,29 @@
                         </div>
                     </div>
                 </div>
-                <button class="btn btn-success" ng-if="hd.trangThai === 0" ng-click="confirmInvoice(hd.id)" >
+                <button class="btn btn-success" ng-if="hd.trangThai === 0" ng-click="confirmInvoice(hd.id)">
                     <i class="fa fa-check-circle"></i> Xác nhận
                 </button>
-                <button class="btn btn-danger" ng-if="hd.loaiHD ==0 " ng-click="deleteInvoice(hd.id)"><i class="fa fa-trash"></i> <!-- Biểu tượng thùng rác -->
+                <button class="btn btn-danger" ng-if="hd.loaiHD ==0 " ng-click="deleteInvoice(hd.id)"><i
+                        class="fa fa-trash"></i> <!-- Biểu tượng thùng rác -->
                 </button>
             </td>
         </tr>
         </tbody>
     </table>
-<div class="text-center">
-    <nav class="text-center">
-        <ul class="pagination">
-            <li ng-class="{ 'disabled': currentPage === 0 }">
-                <button href="" ng-click="previousPage()">Previous</button>
-            </li>
-            <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
-                <button href="" ng-click="getHoaDonsByTrangThai(selectedTrangThai, page)">{{ page + 1 }}</button>
-            </li>
-            <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
-                <button href="" ng-click="nextPage()">Next</button>
-            </li>
-        </ul>
-    </nav>
-</div>
+    <div class="text-center">
+        <nav class="text-center">
+            <ul class="pagination">
+                <li ng-class="{ 'disabled': currentPage === 0 }">
+                    <button href="" ng-click="previousPage()">Previous</button>
+                </li>
+                <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
+                    <button href="" ng-click="getHoaDonsByTrangThai(selectedTrangThai, page)">{{ page + 1 }}</button>
+                </li>
+                <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
+                    <button href="" ng-click="nextPage()">Next</button>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>

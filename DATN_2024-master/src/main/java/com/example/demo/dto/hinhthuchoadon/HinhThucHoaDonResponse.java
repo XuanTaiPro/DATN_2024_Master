@@ -11,16 +11,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class HinhThucHoaDonResponse {
-    private String id ;
-    private String maGiaoDich ;
-    private String ngayTao ;
-    private String  ngayThanhToan ;
+    private String id;
+    private String maGiaoDich;
+    private String ngayTao;
+    private String ngayThanhToan;
     private String soTienKhachTra;
     private String thanhTien;
-    private String  ngayCapNhat ;
-    private String ghiChu ;
-    private int trangThai ;
-    private int hinhThucThanhToan ;
+    private String ngayCapNhat;
+    private String ghiChu;
+    private int trangThai;
+    private int hinhThucThanhToan;
     private String hoaDonId;
 
 

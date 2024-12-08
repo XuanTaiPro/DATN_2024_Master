@@ -4,15 +4,17 @@ import com.example.demo.dto.danhgia.DanhGiaRespOnline;
 import com.example.demo.dto.danhgia.DanhGiaRespone;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "DANHGIA")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class DanhGia {

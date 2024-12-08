@@ -4,19 +4,21 @@ import com.example.demo.dto.thongbao.ThongBaoResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "THONGBAO")
 public class ThongBao {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private String id;
 
@@ -41,6 +43,7 @@ public class ThongBao {
     private KhachHang khachHang;
 
     public ThongBaoResponse toResponse() {
-        return new ThongBaoResponse(id, ma, noiDung, ngayGui, ngayDoc, trangThai, khachHang.getTen(), khachHang.getEmail());
+        return new ThongBaoResponse(id, ma, noiDung, ngayGui, ngayDoc, trangThai, khachHang.getTen(),
+                khachHang.getEmail());
     }
 }

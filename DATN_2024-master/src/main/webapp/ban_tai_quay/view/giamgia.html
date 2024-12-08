@@ -38,7 +38,8 @@
                 <form ng-submit="addGiamGia(giamGia); clearForm()">
                     <div class="mb-3">
                         <label class="form-label">Mã:</label>
-                        <input type="text" class="form-control" ng-model="giamGia.ma" placeholder="GG30THANG04 có thể nhập hoặc bỏ trống!">
+                        <input type="text" class="form-control" ng-model="giamGia.ma"
+                               placeholder="GG30THANG04 có thể nhập hoặc bỏ trống!">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Tên:</label>
@@ -59,11 +60,13 @@
                     <div class="mb-3">
                         <label class="form-label">Chọn sản phẩm áp dụng giảm giá:</label>
                         <div>
-                            <input type="radio" id="allProducts" ng-model="giamGia.selectedProductsType" value="all" ng-change="updateProductSelection()">
+                            <input type="radio" id="allProducts" ng-model="giamGia.selectedProductsType" value="all"
+                                   ng-change="updateProductSelection()">
                             <label for="allProducts">Tất cả sản phẩm</label>
                         </div>
                         <div>
-                            <input type="radio" id="selectProducts" ng-model="giamGia.selectedProductsType" value="selected" ng-change="updateProductSelection()">
+                            <input type="radio" id="selectProducts" ng-model="giamGia.selectedProductsType"
+                                   value="selected" ng-change="updateProductSelection()">
                             <label for="selectProducts">Chọn sản phẩm</label>
                         </div>
                     </div>
@@ -78,15 +81,17 @@
 
                         <!-- Sản phẩm trong danh mục đã chọn -->
                         <label class="form-label mt-3">Chọn sản phẩm:</label>
-                        <select class="form-control" ng-model="giamGia.selectedProduct" ng-options="sp as sp.tenSP for sp in listSanPham" ng-change="addProduct()">
+                        <select class="form-control" ng-model="giamGia.selectedProduct"
+                                ng-options="sp as sp.tenSP for sp in listSanPham" ng-change="addProduct()">
                             <option value="">-- Chọn sản phẩm --</option>
                         </select>
 
                         <h5 class="mt-3">Sản phẩm đã chọn:</h5>
-                        <ul class="list-group scrollable-list" >
+                        <ul class="list-group scrollable-list">
                             <li class="list-group-item" ng-repeat="sp in giamGia.selectedProducts">
                                 {{sp.tenSP}}-{{sp.maSP}}
-                                <button class="btn btn-danger btn-sm float-end" ng-click="removeProduct(sp)">Xóa</button>
+                                <button class="btn btn-danger btn-sm float-end" ng-click="removeProduct(sp)">Xóa
+                                </button>
                             </li>
                         </ul>
                     </div>
@@ -112,7 +117,7 @@
         <th>Tên</th>
         <th>Ngày bắt đầu</th>
         <th>Ngày kết thúc</th>
-        <th>Phần trăm giảm </th>
+        <th>Phần trăm giảm</th>
         <th>Trạng thái</th>
         <th>Ngày tạo</th>
         <th>Ngày sửa</th>
@@ -129,12 +134,15 @@
         <td>{{gg.ngayBatDau}}</td>
         <td>{{gg.ngayKetThuc}}</td>
         <td>{{gg.giaGiam}}%</td>
-        <td>{{gg.trangThai === 1 ? 'Đang hoạt động' : (gg.trangThai === 0 ? 'Không hoạt động' : (gg.trangThai === 2 ? 'Đã kết thúc' : 'Trạng thái không xác định')) }}</td>
+        <td>{{gg.trangThai === 1 ? 'Đang hoạt động' : (gg.trangThai === 0 ? 'Không hoạt động' : (gg.trangThai === 2 ?
+            'Đã kết thúc' : 'Trạng thái không xác định')) }}
+        </td>
         <td>{{gg.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{gg.ngaySua | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{gg.moTa}}</td>
         <td>
-            <button class="btn btn-success" ng-click="viewDetail(gg.id)" data-bs-toggle="modal" data-bs-target="#readData">
+            <button class="btn btn-success" ng-click="viewDetail(gg.id)" data-bs-toggle="modal"
+                    data-bs-target="#readData">
                 <i class="bi bi-eye"></i>
             </button>
             <div class="modal fade" id="readData" tabindex="-1" aria-labelledby="readDataLabel" aria-hidden="true">
@@ -150,16 +158,21 @@
                                 <div class="col-md-6">
                                     <p><strong>Mã:</strong> {{ giamGiaDetail.ma}} </p>
                                     <p><strong>Tên:</strong> {{ giamGiaDetail.ten }} </p>
-                                    <p><strong>Ngày bắt đầu:</strong> {{ giamGiaDetail.ngayBatDau | date:'yyyy-MM-dd HH:mm:ss'}}</p>
-                                    <p><strong>Ngày kết thúc:</strong> {{ giamGiaDetail.ngayKetThuc | date:'yyyy-MM-dd HH:mm:ss' }}</p>
+                                    <p><strong>Ngày bắt đầu:</strong> {{ giamGiaDetail.ngayBatDau | date:'yyyy-MM-dd
+                                        HH:mm:ss'}}</p>
+                                    <p><strong>Ngày kết thúc:</strong> {{ giamGiaDetail.ngayKetThuc | date:'yyyy-MM-dd
+                                        HH:mm:ss' }}</p>
                                     <p><strong>Phần trăm giảm:</strong> {{ giamGiaDetail.giaGiam }}%</p>
                                     <p><strong>Trạng thái:</strong>
                                         {{ giamGiaDetail.trangThai == 1 ? 'Đang hoạt động' :
                                         (giamGiaDetail.trangThai === 0 ? 'Không hoạt động' :
-                                        (giamGiaDetail.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định')) }}
+                                        (giamGiaDetail.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định'))
+                                        }}
                                     </p>
-                                    <p><strong>Ngày tạo:</strong> {{ giamGiaDetail.ngayTao | date:'yyyy-MM-dd HH:mm:ss' }}</p>
-                                    <p><strong>Ngày sửa:</strong> {{ giamGiaDetail.ngaySua | date:'yyyy-MM-dd HH:mm:ss' }}</p>
+                                    <p><strong>Ngày tạo:</strong> {{ giamGiaDetail.ngayTao | date:'yyyy-MM-dd HH:mm:ss'
+                                        }}</p>
+                                    <p><strong>Ngày sửa:</strong> {{ giamGiaDetail.ngaySua | date:'yyyy-MM-dd HH:mm:ss'
+                                        }}</p>
                                     <p><strong>Mô tả:</strong> {{ giamGiaDetail.moTa }}</p>
                                     <h5 class="mt-3">Sản phẩm đang áp dụng giảm giá:</h5>
                                     <ul class="list-group scrollable-list">
@@ -176,7 +189,8 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-primary" ng-click="viewDetail(gg.id)" data-bs-toggle="modal" data-bs-target="#userForm">
+            <button class="btn btn-primary" ng-click="viewDetail(gg.id)" data-bs-toggle="modal"
+                    data-bs-target="#userForm">
                 <i class="bi bi-pencil-square">
                 </i></button>
             <div class="modal fade" id="userForm" tabindex="-1" aria-labelledby="userFormLabel" aria-hidden="true">
@@ -188,11 +202,12 @@
                         </div>
                         <div class="modal-body">
                             <form ng-submit="updateGiamGia(giamGiaDetail); clearForm()">
-                                <input type="hidden" ng-model="giamGiaDetail.id" >
+                                <input type="hidden" ng-model="giamGiaDetail.id">
 
                                 <div class="mb-3">
                                     <label class="form-label">Mã:</label>
-                                    <input type="text" class="form-control" ng-model="giamGiaDetail.ma" placeholder="GG30THANG04 có thể nhập hoặc bỏ trống!">
+                                    <input type="text" class="form-control" ng-model="giamGiaDetail.ma"
+                                           placeholder="GG30THANG04 có thể nhập hoặc bỏ trống!">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Tên:</label>
@@ -200,11 +215,13 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Ngày bắt đầu:</label>
-                                    <input type="datetime-local" class="form-control" ng-model="giamGiaDetail.ngayBatDau" required>
+                                    <input type="datetime-local" class="form-control"
+                                           ng-model="giamGiaDetail.ngayBatDau" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Ngày kết thúc:</label>
-                                    <input type="datetime-local" class="form-control" ng-model="giamGiaDetail.ngayKetThuc" required>
+                                    <input type="datetime-local" class="form-control"
+                                           ng-model="giamGiaDetail.ngayKetThuc" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Phần trăm giảm giá:</label>
@@ -213,25 +230,31 @@
                                 <div class="mb-3">
                                     <label class="form-label">Chọn sản phẩm áp dụng giảm giá:</label>
                                     <div>
-                                        <input type="radio" id="allProductsUpdate" ng-model="giamGiaDetail.selectedProductsType" value="all" ng-change="updateProductSelection()">
+                                        <input type="radio" id="allProductsUpdate"
+                                               ng-model="giamGiaDetail.selectedProductsType" value="all"
+                                               ng-change="updateProductSelection()">
                                         <label for="allProductsUpdate">Tất cả sản phẩm</label>
                                     </div>
                                     <div>
-                                        <input type="radio" id="selectProductsUpdate" ng-model="giamGiaDetail.selectedProductsType" value="selected" ng-change="updateProductSelection()">
+                                        <input type="radio" id="selectProductsUpdate"
+                                               ng-model="giamGiaDetail.selectedProductsType" value="selected"
+                                               ng-change="updateProductSelection()">
                                         <label for="selectProductsUpdate">Chọn sản phẩm</label>
                                     </div>
                                 </div>
                                 <!-- Hiển thị khi người dùng chọn "Chọn sản phẩm" -->
                                 <div ng-show="giamGiaDetail.selectedProductsType === 'selected'">
                                     <label class="form-label">Chọn danh mục:</label>
-                                    <select class="form-control" ng-model="idDanhMuc" ng-change="getSanPhamByDanhMuc(idDanhMuc)">
+                                    <select class="form-control" ng-model="idDanhMuc"
+                                            ng-change="getSanPhamByDanhMuc(idDanhMuc)">
                                         <option value="">-- Chọn danh mục --</option>
                                         <option ng-repeat="dm in listDanhMuc" value="{{dm.id}}">{{dm.ten}}</option>
                                     </select>
 
                                     <!-- Sản phẩm trong danh mục đã chọn -->
                                     <label class="form-label mt-3">Chọn sản phẩm:</label>
-                                    <select class="form-control" ng-model="giamGiaDetail.selectedProduct" ng-options="sp as sp.tenSP for sp in listSanPham" ng-change="addProduct()">
+                                    <select class="form-control" ng-model="giamGiaDetail.selectedProduct"
+                                            ng-options="sp as sp.tenSP for sp in listSanPham" ng-change="addProduct()">
                                         <option value="">-- Chọn sản phẩm --</option>
                                     </select>
 
@@ -239,13 +262,16 @@
                                     <ul class="list-group scrollable-list">
                                         <li class="list-group-item" ng-repeat="sp in giamGiaDetail.listSanPham">
                                             {{sp.tenSP}} - {{sp.maSP}}
-                                            <button class="btn btn-danger btn-sm float-end" ng-click="removeProduct(sp)">Xóa</button>
+                                            <button class="btn btn-danger btn-sm float-end"
+                                                    ng-click="removeProduct(sp)">Xóa
+                                            </button>
                                         </li>
                                     </ul>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Mô tả:</label>
-                                    <textarea type="text" class="form-control" ng-model="giamGiaDetail.moTa" required></textarea>
+                                    <textarea type="text" class="form-control" ng-model="giamGiaDetail.moTa"
+                                              required></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-outline-success">Cập nhật</button>
                             </form>
@@ -275,7 +301,9 @@
             <button href="" ng-click="nextPage()">Next</button>
         </li>
     </ul>
-</nav>
+    </nav>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 

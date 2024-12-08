@@ -18,9 +18,9 @@ public interface GiamGiaRepository extends JpaRepository<GiamGia, String> {
             "OR (:ngayKetThuc >= gg.ngayBatDau AND :ngayKetThuc <= gg.ngayKetThuc) " +
             "OR (gg.ngayBatDau >= :ngayBatDau AND gg.ngayBatDau <= :ngayKetThuc))")
     GiamGia getByNameAndTimeOverlap(@Param("ten") String ten,
-            @Param("ngayBatDau") LocalDateTime ngayBatDau,
-            @Param("ngayKetThuc") LocalDateTime ngayKetThuc,
-            @Param("id") String id);
+                                    @Param("ngayBatDau") LocalDateTime ngayBatDau,
+                                    @Param("ngayKetThuc") LocalDateTime ngayKetThuc,
+                                    @Param("id") String id);
 
     @Query("SELECT gg FROM GiamGia gg where gg.ma=:ma and gg.id<>:id")
     GiamGia getByMaAndId(@Param("ma") String ma, @Param("id") String id);

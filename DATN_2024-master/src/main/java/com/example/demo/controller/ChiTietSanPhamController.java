@@ -149,7 +149,7 @@ public class ChiTietSanPhamController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Valid @ModelAttribute ChiTietSanPhamRequest chiTietSanPhamRequest) {
+    public ResponseEntity<?> add(@ModelAttribute ChiTietSanPhamRequest chiTietSanPhamRequest) {
         // Chuẩn hóa số ngày sử dụng
         chiTietSanPhamRequest.setSoNgaySuDung(chiTietSanPhamRequest.getSoNgaySuDung().trim());
 
@@ -244,10 +244,11 @@ public class ChiTietSanPhamController {
 
         return ResponseEntity.ok().body("Thêm thành công lô hàng");
     }
-//    @PutMapping("/update-lo-hang")
-//    public ResponseEntity<?>updateLoHang(@ModelAttribute LoHangRequest loHangRequest){
-//
-//    }
+    // @PutMapping("/update-lo-hang")
+    // public ResponseEntity<?>updateLoHang(@ModelAttribute LoHangRequest
+    // loHangRequest){
+    //
+    // }
 
     @PutMapping("/update")
     public ResponseEntity<?> update(@Valid @ModelAttribute ChiTietSanPhamRequest chiTietSanPhamRequest) {
@@ -353,7 +354,9 @@ public class ChiTietSanPhamController {
 
         LocalDateTime hsdRequest = lHRequest.getHsd();
         LocalDateTime nsxRequest = lHRequest.getNsx();
-        LocalDateTime ngayNhapRequest=lHRequest.getNgayNhap();
+
+        LocalDateTime ngNhapRequest = lHRequest.getNgayNhap();
+
         LocalDateTime dateNow = LocalDateTime.now();
 
         if (!nsxRequest.isBefore(dateNow)) {
@@ -364,21 +367,27 @@ public class ChiTietSanPhamController {
             return ResponseEntity.badRequest().body("Hạn sử dụng phải sau ngày hiện tại");
         }
 
+        if (!ngNhapRequest.isBefore(dateNow)) {
+            return ResponseEntity.badRequest().body("Ngày nhập phải trước ngày hiện tại");
+        }
+
         LoHang lh = lHRepo.findById(lHRequest.getId()).get();
         boolean checkChange = false;
         if (!hsdRequest.isEqual(lh.getHsd())) {
             lh.setHsd(lHRequest.getHsd());
             checkChange = true;
         }
+
         if (!nsxRequest.isEqual(lh.getNsx())) {
             lh.setNsx(lHRequest.getNsx());
             checkChange = true;
         }
-        if (!ngayNhapRequest.isEqual(lh.getNgayNhap())) {
+
+
+        if (!ngNhapRequest.isEqual(lh.getNgayNhap())) {
             lh.setNgayNhap(lHRequest.getNgayNhap());
             checkChange = true;
         }
-
 
         if (lHRequest.getSoLuong() != lh.getSoLuong()) {
             lh.setSoLuong(lHRequest.getSoLuong());

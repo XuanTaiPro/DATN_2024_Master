@@ -156,7 +156,7 @@ public class LoginController {
 
     @PostMapping("dangKy")
     public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest,
-            BindingResult bindingResult) {
+                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
                     .stream()

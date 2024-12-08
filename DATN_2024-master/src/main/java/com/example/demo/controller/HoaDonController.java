@@ -185,6 +185,7 @@ public class HoaDonController {
 //            return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + loginController.returnIDNV());
 //        }
         Optional<NhanVien> nhanVienOptional=nhanVienRepo.findById(req.getIdNV());
+//        Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById("C1ED6E69");
         if (nhanVienOptional.isPresent()) {
             hoaDon.setNhanVien(nhanVienOptional.get());
         }else {
@@ -215,7 +216,8 @@ public class HoaDonController {
         hd.setNgayTao(LocalDateTime.now());
         hd.setNgaySua(null);
         hd.setTrangThai(0);
-        hd.setLoaiHD(0);
+        hd.setNhanVien(nhanVienRepo.findById("CEC76A2E").get());
+        hd.setLoaiHD(1);
         hd.setThanhtoan(Integer.parseInt(payment));
 
         if (Integer.parseInt(payment) == 2) {
@@ -307,7 +309,6 @@ public class HoaDonController {
             }
 
             cthd.setHoaDon(getHD);
-
             Object soLuongObj = prod.get("soLuongTrongGio");
             Integer sL;
 

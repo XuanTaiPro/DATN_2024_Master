@@ -363,6 +363,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
                 //     hsd: new Date($scope.newLoHang.hsd),
                 //     soLuong: $scope.newLoHang.soLuong
                 // });
+
                 $scope.viewDetail($scope.productDetail.id);
                 $scope.newLoHang = {}; // Reset form
                 $scope.showAddLoHangForm = false; // Ẩn form
@@ -388,6 +389,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
                     })
                 let setOff = document.querySelector(".modal-backdrop")
                 setOff.style.display = 'none'
+
 
             });
     };

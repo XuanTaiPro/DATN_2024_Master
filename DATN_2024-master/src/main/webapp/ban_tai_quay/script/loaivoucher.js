@@ -27,7 +27,7 @@ window.loaivoucherCtrl = function ($scope, $http) {
     };
 
 
-    $scope.getSTT = function(index) {
+    $scope.getSTT = function (index) {
         return index + 1 + ($scope.currentPage * $scope.pageSize);
     };
     $scope.range = function (n) {
@@ -66,7 +66,7 @@ window.loaivoucherCtrl = function ($scope, $http) {
         $scope.selectedLoaiVoucher = angular.copy(loaiVoucher);
         $scope.selectedLoaiVoucher.trangThai = loaiVoucher.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động';
     }
-    $scope.openUpdateModal = function(loaiVoucher) {
+    $scope.openUpdateModal = function (loaiVoucher) {
         $scope.selectedLoaiVoucher = angular.copy(loaiVoucher);
         $scope.selectedLoaiVoucher.trangThai = loaiVoucher.trangThai.toString();
         console.log("Trạng thái hiện tại:", $scope.selectedLoaiVoucher.trangThai);// Sao chép dữ liệu nhân viên cần cập nhật
@@ -131,7 +131,7 @@ window.loaivoucherCtrl = function ($scope, $http) {
     // Reset form
     function resetForm() {
         $scope.ten = "";
-        $scope.moTa ="";
+        $scope.moTa = "";
         $scope.trangThai = "";
     }
 

@@ -16,7 +16,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "LOHANG")
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoHang {

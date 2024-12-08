@@ -27,8 +27,6 @@ public class HinhThucHoaDonRequest {
     private String thanhTien;
 
 
-
-
     private String ngayCapNhat;
 
     private String ghiChu;
