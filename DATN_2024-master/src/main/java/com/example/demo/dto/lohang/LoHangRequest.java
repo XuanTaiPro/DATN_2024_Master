@@ -23,5 +23,4 @@ public class LoHangRequest {
 
     private String idCTSP;
 
-    private LocalDateTime ngayNhap;
 }
