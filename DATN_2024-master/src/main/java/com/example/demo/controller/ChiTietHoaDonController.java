@@ -76,7 +76,6 @@ public class ChiTietHoaDonController {
     }
 
     @PostMapping("/add")
-
     public ResponseEntity<String> createChiTietHoaDon(@ModelAttribute ChiTietHoaDonReq req) {
         String idHD = req.getIdHD();
         if (idHD == null) {
@@ -96,6 +95,16 @@ public class ChiTietHoaDonController {
         ChiTietSanPham chiTietSanPham = chiTietSanPhamOptional.get();
 
         String idCtsp = chiTietSanPham.getId();
+
+        List<ChiTietHoaDon> listCTHD = chiTietHoaDonRepo.findByHoaDon(idHD);
+
+        ChiTietHoaDon getCTHD = null;
+        for (ChiTietHoaDon cthd : listCTHD) {
+            if (cthd.getChiTietSanPham().getId().equals(idCtsp)) {
+                getCTHD = cthd;
+                break;
+            }
+        }
 
         Integer soLuong = req.getSoLuong();
         if (soLuong > cthdService.getTotalSoLuong(idCtsp)) {
@@ -135,10 +144,15 @@ public class ChiTietHoaDonController {
             giaSauGiamFinal = Math.max(0, gia - gia * phanTramGiam / 100);
         }
 
-        ChiTietHoaDon ctHoaDon = cthdService.creatNewCTHD(hoaDonOptional.get(), chiTietSanPham);
-        ctHoaDon.setSoLuong(req.getSoLuong());
-        ctHoaDon.setGiaSauGiam(String.valueOf(giaSauGiamFinal));
-        ctHoaDon.setGiaBan(chiTietSanPham.getGia());
+        ChiTietHoaDon ctHoaDon;
+        if (getCTHD == null) {
+            ctHoaDon = cthdService.creatNewCTHD(hoaDonOptional.get(), chiTietSanPham);
+            ctHoaDon.setGiaSauGiam(String.valueOf(giaSauGiamFinal));
+            ctHoaDon.setSoLuong(req.getSoLuong());
+        } else {
+            ctHoaDon = getCTHD;
+            ctHoaDon.setSoLuong(ctHoaDon.getSoLuong() + req.getSoLuong());
+        }
 
         chiTietHoaDonRepo.save(ctHoaDon);
 
@@ -146,7 +160,6 @@ public class ChiTietHoaDonController {
             lhhd.setCthd(ctHoaDon);
             lhhdRepo.save(lhhd);
         }
-
 
         return ResponseEntity.ok("Thêm chi tiết hóa đơn thành công.");
     }

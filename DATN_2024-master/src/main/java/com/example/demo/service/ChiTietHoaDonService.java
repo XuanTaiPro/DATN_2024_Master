@@ -61,6 +61,7 @@ public class ChiTietHoaDonService {
         cthd.setMaCTHD(genCodeCTHD());
         cthd.setChiTietSanPham(ctsp);
         cthd.setHoaDon(hd);
+        cthd.setGiaBan(ctsp.getGia());
         cthd.setNgayTao(LocalDateTime.now());
         cthd.setTrangThai(1);
 
