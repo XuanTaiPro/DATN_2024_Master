@@ -16,7 +16,11 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
         @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id=:idSP")
         Page<ChiTietSanPham> getAllByIdSP(@Param("idSP") String idSP, Pageable pageable);
 
-        @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id = :idSP AND ctsp.trangThai = :trangThai")
+        @Query("SELECT ctsp FROM ChiTietSanPham ctsp " +
+                "JOIN FETCH ctsp.listLoHang lohang " +
+                "WHERE ctsp.sanPham.id = :idSP " +
+                "AND ctsp.trangThai = :trangThai " +
+                "AND lohang.soLuong > 0")
         List<ChiTietSanPham> getAllByIdSPHD(@Param("idSP") String idSP, @Param("trangThai") int trangThai);
 
         @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.ma=:ma AND ctsp.id<>:id")
@@ -26,5 +30,15 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                         "AND ctsp.soNgaySuDung = :soNgaySuDung ")
         ChiTietSanPham trungCTSP(@Param("idSP") String idSP,
                         @Param("soNgaySuDung") String soNgaySuDung);
-
+        @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id = :idSP " +
+                "AND (:giaMin IS NULL OR CAST(ctsp.gia AS double) >= :giaMin) " +
+                "AND (:giaMax IS NULL OR CAST(ctsp.gia AS double) <= :giaMax) " +
+                "AND (:trangThai IS NULL OR ctsp.trangThai = :trangThai)")
+        Page<ChiTietSanPham> filterCTSP(@Param("idSP") String idSP,
+                                        @Param("giaMin") Double giaMin,
+                                        @Param("giaMax") Double giaMax,
+                                        @Param("trangThai") Integer trangThai,
+                                        Pageable pageable);
+        @Query("SELECT DISTINCT ctsp.soNgaySuDung FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id = :idSP")
+        List<String> findUniqueSoNgaySuDung(@Param("idSP") String idSP);
 }

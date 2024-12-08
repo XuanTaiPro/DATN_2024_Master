@@ -71,18 +71,42 @@ public class ChiTietSanPhamController {
 
     @GetMapping("/getAllCTSP")
     public ResponseEntity<?> getAllCTSP(@RequestParam(name = "idSP", required = false) String idSP) {
-        List<ChiTietSanPham> listCTSP = chiTietSanPhamRepository.getAllByIdSPHD(idSP, 1);
+        // Nếu không có idSP, lấy tất cả ChiTietSanPham có trangThai = 1
+        List<ChiTietSanPham> listCTSP;
+            listCTSP = chiTietSanPhamRepository.getAllByIdSPHD(idSP, 1);
+
+        if (listCTSP == null || listCTSP.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Trả về 204 nếu không có dữ liệu
+        }
+
         List<ChiTietSanPhamResponse> responseList = listCTSP.stream()
                 .map(ChiTietSanPham::toChiTietSanPhamResponse)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(responseList);
-    }
 
+        return ResponseEntity.ok(responseList); // Trả về danh sách ChiTietSanPhamResponse
+    }
+    @GetMapping("/unique-so-ngay-su-dung")
+    public ResponseEntity<?> getUniqueSoNgaySuDung(@RequestParam(name = "idSP", required = false) String idSP) {
+        List<String> uniqueSoNgaySuDung = chiTietSanPhamRepository.findUniqueSoNgaySuDung(idSP);
+        return ResponseEntity.ok(uniqueSoNgaySuDung);
+    }
     @GetMapping("/page")
-    public ResponseEntity<?> page(@RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestParam(name = "idSP", required = false) String idSP) {
+    public ResponseEntity<?> page(
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "idSP", required = false) String idSP,
+            @RequestParam(name = "giaMin", required = false) String giaMinStr,
+            @RequestParam(name = "giaMax", required = false) String giaMaxStr,
+            @RequestParam(name = "trangThai", required = false) Integer trangThai) {
+
+        // Chuyển giaMin và giaMax sang Double, xử lý trường hợp giá trị không hợp lệ
+        Double giaMin = (giaMinStr != null && !giaMinStr.equals("undefined")) ? Double.parseDouble(giaMinStr) : null;
+        Double giaMax = (giaMaxStr != null && !giaMaxStr.equals("undefined")) ? Double.parseDouble(giaMaxStr) : null;
+
+        // Tạo PageRequest và gọi repository
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("ngayTao")));
-        Page<ChiTietSanPham> chiTietSanPhamPage = chiTietSanPhamRepository.getAllByIdSP(idSP, pageRequest);
+        Page<ChiTietSanPham> chiTietSanPhamPage = chiTietSanPhamRepository.filterCTSP(idSP, giaMin, giaMax, trangThai, pageRequest);
+
+        // Xử lý dữ liệu và trả về kết quả
         List<ChiTietSanPhamResponse> responseList = chiTietSanPhamPage.stream()
                 .map(ChiTietSanPham::toChiTietSanPhamResponse)
                 .collect(Collectors.toList());
@@ -93,7 +117,6 @@ public class ChiTietSanPhamController {
         response.put("pageSize", chiTietSanPhamPage.getSize());
         return ResponseEntity.ok(response);
     }
-
     @GetMapping("/detail")
     public ResponseEntity<?> detail(@RequestParam String id) {
         if (id == null || id.isEmpty()) {
@@ -212,7 +235,9 @@ public class ChiTietSanPhamController {
             newLoHang.setMa(genMa.generateMa("LH-", 7));
             newLoHang.setHsd(hsdRequest);
             newLoHang.setNsx(nsxRequest);
+            newLoHang.setNgayNhap(lHRequest.getNgayNhap());
             newLoHang.setSoLuong(lHRequest.getSoLuong());
+            newLoHang.setTrangThai(1);
             newLoHang.setCtsp(chiTietSanPhamRepository.findById(idCTSP).get());
             lHRepo.save(newLoHang);
         }
@@ -328,7 +353,7 @@ public class ChiTietSanPhamController {
 
         LocalDateTime hsdRequest = lHRequest.getHsd();
         LocalDateTime nsxRequest = lHRequest.getNsx();
-
+        LocalDateTime ngayNhapRequest=lHRequest.getNgayNhap();
         LocalDateTime dateNow = LocalDateTime.now();
 
         if (!nsxRequest.isBefore(dateNow)) {
@@ -349,6 +374,12 @@ public class ChiTietSanPhamController {
             lh.setNsx(lHRequest.getNsx());
             checkChange = true;
         }
+        if (!ngayNhapRequest.isEqual(lh.getNgayNhap())) {
+            lh.setNgayNhap(lHRequest.getNgayNhap());
+            checkChange = true;
+        }
+
+
         if (lHRequest.getSoLuong() != lh.getSoLuong()) {
             lh.setSoLuong(lHRequest.getSoLuong());
             checkChange = true;

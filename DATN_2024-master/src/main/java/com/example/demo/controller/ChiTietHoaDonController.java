@@ -82,7 +82,6 @@ public class ChiTietHoaDonController {
 
     @PostMapping("/add")
     public ResponseEntity<String> createChiTietHoaDon(@Validated @ModelAttribute ChiTietHoaDonReq req) {
-
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(req.getIdHD());
         if (hoaDonOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("Hóa đơn không tồn tại.");
@@ -138,8 +137,9 @@ public class ChiTietHoaDonController {
 
         for (LoHangWithHoaDon lhhd : listLH) {
             lhhd.setCthd(ctHoaDon);
+            lhhdRepo.save(lhhd);
         }
-        lhhdRepo.saveAll(listLH);
+
 
         return ResponseEntity.ok("Thêm chi tiết hóa đơn thành công.");
     }

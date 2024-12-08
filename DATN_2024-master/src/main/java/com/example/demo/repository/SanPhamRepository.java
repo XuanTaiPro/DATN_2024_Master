@@ -42,4 +42,17 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
             "WHERE ctp.gia = (SELECT MIN(ctp2.gia) FROM ChiTietSanPham ctp2 WHERE ctp2.sanPham.id = sp.id)")
     Page<SanPhamOnlineResponse> findSanPhamWithMinPrice(Pageable pageable);
 
+    @Query("SELECT sp FROM SanPham sp WHERE " +
+            "(:searchText IS NULL OR (sp.tenSP like %:searchText% OR sp.thanhPhan like %:searchText% OR sp.congDung like %:searchText%)) " +
+            "AND (:tenDanhMuc IS NULL OR sp.danhMuc.ten like %:tenDanhMuc%) " +
+            "AND (:trangThai IS NULL OR sp.trangThai = :trangThai) " +
+            "AND (:tuoiMin IS NULL OR sp.tuoiMin >= :tuoiMin) " +
+            "AND (:tuoiMax IS NULL OR sp.tuoiMax <= :tuoiMax)")
+    Page<SanPham> filterSanPham(@Param("searchText") String searchText,
+                                @Param("tenDanhMuc") String tenDanhMuc,
+                                @Param("trangThai") Integer trangThai,
+                                @Param("tuoiMax") Integer tuoiMax,
+                                @Param("tuoiMin") Integer tuoiMin,
+                                Pageable pageable);
+
 }

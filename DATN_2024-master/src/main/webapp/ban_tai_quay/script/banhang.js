@@ -282,10 +282,12 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $('#confirmAddInvoiceModal').modal('show');
     };
 
-    $scope.confirmAddInvoiceDetail = function() {
+    $scope.confirmAddInvoiceDetail = function(ctsp) {
+        // Lưu đối tượng ctsp vào biến khi nhấn "Thêm"
+        $scope.selectedCTSP = ctsp;
+        // Hiển thị modal xác nhận
         $('#confirmAddInvoiceDetailModal').modal('show');
     };
-
     $scope.closeConfirmModalAddInvoice=function (){
         $('#confirmAddInvoiceModal').modal('hide');
     }
@@ -461,38 +463,56 @@ window.banhangCtrl = function ($scope, $http, $document) {
             });
         $('#productModal').modal('show');  // Hiển thị modal
     };
-    $scope.addCTHD=function(ctsp){
-        const formData = new FormData();
+    $scope.addCTHD = function() {
+        // Lấy đối tượng ctsp đã chọn từ biến selectedCTSP
+        var ctsp = $scope.selectedCTSP;
+        console.log("Thêm sản phẩm:", ctsp);
 
-        formData.append('soLuong',ctsp.soLuongCTHD);
+        // Tiến hành xử lý thêm chi tiết hóa đơn với ctsp
+        const formData = new FormData();
+        formData.append('soLuong', ctsp.soLuongCTHD);
+        formData.append('giaBan', ctsp.gia);
+        formData.append('idCTSP', ctsp.id);
+
+        // Kiểm tra xem selectedTab có tồn tại không và lấy idHD
         const selectedTab = $scope.tabs[$scope.selectedTab];
-        const selectedIdHD = selectedTab.idHD;
-        formData.append('idHD',selectedIdHD);
-        formData.append('giaBan',ctsp.gia);
-        formData.append('idCTSP',ctsp.id);
+        if (selectedTab) {
+            const selectedIdHD = selectedTab.idHD;
+            formData.append('idHD', selectedIdHD);
+        } else {
+            console.log("Không có tab đã chọn hoặc idHD không tồn tại");
+            return;
+        }
+
+        // In ra formData để kiểm tra
         for (let [key, value] of formData.entries()) {
             console.log(`${key}: ${value}`); // In ra key và value
         }
+
+        // Gửi request đến server
         $http.post('http://localhost:8083/chitiethoadon/add', formData, {
-            headers: {
-                'Content-Type': undefined
-            }}
-        )
+            headers: { 'Content-Type': undefined }  // Không cần chỉ định Content-Type, Angular sẽ xử lý multipart/form-data
+        })
             .then(function(response) {
                 console.log(response.data);
-                // $('#addInvoiceModal').modal('show'); // Hiển thị modal
-
-                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+                // Cập nhật dữ liệu hoặc thực hiện hành động sau khi thêm thành công
+                if (selectedTab && selectedTab.idHD) {
+                    $scope.getCTSPByIdHD(selectedTab.idHD, selectedTab.currentPage);
+                }
                 $scope.selectSanPham($scope.selectedSanPham);
-
             })
             .catch(function(error) {
-                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
                 console.log('Lỗi:', error.message);
+                if (selectedTab && selectedTab.idHD) {
+                    $scope.getCTSPByIdHD(selectedTab.idHD, selectedTab.currentPage);
+                }
                 $scope.selectSanPham($scope.selectedSanPham);
-
             });
-    }
+
+        // Đóng modal sau khi thêm
+        $('#confirmAddInvoiceDetailModal').modal('hide');
+    };
+
     $scope.deleteCTHD=function (idCTHD){
         const selectedTab = $scope.tabs[$scope.selectedTab];
         const selectedIdHD = selectedTab.idHD;

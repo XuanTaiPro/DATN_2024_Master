@@ -178,11 +178,17 @@ public class HoaDonController {
         hoaDon.setSdtNguoiNhan(null);
 
         // Xử lý nhân viên
-        Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById(loginController.returnIDNV());
+//        Optional<NhanVien> nhanVienOptional = nhanVienRepo.findById(loginController.returnIDNV());
+//        if (nhanVienOptional.isPresent()) {
+//            hoaDon.setNhanVien(nhanVienOptional.get());
+//        } else {
+//            return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + loginController.returnIDNV());
+//        }
+        Optional<NhanVien> nhanVienOptional=nhanVienRepo.findById(req.getIdNV());
         if (nhanVienOptional.isPresent()) {
             hoaDon.setNhanVien(nhanVienOptional.get());
-        } else {
-            return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: " + loginController.returnIDNV());
+        }else {
+            return ResponseEntity.badRequest().body("Không tìm thấy nhân viên với ID: "+ req.getIdNV());
         }
         try {
             hoaDonRepo.save(hoaDon);

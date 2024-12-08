@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -107,11 +108,12 @@ public class GiamGiaController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Valid @ModelAttribute GiamGia giamGia,
+    public ResponseEntity<?> add(@ModelAttribute GiamGia giamGia,
             @RequestParam("selectedProducts") List<String> selectedProducts) {
         giamGia.setNgayTao(LocalDateTime.now());
         giamGia.setNgaySua(null);
-
+        giamGia.setNgayBatDau(giamGia.getNgayBatDau().toLocalDate().atStartOfDay());
+        giamGia.setNgayKetThuc(giamGia.getNgayKetThuc().toLocalDate().atTime(LocalTime.MAX));
         if (giamGia.getMa() == null || giamGia.getMa().trim().isEmpty()) {
             String prefix = "GG";
             String uniqueID;
@@ -130,9 +132,9 @@ public class GiamGiaController {
         if (giamGia.getNgayBatDau().isAfter(giamGia.getNgayKetThuc())) {
             return ResponseEntity.badRequest().body("Ngày bắt đầu phải trước ngày kết thúc!");
         }
-        if (!isValidDateFormat(giamGia.getNgayBatDau()) || !isValidDateFormat(giamGia.getNgayKetThuc())) {
-            return ResponseEntity.badRequest().body("Ngày phải có định dạng yyyy-MM-dd HH:mm:ss!");
-        }
+//        if (!isValidDateFormat(giamGia.getNgayBatDau()) || !isValidDateFormat(giamGia.getNgayKetThuc())) {
+//            return ResponseEntity.badRequest().body("Ngày phải có định dạng yyyy-MM-dd HH:mm:ss!");
+//        }
         GiamGia existingGiamGia = giamGiaRepository.getByNameAndTimeOverlap(
                 giamGia.getTen(),
                 giamGia.getNgayBatDau(),
@@ -184,7 +186,7 @@ public class GiamGiaController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> update(@Valid @ModelAttribute GiamGia giamGia,
+    public ResponseEntity<?> update( @ModelAttribute GiamGia giamGia,
             @RequestParam("selectedProducts") List<String> selectedProducts) {
         String id = giamGia.getId();
         if (id == null || id.trim().isEmpty()) {
@@ -249,8 +251,10 @@ public class GiamGiaController {
         giamGiaUpdate.setMa(giamGia.getMa());
         giamGiaUpdate.setTen(giamGia.getTen());
         giamGiaUpdate.setNgaySua(LocalDateTime.now());
-        giamGiaUpdate.setNgayBatDau(giamGia.getNgayBatDau());
-        giamGiaUpdate.setNgayKetThuc(giamGia.getNgayKetThuc());
+//        giamGia.setNgayBatDau(giamGia.getNgayBatDau().toLocalDate().atStartOfDay());
+//        giamGia.setNgayKetThuc(giamGia.getNgayKetThuc().toLocalDate().atTime(LocalTime.MAX));
+        giamGiaUpdate.setNgayBatDau(giamGia.getNgayBatDau().toLocalDate().atStartOfDay());
+        giamGiaUpdate.setNgayKetThuc(giamGia.getNgayKetThuc().toLocalDate().atTime(LocalTime.MAX));
         giamGiaUpdate.setGiaGiam(giamGia.getGiaGiam());
         giamGiaUpdate.setTrangThai(giamGia.getTrangThai());
         giamGiaUpdate.setMoTa(giamGia.getMoTa());

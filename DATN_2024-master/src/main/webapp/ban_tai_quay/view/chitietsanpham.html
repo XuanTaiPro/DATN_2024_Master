@@ -1,8 +1,30 @@
+<div class="filters">
+    <!-- Lọc theo số ngày sử dụng -->
+    <select ng-model="filters.soNgaySuDung" ng-change="getAllProducts(0)">
+        <option value="" selected>--Số ngày sử dụng--</option>
+        <option ng-repeat="soNgay in uniqueSoNgaySuDung" value="{{soNgay}}">{{soNgay}}</option>
+    </select>
 
+    <!-- Lọc theo khoảng giá -->
+    <select ng-model="filters.giaRange" ng-change="getAllProducts(0)">
+        <option value="">--Chọn khoảng giá(Giá chưa giảm)--</option>
+        <option value="0,100000">Dưới 100.000đ</option>
+        <option value="100000,200000">100.000đ - 200.000đ</option>
+        <option value="200000,500000">200.000đ - 500.000đ</option>
+        <option value="500000,1000000">500.000đ - 1.000.000đ</option>
+        <option value="1000000,null">Trên 1.000.000đ</option>
+    </select>
+
+    <!-- Lọc theo trạng thái -->
+    <select ng-model="filters.trangThai" ng-change="getAllProducts(0)">
+        <option value="">--Trạng thái--</option>
+        <option value="1">Hoạt động</option>
+        <option value="0">Không hoạt động</option>
+    </select>
+</div>
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
     Thêm Sản Phẩm
 </button>
-
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -65,7 +87,7 @@
 </div>
 
 <!-- Danh sách Chi Tiết Sản Phẩm -->
-<h2>Danh sách Chi Tiết Sản Phẩm</h2>
+<h2 class="text-center">Danh sách Chi Tiết Sản Phẩm</h2>
 <table class="table table-hover mt-4">
     <thead>
     <tr>
@@ -191,10 +213,6 @@
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Ngày nhập:</label>
-                                    <input type="datetime-local" class="form-control" ng-model="productDetail.ngayNhap" required>
-                                </div>
-                                <div class="mb-3">
                                     <label class="form-label">Chọn ảnh:</label>
                                     <input type="file" class="form-control" accept="image/*" multiple onchange="angular.element(this).scope().selectImages(this)">
                                 </div>
@@ -207,6 +225,32 @@
                                 </div>
                                 <div class="mb-12">
                                     <h5>Lô hàng hiện có:</h5>
+                                    <button class="btn btn-primary mt-4" type="button" ng-click="toggleAddLoHangForm()">Thêm lô hàng</button>
+                                    <div ng-if="showAddLoHangForm" class="mt-3">
+                                        <fieldset class="border p-3">
+                                            <legend class="w-auto"><strong>Thêm lô hàng mới</strong></legend>
+                                            <div class="mb-3">
+                                                <label class="form-label">Ngày nhập:</label>
+                                                <input ng-model="newLoHang.ngayNhap" type="datetime-local" class="form-control">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Ngày sản xuất:</label>
+                                                <input ng-model="newLoHang.nsx" type="datetime-local" class="form-control">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Hạn sử dụng:</label>
+                                                <input ng-model="newLoHang.hsd" type="datetime-local" class="form-control">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Số lượng:</label>
+                                                <input ng-model="newLoHang.soLuong" type="number" class="form-control">
+                                            </div>
+                                            <!-- Lưu lô hàng mới -->
+                                            <button class="btn btn-success mt-2" type="button" ng-click="addLoHang()">Lưu lô hàng</button>
+                                            <!-- Hủy thao tác thêm lô hàng -->
+                                            <button class="btn btn-secondary mt-2" type="button" ng-click="toggleAddLoHangForm()">Hủy</button>
+                                        </fieldset>
+                                    </div>
                                     <div class="loHang-scroll-container" style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
                                         <div ng-repeat="(index, loHang) in productDetail.loHangList | orderBy:'ngayNhap'">
                                             <fieldset class="border p-3 mb-3">
@@ -236,35 +280,8 @@
                                         </div>
                                     </div>
 
-                                    <!-- Button để xổ ra form thêm lô hàng -->
-                                    <button class="btn btn-primary mt-4" type="button" ng-click="toggleAddLoHangForm()">Thêm lô hàng</button>
-
                                     <!-- Form thêm lô hàng -->
-                                    <div ng-if="showAddLoHangForm" class="mt-3">
-                                        <fieldset class="border p-3">
-                                            <legend class="w-auto"><strong>Thêm lô hàng mới</strong></legend>
-                                            <div class="mb-3">
-                                                <label class="form-label">Ngày nhập:</label>
-                                                <input ng-model="newLoHang.ngayNhap" type="datetime-local" class="form-control">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Ngày sản xuất:</label>
-                                                <input ng-model="newLoHang.nsx" type="datetime-local" class="form-control">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Hạn sử dụng:</label>
-                                                <input ng-model="newLoHang.hsd" type="datetime-local" class="form-control">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Số lượng:</label>
-                                                <input ng-model="newLoHang.soLuong" type="number" class="form-control">
-                                            </div>
-                                            <!-- Lưu lô hàng mới -->
-                                            <button class="btn btn-success mt-2" type="button" ng-click="addLoHang()">Lưu lô hàng</button>
-                                            <!-- Hủy thao tác thêm lô hàng -->
-                                            <button class="btn btn-secondary mt-2" type="button" ng-click="toggleAddLoHangForm()">Hủy</button>
-                                        </fieldset>
-                                    </div>
+
                                 </div>
 <!--                                <label class="form-label">Trạng thái:</label>-->
 <!--                                <div class="form-check">-->
