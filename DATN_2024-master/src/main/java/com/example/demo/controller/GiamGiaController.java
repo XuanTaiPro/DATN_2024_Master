@@ -4,7 +4,6 @@ import com.example.demo.entity.GiamGia;
 import com.example.demo.entity.SanPham;
 import com.example.demo.repository.GiamGiaRepository;
 import com.example.demo.repository.SanPhamRepository;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -134,9 +133,11 @@ public class GiamGiaController {
         if (giamGia.getNgayBatDau().isAfter(giamGia.getNgayKetThuc())) {
             return ResponseEntity.badRequest().body("Ngày bắt đầu phải trước ngày kết thúc!");
         }
-//        if (!isValidDateFormat(giamGia.getNgayBatDau()) || !isValidDateFormat(giamGia.getNgayKetThuc())) {
-//            return ResponseEntity.badRequest().body("Ngày phải có định dạng yyyy-MM-dd HH:mm:ss!");
-//        }
+        // if (!isValidDateFormat(giamGia.getNgayBatDau()) ||
+        // !isValidDateFormat(giamGia.getNgayKetThuc())) {
+        // return ResponseEntity.badRequest().body("Ngày phải có định dạng yyyy-MM-dd
+        // HH:mm:ss!");
+        // }
         GiamGia existingGiamGia = giamGiaRepository.getByNameAndTimeOverlap(
                 giamGia.getTen(),
                 giamGia.getNgayBatDau(),
@@ -188,7 +189,7 @@ public class GiamGiaController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> update( @ModelAttribute GiamGia giamGia,
+    public ResponseEntity<?> update(@ModelAttribute GiamGia giamGia,
             @RequestParam("selectedProducts") List<String> selectedProducts) {
 
         String id = giamGia.getId();
@@ -254,8 +255,8 @@ public class GiamGiaController {
         giamGiaUpdate.setMa(giamGia.getMa());
         giamGiaUpdate.setTen(giamGia.getTen());
         giamGiaUpdate.setNgaySua(LocalDateTime.now());
-//        giamGia.setNgayBatDau(giamGia.getNgayBatDau().toLocalDate().atStartOfDay());
-//        giamGia.setNgayKetThuc(giamGia.getNgayKetThuc().toLocalDate().atTime(LocalTime.MAX));
+        // giamGia.setNgayBatDau(giamGia.getNgayBatDau().toLocalDate().atStartOfDay());
+        // giamGia.setNgayKetThuc(giamGia.getNgayKetThuc().toLocalDate().atTime(LocalTime.MAX));
         giamGiaUpdate.setNgayBatDau(giamGia.getNgayBatDau().toLocalDate().atStartOfDay());
         giamGiaUpdate.setNgayKetThuc(giamGia.getNgayKetThuc().toLocalDate().atTime(LocalTime.MAX));
         giamGiaUpdate.setGiaGiam(giamGia.getGiaGiam());
