@@ -326,3 +326,20 @@ body {
 main {
     padding: 5px;
 }
+#success-alert {
+    transform: translateY(-100%);
+    transition: transform 0.5s ease-in-out;
+
+}
+#success-alert.show {
+    transform: translateY(0);
+}
+
+#success-danger {
+    transform: translateY(-100%);
+    transition: transform 0.5s ease-in-out;
+
+}
+#success-danger.show {
+    transform: translateY(0);
+}

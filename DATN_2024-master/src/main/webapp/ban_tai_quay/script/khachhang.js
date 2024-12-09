@@ -144,9 +144,8 @@ window.khachhangCtrl = function ($scope, $http) {
                 $scope.listKhachHang.push(response.data);
                 // Đóng modal
                 $('#productModal').modal('hide');
-                setTimeout(function () {
-                    location.reload();
-                }, 500);
+                showSuccessAlert('Thêm thành công!');
+                $scope.loadPage($scope.currentPage);
             })
             .catch(function (error) {
                 $scope.errorMessage = "Thêm thất bại";
@@ -158,7 +157,9 @@ window.khachhangCtrl = function ($scope, $http) {
         console.log("Cập nhật Khách Hàng:", $scope.selectedKhachHang);  // Kiểm tra dữ liệu trước khi gửi
         $http.put('http://localhost:8083/khachhang/update/' + $scope.selectedKhachHang.id, $scope.selectedKhachHang)
             .then(function (response) {
-                location.reload()
+                $('#UpdateForm').modal('hide');
+                showSuccessAlert('Update thành công!');
+                $scope.loadPage($scope.currentPage);
             })
             .catch(function (error) {
 
@@ -176,7 +177,7 @@ window.khachhangCtrl = function ($scope, $http) {
                     if (index !== -1) {
                         $scope.listKhachHang.splice(index, 1);
                     }
-                    alert(response.data.message || 'Xóa thành công!!');  // Sử dụng thông điệp từ server
+                   showSuccessAlert("Xóa thành công") // Sử dụng thông điệp từ server
                 })
                 .catch(function (error) {
                     console.error("Lỗi khi xóa :", error);

@@ -117,3 +117,33 @@ document.addEventListener('DOMContentLoaded', function () {
         sidebar.classList.toggle('hide');
     })
 })
+
+function showSuccessAlert(message) {
+    const alertElement = document.getElementById('success-alert');
+    const messageElement = document.getElementById('success-message');
+    messageElement.textContent = message;
+
+    alertElement.style.display = 'block';
+
+    setTimeout(() => alertElement.classList.add('show'), 10); // Thêm hiệu ứng
+    setTimeout(() => {
+        alertElement.classList.remove('show'); // Ẩn hiệu ứng
+        setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
+    }, 3000);
+}
+
+
+// Hiển thị thông báo lỗi
+function showDangerAlert(message) {
+    const alertElement = document.getElementById('danger-alert');
+    const messageElement = document.getElementById('danger-message');
+    messageElement.textContent = message;
+
+    alertElement.style.display = 'block';
+
+    setTimeout(() => alertElement.classList.add('show'), 10); // Thêm hiệu ứng
+    setTimeout(() => {
+        alertElement.classList.remove('show'); // Ẩn hiệu ứng
+        setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
+    }, 3000);
+}
