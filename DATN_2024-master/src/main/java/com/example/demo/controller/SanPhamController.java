@@ -59,7 +59,24 @@ public class SanPhamController {
 
         return ResponseEntity.ok().body(products);
     }
-
+    @GetMapping("/tim-kiem")
+    public Page<SanPhamOnlineResponse> findSanPhamWithFilters(
+            @RequestParam(required = false) Double giaMin,
+            @RequestParam(required = false) Double giaMax,
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) Integer tuoiMin,
+            @RequestParam(required = false) Integer tuoiMax,
+            @RequestParam(required = false) List<String> danhMuc,
+            @RequestParam(defaultValue = "0") int page) {
+        if (giaMin != null) {
+            giaMin = Double.parseDouble(String.valueOf(giaMin));
+        }
+        if (giaMax != null) {
+            giaMax = Double.parseDouble(String.valueOf(giaMax));
+        }
+        Pageable pageable = PageRequest.of(page, 5);
+        return sanPhamRepository.findSanPhamOnline(giaMin, giaMax, searchText, tuoiMin, tuoiMax, danhMuc, pageable);
+    }
     @GetMapping("/phanTrang")
     public ResponseEntity<?> filterAndPaginate(
             @RequestParam(name = "page", defaultValue = "0") Integer page,

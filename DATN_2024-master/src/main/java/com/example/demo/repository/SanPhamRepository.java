@@ -58,4 +58,25 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
                         @Param("tuoiMin") Integer tuoiMin,
                         Pageable pageable);
 
+    @Query("SELECT new com.example.demo.dto.sanpham.SanPhamOnlineResponse(" +
+            "sp.id, sp.tenSP, ctp.gia, gg.giaGiam, gg.ngayBatDau, gg.ngayKetThuc, ac.link) " +
+            "FROM SanPham sp " +
+            "LEFT JOIN sp.giamGia gg " +
+            "LEFT JOIN sp.listCTSP ctp " +
+            "LEFT JOIN ctp.anhCTSP ac " +
+            "WHERE CAST(ctp.gia AS double) = (SELECT MIN(CAST(ctp2.gia AS double)) FROM ChiTietSanPham ctp2 WHERE ctp2.sanPham.id = sp.id) " +
+            "AND (:giaMin IS NULL OR CAST(ctp.gia AS double) >= :giaMin) " +
+            "AND (:giaMax IS NULL OR CAST(ctp.gia AS double) <= :giaMax) " +
+            "AND (:searchText IS NULL OR " +
+            "(sp.tenSP LIKE %:searchText% OR sp.thanhPhan LIKE %:searchText% OR sp.congDung LIKE %:searchText%)) " +
+            "AND (:tuoiMin IS NULL OR sp.tuoiMin >= :tuoiMin) " +
+            "AND (:tuoiMax IS NULL OR sp.tuoiMax <= :tuoiMax) " +
+            "AND (:danhMuc IS NULL OR sp.danhMuc.ten IN :danhMuc)")
+    Page<SanPhamOnlineResponse> findSanPhamOnline(@Param("giaMin") Double giaMin,
+                                                  @Param("giaMax") Double giaMax,
+                                                  @Param("searchText") String searchText,
+                                                  @Param("tuoiMin") Integer tuoiMin,
+                                                  @Param("tuoiMax") Integer tuoiMax,
+                                                  @Param("danhMuc") List<String> danhMuc,
+                                                  Pageable pageable);
 }
