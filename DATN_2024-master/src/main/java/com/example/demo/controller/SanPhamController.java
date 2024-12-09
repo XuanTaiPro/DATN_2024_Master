@@ -59,18 +59,47 @@ public class SanPhamController {
 
         return ResponseEntity.ok().body(products);
     }
-
+    @GetMapping("/tim-kiem")
+    public Page<SanPhamOnlineResponse> findSanPhamWithFilters(
+            @RequestParam(required = false) Double giaMin,
+            @RequestParam(required = false) Double giaMax,
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) Integer tuoiMin,
+            @RequestParam(required = false) Integer tuoiMax,
+            @RequestParam(required = false) List<String> danhMuc,
+            @RequestParam(defaultValue = "0") int page) {
+        if (giaMin != null) {
+            giaMin = Double.parseDouble(String.valueOf(giaMin));
+        }
+        if (giaMax != null) {
+            giaMax = Double.parseDouble(String.valueOf(giaMax));
+        }
+        Pageable pageable = PageRequest.of(page, 5);
+        return sanPhamRepository.findSanPhamOnline(giaMin, giaMax, searchText, tuoiMin, tuoiMax, danhMuc, pageable);
+    }
     @GetMapping("/phanTrang")
-    public ResponseEntity<?> phanTrang(@RequestParam(name = "page", defaultValue = "0") Integer page) {
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "ngayTao"));
-        Page<SanPham> sanPhamPage = sanPhamRepository.findAll(pageRequest);
+    public ResponseEntity<?> filterAndPaginate(
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "searchText", required = false) String searchText,
+            @RequestParam(name = "tenDanhMuc", required = false) String tenDanhMuc,
+            @RequestParam(name = "trangThai", required = false) Integer trangThai,
+            @RequestParam(name = "tuoiMin", required = false) Integer tuoiMin,
+            @RequestParam(name = "tuoiMax", required = false) Integer tuoiMax) {
 
-        // Tạo một đối tượng để trả về
+        // Tạo đối tượng Pageable với sắp xếp theo ngày tạo giảm dần
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "ngayTao"));
+
+        // Gọi repository filterSanPham
+        Page<SanPham> sanPhamPage = sanPhamRepository.filterSanPham(searchText, tenDanhMuc, trangThai, tuoiMax, tuoiMin, pageable);
+
+        // Chuẩn bị dữ liệu trả về
         Map<String, Object> response = new HashMap<>();
-        response.put("products",
-                sanPhamPage.getContent().stream().map(SanPham::toResponse).collect(Collectors.toList()));
+        response.put("products", sanPhamPage.getContent().stream()
+                .map(SanPham::toResponse)
+                .collect(Collectors.toList()));
         response.put("totalPages", sanPhamPage.getTotalPages());
         response.put("totalElements", sanPhamPage.getTotalElements());
+
         return ResponseEntity.ok(response);
     }
 

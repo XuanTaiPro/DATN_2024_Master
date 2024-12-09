@@ -17,7 +17,7 @@ import java.util.UUID;
 public class HoaDon {
     @Id
     @Column(name = "ID")
-    private String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    private String id;
 
     @Column(name = "MAHD", length = 10)
     private String maHD;
@@ -30,7 +30,6 @@ public class HoaDon {
 
     @Column(name = "NGAYSUA")
     private LocalDateTime ngaySua;
-
 
     @Column(name = "NGAYTHANHTOAN")
     private LocalDateTime ngayThanhToan;
@@ -87,7 +86,8 @@ public class HoaDon {
 
         // Iterate through each chiTietHoaDon to calculate the total
         for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
-            if (maVoucher!=null){}
+            if (maVoucher != null) {
+            }
             tongTien += Double.valueOf(chiTietHoaDon.getGiaSauGiam()) * chiTietHoaDon.getSoLuong();
         }
 
@@ -111,9 +111,7 @@ public class HoaDon {
                 khachHang != null ? khachHang.getSdt() : null,
                 khachHang != null ? khachHang.getEmail() : null,
                 nhanVien != null ? nhanVien.getTen() : null,
-                String.valueOf(tongTien)
-        );
+                String.valueOf(tongTien));
     }
-
 
 }

@@ -1,6 +1,5 @@
 package com.example.demo.dto.chitiethoadon;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +29,7 @@ public class ChiTietHoaDonReq {
 
     private String ghiChu;
 
-    @NotNull(message = "ID hóa đơn không được để trống")
     private String idHD;
-    @NotNull(message = "ID chi tiết sản phẩm không được để trống")
+
     private String idCTSP;
 }

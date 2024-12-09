@@ -35,3 +35,44 @@
     background-color: #007bff; /* Màu nền cho trang đang hoạt động */
     color: white; /* Màu chữ cho trang đang hoạt động */
 }
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* Khoảng cách giữa các phần tử */
+    /*background-color: #f9f9f9; !* Màu nền nhẹ *!*/
+    padding: 20px; /* Khoảng cách trong */
+    border-radius: 8px; /* Bo tròn góc */
+    /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); !* Hiệu ứng đổ bóng *!*/
+}
+
+.filters input[type="text"],
+.filters select {
+    flex: 1; /* Căn đều các phần tử */
+    min-width: 200px; /* Chiều rộng tối thiểu */
+    padding: 8px 12px; /* Khoảng cách trong */
+    border: 1px solid #ccc; /* Viền */
+    border-radius: 4px; /* Bo tròn góc */
+    font-size: 15px; /* Kích thước chữ */
+    background-color: #fff; /* Nền trắng */
+    transition: border-color 0.3s; /* Hiệu ứng hover */
+}
+
+.filters input[type="text"]:focus,
+.filters select:focus {
+    border-color: #007bff; /* Viền màu xanh khi focus */
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Hiệu ứng tập trung */
+}
+
+.filters select option {
+    padding: 5px;
+}
+
+.filters input[type="text"]::placeholder {
+    color: #aaa; /* Màu placeholder */
+    font-style: italic; /* Chữ in nghiêng */
+}
+
+.filters select {
+    cursor: pointer; /* Hiển thị con trỏ pointer */
+}

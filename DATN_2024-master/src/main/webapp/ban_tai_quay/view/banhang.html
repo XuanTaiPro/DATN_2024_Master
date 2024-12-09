@@ -103,40 +103,44 @@
                     <li class="list-group-item" ng-repeat="ctsp in products">
                         <div class="flex-grow-1">
                             <div>
-                                <span>
-                                    <img ng-if="ctsp.linkAnhList.length > 0" ng-src="{{ctsp.linkAnhList[0]}}" alt="{{ctsp.ma}}" width="60" height="60" class="me-1">
-                                    <span ng-if="ctsp.linkAnhList.length === 0">Không có ảnh</span>                    </span>
+                <span>
+                    <img ng-if="ctsp.linkAnhList.length > 0" ng-src="{{ctsp.linkAnhList[0]}}" alt="{{ctsp.ma}}" width="60" height="60" class="me-1">
+                    <span ng-if="ctsp.linkAnhList.length === 0">Không có ảnh</span>
+                </span>
+
                                 <span> | Số lượng: {{ ctsp.soLuong }}</span>
                                 <span> | Số ngày sử dụng: {{ ctsp.soNgaySuDung }}</span>
                                 <span> | Giá bán: {{ ctsp.gia }}</span>
                                 <div class="form-group">
                                     <label>Số lượng:</label>
-                                    <input type="number"  class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}">
-                                    <button ng-click="confirmAddInvoiceDetail()">Thêm</button>
-                                    <div class="modal fade" id="confirmAddInvoiceDetailModal" tabindex="-1" role="dialog" aria-labelledby="confirmAddInvoiceDetailModalLabel" >
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title" id="confirmAddInvoiceDetailModalLabel">Xác nhận</h4>
-                                                    <button type="button" class="btn close-btn"  aria-label="Close" ng-click="closeConfirmModalAddInvoiceDetail()">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <h5> Bạn có chắc chắn muốn thêm sản phẩm này không?</h5>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" ng-click="closeConfirmModalAddInvoiceDetail()">Hủy</button>
-                                                    <button type="button" class="btn btn-success" ng-click="addCTHD(ctsp)">Xác nhận</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <input type="number" class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}">
+                                    <button ng-click="confirmAddInvoiceDetail(ctsp)">Thêm</button> <!-- Truyền ctsp vào hàm -->
                                 </div>
                             </div>
                         </div>
                     </li>
                 </ul>
+
+                <!-- Modal -->
+                <div class="modal fade" id="confirmAddInvoiceDetailModal" tabindex="-1" role="dialog" aria-labelledby="confirmAddInvoiceDetailModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="confirmAddInvoiceDetailModalLabel">Xác nhận</h4>
+                                <button type="button" class="btn close-btn" aria-label="Close" ng-click="closeConfirmModalAddInvoiceDetail()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h5>Bạn có chắc chắn muốn thêm sản phẩm này không?</h5>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" ng-click="closeConfirmModalAddInvoiceDetail()">Hủy</button>
+                                <button type="button" class="btn btn-success" ng-click="addCTHD()">Xác nhận</button> <!-- Sử dụng hàm addCTHD không truyền ctsp trực tiếp -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ng-click="closeProductModal()">Đóng</button>
@@ -226,8 +230,9 @@
                 </td>
                 <td>
                     <input type="hidden" ng-model="cthd.id">
-                    <input type="number" class="form-control" ng-model="cthd.soLuong" min="1" max="cthd.soLuongChiTietSanPham"
-                           ng-change="updateTotal(cthd)" style="width: 90px"/>
+                    <input type="number" class="form-control" ng-model="cthd.soLuong" min="1"
+                            ng-change="updateTotal(cthd)" style="width: 90px"/>
+
                 </td>
                 <td>{{ calculateTotalAmount(cthd)  }} VND
                 </td>

@@ -7,19 +7,52 @@ window.sanPhamCtrl = function ($scope, $http) {
     $scope.currentPage = 0;
     $scope.itemsPerPage = 10; // Số sản phẩm trên mỗi trang
     $scope.totalPages = 0;
-    // Lấy tất cả chi tiết sản phẩm
-    $scope.getAllProducts = function (page) {
-        $scope.currentPage = page || 0; // Nếu không có page được truyền vào, dùng trang 0
-        $http.get('http://localhost:8083/san-pham/phanTrang?page=' + $scope.currentPage)
-            .then(function (response) {
-                $scope.products = response.data.products; // Gán dữ liệu sản phẩm
-                $scope.totalPages = response.data.totalPages; // Lưu tổng số trang
-                $scope.pages = Array.from({length: $scope.totalPages}, (v, i) => i); // Tạo danh sách các số trang
-            })
-            .catch(function (error) {
-                $scope.errorMessage = 'Lỗi khi lấy sản phẩm: ' + error.data;
-                console.error($scope.errorMessage);
-            });
+    $scope.ageRanges = [
+        { label: "Dưới 18", min: null, max: 18 },
+        { label: "18 - 25", min: 18, max: 25 },
+        { label: "26 - 35", min: 26, max: 35 },
+        { label: "36 - 50", min: 36, max: 50 },
+        { label: "Trên 50", min: 50, max: null }
+    ];
+
+    $scope.filters = {
+        searchText: "",
+        tenDanhMuc: null,
+        trangThai: null,
+        tuoiRange: null // Sẽ lưu tùy chọn khoảng tuổi
+    };
+    $scope.getAllProducts = function(page) {
+        $scope.currentPage = page >= 0 ? page : 0;
+
+        // Lấy giá trị min và max từ tùy chọn tuổi
+        const selectedRange = $scope.filters.tuoiRange || {};
+        const tuoiMin = selectedRange.min;
+        const tuoiMax = selectedRange.max;
+
+        // Chuẩn bị tham số gửi lên server
+        const params = {
+            page: $scope.currentPage,
+            searchText: $scope.filters.searchText || null,
+            tenDanhMuc: $scope.filters.tenDanhMuc || null,
+            trangThai: $scope.filters.trangThai || null,
+            tuoiMin: tuoiMin,
+            tuoiMax: tuoiMax
+        };
+        console.log(params);
+        // Gửi request
+        $http({
+            method: 'GET',
+            url: 'http://localhost:8083/san-pham/phanTrang',
+            params: params
+        }).then(function(response) {
+            $scope.products = response.data.products || [];
+            $scope.totalPages = response.data.totalPages || 0;
+            $scope.pages = Array.from({ length: $scope.totalPages }, (_, i) => i);
+        }).catch(function(error) {
+            $scope.errorMessage = 'Lỗi khi lấy sản phẩm: ' + (error.data || 'Không rõ lỗi');
+            console.error("Chi tiết lỗi:", error);
+        });
+
     };
 
     // Chuyển sang trang trước
@@ -35,7 +68,9 @@ window.sanPhamCtrl = function ($scope, $http) {
             $scope.getAllProducts($scope.currentPage + 1);
         }
     };
-    $scope.getAllDanhMuc = function () {
+
+    $scope.getAllDanhMuc=function(){
+
         $http.get('http://localhost:8083/danh-muc')
             .then(function (response) {
                 $scope.listDanhMuc = response.data;

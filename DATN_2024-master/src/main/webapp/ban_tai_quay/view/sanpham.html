@@ -1,6 +1,39 @@
+<div class="text-center">
+    <h2>Quản Lý Sản Phẩm</h2>
+</div>
+<div class="filters">
+    <!-- Tìm kiếm sản phẩm -->
+    <input type="text"
+           ng-model="filters.searchText"
+           ng-change="getAllProducts(0)"
+           placeholder="Tìm kiếm sản phẩm..." />
+
+    <!-- Lọc theo danh mục -->
+    <select ng-model="filters.tenDanhMuc"
+            ng-change="getAllProducts(0)"
+            ng-options="danhMuc.ten as danhMuc.ten for danhMuc in listDanhMuc">
+        <option value="">--Chọn danh mục--</option>
+    </select>
+
+    <!-- Lọc theo trạng thái -->
+    <select ng-model="filters.trangThai"
+            ng-change="getAllProducts(0)">
+        <option value="">--Trạng thái--</option>
+        <option value="1">Hoạt động</option>
+        <option value="0">Không hoạt động</option>
+    </select>
+
+    <!-- Lọc theo tuổi -->
+    <select ng-model="filters.tuoiRange"
+            ng-change="getAllProducts(0)"
+            ng-options="range as range.label for range in ageRanges">
+        <option value="">--Chọn khoảng tuổi--</option>
+    </select>
+</div>
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
     Thêm Sản Phẩm
 </button>
+
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
