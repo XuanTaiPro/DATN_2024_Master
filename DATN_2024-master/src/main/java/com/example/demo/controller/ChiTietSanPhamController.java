@@ -83,7 +83,7 @@ public class ChiTietSanPhamController {
                 .map(ChiTietSanPham::toChiTietSanPhamResponse)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(responseList); // Trả về danh sách ChiTietSanPhamResponse
+        return ResponseEntity.ok(responseList);
     }
     @GetMapping("/unique-so-ngay-su-dung")
     public ResponseEntity<?> getUniqueSoNgaySuDung(@RequestParam(name = "idSP", required = false) String idSP) {
