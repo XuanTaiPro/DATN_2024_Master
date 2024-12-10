@@ -15,7 +15,7 @@
 <body>
 <div class="back-ground">
 </div>
-<div class="form-login">
+<div class="form-login" id="form-login">
     <h3>Đăng nhập</h3>
     <form class="form-user">
         <div class="user-account">
@@ -28,6 +28,7 @@
             <input type="password" id="current-password" name="current-password">
             <span class="error-message" id="error-PW"></span>
         </div>
+        <a href="#" id="linkDoiMK" style="display: block; text-align: right; margin-top: 5px;">Quên mật khẩu?</a>
         <div class="button-next-step">
             <button class="btn-next-step">Tiếp tục</button>
         </div>
@@ -45,8 +46,8 @@
         <button class="btn-submit-otp">Xác nhận OTP</button>
     </form>
 </div>
-
 <script>
+
     const inpUser = document.querySelector('#username')
     const lbUser = document.querySelector('label[for="username"]')
 

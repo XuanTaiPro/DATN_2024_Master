@@ -15,7 +15,7 @@
 <body>
 <div class="back-ground">
 </div>
-<div class="form-login">
+<div class="form-login" id="form-login">
     <h3>Đăng nhập</h3>
     <form class="form-user">
         <div class="user-account">
@@ -28,6 +28,7 @@
             <input type="password" id="current-password" name="current-password">
             <span class="error-message" id="error-PW"></span>
         </div>
+        <a href="#" id="linkDoiMK" style="display: block; text-align: right; margin-top: 5px;">Quên mật khẩu?</a>
         <div class="button-next-step">
             <button class="btn-next-step">Tiếp tục</button>
         </div>
@@ -45,13 +46,54 @@
         <button class="btn-submit-otp">Xác nhận OTP</button>
     </form>
 </div>
+<div class="forgot-password" id="form-forgot" style="display: none;">
+    <form id="forgot-password-form">
+        <div class="email-input">
+            <label for="emailfg">Nhập Email</label>
+            <input type="email" id="emailfg" name="email" placeholder="Nhập email của bạn" required>
+            <span class="error-message" id="error-email"></span>
+        </div>
+        <button type="button" id="send-otp-btn">Gửi OTP</button>
+    </form>
+
+    <!-- Nhập OTP -->
+    <form id="otp-verification-form" style="display: none;">
+        <p>Vui lòng kiểm tra email và nhập mã OTP:</p>
+        <div class="otp-input">
+            <label for="otp-code">Mã OTP</label>
+            <input type="text" id="otp-code" name="otp-code" placeholder="Nhập mã OTP" required>
+            <span class="error-message" id="error-otp-forgot"></span>
+        </div>
+        <button type="button" id="verify-otp-btn">Xác nhận OTP</button>
+    </form>
+
+    <!-- Đổi mật khẩu -->
+    <form id="reset-password-form" style="display: none;">
+        <div class="password-input">
+            <label for="new-password">Mật khẩu mới</label>
+            <input type="password" id="new-password" name="new-password" placeholder="Nhập mật khẩu mới" required>
+        </div>
+        <div class="password-confirm">
+            <label for="confirm-password">Xác nhận mật khẩu</label>
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="Xác nhận mật khẩu"
+                   required>
+            <span class="error-message" id="error-password"></span>
+        </div>
+        <button type="button" id="reset-password-btn">Đổi mật khẩu</button>
+    </form>
+</div>
 
 <script>
+
+
     const inpUser = document.querySelector('#username')
     const lbUser = document.querySelector('label[for="username"]')
 
+
     const inpPass = document.querySelector('#current-password')
     const lbPass = document.querySelector('label[for="current-password"]')
+
+    const inpEmailfg = document.querySelector('#emailfg')
 
     const btnNextStep = document.querySelector('.btn-next-step')
     const btnLogin = document.querySelector('.btn-login')
@@ -65,6 +107,12 @@
     const btnSubmitOtp = document.querySelector('.btn-submit-otp');
     const errorOTP = document.querySelector('#error-OTP');
 
+    const inpOtpFG = document.querySelector('#otp-code')
+    const errorOtpFG = document.querySelector('#error-otp-forgot')
+
+    const inpNewPW = document.querySelector('#new-password')
+    const confirmPW = document.querySelector('#confirm-password')
+    const erPW = document.querySelector('#error-password')
 
     lbPass.classList.add('active-label')
     lbUser.classList.add('active-label')
@@ -130,25 +178,6 @@
         }
     })
 
-    let dataFetch
-
-    const getData = async () => {
-        let account = {
-            email: inpUser.value,
-            passw: inpPass.value
-        }
-        const loginNV = await fetch('http://localhost:8083/login/onlineSale',
-            {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(account)})
-            .then((resp) => {
-                return resp.text()
-            })
-            .then(data => {
-                sessionStorage.setItem("otp", data)
-                console.log(data)
-            })
-
-    }
-
     btnSubmitOtp.addEventListener('click', async (e) => {
         e.preventDefault();
         errorOTP.innerText = '';
@@ -177,8 +206,119 @@
             // sessionStorage.setItem('loginOk',true)
             window.location.href = result.redirectUrl
         }
-
     })
+    document.getElementById('linkDoiMK').addEventListener("click", function (event) {
+        event.preventDefault()
+        document.getElementById('form-login').style.display = 'none'
+        document.getElementById(('form-forgot')).style.display = 'block'
+    })
+    document.getElementById('send-otp-btn').addEventListener('click', function () {
+
+        const email = inpEmailfg.value
+
+        if (validateEmail(email)) {
+            fetch(`http://localhost:8083/login/getmail?email=${encodeURIComponent(email)}`, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'}
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        localStorage.setItem('forgotEmail', email);//lưu lại mail để cho đổi mk(xuống nhớ lấy ra)
+                        document.getElementById('forgot-password-form').style.display = 'none';
+                        document.getElementById('otp-verification-form').style.display = 'block';
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        } else {
+            alert("Vui lòng nhập mail hợp lệ")
+        }
+    });
+
+    function validateEmail(email) {
+        const vali = /^[a-zA-Z0-9._-]+@[a-zAZ0-9.-]+\.[a-zA-Z]{2,6}$/
+        return vali.test(email)
+    }
+
+    document.getElementById('verify-otp-btn').addEventListener('click', function () {
+        errorOtpFG.innerText = ''
+        const checkOtp = inpOtpFG.value.trim()
+
+        if (checkOtp === '') {
+            checkOtp.innerText = 'Vui lòng nhập mã OTP'
+            return
+        }
+
+        fetch(`http://localhost:8083/login/checkOtpFG`, {
+            method: 'POST',
+            headers: {
+                'content-Type': 'application/json'
+            },
+            body: JSON.stringify({otp: checkOtp})
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message)
+                    })
+                }
+                return response.json()
+            })
+            .then(data => {
+                alert(data.message)
+                document.getElementById('otp-verification-form').style.display = 'none';
+                document.getElementById('reset-password-form').style.display = 'block';
+            })
+            .catch(error => {
+                errorOtpFG.innerText = error.message
+            })
+    });
+
+    document.getElementById('reset-password-btn').addEventListener('click', function () {
+        const newPassW = inpNewPW.value.trim()
+        const nhapLaiPassW = confirmPW.value.trim()
+
+        const email = localStorage.getItem('forgotEmail')
+
+        erPW.innerText = ''
+
+        if (!newPassW || !nhapLaiPassW) {
+            erPW.innerText = 'Vui lòng nhập đầy đủ mật khẩu !'
+            return
+        }
+
+        if (newPassW !== nhapLaiPassW) {
+            erPW.innerText = 'Mật khẩu xác nhận không khớp !!'
+            return
+        }
+
+        fetch(`http://localhost:8083/login/changePW`, {
+            method: 'POST',
+            headers: {
+                'content-Type': 'application/json',
+            },
+            body: JSON.stringify({email, newPassW, nhapLaiPassW})
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message)
+                    localStorage.removeItem('forgotEmail');
+                    window.location.href = data.redirectUrl;
+                } else {
+                    erPW.innerText = data.message
+                }
+            })
+            .catch(error => {
+                console.error(error)
+                erPW.innerText = 'Có lỗi xảy ra, vui lòng thử lại sau.';
+            })
+    });
 </script>
 </body>
 

@@ -1,12 +1,6 @@
 <section class="p-3">
     <h1>Quản lý nhân viên</h1>
 
-    <div id="success-alert" class="alert alert-success alert-dismissible fade" role="alert"
-         style="display: none; position: fixed; top: 0; left: 0; width: 100%; z-index: 1050; text-align: center;">
-        <strong>Cập nhật thành công!</strong> Nhân viên đã được cập nhật.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
     <div class="row mb-3">
         <div class="col-md-3">
             <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="searchParams.ten">
@@ -359,16 +353,6 @@
     </div>
 </div>
 <style>
-    /*alert thông báo*/
-    #success-alert {
-        transform: translateY(-100%);
-        transition: transform 0.5s ease-in-out;
-
-    }
-
-    #success-alert.show {
-        transform: translateY(0);
-    }
 
     /*table*/
     .table thead th {

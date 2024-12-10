@@ -154,6 +154,67 @@ public class LoginController {
         }
     }
 
+    @GetMapping("getmail")
+    public ResponseEntity<?> getMail(@RequestParam(name = "email") String email) {
+        if (khRepo.getKhachHangByEmail(email) != null) {
+            String otp = genOtp(); // Sinh OTP
+            otpCache.put("maOtp", otp);
+            sendOtp(email, otp);
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "OTP đã được gửi tới email của bạn"));
+        }
+        return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", "OTP đã được gửi tới email của bạn"));
+    }
+
+    @PostMapping("checkOtpFG")
+    public ResponseEntity<?> checkOtpFG(@RequestBody Map<String, String> otpRequest, HttpSession ses) {
+        String otp = otpRequest.get("otp");
+        System.out.println(otpCache.get("maOtp") + " và " + otp);
+
+        if (!otpCache.get("maOtp").equals(otp)) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Mã OTP không chính xác"));
+        }
+        otpCache.remove("maOtp");
+        System.out.println("otp : " + otp);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "OTP Chính xác"));
+    }
+
+    @PostMapping("changePW")
+    public ResponseEntity<?> changePW(@RequestBody Map<String, String> passWordRequest) {
+        String email = passWordRequest.get("email");
+        String newPassW = passWordRequest.get("newPassW");
+        String nhapLaiPassW = passWordRequest.get("nhapLaiPassW");
+
+        if (!newPassW.equals(nhapLaiPassW)) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Mật khẩu không khớp, vui lòng nhập lại"
+            ));
+        }
+        KhachHang khachHang = khRepo.getKhachHangByEmail(email);
+        if (khachHang == null) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Không tìm thấy khách hàng với email này"
+            ));
+        }
+        khachHang.setPassw(newPassW);
+        khachHang.setNgaySua(LocalDateTime.now());
+        khRepo.save(khachHang);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/loginOnline.html"
+        ));
+    }
+
+
     @PostMapping("dangKy")
     public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest,
                                     BindingResult bindingResult) {
@@ -208,5 +269,6 @@ public class LoginController {
     public String returnIDNV() {
         return getIdNV;
     }
+
 
 }
