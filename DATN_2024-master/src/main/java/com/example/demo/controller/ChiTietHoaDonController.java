@@ -73,10 +73,9 @@ public class ChiTietHoaDonController {
 
             int getResult = cthdService.checkSL(idCTSP, sL);
             if (getResult == -1) {
-                return ResponseEntity.badRequest().body("Không có sản phẩm trong lô hàng");
+                return ResponseEntity.ok().body("Không có sản phẩm trong lô hàng");
             }
             if (getResult != 0) {
-                // status = 204
                 return ResponseEntity.badRequest().body(getResult);
             }
         }
