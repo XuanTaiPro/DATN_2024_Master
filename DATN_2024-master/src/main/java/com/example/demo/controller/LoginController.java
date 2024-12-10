@@ -66,7 +66,7 @@ public class LoginController {
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "message", "OTP đã được gửi tới email của bạn"));
+                    "message", loginNV.toResponse()));
         }
     }
 

@@ -117,6 +117,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        sessionStorage.setItem('idNV', data.message.id);
                         formUser.classList.add('active-form-user')
                         formConfirm.classList.add('active-form-confirm')
                         // sessionStorage.setItem()

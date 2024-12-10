@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +69,16 @@ public class NhanVienController {
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id để hiển thị");
         }
+    }
+
+    @GetMapping("profile/{id}")
+    public ResponseEntity<?> profile(@PathVariable String id) {
+        NhanVien nhanVien = nvRepo.findById(id).orElse(null);
+        if (nhanVien == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Nhân viên không tồn tại"));
+        }
+        return ResponseEntity.ok(nhanVien.toResponse());
     }
 
     @PostMapping("add")

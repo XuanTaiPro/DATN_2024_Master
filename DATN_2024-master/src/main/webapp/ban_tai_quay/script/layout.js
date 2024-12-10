@@ -60,10 +60,67 @@ app.config(function ($routeProvider) {
 })
 
 app.controller('myCtrl', function ($scope, $http) {
-    // const login = sessionStorage.getItem('loginOk')
-    // if(!login){
-    //     window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html?_ijt=rgqkbr1cvcf8at1kk6v46lmcv4'
-    // }
+    const login = sessionStorage.getItem('loginOk')
+    if (!login) {
+        window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html?_ijt=rgqkbr1cvcf8at1kk6v46lmcv4'
+        return
+    }
+    const profileButton = document.querySelector('.profile');
+    const profileModal = document.querySelector('#profileModal');
+
+    const idNV = sessionStorage.getItem('idNV');
+    if (!idNV) {
+        console.error('Không tìm thấy ID nhân viên trong sessionStorage');
+        return;
+    }
+
+    let getNV
+
+    fetch('http://localhost:8083/nhanvien/profile/' + idNV, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        mode: 'cors'
+            })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Không thể lấy thông tin nhân viên');
+                return;
+            }
+            return response.json(); // Chuyển dữ liệu từ response thành JSON
+        })
+        .then(nhanVien => {
+            if (!nhanVien) {
+                console.error('Không có dữ liệu nhân viên');
+                return;
+            }
+
+            getNV = nhanVien
+
+            const imgAcc = document.querySelector("#img-acc")
+            imgAcc.src = nhanVien.img
+        })
+    profileButton.addEventListener('click', async () => {
+                const profileModalBody = document.querySelector('#profileModal .modal-body');
+                profileModalBody.innerHTML = `
+                        <div class="form-group">
+                            <label>Tên nhân viên:</label>
+                            <p>${getNV.ten || 'Không có thông tin'}</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <p>${getNV.email || 'Không có thông tin'}</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Quyền:</label>
+                            <p>${getNV.tenQuyen || 'Không có thông tin'}</p>
+                        </div>                     
+                    `;
+
+                $('#profileModal').modal('show');
+            })
+
 
     $scope.modalMessage = ""; // Nội dung thông báo
 
@@ -147,3 +204,4 @@ function showDangerAlert(message) {
         setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
     }, 3000);
 }
+

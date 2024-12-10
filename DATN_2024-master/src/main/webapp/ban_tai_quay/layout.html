@@ -160,8 +160,8 @@
             <i class='bx bxs-bell'></i>
             <span class="num">8</span>
         </a>
-        <a href="#" class="profile">
-            <img src="">
+        <a class="profile" ng-click="showProfile()">
+            <img id="img-acc" alt="Ảnh nhân viên" style="width: 50px; height: 50px;" />
         </a>
     </nav>
     <main>
@@ -182,6 +182,28 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" ng-click="closeNotificationModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="profileModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thông tin nhân viên</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-">
+                    Đăng Xuất
+                </button>
             </div>
         </div>
     </div>
