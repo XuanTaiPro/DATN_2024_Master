@@ -50,26 +50,34 @@ public class ChiTietHoaDonController {
     private LHwithHDrepository lhhdRepo;
 
     @PostMapping("/checkSoLuong")
-    public ResponseEntity<?> checkSoLuong(@RequestBody Map<String, Object> mapCTHD) {
+    public ResponseEntity<?> checkSoLuong(@RequestBody List<Map<String, Object>> mapCTHD) {
 
-        String idCTSP = (String) mapCTHD.get("idCTSP");
-
-        Object soLuongObj = mapCTHD.get("soLuong");
-        Integer sL;
-
-        if (soLuongObj instanceof Integer) {
-            sL = (Integer) soLuongObj;
-        } else {
-            try {
-                sL = Integer.valueOf((String) mapCTHD.get("soLuong"));
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException();
-            }
+        if (mapCTHD.size() == 0) {
+            return ResponseEntity.badRequest().body("Giá trị gửi lên không có");
         }
+        for (Map<String, Object> itemCTHD : mapCTHD) {
+            String idCTSP = (String) itemCTHD.get("idCTSP");
 
-        if (!cthdService.checkSL(idCTSP, sL)) {
-            // status = 204
-            return ResponseEntity.noContent().build();
+            Object soLuongObj = itemCTHD.get("soLuong");
+            Integer sL;
+
+            if (soLuongObj instanceof Integer) {
+                sL = (Integer) soLuongObj;
+            } else {
+                try {
+                    sL = Integer.valueOf((String) soLuongObj);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException();
+                }
+            }
+
+            int getResult = cthdService.checkSL(idCTSP, sL);
+            if (getResult == -1) {
+                return ResponseEntity.ok().body("Không có sản phẩm trong lô hàng");
+            }
+            if (getResult != 0) {
+                return ResponseEntity.badRequest().body(getResult);
+            }
         }
 
         return ResponseEntity.ok().body(null);

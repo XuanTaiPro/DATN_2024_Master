@@ -300,3 +300,35 @@ button {
     margin-top: 5px;
 }
 
+.overlay-load {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(110, 110, 110, 0.5);
+    z-index: 99;
+}
+
+.loader {
+    display: none;
+    width: 3rem;
+    height: 3rem;
+    position: absolute;
+    top: 47%;
+    left: 47%;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border-top: 5px solid #fff;
+    border-left: 1px solid #fff;
+    border-right: 15px solid #ff00;
+    animation: loader 1.2s infinite linear;
+    z-index: 100;
+}
+
+@keyframes loader {
+    to {
+        transform: rotate(360deg);
+    }
+}
