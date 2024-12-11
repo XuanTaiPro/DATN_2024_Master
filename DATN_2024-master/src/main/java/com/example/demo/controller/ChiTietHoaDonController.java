@@ -182,13 +182,15 @@ public class ChiTietHoaDonController {
 
     @PutMapping("/updateSoLuong")
     public ResponseEntity<?> updateCTHDSoLuong(@RequestBody Map<String, Object> req) {
-        String idCTSP = (String) req.get("idCTSP");
+        String id = (String) req.get("id");
 
-        ChiTietHoaDon cTHDExisting = chiTietHoaDonRepo.findById(idCTSP).get();
+        ChiTietHoaDon cTHDExisting = chiTietHoaDonRepo.findById(id).get();
 
         if (cTHDExisting == null) {
             return ResponseEntity.badRequest().body("Chi tiết hóa đơn không tồn tại");
         }
+
+        String idCTSP = cTHDExisting.getChiTietSanPham().getId();
 
         Integer sLRequest = (Integer) req.get("soLuong");
 
