@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.DanhGia;
+import com.example.demo.entity.DanhMuc;
 
 import java.util.List;
 
