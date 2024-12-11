@@ -214,13 +214,15 @@ public class ChiTietHoaDonController {
 
                 lh.setSoLuong(lh.getSoLuong() - usedQuantity);
 
-                LoHangWithHoaDon lwhd = lhhdRepo.getByIdLoHang(idCTSP, cTHDExisting.getId());
+                LoHangWithHoaDon lwhd = lhhdRepo.getByIdLoHang(lh.getId(), cTHDExisting.getId());
                 if (lwhd == null) {
                     lwhd = new LoHangWithHoaDon();
                     lwhd.setLoHang(lh);
                     lwhd.setCthd(cTHDExisting);
+                    lwhd.setSoLuong(usedQuantity);
+                } else {
+                    lwhd.setSoLuong(lwhd.getSoLuong() + usedQuantity);
                 }
-                lwhd.setSoLuong(lwhd.getSoLuong() + usedQuantity);
 
                 lHRepo.save(lh);
                 lhhdRepo.save(lwhd);
