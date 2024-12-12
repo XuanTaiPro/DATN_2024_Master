@@ -173,46 +173,70 @@ window.nhansuCtrl = function ($scope, $http) {
         console.log("Trạng thái hiện tại:", $scope.selectedNhanVien.trangThai);
     };
 
-    $scope.errorMessages = {};
     $scope.addNhanVien = function () {
+        $scope.errorMessage = '';
         $scope.errorMessages = {};
-        if (!$scope.gioiTinh) {
-            $scope.gioiTinh = "Nam";
-        }
-        console.log("Thêm nhân viên được gọi!");
-        const newNhanVien = {
-            ten: $scope.ten,
-            email: $scope.email,
-            passw: $scope.passw,
-            gioiTinh: $scope.gioiTinh,
-            diaChi: $scope.diaChi,
-            trangThai: $scope.trangThai,
-            idQuyen: $scope.idQuyen,
-            img: $scope.img
-        };
-        console.log("Dữ liệu nhân viên mới:", newNhanVien);
-
-        $http.post('http://localhost:8083/nhanvien/add', newNhanVien)
+        $scope.successMessage = '';
+        $http.get('http://localhost:8083/nhanvien/check-email', { params: { email: $scope.email } })
             .then(function (response) {
-                $scope.listNhanVien.push(response.data);
+                if (response.data) {
 
-                // Đóng modal
-                $('#productModal').modal('hide');
-                setTimeout(function () {
-                    $scope.loadPage($scope.currentPage);
-                }, 500);
-                resetForm();
+                    $scope.errorMessages.email = "Email này đã tồn tại!";
+                } else {
+                    const newNhanVien = {
+                        ten: $scope.ten,
+                        email: $scope.email,
+                        passw: $scope.passw,
+                        gioiTinh: $scope.gioiTinh,
+                        diaChi: $scope.diaChi,
+                        trangThai: $scope.trangThai,
+                        idQuyen: $scope.idQuyen,
+                        img: $scope.img
+                    };
+                    console.log("Dữ liệu nhân viên mới:", newNhanVien);
+
+                    $http.post('http://localhost:8083/nhanvien/add', newNhanVien)
+                        .then(function (response) {
+                            console.log("Phản hồi từ backend:", response);
+                            if (response.data && response.data.message) {
+                                $scope.successMessage = response.data.message;
+                                $scope.errorMessage = '';
+
+                                if (!$scope.$$phase) {
+                                    $scope.$apply(function () {
+                                        $('#productModal').modal('hide');
+                                    });
+                                } else {
+                                    $('#productModal').modal('hide');
+                                }
+
+                                $timeout(function () {
+                                    $scope.successMessage = '';
+                                }, 2000);
+                            }
+
+                            resetForm();
+                        })
+                        .catch(function (error) {
+                            $scope.successMessage = '';
+                            if (error.status === 400) {
+                                $scope.errorMessages = error.data;
+                            } else {
+                                $scope.errorMessage = 'Thêm nhân viên thất bại!';
+                                $timeout(function () {
+                                    $scope.errorMessage = '';
+                                }, 2000);
+                            }
+                        });
+
+                }
             })
             .catch(function (error) {
-                // if (error.status === 400) {
-                //     $scope.errorMessages = error.data;
-                // } else if (error.status === 403) {
-                //     alert(error.data.message || "Bạn không có quyền thực hiện thao tác này!");
-                // } else {
-                //     alert(error.data.message || "Thêm thất bại. Vui lòng thử lại sau.");
-                // }
+                $scope.errorMessages.email = "Lỗi khi kiểm tra email!";
             });
     };
+
+
 
 
     $scope.updateNhanVien = function () {
@@ -220,34 +244,44 @@ window.nhansuCtrl = function ($scope, $http) {
             alert("Vui lòng chọn quyền cho nhân viên.");
             return;
         }
-        // $event.preventDefault()
-        $scope.selectedNhanVien.idQuyen = $scope.idQuyen;
-        $http.put('http://localhost:8083/nhanvien/update/' + $scope.selectedNhanVien.id, $scope.selectedNhanVien)
+
+        $http.get('http://localhost:8083/nhanvien/nhavienud/check-email', {
+            params: {
+                email: $scope.email,
+                id: $scope.selectedNhanVien.id
+            }
+        })
             .then(function (response) {
-                // Ẩn modal
-                $('#UpdateForm').modal('hide');
+                if (response.data) {
+                    $scope.errorMessages.email = "Email này đã tồn tại!";
+                } else {
+                    $scope.selectedNhanVien.idQuyen = $scope.idQuyen;
 
-                // Hiển thị alert với hiệu ứng slide down
-                const alertBox = document.getElementById('success-alert');
-                alertBox.style.display = 'block'; // Hiện alert
-                setTimeout(() => alertBox.classList.add('show'), 10); // Thêm hiệu ứng
+                    $http.put('http://localhost:8083/nhanvien/update/' + $scope.selectedNhanVien.id, $scope.selectedNhanVien)
+                        .then(function (response) {
+                            $('#UpdateForm').modal('hide');
+                            const alertBox = document.getElementById('success-alert');
+                            alertBox.style.display = 'block'; // Hiện alert
+                            setTimeout(() => alertBox.classList.add('show'), 10);
+                            setTimeout(() => {
+                                alertBox.classList.remove('show'); // Ẩn hiệu ứng
+                                setTimeout(() => (alertBox.style.display = 'none'), 500); // Ẩn hoàn toàn
+                            }, 3000);
 
-                // Tự động ẩn alert sau 3 giây
-                setTimeout(() => {
-                    alertBox.classList.remove('show'); // Ẩn hiệu ứng
-                    setTimeout(() => (alertBox.style.display = 'none'), 500); // Ẩn hoàn toàn
-                }, 3000);
-
-                // Reload danh sách nhân viên
-                $scope.loadPage($scope.currentPage);
+                            $scope.loadPage($scope.currentPage);
+                        })
+                        .catch(function (error) {
+                            console.error("Lỗi khi cập nhật nhân viên:", error);
+                            if (error.status === 403) {
+                                alert(error.data.message || "Bạn không có quyền thực hiện thao tác này!");
+                            } else {
+                                alert(error.data.message || "Cập nhật nhân viên thất bại. Vui lòng thử lại sau.");
+                            }
+                        });
+                }
             })
             .catch(function (error) {
-                console.error("Lỗi khi cập nhật nhân viên:", error);
-                if (error.status === 403) {
-                    alert(error.data.message || "Bạn không có quyền thực hiện thao tác này!");
-                } else {
-                    alert(error.data.message || "Xóa thất bại. Vui lòng thử lại sau.");
-                }
+                $scope.errorMessages.email = "Lỗi khi kiểm tra email!";
             });
     };
 

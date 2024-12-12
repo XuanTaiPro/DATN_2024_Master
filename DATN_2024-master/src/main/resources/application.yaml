@@ -3,9 +3,9 @@ spring:
     name: demo
 
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=DATN_2024;encrypt=true;trustServerCertificate=true
-    username: sa
-    password: 1234
+    url: jdbc:sqlserver://localhost:1433;databaseName=DATN_2024_9;encrypt=true;trustServerCertificate=true
+    username: test2
+    password: kien1234
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:

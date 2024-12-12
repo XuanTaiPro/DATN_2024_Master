@@ -1,4 +1,4 @@
-window.loaivoucherCtrl = function ($scope, $http) {
+window.loaivoucherCtrl = function ($scope, $http,$timeout) {
     const url = "http://localhost:8083/loaivoucher";
 
     $scope.listLoaiVoucher = [];
@@ -6,6 +6,7 @@ window.loaivoucherCtrl = function ($scope, $http) {
     $scope.totalPages = 1;
     $scope.pageSize = 3;
     $scope.emptyMessage = "";
+    $scope.isSubmitted = false;
 
     $scope.loadPage = function (page) {
         $http.get('http://localhost:8083/loaivoucher/page?page=' + page)
@@ -72,27 +73,71 @@ window.loaivoucherCtrl = function ($scope, $http) {
         console.log("Trạng thái hiện tại:", $scope.selectedLoaiVoucher.trangThai);// Sao chép dữ liệu nhân viên cần cập nhật
     };
 
+    // $scope.openModal = function () {
+    //     $scope.isModalVisible = true;
+    // };
+    // // $scope.closeModal = function () {
+    // //     $scope.isModalVisible = false;
+    // // };
+    // $scope.closeModal = function () {
+    //     $scope.isModalVisible = false;
+    //     $('#productModal').modal('hide'); // Đóng modal
+    // };
 
-    $scope.addLoaiVoucher = function () {
-        const newLoaiVoucher = {
-            ten: $scope.ten,
-            trangThai: $scope.trangThai,
-            moTa: $scope.moTa,
-        };
-        console.log("Dữ liệu mới:", newLoaiVoucher);
-        $http.post('http://localhost:8083/loaivoucher/add', newLoaiVoucher)
-            .then(function (response) {
-                $('#productModal').modal('hide');
-                setTimeout(function () {
-                    location.reload();
-                }, 500);
-            })
-            .catch(function (error) {
-                $scope.errorMessage = "Thêm thất bại";
-            });
-        resetForm();
+    $scope.validationErrors = {};
+    $scope.validateDiscounts = function() {
+        $scope.validationErrors = {}; // Xóa lỗi cũ
+        if (!$scope.ten || $scope.ten.trim() === '') {
+            $scope.validationErrors.ten = "Tên không được để trống!";
+
+        }
+        if (!$scope.moTa || $scope.moTa.trim() === '') {
+            $scope.validationErrors.moTa = "Mô tả không được để trống!";
+            // $scope.$apply();
+        }
+        if (!$scope.trangThai) {
+            $scope.validationErrors.trangThai = 'Phải chọn trạng thái';
+        }
 
     };
+
+
+    $scope.addVoucher = function () {
+        $scope.isSubmitted = true;
+        $scope.validateDiscounts();
+        const newVoucherType = {
+            ten: $scope.ten,
+            trangThai: $scope.trangThai,
+            moTa: $scope.moTa
+        };
+
+        $http.post('http://localhost:8083/loaivoucher/add', newVoucherType)
+            .then(function (response) {
+                $('#UpdateForm').modal('hide');
+                $scope.successMessage = response.data.message;
+                $scope.errorMessages = {}; // Xóa thông báo lỗi
+
+                // Ẩn thông báo sau 2 giây
+                $timeout(function () {
+                    $scope.successMessage = '';
+                }, 2000);
+
+                // Đặt lại form
+                resetForm();
+            })
+            .catch(function (error) {
+                if (error.status === 400) {
+                    $scope.errorMessages = error.data;
+                } else {
+                    $scope.errorMessage = 'Thêm Loại VC thất bại!';
+                    $timeout(function () {
+                        $scope.errorMessage = '';
+                    }, 2000);
+                }
+            });
+    };
+
+
 
     $scope.updateLoaiVoucher = function () {
         console.log("Cập nhật Loại Voucher:", $scope.selectedLoaiVoucher);  // Kiểm tra dữ liệu trước khi gửi

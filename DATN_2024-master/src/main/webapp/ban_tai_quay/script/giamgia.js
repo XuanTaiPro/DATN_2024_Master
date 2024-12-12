@@ -120,7 +120,63 @@ window.giamGiaCtrl = function ($scope, $http) {
             });
     };
 
+
+
+    $scope.isTenValid = function() {
+        return $scope.giamGia.ten && $scope.giamGia.ten.trim() !== '';
+    };
+
+    $scope.isNgayBatDauValid = function(ngayBatDau) {
+        const now = moment().startOf('day'); // Ngày hiện tại, không tính giờ
+        const batDau = moment(ngayBatDau, 'YYYY-MM-DD', true);
+        return batDau.isValid() && batDau.isSameOrAfter(now);
+    };
+
+    $scope.isNgayKetThucValid = function(ngayKetThuc, ngayBatDau) {
+        const now = moment().startOf('day'); // Ngày hiện tại
+        const ketThuc = moment(ngayKetThuc, 'YYYY-MM-DD', true);
+        const batDau = moment(ngayBatDau, 'YYYY-MM-DD', true);
+
+        return (
+            ketThuc.isValid() &&
+            ketThuc.isAfter(now) &&
+            (!ngayBatDau || ketThuc.isAfter(batDau))
+        );
+    };
+
+
+    $scope.isGiaGiamValid = function(giaGiam) {
+        return giaGiam !== undefined && giaGiam >= 0 && giaGiam<=100;
+    };
+    $scope.isMoTaValid = function(moTa) {
+        return moTa && moTa.trim() !== '';
+    };
+
+    $scope.giamGia = {
+        selectedProductsType: '', // Không chọn mặc định
+        selectedProducts: []
+    };
+
+// Kiểm tra tính hợp lệ
+    $scope.isProductTypeValid = function() {
+        return $scope.giamGia.selectedProductsType === 'all' ||
+            ($scope.giamGia.selectedProductsType === 'selected' && $scope.giamGia.selectedProducts.length > 0);
+    };
+
+// Cập nhật khi thay đổi tùy chọn
+    $scope.updateProductSelection = function() {
+        if ($scope.giamGia.selectedProductsType === 'all') {
+            // Nếu chọn "Tất cả sản phẩm", xóa danh sách sản phẩm được chọn
+            $scope.giamGia.selectedProducts = [];
+        }
+    };
+    $scope.formSubmitted = false;
+
     $scope.addGiamGia = function (giamGia) {
+        $scope.formSubmitted = true;
+        if(!$scope.isTenValid()||!$scope.isNgayBatDauValid()||!$scope.isNgayKetThucValid()||!$scope.isGiaGiamValid()){
+            return
+        }
         const formData = new FormData();
         // Thêm thông tin sản phẩm vào FormData
         formData.append('ten', giamGia.ten || '');
@@ -237,7 +293,7 @@ window.giamGiaCtrl = function ($scope, $http) {
         $scope.giamGiaDetail = {}; // Xóa dữ liệu chi tiết sản phẩm
         $scope.giamGia = {};
         $('#userForm').modal('hide'); // Đóng modal
-        $('#addModal').modal('hide'); // Đóng modal
+        // $('#addModal').modal('hide'); // Đóng modal
     };
     // Xem chi tiết sản phẩm
     $scope.viewDetail = function (ggId) {

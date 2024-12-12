@@ -13,6 +13,10 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, String> {
     // @Query("SELECT k.ma FROM KhachHang k ORDER BY k.id DESC LIMIT 1")
     // String findLastCustomerCode();
     boolean existsByMa(String ma);
+    boolean existsByEmail(String email);
+    boolean existsBySdt(String sdt);
+    boolean existsByEmailAndIdNot(String email, String id);
+    boolean existsBySdtAndIdNot(String sdt, String id);
 
     KhachHang getById(String id);
 

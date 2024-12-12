@@ -1,4 +1,4 @@
-window.banhangCtrl = function ($scope, $http, $document) {
+window.banhangCtrl = function ($scope, $http, $document,$timeout) {
     $scope.tabs = []; // Khởi tạo danh sách tab
     $scope.selectedTab = 0; // Chỉ số tab đang chọn
     $scope.searchText = ""; // Khởi tạo biến tìm kiếm
@@ -110,7 +110,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
                     videoElement.srcObject = null; // Hủy kết nối video
                 } else {
                     const formData = new FormData();
-                    formData.append('idNV', '40E70DA8'); // Thay đổi theo nhu cầu
+                    formData.append('idNV', '909918DD'); // Thay đổi theo nhu cầu
 
                     // Gọi API để thêm hóa đơn mới
                     $http.post('http://localhost:8083/hoadon/add', formData, {
@@ -216,6 +216,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
             })
             .catch(function (error) {
                 console.error('Lỗi khi lấy hóa đơn tại quầy:', error.data);
+                console.error('Lỗi khi lấy hóa đơn tại quầy:', error.data);
             });
     };
 
@@ -223,20 +224,35 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $('#confirmAddInvoiceModal').modal('hide');
 
         const formData = new FormData();
-        formData.append('idNV', '40E70DA8'); // Thay đổi theo nhu cầu
-
-        // Gọi API để thêm hóa đơn
-        $http.post('http://localhost:8083/hoadon/add', formData, {
-            transformRequest: angular.identity,
-            headers: { 'Content-Type': undefined }
-        })
+        formData.append('idNV', '909918DD'); // Thay đổi theo nhu cầu
+        $http.get('http://localhost:8083/hoadon/getHDTaiQuay')
             .then(function (response) {
-                $('#addInvoiceModal').modal('show'); // Hiển thị modal
-                $scope.getHDTaiQuay(); // Lấy lại danh sách hóa đơn mới nhất
+                if (response.data && response.data.length >= 4) {
+                    $scope.showMessage = "Đã đủ 10 hóa đơn tại quầy, không thể thêm nữa!";
+                    $timeout(function () {
+                        $scope.showMessage = '';
+                    }, 2000);
+                    return;
+                } else {
+                                $http.post('http://localhost:8083/hoadon/add', formData, {
+                                    transformRequest: angular.identity,
+                                    headers: { 'Content-Type': undefined }
+                                })
+                                    .then(function (response) {
+                                        $('#addInvoiceModal').modal('show'); // Hiển thị modal
+                                        $scope.getHDTaiQuay(); // Lấy lại danh sách hóa đơn mới nhất
+                                    })
+                                    .catch(function (error) {
+                                        console.error('Lỗi:', error);
+                                        alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
+                                    });
+
+
+                }
             })
             .catch(function (error) {
-                console.error('Lỗi:', error);
-                alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
+                // console.error('Lỗi khi lấy danh sách hóa đơn:', error);
+                // alert('Lỗi khi lấy danh sách hóa đơn!');
             });
     };
     $scope.updateGhiChu = function (hd) {

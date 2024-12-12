@@ -30,18 +30,21 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="productModalLabel">Thêm Sản Phẩm</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
             </div>
             <div class="modal-body">
-                <form ng-submit="addProduct(product); clearForm()">
+                <form ng-submit="addProduct(product); clearForm()" name="myForm" novalidate>
                     <div class="mb-3">
                         <label class="form-label">Giá:</label>
-                        <input type="text" class="form-control" ng-model="product.gia" required>
+                        <input type="text" name="gia" class="form-control" ng-model="product.gia"  ng-class="{'is-invalid': !isGiaValid(product.gia) && (myForm.gia.$touched || formSubmitted)}" min="1"/>
+                        <div ng-show="!isGiaValid(product.gia) && (myForm.gia.$touched|| formSubmitted) " class="error text-danger">
+                            Giá phải là số và lớn hơn 1đ.
+                        </div>
                     </div>
                     <div class="mb-3 row">
                         <div class="col-md-6">
                             <label class="form-label">Số ngày sử dụng:</label>
-                            <select class="form-control" ng-model="product.soNgaySuDung" ng-disabled="product.soNgaySuDungInput" required>
+                            <select class="form-control" ng-model="product.soNgaySuDung" ng-disabled="product.soNgaySuDungInput" >
                                 <option value=""  selected>Vui lòng chọn số ngày</option>
                                 <option ng-repeat="soNgay in uniqueSoNgaySuDung" value="{{soNgay}}">{{soNgay}}</option>
                             </select>
@@ -54,19 +57,22 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Ngày nhập:</label>
-                        <input type="datetime-local" class="form-control" ng-model="product.ngayNhap" required>
+                        <input type="datetime-local" class="form-control" ng-model="product.ngayNhap" >
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Ngày sản xuất:</label>
-                        <input type="datetime-local" class="form-control" ng-model="product.nsx" required>
+                        <input type="datetime-local" class="form-control" ng-model="product.nsx" >
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Hạn sử dụng:</label>
-                        <input type="datetime-local" class="form-control" ng-model="product.hsd" required>
+                        <input type="datetime-local" class="form-control" ng-model="product.hsd" >
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Số lượng:</label>
-                        <input type="number" class="form-control" ng-model="product.soLuong" required>
+                        <input type="number" name="soLuong" class="form-control" ng-model="product.soLuong" ng-class="{'is-invalid': !isSoLuongValid(product.soLuong)  && (myForm.soLuong.$touched || formSubmitted)}" min="1">
+                        <div ng-show="!isSoLuongValid(product.soLuong) && (myForm.soLuong.$touched || formSubmitted)" class="error text-danger">
+                            Số lượng phải là số và lớn hơn hoặc bằng 1.
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Chọn ảnh:</label>
@@ -79,6 +85,7 @@
                             <a class="btn btn-danger remove-button" ng-click="removeImage($index, false)">X</a>
                         </div>
                     </div>
+
                     <button type="submit" class="btn btn-outline-success">Thêm</button>
                 </form>
             </div>
@@ -230,21 +237,29 @@
                                         <fieldset class="border p-3">
                                             <legend class="w-auto"><strong>Thêm lô hàng mới</strong></legend>
                                             <div class="mb-3">
-                                                <label class="form-label">Ngày nhập:</label>
-                                                <input ng-model="newLoHang.ngayNhap" type="datetime-local" class="form-control">
-                                            </div>
-                                            <div class="mb-3">
                                                 <label class="form-label">Ngày sản xuất:</label>
                                                 <input ng-model="newLoHang.nsx" type="datetime-local" class="form-control">
+                                                <div ng-show="newLoHangErrors.nsx" class="error text-danger">{{ newLoHangErrors.nsx }}</div>
                                             </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Ngày nhập:</label>
+                                                <input ng-model="newLoHang.ngayNhap" type="datetime-local" class="form-control">
+                                                <div ng-show="newLoHangErrors.ngayNhap" class="error text-danger">{{ newLoHangErrors.ngayNhap }}</div>
+                                            </div>
+
                                             <div class="mb-3">
                                                 <label class="form-label">Hạn sử dụng:</label>
                                                 <input ng-model="newLoHang.hsd" type="datetime-local" class="form-control">
+                                                <div ng-show="newLoHangErrors.hsd" class="error text-danger">{{ newLoHangErrors.hsd }}</div>
                                             </div>
+
                                             <div class="mb-3">
                                                 <label class="form-label">Số lượng:</label>
                                                 <input ng-model="newLoHang.soLuong" type="number" class="form-control">
+                                                <div ng-show="newLoHangErrors.soLuong" class="error text-danger">{{ newLoHangErrors.soLuong }}</div>
                                             </div>
+
                                             <!-- Lưu lô hàng mới -->
                                             <button class="btn btn-success mt-2" type="button" ng-click="addLoHang()">Lưu lô hàng</button>
                                             <!-- Hủy thao tác thêm lô hàng -->

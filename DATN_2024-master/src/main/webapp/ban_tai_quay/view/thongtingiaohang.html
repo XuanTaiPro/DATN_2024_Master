@@ -73,34 +73,54 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="#!/thongtingiaohang" id="myForm" ng-submit="addTtgh()">
+                <form action="#!/thongtingiaohang" id="myForm" name="myForm" ng-submit="addTtgh()">
                     <div class="inputField">
                         <div>
                             <label>SDT người nhận:</label>
-                            <input type="text" ng-model="sdtNguoiNhan">
+                            <input type="text" ng-model="sdtNguoiNhan"name="sdtNguoiNhan" ng-change="validateDiscounts()">
+                            <div style="color: red;" ng-show="isSubmitted && !sdtNguoiNhan">
+                                SDT không được để trống.
+                            </div>
+                            <div style="color: red;" ng-show="validationErrors.sdtNguoiNhan">
+                                {{ validationErrors.sdtNguoiNhan }}
+                            </div>
                         </div>
                         <div>
                             <label>Tên người nhận:</label>
                             <input type="text" ng-model="tenNguoiNhan">
+                            <div style="color: red;" ng-show="isSubmitted && !tenNguoiNhan">
+                                Tên  không được để trống.
+                            </div>
+
                         </div>
                         <div>
                             <label>Địa chỉ người nhận:</label>
                             <input type="text" ng-model="dcNguoiNhan">
+                            <div style="color: red;" ng-show="isSubmitted && !dcNguoiNhan">
+                                Địa chỉ  không được để trống.
+                            </div>
                         </div>
                         <div>
                             <label for="trangThai">Trạng thái:</label>
-                            <select ng-model="trangThai" id="trangThai" class="short-select" required>
+                            <select ng-model="trangThai" id="trangThai" class="short-select" >
                                 <option value="" disabled selected>Chọn Trạng Thái</option>
                                 <option value="1">Hoạt động</option>
                                 <option value="0">Ngưng hoạt động</option>
                             </select>
+                            <div style="color: red;" ng-show="isSubmitted && !trangThai">
+                                Trạng thái  không được để trống.
+                            </div>
                         </div>
                         <div>
                             <label>Khách hàng:</label>
-                            <select ng-model="idKH" class="short-select" required>
+
+                            <select ng-model="idKH" class="short-select" >
                                 <option value="" disabled selected>Chọn Khách hàng</option>
                                 <option ng-repeat="kh in listKH" value="{{kh.id}}">{{kh.ten}}</option>
                             </select>
+                            <div style="color: red;" ng-show="isSubmitted && !idKH">
+                                Cần phải chọn khách hàng.
+                            </div>
                         </div>
                     </div>
                 </form>

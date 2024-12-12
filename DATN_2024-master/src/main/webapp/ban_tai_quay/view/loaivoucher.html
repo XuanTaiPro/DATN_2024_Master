@@ -59,6 +59,8 @@
     </div>
 </section>
 
+
+
 <!--add loại voucher-->
 
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
@@ -69,30 +71,39 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="#!/loaivoucher" id="myForm" ng-submit="addLoaiVoucher()">
+                <form action="#!/loaivoucher" id="myForm" ng-submit="addVoucher()" >
                     <div class="inputField">
                         <div>
                             <label>Tên Loại Voucher:</label>
                             <input type="text" ng-model="ten" id="ten">
+                            <div style="color: red;" ng-show="isSubmitted && !ten">
+                                Tên Loại voucher không được để trống.
+                            </div>
                         </div>
                         <div>
                             <label for="trangThai">Trạng thái:</label>
-                            <select ng-model="trangThai" id="trangThai" class="short-select" required>
+                            <select ng-model="trangThai" id="trangThai" class="short-select" >
                                 <option value="" disabled selected>Chọn Trạng Thái</option>
                                 <option value="1">Hoạt động</option>
                                 <option value="0">Ngưng hoạt động</option>
                             </select>
+                            <div style="color: red;" ng-show="isSubmitted && !trangThai">
+                                Phải chọn trạng thái
+                            </div>
                         </div>
                         <div>
                             <label>Mô tả:</label>
                             <input type="text" ng-model="moTa" id="moTa">
+                            <div style="color: red;" ng-show="isSubmitted && !moTa">
+                                Mô tả  không được để trống.
+                            </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="myForm" class="btn btn-primary submit">Submit</button>
+                <button type="submit" form="myForm" class="btn btn-primary">Submit</button>
             </div>
         </div>
     </div>

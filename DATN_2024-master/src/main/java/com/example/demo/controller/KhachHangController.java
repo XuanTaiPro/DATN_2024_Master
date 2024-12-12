@@ -5,6 +5,7 @@ import com.example.demo.dto.khachhang.KhachHangRequestOnline;
 import com.example.demo.dto.khachhang.KhachHangResponse;
 import com.example.demo.entity.KhachHang;
 import com.example.demo.repository.KhachHangRepository;
+import com.example.demo.repository.NhanVienRepository;
 import com.example.demo.service.GenerateCodeAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,38 @@ public class KhachHangController {
 
     @Autowired
     private GenerateCodeAll generateCodeAll;
-
+    @Autowired
+    private NhanVienRepository nhanVienRepository;
     @GetMapping
     public List<KhachHang> findAll() {
         return khRepo.findAll();
+    }
+
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        boolean existsInNhanVien = nhanVienRepository.existsByEmail(email);
+        boolean existsInKhachHang = khRepo.existsByEmail(email);
+        boolean exists = existsInNhanVien || existsInKhachHang;
+        return ResponseEntity.ok(exists);
+    }
+    @GetMapping("/khachhangud/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email, @RequestParam String id) {
+        boolean existsInKhachHang= khRepo.existsByEmailAndIdNot(email, id);
+        boolean existsInNhanVien= nhanVienRepository.existsByMaAndIdNot(email, id);
+        boolean exists = existsInNhanVien || existsInKhachHang;
+        return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/khachhangud/check-phone")
+    public boolean checkPhone(@RequestParam String sdt, @RequestParam String id) {
+        return khRepo.existsBySdtAndIdNot(sdt, id);
+    }
+
+    @GetMapping("/check-phone")
+    public ResponseEntity<Boolean> checkPhoneExists(@RequestParam("sdt") String sdt) {
+        boolean exists = khRepo.existsBySdt(sdt);
+        return ResponseEntity.ok(exists);
     }
 
     @GetMapping("getId")

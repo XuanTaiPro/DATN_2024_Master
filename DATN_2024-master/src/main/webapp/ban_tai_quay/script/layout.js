@@ -62,7 +62,7 @@ app.config(function ($routeProvider) {
 app.controller('myCtrl', function ($scope, $http) {
     const login = sessionStorage.getItem('loginOk')
     if (!login) {
-        window.location.href = 'http://127.0.0.1:5500/DATN_2024-master/src/main/webapp/ban_tai_quay/view/login.html'
+        window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
         return
     }
     const profileButton = document.querySelector('.profile');

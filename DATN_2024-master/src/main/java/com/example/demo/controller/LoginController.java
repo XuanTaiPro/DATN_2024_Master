@@ -92,7 +92,7 @@ public class LoginController {
         return ResponseEntity.ok(Map.of(
                 "success", true,
 
-                "redirectUrl", "http://127.0.0.1:5500/DATN_2024-master/src/main/webapp/ban_tai_quay/layout.html#!/sanpham"));
+                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html"));
     }
 
     @PostMapping("checkOtpOl")

@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface NhanVienRepository extends JpaRepository<NhanVien, String> {
     boolean existsByMa(String ma);
-
+    boolean existsByEmail(String Email);
     boolean existsByMaAndIdNot(String ma, String id);
 
     @Query("SELECT nv FROM NhanVien nv WHERE " +
