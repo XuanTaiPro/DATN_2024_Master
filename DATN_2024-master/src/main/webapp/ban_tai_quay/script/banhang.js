@@ -442,8 +442,11 @@ window.banhangCtrl = function ($scope, $http, $document) {
             },
             body: JSON.stringify(request)
         })
-            .then(response => {
+            .then(async response => {
                 console.log(response)
+                if (response.status== 400){
+                    showDangerAlert(await response.text())
+                }
                 return
                 const selectedTab = $scope.tabs[$scope.selectedTab];
                 const selectedIdHD = selectedTab.idHD;

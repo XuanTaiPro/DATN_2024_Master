@@ -45,9 +45,10 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     });
 
     $scope.khachVangLai = function () {
-        $scope.selectedCustomerName = "";
-        $scope.selectedCustomerPhone = "";
+        $scope.selectedCustomerName = "Không liên hệ";
+        $scope.selectedCustomerPhone = "0123456789";
         $scope.selectedCustomerId = "";
+        $scope.selectedCustomerEmail = "";
 
         // Xóa danh sách voucher
         $scope.vouchers = [];
@@ -61,10 +62,11 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     };
 
 
-    $scope.selectCustomer = function (ten, sdt, id) {
+    $scope.selectCustomer = function (ten, sdt, id, email) {
         $scope.selectedCustomerName = ten;
         $scope.selectedCustomerPhone = sdt;
         $scope.selectedCustomerId = id; // Lưu ID khách hàng
+        $scope.selectedCustomerEmail = email;
 
         // Khôi phục tổng tiền về giá trị gốc
         if ($scope.previousTotal) {
@@ -272,14 +274,14 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
 
         // Kiểm tra nếu tên hoặc số điện thoại bị trống
         if (!$scope.selectedCustomerName || !$scope.selectedCustomerPhone) {
-            alert("Vui lòng điền đầy đủ Tên khách hàng và Số điện thoại.");
+            showWarningAlert("Vui lòng điền đầy đủ Tên khách hàng và Số điện thoại.")
             return; // Chặn không cho chuyển modal
         }
 
         const amountPattern = /^[0-9]+$/;
         if (!amountPattern.test($scope.amountPaid)) {
             $scope.invalidAmount = true; // Hiển thị lỗi số tiền không hợp lệ
-            alert("Số tiền phải là số nguyên dương và không chứa ký tự đặc biệt.");
+            showWarningAlert("Số tiền phải là số nguyên dương và không chứa ký tự đặc biệt.")
             return;
         } else {
             $scope.invalidAmount = false;
@@ -288,41 +290,68 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         // Kiểm tra số tiền có đủ để thanh toán không
         if ($scope.amountPaid < $scope.tongTien) {
             $scope.showError = true; // Hiển thị lỗi tiền không đủ
-            alert("Số tiền cần thanh toán không đủ. Vui lòng kiểm tra lại.");
+            showWarningAlert("Số tiền cần thanh toán không đủ. Vui lòng kiểm tra lại.")
             return; // Chặn không cho chuyển modal
         } else {
             $scope.showError = false; // Ẩn lỗi tiền không đủ
         }
 
-        // Nếu không có lỗi nào, mở modal xác nhận
+        $('#cashModal').modal('hide');
         const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
         confirmModal.show();
     };
 
 
-    // Hoàn tất thanh toán tiền mặt
-    $scope.completePayment = function () {
-        if ($scope.amountPaid < $scope.tongTien) {
-            alert("Không thể hoàn tất thanh toán vì số tiền không đủ.");
-            return;
+
+    // gừi hóa đơn qua mail
+    $scope.generateAndSendInvoice = function () {
+
+        if(!$scope.selectedCustomerEmail || $scope.selectedCustomerEmail === ''){
+            showDangerAlert("Khách hàng vãng lai không có Email để gửi hóa đơn")
+            return
         }
-        console.log("Thanh toán hoàn tất cho khách hàng:", $scope.selectedCustomerName);
-        alert("Thanh toán thành công!");
-        new bootstrap.Modal(document.getElementById('confirmModal')).hide();
-        location.reload();
+        const invoiceData = {
+            customerName: $scope.selectedCustomerName,
+            amountPaid: $scope.amountPaid,
+            totalAmount: $scope.tongTien,
+            changeAmount: $scope.changeAmount,
+            email: $scope.selectedCustomerEmail // Gán email khách hàng
+        };
+
+        fetch('http://localhost:8083/hoadon/send-invoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(invoiceData)
+
+        })
+            .then(response => {
+                if (response.ok) {
+                    $scope.completePayment();
+                    showSuccessAlert("Hóa đơn đã được gửi đến mail của khách hàng")
+                } else {
+                    showDangerAlert("Mail khách hàng không tồn tại!!")
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi gửi hóa đơn:", error);
+                alert("Đã xảy ra lỗi.");
+            });
 
     };
+
     // Hoàn tất thanh toán chuyển khoản
     $scope.completePaymentCK = function () {
 
         $scope.isSubmitted = true;
         // Kiểm tra nếu tên hoặc số điện thoại bị trống
         if (!$scope.selectedCustomerName || !$scope.selectedCustomerPhone) {
-            alert("Vui lòng điền đầy đủ Tên khách hàng và Số điện thoại.");
+            showDangerAlert("Vui lòng điền đầy đủ Tên khách hàng và Số điện thoại.")
             return; // Chặn không cho chuyển modal
         }
         console.log("Thanh toán hoàn tất cho khách hàng:", $scope.selectedCustomerName);
-        alert("Thanh toán thành công!");
+        showSuccessAlert("Thanh toán thành công!")
         new bootstrap.Modal(document.getElementById('confirmModal')).hide();
         location.reload();
 
@@ -341,7 +370,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
 
         // Kiểm tra trạng thái voucher
         if (voucher.soLuong <= 0 || voucher.trangThai === 0) {
-            alert("Voucher này đã hết số lượng hoặc không còn hoạt động.");
+            showDangerAlert("Voucher này đã hết số lượng hoặc không còn hoạt động.")
             return;
         }
 
@@ -372,7 +401,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         let maxDiscount = parseInt(voucher.giamMax);
 
         if (totalAmount < minAmount) {
-            alert("Hóa đơn phải có giá trị ít nhất " + minAmount + " VNĐ để áp dụng voucher.");
+            showWarningAlert("Hóa đơn phải có giá trị ít nhất " + minAmount + " VNĐ để áp dụng voucher.");
             return;
         }
 
@@ -414,7 +443,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
 
     $scope.completePayment = function () {
         if ($scope.amountPaid < $scope.tongTien) {
-            alert("Không thể hoàn tất thanh toán vì số tiền không đủ.");
+            showDangerAlert("Không thể hoàn tất thanh toán vì số tiền không đủ.");
             return;
         }
 
@@ -427,7 +456,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         };
         $http.put(`http://localhost:8083/hoadon/update/${$scope.idHD}`, hoaDonData)
             .then(function (response) {
-                alert("Thanh toán thành công!");
+                showSuccessAlert("Thanh toán thành công!");
                 if ($scope.appliedVoucherId) {
                     $http.post(`http://localhost:8083/voucher/apply`, {id: $scope.appliedVoucherId})
                         .then(function () {
@@ -437,14 +466,45 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
                             console.error("Lỗi khi áp dụng voucher:", error);
                         });
                 }
+                showSuccessAlert("Thanh toán thành công cho khác hàng : " +  $scope.selectedCustomerName)
                 new bootstrap.Modal(document.getElementById('confirmModal')).hide();
-                location.reload();
+                window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html?_ijt=b52rmmgrr07e4fbs2cavr9s5sd#!/banhang'
             })
             .catch(function (error) {
                 console.error("Lỗi khi cập nhật hóa đơn:", error);
                 alert("Có lỗi xảy ra khi hoàn tất thanh toán.");
             });
     };
+// add nhanh khách hàng
+    $scope.newKH = {
+        ten: '',
+        email: '',
+        sdt: '',
+        gioiTinh: ''
+    }
+    $scope.addCustomer = function () {
+        if ($scope.newKH.ten && $scope.newKH.email && $scope.newKH.sdt && $scope.newKH.gioiTinh) {
+            $http({
+                method: 'POST',
+                url: 'http://localhost:8083/khachhang/add',
+                data: $scope.newKH
+            })
+                .then(function (response) {
+
+                    $scope.selectCustomer(response.data.ten, response.data.sdt)
+                    showSuccessAlert("Thêm mới thành công khách hàng")
+                    $('#addCustomerModal').modal('hide')
+                    $scope.newKH = {}
+                }),
+                (function (error) {
+                    showDangerAlert("khách hàng không thể thêm mới")
+                })
+        } else {
+            showDangerAlert("Vui lòng điền đủ thông tin khách hàng")
+        }
+    }
+
+
     //check ngày kết thúc voucher
     $scope.getDaysLeft = function (ngayKetThuc) {
         var today = new Date(); // Ngày hiện tại
@@ -457,5 +517,8 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         return daysLeft;
     };
 
+    $scope.closeVCTU = function (){
+        $('#suggestedVoucherModal').modal('hide');
+    }
 
 }

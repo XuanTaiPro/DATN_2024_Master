@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MailKH {
+    private String customerName;
     private double amountPaid;
     private double totalAmount;
     private double changeAmount;

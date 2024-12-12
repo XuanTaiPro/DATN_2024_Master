@@ -292,11 +292,17 @@ public class ChiTietHoaDonController {
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteChiTietHoaDon(@RequestBody Map<String, String> request) {
         String id = request.get("id");
-        ChiTietHoaDon existingCTHD = chiTietHoaDonRepo.findById(id).get();
         if (chiTietHoaDonRepo.existsById(id)) {
-            existingCTHD.getChiTietSanPham()
-                    .setSoLuong(existingCTHD.getSoLuong() + existingCTHD.getChiTietSanPham().getSoLuong());
-            chiTietSanPhamRepo.save(existingCTHD.getChiTietSanPham());
+            Sort sort = Sort.by(Sort.Order.desc("loHang.hsd"));
+            List<LoHangWithHoaDon> loHangs = lhhdRepo.getByIdCTHD(id,sort);
+            if(loHangs != null){
+                for (LoHangWithHoaDon lhwhh : loHangs){
+                    LoHang lh = lhwhh.getLoHang();
+                    lh.setSoLuong(lh.getSoLuong() + lhwhh.getSoLuong());
+                    lHRepo.save(lh);
+                    lhhdRepo.deleteById(lhwhh.getId());
+                }
+            }
             chiTietHoaDonRepo.deleteById(id);
             return ResponseEntity.ok("Xóa chi tiết hóa đơn thành công.");
         } else {

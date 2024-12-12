@@ -54,53 +54,81 @@
 <body ng-app="myApp" ng-controller="myCtrl">
 
 <div id="success-alert" class="alert alert-success alert-dismissible fade" role="alert"
-     style="display: none; position: fixed; top: 0; left: 0; width: 100%; z-index: 1050; text-align: center;">
+     style="display: none; position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; text-align: center;">
     <strong><span id="success-message"></span></strong>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
 <div id="danger-alert" class="alert alert-danger alert-dismissible fade" role="alert"
-     style="display: none; position: fixed; top: 0; left: 0; width: 100%; z-index: 1050; text-align: center;">
+     style="display: none; position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; text-align: center;">
     <strong><span id="danger-message"></span></strong>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-
-<div class="popup popup-confirm">
-    <div class="head-popup head-confirm">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-                <path d="M20 7L9.00004 18L3.99994 13" stroke="#fff" stroke-width="1.5" stroke-linecap="round"
-                      stroke-linejoin="round"></path>
-            </g>
-        </svg>
-    </div>
-    <h3 id="text-popup">Bạn chắc chắn chứ!</h3>
-    <div class="btn-popup">
-        <button id="confirm">Xác nhận</button>
-        <button id="cancel">Hủy</button>
+<div id="warning-alert" class="alert alert-warning alert-dismissible fade" role="alert"
+     style="display: none; position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; text-align: center;">
+    <strong><span id="warning-message"></span></strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<div id="confirm-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true"
+     style="z-index: 10500;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Xác nhận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-icon">
+                    <i class="fas fa-exclamation-triangle"></i> <!-- Thêm icon cảnh báo -->
+                </div>
+                <p id="confirm-message">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="confirm-yes" class="btn btn-primary">Xác nhận</button>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="popup popup-warning">
-    <div class="head-popup head-warning">
-        <svg aria-hidden="true" stroke="orange" stroke-width="1.5" viewBox="0 0 24 24" fill="none">
-            <path
-                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-                    stroke-linejoin="round" stroke-linecap="round">
-            </path>
-        </svg>
-    </div>
-    <div class="content-popup">
-        <h3 style="text-align: center;">Warning</h3>
-        <p id="text-warning">This is a warning message</p>
-    </div>
-    <div class="btn-popup">
-        <button id="confirm-warning">Xác nhận</button>
-        <button id="cancel-warning">Hủy</button>
-    </div>
-</div>
+
+
+<!--<div class="popup popup-confirm">-->
+<!--    <div class="head-popup head-confirm">-->
+<!--        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+<!--            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>-->
+<!--            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>-->
+<!--            <g id="SVGRepo_iconCarrier">-->
+<!--                <path d="M20 7L9.00004 18L3.99994 13" stroke="#fff" stroke-width="1.5" stroke-linecap="round"-->
+<!--                      stroke-linejoin="round"></path>-->
+<!--            </g>-->
+<!--        </svg>-->
+<!--    </div>-->
+<!--    <h3 id="text-popup">Bạn chắc chắn chứ!</h3>-->
+<!--    <div class="btn-popup">-->
+<!--        <button id="confirm">Xác nhận</button>-->
+<!--        <button id="cancel">Hủy</button>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<div class="popup popup-warning">-->
+<!--    <div class="head-popup head-warning">-->
+<!--        <svg aria-hidden="true" stroke="orange" stroke-width="1.5" viewBox="0 0 24 24" fill="none">-->
+<!--            <path-->
+<!--                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"-->
+<!--                    stroke-linejoin="round" stroke-linecap="round">-->
+<!--            </path>-->
+<!--        </svg>-->
+<!--    </div>-->
+<!--    <div class="content-popup">-->
+<!--        <h3 style="text-align: center;">Warning</h3>-->
+<!--        <p id="text-warning">This is a warning message</p>-->
+<!--    </div>-->
+<!--    <div class="btn-popup">-->
+<!--        <button id="confirm-warning">Xác nhận</button>-->
+<!--        <button id="cancel-warning">Hủy</button>-->
+<!--    </div>-->
+<!--</div>-->
 
 <section id="sidebar">
     <a href="#" class="brand">
@@ -223,29 +251,25 @@
         </div>
     </div>
 </div>
-<div id="profileModal" class="modal fade" tabindex="-1" role="dialog">
+<div id="profileModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Thông tin nhân viên</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <h5 class="modal-title">Thông tin cá nhân</h5>
+                <button type="button" class="close" data-bs-dismiss="modal">
+                    <span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
+                <!-- Nội dung -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-            </div>
-            <div>
-                <button type="button" class="btn btn-">
-                    Đăng Xuất
-                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-danger" ng-click="logout()">Đăng Xuất</button>
             </div>
         </div>
     </div>
 </div>
-
 </body>
 
 
