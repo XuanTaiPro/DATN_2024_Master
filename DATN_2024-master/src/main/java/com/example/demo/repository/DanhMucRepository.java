@@ -23,9 +23,9 @@ public interface DanhMucRepository extends JpaRepository<DanhMuc, String> {
 
     @Query("SELECT DISTINCT dm " +
             "FROM DanhMuc dm " +
-            "JOIN dm.sanPham sp " +
+            "JOIN dm.listSanPham sp " +
             "JOIN sp.listCTSP ctp " +
-            "JOIN ctp.loHang lh " +
+            "JOIN ctp.listLoHang lh " +
             "WHERE lh.soLuong > 0")
     List<DanhMuc> findDanhMucWithValidProducts();
 }
