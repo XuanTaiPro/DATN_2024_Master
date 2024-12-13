@@ -51,26 +51,34 @@ public class ChiTietHoaDonController {
     private LHwithHDrepository lhhdRepo;
 
     @PostMapping("/checkSoLuong")
-    public ResponseEntity<?> checkSoLuong(@RequestBody Map<String, Object> mapCTHD) {
+    public ResponseEntity<?> checkSoLuong(@RequestBody List<Map<String, Object>> mapCTHD) {
 
-        String idCTSP = (String) mapCTHD.get("idCTSP");
-
-        Object soLuongObj = mapCTHD.get("soLuong");
-        Integer sL;
-
-        if (soLuongObj instanceof Integer) {
-            sL = (Integer) soLuongObj;
-        } else {
-            try {
-                sL = Integer.valueOf((String) mapCTHD.get("soLuong"));
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException();
-            }
+        if (mapCTHD.size() == 0) {
+            return ResponseEntity.badRequest().body("Giá trị gửi lên không có");
         }
+        for (Map<String, Object> itemCTHD : mapCTHD) {
+            String idCTSP = (String) itemCTHD.get("idCTSP");
 
-        if (!cthdService.checkSL(idCTSP, sL)) {
-            // status = 204
-            return ResponseEntity.noContent().build();
+            Object soLuongObj = itemCTHD.get("soLuong");
+            Integer sL;
+
+            if (soLuongObj instanceof Integer) {
+                sL = (Integer) soLuongObj;
+            } else {
+                try {
+                    sL = Integer.valueOf((String) soLuongObj);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException();
+                }
+            }
+
+            int getResult = cthdService.checkSL(idCTSP, sL);
+            if (getResult == -1) {
+                return ResponseEntity.ok().body("Không có sản phẩm trong lô hàng");
+            }
+            if (getResult != 0) {
+                return ResponseEntity.badRequest().body(getResult);
+            }
         }
 
         return ResponseEntity.ok().body(null);
@@ -175,13 +183,15 @@ public class ChiTietHoaDonController {
 
     @PutMapping("/updateSoLuong")
     public ResponseEntity<?> updateCTHDSoLuong(@RequestBody Map<String, Object> req) {
-        String idCTSP = (String) req.get("idCTSP");
+        String id = (String) req.get("id");
 
-        ChiTietHoaDon cTHDExisting = chiTietHoaDonRepo.findById(idCTSP).get();
+        ChiTietHoaDon cTHDExisting = chiTietHoaDonRepo.findById(id).get();
 
         if (cTHDExisting == null) {
             return ResponseEntity.badRequest().body("Chi tiết hóa đơn không tồn tại");
         }
+
+        String idCTSP = cTHDExisting.getChiTietSanPham().getId();
 
         Integer sLRequest = (Integer) req.get("soLuong");
 
@@ -205,13 +215,15 @@ public class ChiTietHoaDonController {
 
                 lh.setSoLuong(lh.getSoLuong() - usedQuantity);
 
-                LoHangWithHoaDon lwhd = lhhdRepo.getByIdLoHang(idCTSP, cTHDExisting.getId());
+                LoHangWithHoaDon lwhd = lhhdRepo.getByIdLoHang(lh.getId(), cTHDExisting.getId());
                 if (lwhd == null) {
                     lwhd = new LoHangWithHoaDon();
                     lwhd.setLoHang(lh);
                     lwhd.setCthd(cTHDExisting);
+                    lwhd.setSoLuong(usedQuantity);
+                } else {
+                    lwhd.setSoLuong(lwhd.getSoLuong() + usedQuantity);
                 }
-                lwhd.setSoLuong(lwhd.getSoLuong() + usedQuantity);
 
                 lHRepo.save(lh);
                 lhhdRepo.save(lwhd);
@@ -283,11 +295,17 @@ public class ChiTietHoaDonController {
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteChiTietHoaDon(@RequestBody Map<String, String> request) {
         String id = request.get("id");
-        ChiTietHoaDon existingCTHD = chiTietHoaDonRepo.findById(id).get();
         if (chiTietHoaDonRepo.existsById(id)) {
-            existingCTHD.getChiTietSanPham()
-                    .setSoLuong(existingCTHD.getSoLuong() + existingCTHD.getChiTietSanPham().getSoLuong());
-            chiTietSanPhamRepo.save(existingCTHD.getChiTietSanPham());
+            Sort sort = Sort.by(Sort.Order.desc("loHang.hsd"));
+            List<LoHangWithHoaDon> loHangs = lhhdRepo.getByIdCTHD(id,sort);
+            if(loHangs != null){
+                for (LoHangWithHoaDon lhwhh : loHangs){
+                    LoHang lh = lhwhh.getLoHang();
+                    lh.setSoLuong(lh.getSoLuong() + lhwhh.getSoLuong());
+                    lHRepo.save(lh);
+                    lhhdRepo.deleteById(lhwhh.getId());
+                }
+            }
             chiTietHoaDonRepo.deleteById(id);
             return ResponseEntity.ok("Xóa chi tiết hóa đơn thành công.");
         } else {

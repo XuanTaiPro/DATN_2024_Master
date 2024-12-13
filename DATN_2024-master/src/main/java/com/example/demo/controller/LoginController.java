@@ -66,7 +66,7 @@ public class LoginController {
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "message", "OTP đã được gửi tới email của bạn"));
+                    "message", loginNV.toResponse()));
         }
     }
 
@@ -92,7 +92,7 @@ public class LoginController {
         return ResponseEntity.ok(Map.of(
                 "success", true,
 
-                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html#!/sanpham"));
+                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html"));
     }
 
     @PostMapping("checkOtpOl")

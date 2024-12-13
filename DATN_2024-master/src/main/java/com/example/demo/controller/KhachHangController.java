@@ -86,13 +86,8 @@ public class KhachHangController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<?> add(@Valid @RequestBody KhachHangRequest khachHangRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            System.out.println(mess.toString());
-            return ResponseEntity.badRequest().body(mess.toString());
-        }
+    public ResponseEntity<?> add( @RequestBody KhachHangRequest khachHangRequest) {
+
         if (khachHangRequest.getMa() == null || khachHangRequest.getMa().isEmpty()) {
             khachHangRequest.setMa(generateCodeAll.generateMaKhachHang());
         }
@@ -102,7 +97,7 @@ public class KhachHangController {
         KhachHang khachHang = khachHangRequest.toEntity();
         khachHang.setNgayTao(LocalDateTime.now());
         khRepo.save(khachHang);
-        return ResponseEntity.ok("thêm thành công");
+        return ResponseEntity.ok(khachHang);
     }
 
     @PostMapping("dangKy")
@@ -198,13 +193,15 @@ public class KhachHangController {
     }
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<Void> deleteKhachHang(@PathVariable String id) {
-        Optional<KhachHang> khachHang = khRepo.findById(id);
-        if (khachHang.isPresent()) {
-            khRepo.delete(khachHang.get());
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<?> delete(@PathVariable String id) {
+        Map<String, String> response = new HashMap<>(); // Khởi tạo Map để trả về JSON hợp lệ
+        if (khRepo.findById(id).isPresent()) {
+            khRepo.deleteById(id);
+            response.put("message", "Xóa thành công");
+            return ResponseEntity.ok(response); // Trả về phản hồi JSON
         } else {
-            return ResponseEntity.notFound().build();
+            response.put("message", "Không tìm thấy id cần xóa");
+            return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON khi lỗi
         }
     }
 

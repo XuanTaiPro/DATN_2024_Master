@@ -107,7 +107,7 @@ window.loaivoucherCtrl = function ($scope, $http) {
 
 
     $scope.delete = function (id) {
-        if (confirm('Bạn có chắc chắn muốn xóa?')) {
+        showConfirm('Bạn có chắc chắn muốn xóa loại Voucher này?', () => {
             $http.delete('http://localhost:8083/loaivoucher/delete/' + id)
                 .then(function (response) {
                     // Kiểm tra phản hồi server
@@ -117,13 +117,13 @@ window.loaivoucherCtrl = function ($scope, $http) {
                     if (index !== -1) {
                         $scope.listLoaiVoucher.splice(index, 1);
                     }
-                    alert(response.data.message || 'Xóa thành công!!');  // Sử dụng thông điệp từ server
+                    showSuccessAlert("Xóa thành công loại voucher")
                 })
                 .catch(function (error) {
                     console.error("Lỗi khi xóa :", error);
-                    alert("Xóa thất bại. Vui lòng thử lại sau.");
+                    showDangerAlert("Xóa thất bại. Vui lòng thử lại sau.")
                 });
-        }
+        })
     };
 
 

@@ -392,27 +392,52 @@ window.banhangCtrl = function ($scope, $http, $document) {
         const formData = new FormData();
         formData.append('soLuong', cthd.soLuong);
 
-        $http.put('http://localhost:8083/chitiethoadon/updateSoLuong?id=' + cthd.id, formData, {
-            headers: { 'Content-Type': undefined }
+        // $http.put('http://localhost:8083/chitiethoadon/updateSoLuong?id=' + cthd.id, formData, {
+        //     headers: { 'Content-Type': undefined }
+        // })
+        //     .then(function (response) {
+        //         console.log("Update successful:", response);
+
+        //         // Lấy idHD của tab hiện tại
+        //         const selectedTab = $scope.tabs[$scope.selectedTab];
+        //         const selectedIdHD = selectedTab.idHD;
+
+        //         // Gọi lại hàm để load lại danh sách chi tiết hóa đơn của tab hiện tại
+        //         $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+
+        //         // alert("Cập nhật thành công!");
+        //     })
+        //     .catch(function (error) {
+        //         const selectedTab = $scope.tabs[$scope.selectedTab];
+        //         const selectedIdHD = selectedTab.idHD;
+        //         $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+        //     });
+
+        const request = {
+            id: cthd.id,
+            soLuong: cthd.soLuong
+        }
+        fetch(`http://localhost:8083/chitiethoadon/updateSoLuong`, {
+            method: "PUT",
+            headers: {
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify(request)
         })
-            .then(function (response) {
-                console.log("Update successful:", response);
-                showSuccessAlert("Cập nhật số lượng thành công!");
-                // Lấy idHD của tab hiện tại
+            .then(async response => {
+                console.log(response)
+                if (response.status== 400){
+                    showDangerAlert(await response.text())
+                }
+                return
                 const selectedTab = $scope.tabs[$scope.selectedTab];
                 const selectedIdHD = selectedTab.idHD;
 
                 // Gọi lại hàm để load lại danh sách chi tiết hóa đơn của tab hiện tại
-                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
-
-                // alert("Cập nhật thành công!");
+                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
             })
-            .catch(function (error) {
-                showDangerAlert("Cập nhật thất bại!");
-                const selectedTab = $scope.tabs[$scope.selectedTab];
-                const selectedIdHD = selectedTab.idHD;
-                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
-            });
+
+
     };
     $scope.calculateTotalAmount = function (cthd) {
         if (!cthd) return 0; // Kiểm tra nếu đối tượng không tồn tại

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -50,6 +51,17 @@ public class DanhMucController {
             return ResponseEntity.badRequest().body("Không tìm thấy danh mục có id: " + id);
         }
         return ResponseEntity.ok(danhMuc);
+    }
+
+    @GetMapping("/danh-muc-co-san-pham")
+    public ResponseEntity<?> getDanhMucWithValidProducts() {
+        List<DanhMuc> danhMucList = danhMucRepository.findDanhMucWithValidProducts();
+
+        if (danhMucList.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(danhMucList.stream().map(DanhMuc::getTen).collect(Collectors.toList()));
     }
 
     @PostMapping("/detailByMa")

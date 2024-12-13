@@ -60,24 +60,44 @@ public class SanPhamController {
 
         return ResponseEntity.ok().body(products);
     }
+
     @GetMapping("/tim-kiem")
-    public Page<SanPhamOnlineResponse> findSanPhamWithFilters(
-            @RequestParam(required = false) Double giaMin,
-            @RequestParam(required = false) Double giaMax,
+    public ResponseEntity<?> findSanPhamWithFilters(
+            @RequestParam(required = false) String giaMin,
+            @RequestParam(required = false) String giaMax,
             @RequestParam(required = false) String searchText,
-            @RequestParam(required = false) Integer tuoiMin,
-            @RequestParam(required = false) Integer tuoiMax,
             @RequestParam(required = false) List<String> danhMuc,
             @RequestParam(defaultValue = "0") int page) {
-        if (giaMin != null) {
-            giaMin = Double.parseDouble(String.valueOf(giaMin));
+
+        Double getGiaMin = null, getGiaMax = null;
+        // Kiểm tra giá trị trước khi parse
+        if (giaMin != null && !"null".equals(giaMin)) {
+            try {
+                getGiaMin = Double.parseDouble(giaMin);
+            } catch (NumberFormatException e) {
+                return ResponseEntity.badRequest().body("Invalid giaMin value: " + giaMin);
+            }
         }
-        if (giaMax != null) {
-            giaMax = Double.parseDouble(String.valueOf(giaMax));
+
+        if (giaMax != null && !"null".equals(giaMax)) {
+            try {
+                getGiaMax = Double.parseDouble(giaMax);
+            } catch (NumberFormatException e) {
+                return ResponseEntity.badRequest().body("Invalid giaMax value: " + giaMax);
+            }
         }
-        Pageable pageable = PageRequest.of(page, 5);
-        return sanPhamRepository.findSanPhamOnline(giaMin, giaMax, searchText, tuoiMin, tuoiMax, danhMuc, pageable);
+
+        Pageable pageable = PageRequest.of(page, 8);
+        Page<SanPhamOnlineResponse> result = sanPhamRepository.findSanPhamOnline(getGiaMin, getGiaMax, searchText,
+                danhMuc, pageable);
+
+        if (result.getContent().isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().body(result.getContent());
     }
+
     @GetMapping("/phanTrang")
     public ResponseEntity<?> filterAndPaginate(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -91,7 +111,8 @@ public class SanPhamController {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "ngayTao"));
 
         // Gọi repository filterSanPham
-        Page<SanPham> sanPhamPage = sanPhamRepository.filterSanPham(searchText, tenDanhMuc, trangThai, tuoiMax, tuoiMin, pageable);
+        Page<SanPham> sanPhamPage = sanPhamRepository.filterSanPham(searchText, tenDanhMuc, trangThai, tuoiMax, tuoiMin,
+                pageable);
 
         // Chuẩn bị dữ liệu trả về
         Map<String, Object> response = new HashMap<>();

@@ -85,6 +85,30 @@ window.voucherCtrl = function ($scope, $http) {
     $scope.selectAll = false;
     $scope.selectAllUpdate = false;
 
+    $scope.search = {
+        ten: '',
+        gioiTinh: '',
+        sdt: ''
+    }
+    $scope.searchKH = function () {
+        const params = {
+            ten: $scope.search.ten || null,
+            gioiTinh: $scope.search.gioiTinh || null,
+            sdt: $scope.search.sdt || null
+        }
+        $http.get('http://localhost:8083/khachhang/search', {params})
+            .then(function (response) {
+                $scope.listKhachHang = response.data
+                if ($scope.listKhachHang == null) {
+                    $scope.emptyMessage = response.data.message || "Danh sách trống"
+                } else {
+                    $scope.emptyMessage = ""
+                }
+            })
+            .catch(function (error) {
+                console.log("lỗi khi tìm kiếm" + error)
+            })
+    }
 // Hàm toggle cho từng khách hàng
     $scope.toggleCustomerSelection = function (khachHang) {
         if (khachHang.selected) {
@@ -243,11 +267,9 @@ window.voucherCtrl = function ($scope, $http) {
         console.log("Dữ liệu mới:", newVoucher);
         $http.post('http://localhost:8083/voucher/add', newVoucher)
             .then(function (response) {
-                // Đóng modal
                 $('#productModal').modal('hide');
-                setTimeout(function () {
-                    location.reload();
-                }, 500);
+                showSuccessAlert('Thêm thành công!');
+                $scope.loadPage($scope.currentPage);
             })
             .catch(function (error) {
                 $scope.errorMessage = "Thêm thất bại";

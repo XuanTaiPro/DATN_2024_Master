@@ -244,7 +244,7 @@ window.nhansuCtrl = function ($scope, $http) {
             .catch(function (error) {
                 console.error("Lỗi khi cập nhật nhân viên:", error);
                 if (error.status === 403) {
-                    alert(error.data.message || "Bạn không có quyền thực hiện thao tác này!");
+                    showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
                 } else {
                     alert(error.data.message || "Xóa thất bại. Vui lòng thử lại sau.");
                 }
@@ -269,7 +269,7 @@ window.nhansuCtrl = function ($scope, $http) {
             .catch(function (error) {
                 console.error("Lỗi khi xóa nhân viên:", error);
                 if (error.status === 403) {
-                    alert(error.data.message || "Bạn không có quyền thực hiện thao tác này!");
+                    showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
                 } else {
                     alert(error.data.message || "Xóa thất bại. Vui lòng thử lại sau.");
                 }

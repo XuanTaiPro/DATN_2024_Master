@@ -60,10 +60,75 @@ app.config(function ($routeProvider) {
 })
 
 app.controller('myCtrl', function ($scope, $http) {
-    // const login = sessionStorage.getItem('loginOk')
-    // if(!login){
-    //     window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html?_ijt=rgqkbr1cvcf8at1kk6v46lmcv4'
-    // }
+    const login = sessionStorage.getItem('loginOk')
+    if (!login) {
+        window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
+        return
+    }
+
+    const idNV = sessionStorage.getItem('idNV');
+    if (!idNV) {
+        console.error('Không tìm thấy ID nhân viên trong sessionStorage');
+        return;
+    }
+    let getNV
+
+    const profileButton = document.querySelector('.profile');
+    const profileModal = document.querySelector('#profileModal');
+
+    fetch('http://localhost:8083/nhanvien/profile/' + idNV, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        mode: 'cors'
+            })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Không thể lấy thông tin nhân viên');
+                return;
+            }
+            return response.json(); // Chuyển dữ liệu từ response thành JSON
+        })
+        .then(nhanVien => {
+            if (!nhanVien) {
+                console.error('Không có dữ liệu nhân viên');
+                return;
+            }
+
+            getNV = nhanVien
+
+            const imgAcc = document.querySelector("#img-acc")
+            imgAcc.src = nhanVien.img
+        })
+    profileButton.addEventListener('click', async () => {
+                const profileModalBody = document.querySelector('#profileModal .modal-body');
+                profileModalBody.innerHTML = `
+                        <div class="form-group">
+                            <label>Tên nhân viên:</label>
+                            <p>${getNV.ten || 'Chưa đăng nhập'}</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <p>${getNV.email || 'Chưa đăng nhập'}</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Quyền:</label>
+                            <p>${getNV.tenQuyen || 'Chưa đăng nhập'}</p>
+                        </div>                     
+                    `;
+
+                $('#profileModal').modal('show');
+            })
+
+    $scope.logout = function() {
+        $('#profileModal').modal('hide');
+        showConfirm('Bạn có chắc chắn muốn đăng xuất không ?' , () =>{
+            sessionStorage.removeItem('idNV');
+            sessionStorage.removeItem('loginOk');
+            window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html';
+        })
+    }
 
     $scope.modalMessage = ""; // Nội dung thông báo
 
@@ -118,6 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 })
 
+
 function showSuccessAlert(message) {
     const alertElement = document.getElementById('success-alert');
     const messageElement = document.getElementById('success-message');
@@ -147,3 +213,40 @@ function showDangerAlert(message) {
         setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
     }, 3000);
 }
+
+function showWarningAlert(message) {
+    const alertElement = document.getElementById('warning-alert');
+    const messageElement = document.getElementById('warning-message');
+    messageElement.textContent = message;
+
+    alertElement.style.display = 'block';
+
+    setTimeout(() => alertElement.classList.add('show'), 10); // Thêm hiệu ứng
+    setTimeout(() => {
+        alertElement.classList.remove('show'); // Ẩn hiệu ứng
+        setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
+    }, 3000);
+}
+
+function showConfirm(message, onConfirm) {
+    // Cập nhật thông báo trong modal
+    const messageElement = document.getElementById('confirm-message');
+    messageElement.textContent = message || 'Bạn có chắc chắn muốn thực hiện hành động này?';
+
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirm-modal'));
+    confirmModal.show();
+
+    const confirmYesButton = document.getElementById('confirm-yes');
+
+    // Xóa sự kiện click cũ để tránh trùng lặp
+    confirmYesButton.onclick = null;
+
+    // Thêm sự kiện click cho nút xác nhận
+    confirmYesButton.addEventListener('click', () => {
+        confirmModal.hide(); // Ẩn modal
+        if (onConfirm) onConfirm(); // Gọi callback
+    });
+}
+
+
+

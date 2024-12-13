@@ -26,16 +26,20 @@ public class ChiTietHoaDonService {
     @Autowired
     private ChiTietHoaDonRepo cthdRepo;
 
-    public boolean checkSL(String idCTSP, Integer soLuong) {
+    public int checkSL(String idCTSP, Integer soLuong) {
         List<LoHang> listLo = lHRepo.fByIdCTSP(idCTSP);
+
+        if (listLo.size() == 0) {
+            return -1;
+        }
 
         Collections.sort(listLo, Comparator.comparing(lo -> lo.getHsd()));
 
-        if (listLo.get(0).getSoLuong() > soLuong) {
-            return false;
+        if (soLuong > listLo.get(0).getSoLuong()) {
+            return listLo.get(0).getSoLuong();
         }
 
-        return true;
+        return 0;
     }
 
     public Integer getTotalSoLuong(String idCTSP) {

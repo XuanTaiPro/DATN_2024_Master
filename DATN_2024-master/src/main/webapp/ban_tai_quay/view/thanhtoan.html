@@ -194,13 +194,13 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="cashModalLabel">Thanh toán tiền mặt</h5>
+                        <h5 class="modal-title" id="cashModalLabel"><i class="fa-solid fa-money-bill-wave"></i>Thanh toán tiền mặt</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form action="processPayment" method="post">
                             <div class="form-group mt-3">
-                                <label for="amountPaid">Tiền khách đưa:</label>
+                                <label for="amountPaid"><i class="fa-solid fa-money-bill"></i> Tiền khách đưa:</label>
                                 <input type="text" class="form-control" id="amountPaid" ng-model="amountPaid"
                                        ng-change="calculateChange()">
                                 <div id="invalid-message" style="color: red;" ng-show="invalidAmount">
@@ -211,14 +211,14 @@
                                 </div>
                             </div>
                             <div class="form-group mt-3" style="display: flex">
-                                <label>Tiền thừa:</label>
+                                <label><i class="fa-solid fa-comments-dollar"></i> Tiền thừa: </label>
                                 <p id="changeAmount" ng-show="!invalidAmount && !showError">{{changeAmount}} VNĐ</p>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="button" class="btn btn-primary" ng-click="showConfirmation()">Xác nhận</button>
+                            <button type="button" class="btn btn-primary" ng-click="showConfirmation()">Xác nhận</button>
                     </div>
                 </div>
             </div>
@@ -258,6 +258,7 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                         <button type="button" class="btn btn-success" ng-click="completePayment()">Hoàn tất thanh toán
                         </button>
+                        <button type="button" class="btn btn-primary" ng-click="generateAndSendInvoice()">Gửi Hóa Đơn Cho Khách</button>
                     </div>
                 </div>
             </div>
@@ -302,10 +303,9 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Customer Table -->
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
-                                <thead class="table-light">
+                                <thead class="table-light" style="height: 70px">
                                 <tr>
                                     <th><i class="fas fa-user"></i> Tên</th>
                                     <th><i class="fas fa-envelope"></i> Email</th>
@@ -315,29 +315,38 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="khachHang in listKhachHang">
-                                    <td>{{ khachHang.ten }}</td>
-                                    <td>{{ khachHang.email }}</td>
-                                    <td>{{ khachHang.gioiTinh }}</td>
-                                    <td>{{ khachHang.sdt }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary btn-sm"
-                                                ng-click="selectCustomer(khachHang.ten, khachHang.sdt, khachHang.id)"
-                                                data-bs-dismiss="modal">
-                                            <i class="fas fa-check"></i> Chọn
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr ng-if="listKhachHang.length === 0">
-                                    <td colspan="5" class="text-center text-muted">
-                                        <i class="fas fa-exclamation-circle"></i> Danh sách trống
-                                    </td>
-                                </tr>
                                 </tbody>
                             </table>
+                            <div class="scrollable-tbody">
+                                <table class="table table-hover align-middle">
+                                    <tbody>
+                                    <tr ng-repeat="khachHang in listKhachHang">
+                                        <td>{{ khachHang.ten }}</td>
+                                        <td>{{ khachHang.email }}</td>
+                                        <td>{{ khachHang.gioiTinh }}</td>
+                                        <td>{{ khachHang.sdt }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                    ng-click="selectCustomer(khachHang.ten, khachHang.sdt, khachHang.id,khachHang.email)"
+                                                    data-bs-dismiss="modal">
+                                                <i class="fas fa-check"></i> Chọn
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="listKhachHang.length === 0">
+                                        <td colspan="5" class="text-center text-muted">
+                                            <i class="fas fa-exclamation-circle"></i> Danh sách trống
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+                            <i class="fa-regular fa-address-card"></i> Thêm Khách Hàng mới
+                        </button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times"></i> Đóng
                         </button>
@@ -345,6 +354,54 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- Modal Thêm Khách Hàng Mới -->
+        <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCustomerModalLabel">
+                            <i class="fas fa-user-plus"></i> Thêm Khách Hàng Mới
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Form Thêm Khách Hàng -->
+                        <form ng-submit="addCustomer()">
+                            <div class="mb-3">
+                                <label for="customerName" class="form-label">Tên</label>
+                                <input type="text" class="form-control" id="customerNameAdd" ng-model="newKH.ten" >
+                            </div>
+                            <div class="mb-3">
+                                <label for="customerEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="customerEmail" ng-model="newKH.email" >
+                            </div>
+                            <div class="mb-3">
+                                <label for="customerPhone" class="form-label">Số điện thoại</label>
+                                <input type="text" class="form-control" id="customerPhoneAdd" ng-model="newKH.sdt" >
+                            </div>
+                            <div class="mb-3">
+                                <label for="customerGender" class="form-label">Giới tính</label>
+                                <select class="form-select" id="customerGender" ng-model="newKH.gioiTinh" >
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Lưu
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times"></i> Đóng
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 
         <div class="modal fade" id="suggestedVoucherModal" tabindex="-1" aria-labelledby="suggestedVoucherModalLabel" aria-hidden="true">
@@ -371,7 +428,7 @@
                         <button type="button" class="btn btn-success" ng-click="applySuggestedVoucher()" data-bs-dismiss="modal" ng-disabled="!suggestedVoucher">
                             <i class="fas fa-check-circle"></i> Áp dụng
                         </button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary" ng-click="closeVCTU()">
                             <i class="fas fa-times"></i> Hủy
                         </button>
                     </div>
@@ -516,6 +573,27 @@
         color: #6c757d;
     }
 
+    .table-responsive {
+        position: relative;
+        border: 1px solid #ddd;
+    }
+
+    .table-responsive thead {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: white;
+    }
+
+    .scrollable-tbody {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .scrollable-tbody table {
+        margin-bottom: 0;
+    }
+
     /*Gợi ý voucher*/
     .modal-header {
         background-color: #f8f9fa;
@@ -658,6 +736,9 @@
         border: 1px solid #ced4da;
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
+   .form-select{
+       padding: 10px;
+   }
 
     input.form-control:focus {
         border-color: #007bff;
