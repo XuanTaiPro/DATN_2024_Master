@@ -116,9 +116,9 @@
         <td>{{ctsp.ma}}</td>
         <td>
             {{ ctsp.gia }} VND
-            <span ng-if="ctsp.tienGiam && ctsp.tienGiam !== 0" class="text-danger">
-    (Giảm: {{ ctsp.tienGiam }} VND)
-  </span>
+            <span ng-if="ctsp.tienGiam && ctsp.tienGiam > 0" class="text-danger">
+        (Giảm: {{ ctsp.tienGiam }} VND)
+    </span>
         </td>        <td>{{ctsp.soNgaySuDung}} ngày</td>
         <td>{{ctsp.ngayNhap | date:'yyyy-MM-dd'}}</td>
         <td>{{ctsp.soLuong}}</td>
@@ -144,7 +144,9 @@
                                 <!-- Cột cho thông tin chi tiết sản phẩm -->
                                 <div class="col-md-6">
                                     <p><strong>Giá:</strong> {{ productDetail.gia }} VND</p>
-                                    <p><strong>Số ngày sử dụng:</strong> {{ productDetail.soNgaySuDung }} Ngày</p>
+                                    <p ng-if="productDetail.tienGiam > 0" class="text-danger">
+                                        (Giảm: {{ productDetail.tienGiam }} VND)
+                                    </p>                                    <p><strong>Số ngày sử dụng:</strong> {{ productDetail.soNgaySuDung }} Ngày</p>
                                     <p><strong>Số lượng:</strong> {{ productDetail.soLuong }}</p>
                                     <p><strong>Trạng thái:</strong>
                                         {{ productDetail.trangThai == 1 ? 'Đang hoạt động' :
@@ -197,7 +199,11 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Giá:</label>
-                                    <input type="text" class="form-control" ng-model="productDetail.gia" required>
+                                    <input type="text" class="form-control" ng-value="totalPrice" ng-model="productDetail.gia" required>
+                                </div>
+                                <div class="mb-3" ng-if="productDetail.tienGiam > 0">
+<!--                                    <label class="form-label">Tổng giá (bao gồm giảm):</label>-->
+                                    <p>Tiền giảm hiện tại: {{productDetail.tienGiam}}VND</p>
                                 </div>
                                 <div class="mb-3 row">
                                     <div class="col-md-6">
@@ -300,9 +306,16 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-danger" ng-click="deleteProduct(ctsp.id)">
-                <i class="bi bi-trash"></i>
-            </button>
+            <div>
+                <button class="btn btn-danger" ng-if="ctsp.trangThai == 1" ng-click="deleteProduct(ctsp.id)">
+                    <i class="bi bi-trash"></i>
+                </button>
+
+                <!-- Nút Kích Hoạt -->
+                <button class="btn btn-success" ng-if="ctsp.trangThai != 1" ng-click="activateProduct(ctsp.id)">
+                    <i class="bi bi-check-circle"></i>
+                </button>
+            </div>
         </td>
     </tr>
     </tbody>

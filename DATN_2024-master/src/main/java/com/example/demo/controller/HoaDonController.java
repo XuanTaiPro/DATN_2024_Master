@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -130,7 +131,7 @@ public class HoaDonController {
         }
 
         // Trả về phản hồi khi xóa thành công
-        return ResponseEntity.ok("Đã xóa các hóa đơn cũ");
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Đã xóa các hóa đơn cũ");
     }
 
     @GetMapping("/getHDNullKH")
@@ -504,7 +505,7 @@ public class HoaDonController {
     }
 
     @PutMapping("/update-ghi-chu/{id}")
-    public ResponseEntity<Void> updateGhiChu(@PathVariable String id, @RequestBody Map<String, String> payload) {
+    public ResponseEntity<?> updateGhiChu(@PathVariable String id, @RequestBody Map<String, String> payload) {
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(id);
         if (hoaDonOptional.isPresent()) {
             HoaDon hoaDon = hoaDonOptional.get();
@@ -518,7 +519,7 @@ public class HoaDonController {
 
             try {
                 hoaDonRepo.save(hoaDon);
-                return ResponseEntity.ok().build();
+                return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật ghi chú hóa đơn thành công.");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
@@ -529,7 +530,7 @@ public class HoaDonController {
 
     // Delete
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteHoaDon(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> deleteHoaDon(@RequestBody Map<String, String> request) {
         String id = request.get("id");
         if (!hoaDonRepo.existsById(id)) {
             return ResponseEntity.notFound().build();

@@ -19,8 +19,6 @@ public class ChiTietSanPhamRequest {
 
     private String soNgaySuDung;
 
-    @NotNull(message = "Ngày nhập không được để trống")
-    @PastOrPresent(message = "Ngày nhập phải là ngày hiện tại hoặc trong quá khứ")
     private LocalDateTime ngayNhap;
 
     private Integer soLuong;

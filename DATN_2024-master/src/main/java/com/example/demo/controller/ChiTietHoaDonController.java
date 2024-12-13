@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -161,7 +162,7 @@ public class ChiTietHoaDonController {
             lhhdRepo.save(lhhd);
         }
 
-        return ResponseEntity.ok("Thêm chi tiết hóa đơn thành công.");
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Thêm chi tiết hóa đơn thành công.");
     }
 
     @GetMapping("/list")
@@ -240,7 +241,7 @@ public class ChiTietHoaDonController {
         cTHDExisting.setNgaySua(LocalDateTime.now());
         chiTietHoaDonRepo.save(cTHDExisting);
 
-        return ResponseEntity.ok("Update Done!");
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật chi tiết hóa đơn thành công.");
     }
 
     @GetMapping("/getCTHD")

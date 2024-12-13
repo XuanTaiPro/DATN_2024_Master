@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -137,14 +138,14 @@ public class SanPhamController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Valid @ModelAttribute SanPhamRequest sanPhamRequest) {
+    public ResponseEntity<?> add(@Valid @RequestBody SanPhamRequest sanPhamRequest) {
         SanPham sanPham = new SanPham();
         if (sanPhamRepository.getByName(sanPhamRequest.getTenSP().trim()) != null) {
             return ResponseEntity.badRequest().body("Tên sản phẩm không được trùng!");
         }
-        String maSanPham = "SP" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+        String maSanPham = "SP-" + UUID.randomUUID().toString().replace("-", "").substring(0, 7).toUpperCase();
         while (sanPhamRepository.getByMa(maSanPham) != null) {
-            maSanPham = "SP" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+            maSanPham = "SP-" + UUID.randomUUID().toString().replace("-", "").substring(0, 7).toUpperCase();
         }
         if (danhMucRepository.findById(sanPhamRequest.getIdDanhMuc().trim()).isEmpty()) {
             return ResponseEntity.badRequest()
@@ -173,11 +174,13 @@ public class SanPhamController {
             sanPham.setGiamGia(giamGiaRepository.findById(sanPhamRequest.getIdGiamGia().trim()).get());
         }
         sanPhamRepository.save(sanPham);
-        return ResponseEntity.ok("Thêm sản phẩm thành công!");
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body("Thêm sản phẩm thành công!");
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> update(@Valid @ModelAttribute SanPhamRequest sanPhamRequest) {
+    public ResponseEntity<?> update(@Valid @RequestBody SanPhamRequest sanPhamRequest) {
         String id = sanPhamRequest.getId();
         if (id == null || id.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("ID không được để trống.");
@@ -219,8 +222,9 @@ public class SanPhamController {
         }
 
         sanPhamRepository.save(existingSanPham);
-        return ResponseEntity.ok("Cập nhật sản phẩm thành công!");
-    }
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body("Cập nhật sản phẩm thành công!");    }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody Map<String, String> body) {
@@ -231,8 +235,26 @@ public class SanPhamController {
         if (sanPhamRepository.findById(id).isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm có id: " + id);
         }
-        sanPhamRepository.deleteById(id);
-        return ResponseEntity.ok("Xóa sản phẩm thành công!");
+        SanPham sanPham=sanPhamRepository.getReferenceById(id);
+        sanPham.setTrangThai(0);
+        sanPhamRepository.save(sanPham);
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
+                .body("Cập nhật trạng thái thành công!");
+    }
+    @PutMapping("/activateProduct")
+    public ResponseEntity<?>activateProduct(@RequestBody Map<String, String> body){
+        String id = body.get("id");
+        if (id == null || id.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID không được để trống.");
+        }
+        if (sanPhamRepository.findById(id).isEmpty()) {
+            return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm có id: " + id);
+        }
+        SanPham sanPham=sanPhamRepository.getReferenceById(id);
+        sanPham.setTrangThai(1);
+        sanPhamRepository.save(sanPham);
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
+                .body("Cập nhật trạng thái thành công!");
     }
 
     // Handle validation errors

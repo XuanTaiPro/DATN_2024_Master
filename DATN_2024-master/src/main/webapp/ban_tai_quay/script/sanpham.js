@@ -82,37 +82,29 @@ window.sanPhamCtrl = function ($scope, $http) {
     };
 
     $scope.addProduct = function (product) {
-        const formData = new FormData();
-        // Thêm thông tin sản phẩm vào FormData
-        formData.append('tenSP', product.tenSP || '');
-        formData.append('thanhPhan', product.thanhPhan || '');
-        formData.append('congDung', product.congDung || '');
-        formData.append('tuoiMin', product.tuoiMin || 0);
-        formData.append('tuoiMax', product.tuoiMax || 0);
-        formData.append('hdsd', product.hdsd);
-        formData.append('moTa', product.moTa || '');
-        formData.append('idDanhMuc', product.idDanhMuc || '');
-        formData.append('trangThai', 1);
-        formData.append('idThuongHieu', "95B16137");
+        const data = {
+            tenSP: product.tenSP || '',
+            thanhPhan: product.thanhPhan || '',
+            congDung: product.congDung || '',
+            tuoiMin: product.tuoiMin || 0,
+            tuoiMax: product.tuoiMax || 0,
+            hdsd: product.hdsd,
+            moTa: product.moTa || '',
+            idDanhMuc: product.idDanhMuc || '',
+            trangThai: 1,
+            idThuongHieu: "95B16137"
+        };
 
-        console.log('Thông tin sản phẩm:', product);
-        for (var pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
-        }
-
-        // Gửi FormData lên server
-        $http.post('http://localhost:8083/san-pham/add', formData, {
-            headers: {
-                'Content-Type': undefined // Cho phép browser tự động thiết lập boundary
-            }
-        })
+        $http.post('http://localhost:8083/san-pham/add', data,
+        )
             .then(function (response) {
                 $('#productModal').modal('hide');
                 $scope.product = {};
                 $scope.getAllProducts();
-                alert('Thêm sản phẩm thành công!');
-            })
+                console.log(response.data); // "Thêm sản phẩm thành công!"
+                showSuccessAlert(response.data);            })
             .catch(function (error) {
+                showDangerAlert("Thất bại rồi!");
                 $scope.getAllProducts();
                 console.error('Lỗi:', error);
                 if (error.data && error.data.message) {
@@ -123,54 +115,60 @@ window.sanPhamCtrl = function ($scope, $http) {
             });
     };
     $scope.deleteProduct = function (productId) {
-        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
             $http({
                 method: 'DELETE',
                 url: 'http://localhost:8083/san-pham/delete', // Đường dẫn đến API
                 data: {id: productId}, // Gửi id sản phẩm qua request body
                 headers: {"Content-Type": "application/json;charset=utf-8"}
             }).then(function (response) {
-                alert(response.data); // Hiển thị thông báo thành công
-                // Cập nhật lại danh sách sản phẩm
                 $scope.getAllProducts();
-                alert(response.data); // Hiển thị thông báo thành công
-
+                showSuccessAlert(response.data);
             }, function (error) {
                 $scope.getAllProducts();
-                // alert(response.data); // Hiển thị thông báo thành công
+                showDangerAlert("Thất bại!");
             });
-        }
+
+    };
+    $scope.activateProduct = function (productId) {
+        $http({
+            method: 'PUT',
+            url: 'http://localhost:8083/san-pham/activateProduct', // Đường dẫn đến API
+            data: {id: productId}, // Gửi id sản phẩm qua request body
+            headers: {"Content-Type": "application/json;charset=utf-8"}
+        }).then(function (response) {
+            $scope.getAllProducts();
+            showSuccessAlert(response.data);
+        }, function (error) {
+            $scope.getAllProducts();
+            showDangerAlert("Thất bại!");
+        });
+
     };
 
     $scope.updateProduct = function () {
-        const formData = new FormData();
-        formData.append('id', $scope.productDetail.id || '');
-        formData.append('tenSP', $scope.productDetail.tenSP || '');
-        formData.append('thanhPhan', $scope.productDetail.thanhPhan || '');
-        formData.append('congDung', $scope.productDetail.congDung || '');
-        formData.append('tuoiMin', $scope.productDetail.tuoiMin || 0);
-        formData.append('tuoiMax', $scope.productDetail.tuoiMax || 0);
-        formData.append('hdsd', $scope.productDetail.hdsd);
-        formData.append('moTa', $scope.productDetail.moTa || '');
-        formData.append('idDanhMuc', $scope.productDetail.idDanhMuc || '');
-        formData.append('trangThai', 1);
-        formData.append('idThuongHieu', "95B16137");
+        const data = {
+            id: $scope.productDetail.id || '',
+            tenSP: $scope.productDetail.tenSP || '',
+            thanhPhan: $scope.productDetail.thanhPhan || '',
+            congDung: $scope.productDetail.congDung || '',
+            tuoiMin: $scope.productDetail.tuoiMin || 0,
+            tuoiMax: $scope.productDetail.tuoiMax || 0,
+            hdsd: $scope.productDetail.hdsd || '',
+            moTa: $scope.productDetail.moTa || '',
+            idDanhMuc: $scope.productDetail.idDanhMuc || '',
+            trangThai: 1,
+            idThuongHieu: "95B16137"
+        };
 
-        // Gửi FormData lên server
-        $http.put('http://localhost:8083/san-pham/update', formData, {
-            transformRequest: angular.identity,
-            headers: {
-                'Content-Type': undefined // Cho phép browser tự động thiết lập boundary
-            }
-        })
+        $http.put('http://localhost:8083/san-pham/update', data)
             .then(function (response) {
                 $scope.getAllProducts(); // Tải lại danh sách sản phẩm
                 $('#userForm').modal('hide'); // Đóng modal sau khi cập nhật
-                alert('Cập nhật thành công!');
+                showSuccessAlert(response.data);
             })
             .catch(function (error) {
+                showDangerAlert("Thất bại rồi!")
                 $scope.getAllProducts(); // Tải lại danh sách sản phẩm
-                $scope.errorMessage = error.data && error.data.message ? 'Lỗi khi cập nhật sản phẩm: ' + error.data.message : 'Lỗi không xác định: ' + JSON.stringify(error);
             });
     };
     $scope.clearForm = function () {

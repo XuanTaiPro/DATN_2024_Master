@@ -52,6 +52,7 @@ window.giamGiaCtrl = function ($scope, $http) {
         $http.get('http://localhost:8083/san-pham')
             .then(function (response) {
                 $scope.listAllSanPham = response.data;
+                console.log($scope.listAllSanPham.length);
             })
             .catch(function (error) {
                 $scope.errorMessage = 'Lỗi khi lấy sản phẩm qua danh mục: ' + error.data;
@@ -153,10 +154,11 @@ window.giamGiaCtrl = function ($scope, $http) {
                 $('#addModal').modal('hide'); // Đóng modal thêm mới sau khi thêm thành công
                 $scope.giamGia = {}; // Xóa dữ liệu form sau khi thêm
                 $scope.getAllGiamGias(); // Tải lại danh sách giảm giá
-                alert('Thêm giảm giá thành công!');
+                showSuccessAlert("Thêm giảm giá thành công!");
             })
             .catch(function (error) {
                 $scope.getAllGiamGias(); // Tải lại danh sách giảm giá
+                showDangerAlert("Thêm giảm giá thất bại!");
                 console.error('Lỗi khi thêm giảm giá:', error);
                 if (error.data && error.data.message) {
                     $scope.errorMessage = 'Lỗi khi thêm giảm giá: ' + error.data.message;
@@ -174,13 +176,14 @@ window.giamGiaCtrl = function ($scope, $http) {
                 data: {id: ggId}, // Gửi id sản phẩm qua request body
                 headers: {"Content-Type": "application/json;charset=utf-8"}
             }).then(function (response) {
-                alert(response.data); // Hiển thị thông báo thành công
+                showSuccessAlert(response.data); // Hiển thị thông báo thành công
                 // Cập nhật lại danh sách sản phẩm
                 $scope.getAllGiamGias();
-                alert(response.data); // Hiển thị thông báo thành công
+
 
             }, function (error) {
                 $scope.getAllGiamGias();
+                showDangerAlert("Cập nhật trạng thái thất bại!");
                 // alert(response.data); // Hiển thị thông báo thành công
             });
         }
@@ -221,11 +224,11 @@ window.giamGiaCtrl = function ($scope, $http) {
             .then(function (response) {
                 $scope.getAllGiamGias(0);
                 $('#userForm').modal('hide');
-                alert('Cập nhật thành công!');
+                showSuccessAlert("Cập nhật giảm giá thành công!");
             })
             .catch(function (error) {
                 $scope.getAllGiamGias(0);
-                alert('Cập nhật thành công!');
+                showDangerAlert("Cập nhật giảm giá thất bại!");
                 $scope.errorMessage = error.data && error.data.message
                     ? 'Lỗi khi cập nhật: ' + error.data.message
                     : 'Lỗi không xác định: ' + JSON.stringify(error);
@@ -257,12 +260,14 @@ window.giamGiaCtrl = function ($scope, $http) {
                 listSanPham: giamGia.listSanPham
             };
             console.log($scope.giamGiaDetail);
+            console.log($scope.giamGiaDetail.listSanPham.length);  // Kiểm tra độ dài của listSanPham trong giamGiaDetail
             // Mở modal để hiển thị chi tiết giảm giá (nếu cần)
             // $('#readData').modal('show'); // Đảm bảo modal có ID là 'readData'
         } else {
             console.error('Không tìm thấy giảm giá với ID:', ggId);
         }
     };
+
     // Khởi tạo
     $scope.getAllGiamGias(0);
     $scope.getAllDanhMuc();
