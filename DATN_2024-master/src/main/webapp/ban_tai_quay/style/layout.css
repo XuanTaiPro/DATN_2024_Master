@@ -326,6 +326,7 @@ body {
 main {
     padding: 5px;
 }
+/*alert success and danger*/
 #success-alert {
     transform: translateY(-100%);
     transition: transform 0.5s ease-in-out;
@@ -343,6 +344,24 @@ main {
 #success-danger.show {
     transform: translateY(0);
 }
+/*alert warning*/
+#warning-alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1050;
+    text-align: center;
+}
+
+#warning-alert .btn-close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+
+/*k biết*/
 
 .popup {
     position: fixed;
@@ -393,27 +412,6 @@ main {
     }
 }
 
-.btn-popup {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    width: 100%;
-
-    button {
-        width: 85px;
-        height: 40px;
-        border-radius: 10px;
-        border: 1px solid #fff;
-        font: 16px 'Times New Roman';
-        cursor: pointer;
-        color: #fff;
-
-        &:hover {
-            box-shadow: inset 0 0 5px 3px rgb(227, 227, 227);
-        }
-    }
-}
-
 #text-warning {
     text-align: center;
 }
@@ -434,6 +432,216 @@ main {
     background-color: rgb(165, 165, 165);
 }
 
+
 .popup {
     display: none;
 }
+/*confirm*/
+/* Định dạng cho Modal */
+#confirm-modal .modal-content {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+#confirm-modal .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    padding: 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+#confirm-modal .modal-title {
+    color: #333;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+#confirm-modal .modal-body {
+    padding: 20px;
+    font-size: 1rem;
+    color: #555;
+    text-align: center;
+}
+
+/* Định dạng cho icon */
+#confirm-modal .modal-icon {
+    font-size: 50px;
+    color: #ffc107;  /* Màu vàng cho icon */
+    margin-bottom: 15px;
+}
+
+/* Modal footer */
+#confirm-modal .modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
+    padding: 15px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+/* Nút hủy */
+#confirm-modal .btn-secondary {
+    background-color: #ccc;
+    color: #333;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#confirm-modal .btn-secondary:hover {
+    background-color: #aaa;
+    color: #fff;
+}
+
+/* Nút xác nhận */
+#confirm-modal .btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#confirm-modal .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Hiệu ứng cho nút đóng */
+#confirm-modal .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+#confirm-modal .btn-close:hover {
+    color: #007bff;
+}
+
+/* Thêm hiệu ứng mở modal */
+#confirm-modal.fade .modal-dialog {
+    transform: translate(0, -50%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#confirm-modal.show .modal-dialog {
+    transform: translate(0, 0);
+    opacity: 1;
+}
+
+/* Nền của modal khi mở */
+#confirm-modal .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease;
+}
+
+
+/*css profile*/
+/*#profileModal {*/
+/*    position: absolute;*/
+/*    top: 70px; !* Điều chỉnh vị trí trên *!*/
+/*    right: 10px; !* Đặt form ở góc phải *!*/
+/*    width: 280px; !* Giảm chiều rộng của modal *!*/
+/*    background: white;*/
+/*    border-radius: 10px;*/
+/*    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);*/
+/*    z-index: 1050;*/
+/*    font-family: 'Arial', sans-serif;*/
+/*}*/
+
+/*#profileModal .modal-content {*/
+/*    border: none;*/
+/*    padding: 15px;*/
+/*}*/
+
+/*#profileModal .modal-header {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: space-between;*/
+/*    border-bottom: 1px solid #eaeaea;*/
+/*    padding-bottom: 10px;*/
+/*}*/
+
+/*#profileModal .modal-title {*/
+/*    font-size: 16px; !* Giảm kích thước font *!*/
+/*    font-weight: bold;*/
+/*    color: #333;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    margin: 0;*/
+/*}*/
+
+/*#profileModal .close {*/
+/*    background: none;*/
+/*    border: none;*/
+/*    font-size: 18px; !* Kích thước font nhỏ hơn *!*/
+/*    color: #aaa;*/
+/*    cursor: pointer;*/
+/*    transition: color 0.2s;*/
+/*}*/
+
+/*#profileModal .close:hover {*/
+/*    color: #ff4d4d;*/
+/*}*/
+
+/*#profileModal .modal-body {*/
+/*    margin-top: 10px;*/
+/*}*/
+
+/*#profileModal .modal-body p {*/
+/*    font-size: 14px;*/
+/*    margin-bottom: 8px; !* Giảm khoảng cách *!*/
+/*    color: #555;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*}*/
+
+/*#profileModal .modal-body p i {*/
+/*    font-size: 16px;*/
+/*    margin-right: 10px;*/
+/*    color: #007bff;*/
+/*}*/
+
+/*#profileModal .modal-footer {*/
+/*    display: flex;*/
+/*    justify-content: flex-end;*/
+/*    padding-top: 10px;*/
+/*    border-top: 1px solid #eaeaea;*/
+/*}*/
+
+/*#profileModal .btn {*/
+/*    font-size: 14px;*/
+/*    padding: 8px 12px;*/
+/*    border-radius: 5px;*/
+/*    transition: background-color 0.2s, color 0.2s;*/
+/*}*/
+
+/*#profileModal .btn-secondary {*/
+/*    background-color: #6c757d;*/
+/*    color: white;*/
+/*}*/
+
+/*#profileModal .btn-secondary:hover {*/
+/*    background-color: #5a6268;*/
+/*}*/
+
+/*#profileModal .btn-danger {*/
+/*    background-color: #dc3545;*/
+/*    color: white;*/
+/*}*/
+
+/*#profileModal .btn-danger:hover {*/
+/*    background-color: #c82333;*/
+/*}*/
+
+
+
+
+
+

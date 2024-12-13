@@ -223,6 +223,32 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="search mb-3">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten" ng-change="searchKH()">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                                <select class="form-select" ng-model="search.gioiTinh" ng-change="searchKH()">
+                                    <option value="">-- Giới tính --</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" class="form-control" placeholder="Số điện thoại" ng-model="search.sdt" ng-change="searchKH()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead class="thead-light">
@@ -291,7 +317,7 @@
                         </div>
                         <div>
                             <label>Giảm min:</label>
-                            <input type="text" ng-model="selectedVoucher.giamGia"ng-change="validateDiscounts()" >
+                            <input type="text" ng-model="selectedVoucher.giamMin"ng-change="validateDiscounts()" >
                             <div style="color: red;" ng-show="isSubmitted && !giamMin">
                                 Phải điền giá min.
                             </div>
@@ -387,6 +413,32 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="search mb-3">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten" ng-change="searchKH()">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                                <select class="form-select" ng-model="search.gioiTinh" ng-change="searchKH()">
+                                    <option value="">-- Giới tính --</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" class="form-control" placeholder="Số điện thoại" ng-model="search.sdt" ng-change="searchKH()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead class="thead-light">

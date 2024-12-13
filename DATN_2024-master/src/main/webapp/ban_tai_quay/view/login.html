@@ -35,9 +35,6 @@
             <div class="button-next-step">
                 <button class="btn-next-step">Tiếp tục</button>
             </div>
-            <div class="login-face-id">
-                <button><i class='bx bx-scan'></i> Đăng nhập bằng khuôn mặt</button>
-            </div>
         </form>
         <form class="form-confirm">
             <p>Chúng tôi đã gửi cho bạn mã xác nhận. Vui lòng hãy kiểm tra email của bạn.</p>
@@ -137,24 +134,6 @@
             }
         })
 
-        let dataFetch
-
-        const getData = async () => {
-            let account = {
-                email: inpUser.value,
-                passw: inpPass.value
-            }
-            const loginNV = await fetch('http://localhost:8083/login/manager',
-                { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(account) })
-                .then((resp) => {
-                    return resp.text()
-                })
-                .then(data => {
-                    sessionStorage.setItem("otp", data)
-                    console.log(data)
-                })
-
-        }
 
         btnSubmitOtp.addEventListener('click', async (e) => {
             e.preventDefault();

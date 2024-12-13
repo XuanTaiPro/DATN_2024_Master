@@ -86,6 +86,30 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
     $scope.selectAll = false;
     $scope.selectAllUpdate = false;
 
+    $scope.search = {
+        ten: '',
+        gioiTinh: '',
+        sdt: ''
+    }
+    $scope.searchKH = function () {
+        const params = {
+            ten: $scope.search.ten || null,
+            gioiTinh: $scope.search.gioiTinh || null,
+            sdt: $scope.search.sdt || null
+        }
+        $http.get('http://localhost:8083/khachhang/search', {params})
+            .then(function (response) {
+                $scope.listKhachHang = response.data
+                if ($scope.listKhachHang == null) {
+                    $scope.emptyMessage = response.data.message || "Danh sách trống"
+                } else {
+                    $scope.emptyMessage = ""
+                }
+            })
+            .catch(function (error) {
+                console.log("lỗi khi tìm kiếm" + error)
+            })
+    }
 // Hàm toggle cho từng khách hàng
     $scope.toggleCustomerSelection = function (khachHang) {
         if (khachHang.selected) {
@@ -287,11 +311,6 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
     $scope.addVoucher = function () {
         $scope.isSubmitted = true;
         $scope.validateDiscounts();
-        // if (!$scope.ten ) {
-        //     // alert("Vui lòng điền đầy đủ Tên ");
-        //     return; // Chặn không cho chuyển modal
-        // }
-
         const newVoucher = {
             ten: $scope.ten,
             giamGia: $scope.giamGia,
@@ -307,34 +326,22 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
 
         console.log("Dữ liệu mới:", newVoucher);
 
+
         // Kiểm tra nếu form hợp lệ trước khi gửi request
         if ($scope.voucherForm.$valid) {
             $http.post('http://localhost:8083/voucher/add', newVoucher)
                 .then(function (response) {
                     $('#productModal').modal('hide');
-                    // Thông báo thành công
-                    const alertBox = document.getElementById('success-alert2');
-                    alertBox.style.display = 'block'; // Hiện alert
-                    setTimeout(() => alertBox.classList.add('show'), 10); // Thêm hiệu ứng
-
-                    // Tự động ẩn alert sau 3 giây
-                    setTimeout(() => {
-                        alertBox.classList.remove('show'); // Ẩn hiệu ứng
-                        setTimeout(() => (alertBox.style.display = 'none'), 500); // Ẩn hoàn toàn
-                    }, 3000);
-                    // $scope.loadPage($scope.currentPage);
-                    // setTimeout(function () {
-                    //     location.reload();
-                    // }, 500);
+                    showSuccessAlert('Thêm thành công!');
+                    $scope.loadPage($scope.currentPage);
                 })
                 .catch(function (error) {
-                    // Thông báo thất bại
-                    $scope.errorMessage = "Thêm thất bại. Vui lòng kiểm tra lại!";
-                    console.error("Lỗi khi thêm voucher:", error);
+                    $scope.errorMessage = "Thêm thất bại";
                 });
         } else {
             $scope.errorMessage = "Vui lòng điền đầy đủ thông tin!";
         }
+
         resetForm();
     };
 

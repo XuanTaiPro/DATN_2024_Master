@@ -11,6 +11,8 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
     $scope.searchResultsVisible = false;
     $scope.qrData = '';
     $scope.isScanning = false;
+    $scope.soLuongError = false;
+
 
     // Hàm bắt đầu quét mã QR khi nút được nhấn
     $scope.startQRCodeScan = function () {
@@ -299,10 +301,11 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
     };
 
     $scope.confirmAddInvoiceDetail = function (ctsp) {
-        // Lưu đối tượng ctsp vào biến khi nhấn "Thêm"
-        $scope.selectedCTSP = ctsp;
-        // Hiển thị modal xác nhận
-        $('#confirmAddInvoiceDetailModal').modal('show');
+
+            $scope.selectedCTSP = ctsp;
+            $('#confirmAddInvoiceDetailModal').modal('show');
+
+
     };
 
     $scope.closeConfirmModalAddInvoice = function () {
@@ -458,8 +461,11 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
             },
             body: JSON.stringify(request)
         })
-            .then(response => {
+            .then(async response => {
                 console.log(response)
+                if (response.status== 400){
+                    showDangerAlert(await response.text())
+                }
                 return
                 const selectedTab = $scope.tabs[$scope.selectedTab];
                 const selectedIdHD = selectedTab.idHD;

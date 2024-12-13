@@ -175,51 +175,52 @@ window.giamGiaCtrl = function ($scope, $http) {
     $scope.addGiamGia = function (giamGia) {
         $scope.formSubmitted = true;
         if(!$scope.isTenValid()||!$scope.isNgayBatDauValid()||!$scope.isNgayKetThucValid()||!$scope.isGiaGiamValid()){
-            return
-        }
-        const formData = new FormData();
-        // Thêm thông tin sản phẩm vào FormData
-        formData.append('ten', giamGia.ten || '');
-        formData.append('ma', giamGia.ma || '');
-        formData.append('ngayBatDau', moment(giamGia.ngayBatDau).format('YYYY-MM-DDTHH:mm:ss'));
-        formData.append('ngayKetThuc', moment(giamGia.ngayKetThuc).format('YYYY-MM-DDTHH:mm:ss'));
-        formData.append('giaGiam', giamGia.giaGiam || 0);
-        formData.append('trangThai', 1);
-        formData.append('moTa', giamGia.moTa || '');
-        if ($scope.giamGia.selectedProductsType === 'all') {
-            $scope.giamGia.selectedProducts = angular.copy($scope.listAllSanPham);
-        } else if ($scope.giamGia.selectedProductsType === 'selected') {
-            // Danh sách sản phẩm đã chọn sẽ là những sản phẩm được người dùng chọn
-            $scope.giamGia.selectedProducts = $scope.giamGia.selectedProducts || [];
-        }
-
-        // Lấy ID của các sản phẩm đã chọn và thêm vào FormData
-        giamGia.selectedProductsIds = $scope.giamGia.selectedProducts.map(sp => sp.id);
-        giamGia.selectedProductsIds.forEach(function (productId) {
-            formData.append('selectedProducts', productId);
-        });
-
-        // Gửi FormData lên server
-        $http.post('http://localhost:8083/giam-gia/add', formData, {
-            headers: {
-                'Content-Type': undefined // Cho phép browser tự động thiết lập boundary
+            $scope.showDangerAlert = "Cần điền đầy đủ thông tin";
+        }else {
+            const formData = new FormData();
+            // Thêm thông tin sản phẩm vào FormData
+            formData.append('ten', giamGia.ten || '');
+            formData.append('ma', giamGia.ma || '');
+            formData.append('ngayBatDau', moment(giamGia.ngayBatDau).format('YYYY-MM-DDTHH:mm:ss'));
+            formData.append('ngayKetThuc', moment(giamGia.ngayKetThuc).format('YYYY-MM-DDTHH:mm:ss'));
+            formData.append('giaGiam', giamGia.giaGiam || 0);
+            formData.append('trangThai', 1);
+            formData.append('moTa', giamGia.moTa || '');
+            if ($scope.giamGia.selectedProductsType === 'all') {
+                $scope.giamGia.selectedProducts = angular.copy($scope.listAllSanPham);
+            } else if ($scope.giamGia.selectedProductsType === 'selected') {
+                // Danh sách sản phẩm đã chọn sẽ là những sản phẩm được người dùng chọn
+                $scope.giamGia.selectedProducts = $scope.giamGia.selectedProducts || [];
             }
-        })
-            .then(function (response) {
-                $('#addModal').modal('hide'); // Đóng modal thêm mới sau khi thêm thành công
-                $scope.giamGia = {}; // Xóa dữ liệu form sau khi thêm
-                $scope.getAllGiamGias(); // Tải lại danh sách giảm giá
-                alert('Thêm giảm giá thành công!');
-            })
-            .catch(function (error) {
-                $scope.getAllGiamGias(); // Tải lại danh sách giảm giá
-                console.error('Lỗi khi thêm giảm giá:', error);
-                if (error.data && error.data.message) {
-                    $scope.errorMessage = 'Lỗi khi thêm giảm giá: ' + error.data.message;
-                } else {
-                    $scope.errorMessage = 'Lỗi không xác định: ' + JSON.stringify(error);
-                }
+
+            // Lấy ID của các sản phẩm đã chọn và thêm vào FormData
+            giamGia.selectedProductsIds = $scope.giamGia.selectedProducts.map(sp => sp.id);
+            giamGia.selectedProductsIds.forEach(function (productId) {
+                formData.append('selectedProducts', productId);
             });
+
+            // Gửi FormData lên server
+            $http.post('http://localhost:8083/giam-gia/add', formData, {
+                headers: {
+                    'Content-Type': undefined // Cho phép browser tự động thiết lập boundary
+                }
+            })
+                .then(function (response) {
+                    $('#addModal').modal('hide'); // Đóng modal thêm mới sau khi thêm thành công
+                    $scope.giamGia = {}; // Xóa dữ liệu form sau khi thêm
+                    $scope.getAllGiamGias(); // Tải lại danh sách giảm giá
+                    alert('Thêm giảm giá thành công!');
+                })
+                .catch(function (error) {
+                    $scope.getAllGiamGias(); // Tải lại danh sách giảm giá
+                    console.error('Lỗi khi thêm giảm giá:', error);
+                    if (error.data && error.data.message) {
+                        $scope.errorMessage = 'Lỗi khi thêm giảm giá: ' + error.data.message;
+                    } else {
+                        $scope.errorMessage = 'Lỗi không xác định: ' + JSON.stringify(error);
+                    }
+                });
+        }
     };
 
     $scope.deleteGiamGia = function (ggId) {

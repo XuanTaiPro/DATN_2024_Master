@@ -123,36 +123,6 @@ window.khachhangCtrl = function ($scope, $http) {
         console.log("Trạng thái hiện tại:", $scope.selectedKhachHang.trangThai);// Sao chép dữ liệu nhân viên cần cập nhật
     };
 
-    //
-    // $scope.addKhachHang = function () {
-    //     if (!$scope.gioiTinh) {
-    //         $scope.gioiTinh = "Nam";
-    //     }
-    //     const newKhachHang = {
-    //         ten: $scope.ten,
-    //         email: $scope.email,
-    //         passw: $scope.passw,
-    //         gioiTinh: $scope.gioiTinh,
-    //         sdt: $scope.sdt,
-    //         diaChi: $scope.diaChi,
-    //         trangThai: $scope.trangThai
-    //
-    //     };
-    //     console.log("Dữ liệu nhân viên mới:", newKhachHang);
-    //     $http.post('http://localhost:8083/khachhang/add', newKhachHang)
-    //         .then(function (response) {
-    //             $scope.listKhachHang.push(response.data);
-    //             // Đóng modal
-    //             $('#productModal').modal('hide');
-    //             showSuccessAlert('Thêm thành công!');
-    //             $scope.loadPage($scope.currentPage);
-    //         })
-    //         .catch(function (error) {
-    //             $scope.errorMessage = "Thêm thất bại";
-    //         });
-    //     resetForm();
-    // };
-
     $scope.addKhachHang = function () {
         $scope.errorMessages = {}; // Đặt lại thông báo lỗi
         $scope.successMessage = ''; // Đặt lại thông báo thành công
@@ -234,7 +204,7 @@ window.khachhangCtrl = function ($scope, $http) {
                             $scope.listKhachHang.push(response.data);
                             $('#productModal').modal('hide');
                             showSuccessAlert('Thêm thành công!');
-                            $scope.loadPage($scope.currentPage);
+                            // $scope.loadPage($scope.currentPage);
                         })
                         .catch(function (error) {
                             $scope.errorMessage = "Thêm thất bại";
@@ -248,23 +218,9 @@ window.khachhangCtrl = function ($scope, $http) {
             });
     };
 
-    // $scope.updateKhachHang = function () {
-    //     console.log("Cập nhật Khách Hàng:", $scope.selectedKhachHang);  // Kiểm tra dữ liệu trước khi gửi
-    //     $http.put('http://localhost:8083/khachhang/update/' + $scope.selectedKhachHang.id, $scope.selectedKhachHang)
-    //         .then(function (response) {
-    //             $('#UpdateForm').modal('hide');
-    //             showSuccessAlert('Update thành công!');
-    //             $scope.loadPage($scope.currentPage);
-    //         })
-    //         .catch(function (error) {
-    //
-    //         });
-    // }
     $scope.updateKhachHang = function () {
-        console.log("Cập nhật Khách Hàng:", $scope.selectedKhachHang); // Kiểm tra dữ liệu trước khi gửi
+        console.log("Cập nhật Khách Hàng:", $scope.selectedKhachHang);
         $scope.errorMessages = {}; // Đặt lại thông báo lỗi
-
-        // Kiểm tra các thông tin đầu vào (Client-side validation)
         if (!$scope.selectedKhachHang.ten || $scope.selectedKhachHang.ten.trim() === '') {
             $scope.errorMessages.ten = "Họ và tên không được để trống!";
         } else if ($scope.selectedKhachHang.ten.trim().length < 3 || $scope.selectedKhachHang.ten.trim().length > 50) {
@@ -331,7 +287,7 @@ window.khachhangCtrl = function ($scope, $http) {
 
     $scope.delete = function (id) {
         console.log("Xóa");
-        if (confirm('Bạn có chắc chắn muốn xóa ?')) {
+        showConfirm('Bạn có chắc chắn muốn xóa khách hàng này?', () => {
             $http.delete('http://localhost:8083/khachhang/delete/' + id)
                 .then(function (response) {
                     // Kiểm tra phản hồi server
@@ -340,13 +296,13 @@ window.khachhangCtrl = function ($scope, $http) {
                     if (index !== -1) {
                         $scope.listKhachHang.splice(index, 1);
                     }
-                   showSuccessAlert("Xóa thành công") // Sử dụng thông điệp từ server
+                   showSuccessAlert("Xóa thành công")
                 })
                 .catch(function (error) {
                     console.error("Lỗi khi xóa :", error);
-                    alert("Xóa thất bại. Vui lòng thử lại sau.");
+                   showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
                 });
-        }
+        })
     };
 
 //     // Reset form
