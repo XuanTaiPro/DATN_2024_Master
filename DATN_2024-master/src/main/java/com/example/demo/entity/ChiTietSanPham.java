@@ -73,7 +73,7 @@ public class ChiTietSanPham {
         List<String> linkAnhList = anhCTSP != null
                 ? anhCTSP.stream().map(AnhCTSP::getLink).collect(Collectors.toList())
                 : new ArrayList<>(); // Trả về danh sách rỗng nếu không có hình ảnh
-        if (sanPham.getGiamGia() != null &&
+        if (sanPham.getGiamGia() != null &&sanPham.getGiamGia().getTrangThai()==1&&
                 sanPham.getGiamGia().getNgayKetThuc().isAfter(LocalDateTime.now()) &&
                 sanPham.getGiamGia().getNgayBatDau().isBefore(LocalDateTime.now())) {
             double giaGiam = Double.valueOf(sanPham.getGiamGia().getGiaGiam()) / 100;

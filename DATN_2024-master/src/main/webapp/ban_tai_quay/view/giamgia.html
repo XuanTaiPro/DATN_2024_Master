@@ -232,15 +232,13 @@
                                     <label class="form-label">Chọn sản phẩm áp dụng giảm giá:</label>
                                     <div>
                                         <input type="radio" id="allProductsUpdate"
-                                               ng-model="giamGiaDetail.selectedProductsType" value="all"
-                                               ng-change="updateProductSelection()">
+                                               ng-model="giamGiaDetail.selectedProductsType" value="all">
                                         <label for="allProductsUpdate">Tất cả sản phẩm</label>
                                     </div>
                                     <div>
                                         <input type="radio" id="selectProductsUpdate"
-                                               ng-model="giamGiaDetail.selectedProductsType" value="selected"
-                                               ng-change="updateProductSelection()">
-                                        <label for="selectProductsUpdate">Chọn sản phẩm</label>
+                                               ng-model="giamGiaDetail.selectedProductsType" value="selected">
+                                        <label for="selectProductsUpdate" >Chọn sản phẩm</label>
                                     </div>
                                 </div>
                                 <!-- Hiển thị khi người dùng chọn "Chọn sản phẩm" -->
@@ -283,9 +281,17 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-danger" ng-click="deleteGiamGia(gg.id)">
-                <i class="bi bi-trash"></i>
-            </button>
+            <div>
+                <!-- Hiển thị nút xóa khi trangThai = 1 -->
+                <button class="btn btn-danger" ng-if="gg.trangThai == 1" ng-click="deleteGiamGia(gg.id)">
+                    <i class="bi bi-trash"></i>
+                </button>
+
+                <!-- Hiển thị nút kích hoạt khi trangThai khác 1 và không phải 0 -->
+                <button class="btn btn-success" ng-if="gg.trangThai != 1 && gg.trangThai != 2" ng-click="activateGiamGia(gg.id)">
+                    <i class="bi bi-check-circle"></i>
+                </button>
+            </div>
         </td>
     </tr>
     </tbody>

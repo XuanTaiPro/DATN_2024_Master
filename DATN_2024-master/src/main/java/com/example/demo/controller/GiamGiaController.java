@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -175,7 +176,7 @@ public class GiamGiaController {
             sanPhams.add(sanPham);
         }
         sanPhamRepository.saveAll(sanPhams); //
-        return ResponseEntity.ok("Add done!");
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Add done!");
     }
 
     private boolean isValidDateFormat(LocalDateTime date) {
@@ -286,7 +287,7 @@ public class GiamGiaController {
         sanPhamRepository.saveAll(sanPhams);
 
         // Lưu cập nhật cho GiamGia
-        return ResponseEntity.ok("Cập nhật thành công!");
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật thành công!");
     }
 
     @DeleteMapping("/delete")
@@ -298,8 +299,9 @@ public class GiamGiaController {
         if (giamGiaRepository.findById(id).isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy giảm giá có id: " + id);
         }
-        giamGiaRepository.deleteById(id);
-        return ResponseEntity.ok("Xóa giảm giá thành công!");
+        GiamGia giamGia=giamGiaRepository.getReferenceById(id);
+        giamGia.setTrangThai(0);
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật trạng thái giảm giá thành công!");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -16,13 +16,17 @@ public interface VoucherRepository extends JpaRepository<Voucher, String> {
 
     @Query("SELECT v FROM Voucher v WHERE " +
             "(:ten IS NULL OR v.ten LIKE %:ten%) AND " +
-            "(:giamGia IS NULL OR v.giamGia LIKE CONCAT('%',:giamGia ,'%') ) AND " +
-            "(:trangThai IS NULL OR v.trangThai = :trangThai)")
+                    "(:giamGia IS NULL OR v.giamGia LIKE CONCAT('%',:giamGia ,'%') ) AND " +
+                    "(:trangThai IS NULL OR v.trangThai = :trangThai)")
     Page<Voucher> filterVouchers(
             @Param("ten") String ten,
             @Param("giamGia") String giamGia,
             @Param("trangThai") Integer trangThai,
             Pageable pageable);
+
+    @Query("SELECT v from Voucher v WHERE v.ma=:ma")
+    Voucher getBYMa(@Param("ma") String ma);
+
 
     List<Voucher> findByTrangThaiAndSoLuongGreaterThan(Integer trangThai, int soLuong);
 }
