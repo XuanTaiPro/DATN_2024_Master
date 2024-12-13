@@ -7,7 +7,7 @@
          style="display: none; position: fixed; top: 0; left: 0; width: 100%; z-index: 1050; text-align: center;">
     </div>
     <div class="payment-container">
-        <table class="table table-hover">
+        <table class="table table-hover" id="tbw">
             <thead>
             <tr>
                 <td>Tên Sản Phẩm</td>
@@ -19,7 +19,12 @@
             <tbody>
             <tr ng-repeat="cthds in listCTHD">
                 <td>{{cthds.tenSP}}</td>
-                <td>{{cthds.giaSauGiam}}</td>
+                <td>
+                    {{ cthds.giaSauGiam}} VND
+                    <span ng-if="cthds.tienGiam && cthds.tienGiam > 0" class="text-danger">
+                        (Giảm: {{ cthds.tienGiam }} VND)
+                    </span>
+                </td>
                 <td>{{cthds.soLuong}}</td>
                 <td>{{cthds.giaSauGiam * cthds.soLuong}} VND</td>
             </tr>
@@ -550,9 +555,13 @@
         font-size: 14px;
         color: #f6f6f6;
     }
+    .table{
+        border-spacing: 20px;
+    }
 
     .table tbody td {
         text-align: center;
+        height: 90px;
     }
 
     .table tbody tr:hover {
@@ -768,9 +777,27 @@
     }
 
     /* Đảm bảo các cột có chiều rộng đều nhau */
-    .table th, .table td {
-        width: calc(100% / 5.2); /* Chia đều chiều rộng cho các cột */
+    #tbw th, #tbw td {
+        text-align: left;
+        padding: 10px;
     }
+
+    #tbw th:nth-child(1),#tbw td:nth-child(1) { /* Tên Sản Phẩm */
+        width: 20%;
+    }
+
+    #tbw th:nth-child(2), #tbw td:nth-child(2) { /* Giá bán */
+        width: 30%;
+    }
+
+    #tbw th:nth-child(3), #tbw td:nth-child(3) { /* Số lượng */
+        width: 10%;
+    }
+
+    #tbw th:nth-child(4), #tbw td:nth-child(4) { /* Tổng tiền */
+        width: 40%;
+    }
+
 
     .table td:last-child {
         width: auto; /* Để nút "Áp dụng" không bị bó hẹp */
@@ -778,6 +805,7 @@
     }
 
     /* Thiết lập kiểu cho bảng */
+
     .table {
         width: 100%;
         margin: 20px 0;
@@ -859,35 +887,6 @@
 
     .table-hover tbody tr:hover {
         background-color: #f1f1f1;
-    }
-
-    .customer-table {
-        display: none;
-        position: fixed;
-        width: 630px;
-        height: 660px;
-        top: 50%;
-        left: 50%; /* Đặt vị trí ngang ở giữa */
-        transform: translate(-50%, -50%); /* Đưa form vào trung tâm */
-        background-color: white;
-        padding: 20px;
-        border-radius: 5px;
-        z-index: 10000;
-    }
-
-    #qrCode {
-        display: none;
-        position: fixed;
-        top: 30%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 350px;
-        height: 350px;
-        border: 1px solid #ddd;
-        padding: 10px;
-        background-color: #fff;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        z-index: 10000;
     }
 
     .bordered-form {

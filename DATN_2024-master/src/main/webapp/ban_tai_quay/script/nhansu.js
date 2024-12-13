@@ -243,49 +243,56 @@ window.nhansuCtrl = function ($scope, $http) {
             })
             .catch(function (error) {
                 console.error("Lỗi khi cập nhật nhân viên:", error);
-                if (error.status === 403) {
-                    showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
-                } else {
-                    alert(error.data.message || "Xóa thất bại. Vui lòng thử lại sau.");
-                }
+                // if (error.status === 403) {
+                //     showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
+                // } else {
+                //     alert(error.data.message || "Xóa thất bại. Vui lòng thử lại sau.");
+                // }
             });
     };
 
-
-// Xóa nhân viên
-    $scope.deleteNhanVien = function (id) {
-        console.log("Xóa");
+    $scope.delete = function (id) {
+        console.log(id);
         $('#deleteNhanSuModal').modal('hide');
-        $http.delete('http://localhost:8083/nhanvien/delete/' + id)
-            .then(function (response) {
-                // Kiểm tra phản hồi server
-                console.log(response.data);
-                const index = $scope.listNhanVien.findIndex(nv => nv.id === id);
-                if (index !== -1) {
-                    $scope.listNhanVien.splice(index, 1);
-                    $('#deleteSuccessModal').modal('show');
-                }
-            })
-            .catch(function (error) {
-                console.error("Lỗi khi xóa nhân viên:", error);
-                if (error.status === 403) {
-                    showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
-                } else {
-                    alert(error.data.message || "Xóa thất bại. Vui lòng thử lại sau.");
-                }
-            });
+        showConfirm('Bạn có chắc chắn muốn ngưng hoạt động nhân viên này?', (check) => {
+            if(check){
+                $http.delete('http://localhost:8083/nhanvien/delete/' + id)
+                    .then(function (response) {
+                        showSuccessAlert("cập nhật thành công")
+                        $scope.loadPage($scope.currentPage);
+                    })
+                    .catch(function (error) {
+                        console.error("Lỗi khi xóa nhân viên:", error);
+                        if (error.status === 403) {
+                            showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
+                        } else {
+                            showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
+                        }
+                    });
+            }
+        })
     };
 
-    $scope.confirmDeleteNhanSu = function () {
-        $('#deleteNhanSuModal').modal('show');
-    }
-    $scope.closeModalDeleteSuccess = function () {
-        $('#deleteSuccessModal').modal('hide');
-        console.log("ok")
-    }
-    $scope.closeDeleteNhanSuModal = function () {
+
+    $scope.deleteback = function (id) {
+        console.log(id);
         $('#deleteNhanSuModal').modal('hide');
-    }
+        // showConfirm('Bạn có chắc chắn muốn cấp lại hoạt động nhân viên  này?', () => {
+            $http.delete('http://localhost:8083/nhanvien/deleteback/' + id)
+                .then(function (response) {
+                    showSuccessAlert("cập nhật thành công")
+                    $scope.loadPage($scope.currentPage);
+                })
+                .catch(function (error) {
+                    console.error("Lỗi khi xóa nhân viên:", error);
+                    if (error.status === 403) {
+                        showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
+                    } else {
+                        showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
+                    }
+                });
+        // })
+    };
 
     function resetForm() {
         $scope.name = "";

@@ -14,5 +14,7 @@ public class MailKH {
     private double amountPaid;
     private double totalAmount;
     private double changeAmount;
+    private String idHD;
     private String email;
+    private double discountAmount;
 }

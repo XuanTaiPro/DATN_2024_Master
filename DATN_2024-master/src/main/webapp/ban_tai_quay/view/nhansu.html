@@ -3,20 +3,22 @@
 
     <div class="row mb-3">
         <div class="col-md-3">
-            <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="searchParams.ten">
+            <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="searchParams.ten"
+                   ng-change="searchAndFilter()">
         </div>
         <div class="col-md-3">
-            <select class="form-select" ng-model="searchParams.gioiTinh">
+            <select class="form-select" ng-model="searchParams.gioiTinh" ng-change="searchAndFilter()">
                 <option value="">-- Giới tính --</option>
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
             </select>
         </div>
         <div class="col-md-3">
-            <input type="text" class="form-control" placeholder="Địa chỉ" ng-model="searchParams.diaChi">
+            <input type="text" class="form-control" placeholder="Địa chỉ" ng-model="searchParams.diaChi"
+                   ng-change="searchAndFilter()">
         </div>
         <div class="col-md-3">
-            <select class="form-select" ng-model="searchParams.trangThai">
+            <select class="form-select" ng-model="searchParams.trangThai" ng-change="searchAndFilter()">
                 <option value="">-- Trạng thái --</option>
                 <option value="1">Hoạt động</option>
                 <option value="0">Ngưng hoạt động</option>
@@ -25,7 +27,7 @@
     </div>
     <div class="row mb-3">
         <div class="col-md-12 text-end">
-            <button class="btn btn-primary" ng-click="searchAndFilter()">Tìm kiếm</button>
+            <!--            <button class="btn btn-primary" ng-click="searchAndFilter()">Tìm kiếm</button>-->
             <button class="btn btn-secondary" ng-click="resetFilters()">Xóa lọc</button>
         </div>
     </div>
@@ -34,7 +36,7 @@
     <div class="row">
         <div class="col-12">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
-                Thêm Nhân Viên
+                <i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên
             </button>
         </div>
     </div>
@@ -76,66 +78,12 @@
                                 data-bs-target="#DetailForm"><i class="bi bi-eye"></i></button>
                         <button class="btn btn-primary" ng-click="openUpdateModal(nhanVien)" data-bs-toggle="modal"
                                 data-bs-target="#UpdateForm"><i class="bi bi-pencil-square"></i></button>
-                        <button class="btn btn-danger" ng-click="confirmDeleteNhanSu()"
-                                ng-disabled="nhanVien.tenQuyen === 'Admin'"><i
+                        <button class="btn btn-danger" ng-click="delete(nhanVien.id)"
+                                ng-disabled="nhanVien.tenQuyen === 'Admin'" ng-if="nhanVien.trangThai === 1"><i
                                 class="bi bi-trash"></i></button>
-                        <div class="modal fade" id="deleteNhanSuModal" tabindex="-1" role="dialog"
-                             aria-labelledby="actionModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="actionModalLabel">Khi bạn đóng hóa đơn sẽ bị xóa,bạn
-                                            có chắc chắn?</h5>
-                                        <!-- Dấu X đóng modal -->
-                                        <button type="button" class="close" ng-click="closeModal()" data-dismiss="modal"
-                                                aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <button type="button" class="btn btn-danger"
-                                                ng-click="deleteNhanVien(nhanVien.id)">Đóng và xóa hóa đơn
-                                        </button>
-                                        <!-- Nút Hủy đóng modal -->
-                                        <button type="button" class="btn btn-secondary"
-                                                ng-click="closeDeleteNhanSuModal()">Hủy
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal fade" id="deleteSuccessModal" tabindex="-1" role="dialog"
-                             aria-labelledby="addInvoiceModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content text-center">
-                                    <div class="modal-header justify-content-center border-0">
-                                        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
-                                             width="120" height="120">
-                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-                                               stroke-linejoin="round"></g>
-                                            <g id="SVGRepo_iconCarrier">
-                                                <!-- Vòng tròn bên ngoài -->
-                                                <circle cx="60" cy="60" r="50" stroke="#28a745" stroke-width="5"
-                                                        fill="none"></circle>
-                                                <!-- Dấu tích -->
-                                                <path d="M72 40L55 65L47 55" stroke="#28a745" stroke-width="5"
-                                                      stroke-linecap="round"
-                                                      stroke-linejoin="round"></path>
-                                            </g>
-                                        </svg>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!-- Thêm thành công -->
-                                        <h5 class="mt-3 text-success">Xóa thành công!</h5>
-                                        <button type="button" class="btn btn-success mt-3"
-                                                ng-click="closeModalDeleteSuccess()">Oke
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                        <button class="btn btn-success" ng-click="deleteback(nhanVien.id)"
+                                ng-disabled="nhanVien.tenQuyen === 'Admin'" ng-if="nhanVien.trangThai === 0"><i
+                                class="bi bi-check-circle"></i></button>
                     </td>
                 </tr>
                 </tbody>

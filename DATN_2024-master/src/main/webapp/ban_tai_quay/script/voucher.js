@@ -336,7 +336,44 @@ window.voucherCtrl = function ($scope, $http) {
         }
     };
 
+    $scope.searchParams = {
+        ten: '',
+        giamGia: '',
+        trangThai: ''
+    }
+    $scope.searchAndFilter = function (page = 0) {
+        const params = {
+            ...$scope.searchParams,
+            page: page,
+            size: $scope.pageSize
+        }
+        $http.get(`http://localhost:8083/voucher/filter`, {params})
+            .then(function (response) {
+                $scope.listVoucher = response.data.vouchers
+                $scope.currentPage = response.data.currentPage
+                $scope.totalPages = response.data.totalPages
 
+                if ($scope.listVoucher.length === 0) {
+                    $scope.emptyMessage = response.data.message || "Không tìm thấy voucher!!"
+                } else {
+                    $scope.emptyMessage = ''
+                }
+            })
+            .catch(function (error) {
+              console.error("xảy ra lỗi :" + error )
+
+            })
+        }
+
+
+        $scope.resetFilters = function (){
+          $scope.searchParams = {
+              ten :'',
+              giamGia :'',
+              trangThai :''
+          }
+          $scope.loadPage(0)
+        }
     // Reset form
     function resetForm() {
         $scope.ten = "";

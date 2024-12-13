@@ -7,10 +7,39 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
+
+    <div class="row mb-3" style="margin-top: 10px">
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="searchParams.ten" ng-change="searchAndFilter()">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" ng-model="searchParams.giamGia" ng-change="searchAndFilter()">
+                <option value="">-- Chọn giá giảm --</option>
+                <option value="10">10%</option>
+                <option value="20">20%</option>
+                <option value="30">50%</option>
+                <option value="70">70%</option>
+                <option value="80">80%</option>
+                <option value="100">100%</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" ng-model="searchParams.trangThai" ng-change="searchAndFilter()">
+                <option value="">-- Trạng thái --</option>
+                <option value="1">Hoạt động</option>
+                <option value="0">Ngưng hoạt động</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12 ">
+            <button class="btn btn-secondary" ng-click="resetFilters()">Xóa lọc</button>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
-                Thêm Voucher
+                <i class="fa-solid fa-ticket"></i> Thêm Voucher
             </button>
         </div>
     </div>
@@ -61,7 +90,7 @@
                 </tr>
                 </tbody>
             </table>
-            <p class="text-center text-muted" ng-if="listNhanVien.length === 0">{{ emptyMessage }}</p>
+            <p class="text-center text-muted" ng-if="listVoucher.length === 0">{{ emptyMessage }}</p>
             <ul class="pagination justify-content-center">
                 <li class="page-item" ng-class="{disabled: currentPage == 0}">
                     <a class="page-link" href="" ng-click="prevPage()">«</a>
@@ -248,7 +277,7 @@
                         </div>
                         <div>
                             <label>Giảm min:</label>
-                            <input type="text" ng-model="selectedVoucher.giamGia">
+                            <input type="text" ng-model="selectedVoucher.giamMin">
                         </div>
                         <div>
                             <label>Giảm max:</label>
