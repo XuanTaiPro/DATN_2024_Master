@@ -56,15 +56,38 @@ window.hoaDonCtrl = function ($scope, $http) {
         }
 
         $http.get(url)
-            .then(function (response) {
-                $scope.hoaDons = response.data.hoaDons;
-                console.log($scope.hoaDons);
+            .then(async function (response) {
+                const listHD = response.data.hoaDons;
+
+                const requests = listHD.map(async item => {
+                    try {
+                        const response = await fetch(`http://localhost:8083/chitiethoadon/getAllByOrderId?idHD=` + item.id);
+                        const resultCTHD = await response.json();
+
+                        if (item.trangThai === 3) {
+                            const tt = $scope.getTotalAmount(resultCTHD);
+                            const giaGiamVC = item.giaGiamVC || 0;
+                            const giaMax = item.giaMax || 0;
+
+                            let totalAfterVC = tt - tt * (giaGiamVC / 100);
+                            item['ttLastMoney'] = tt - Math.min(totalAfterVC, giaMax);
+                            item['tt'] = tt;
+                        }
+                        return item;
+                    } catch (error) {
+                        console.error(`Lỗi khi xử lý hóa đơn ID: ${item.id}`, error);
+                        return item; // Trả về item dù có lỗi để không gián đoạn toàn bộ
+                    }
+                });
+
+                $scope.hoaDons = await Promise.all(requests);
                 $scope.totalPages = response.data.totalPages;
-                $scope.pages = Array.from({length: $scope.totalPages}, (v, i) => i);
+                $scope.pages = Array.from({ length: $scope.totalPages }, (v, i) => i);
             })
             .catch(function (error) {
                 $scope.errorMessage = 'Lỗi khi lấy hóa đơn: ' + (error.data?.message || JSON.stringify(error.data));
             });
+
     };
 
 
@@ -163,11 +186,14 @@ window.hoaDonCtrl = function ($scope, $http) {
             items.forEach(item => {
                 // Ensure both giaSauGiam and giaBan are valid numbers before multiplying
                 const giaSauGiam = parseFloat(item.giaSauGiam);
+                const giaMax = parseFloat(item.giaMax);
+                const giaGiamVC = parseFloat(item.giaGiamVC);
                 const soLuong = parseFloat(item.soLuong);
                 if (!isNaN(giaSauGiam) && !isNaN(soLuong)) {
                     total += giaSauGiam * soLuong; // Cộng dồn tổng tiền
                 }
             });
+            total
         }
         return total; // Trả về tổng tiền
     };

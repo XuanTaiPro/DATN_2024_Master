@@ -75,8 +75,8 @@
             <td>{{hd.sdt}}</td>
             <td>{{hd.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
             <td>{{hd.loaiHD == 1 ? 'Online' : 'Tại quầy' }}</td>
-            <td>{{ hd.tongTien }} VND</td>
-            <td ng-if="tongTienDaGiam > 0">{{ tongTienDaGiam || 0 }} VND</td>
+            <td>{{ hd.tt }} VND</td>
+            <td >{{ hd.ttLastMoney }} VND</td>
             <td>
                 <button class="btn btn-success" ng-click="detailHoaDon(hd.id)" data-bs-toggle="modal"
                         data-bs-target="#readData">

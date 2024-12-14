@@ -500,8 +500,8 @@ public class HoaDonController {
             }
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(hoaDon.getMaHD());
-            vcRepo.getBYMa(req.getMaVoucher());
-            hoaDon.setVoucher(vcRepo.getBYMa(req.getMaVoucher()));
+            Voucher vc = vcRepo.findById(req.getMaVoucher()).get();
+            hoaDon.setVoucher(vc);
             hoaDon.setNgayThanhToan(LocalDateTime.now());
 
             // hoaDon.setNgayNhanHang(req.getNgayNhanHang());
