@@ -123,6 +123,9 @@
                         if (data.success) {
                             // Xử lý khi đăng nhập thành công
                             sessionStorage.setItem('idNV', data.message.id);
+                            // $scope.tenQuyen = response.data.tenQuyen;
+                            // localStorage.setItem("tenQuyen", response.data.tenQuyen);
+                            sessionStorage.setItem('tenQuyen',data.tenQuyen)
                             formUser.classList.add('active-form-user');
                             formConfirm.classList.add('active-form-confirm');
                         } else {

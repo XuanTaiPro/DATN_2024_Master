@@ -69,7 +69,8 @@ public class LoginController {
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "message", loginNV.toResponse()));
+                    "message", loginNV.toResponse(),
+                    "tenQuyen", tenQuyen));
 
     }
 
@@ -94,9 +95,9 @@ public class LoginController {
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
-
                 "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html"));
     }
+
 
     @PostMapping("checkOtpOl")
     public ResponseEntity<?> checkOtpOl(@RequestBody Map<String, String> otpRequest, HttpSession ses) {

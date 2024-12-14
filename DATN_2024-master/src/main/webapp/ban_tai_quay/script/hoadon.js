@@ -20,12 +20,21 @@ window.hoaDonCtrl = function ($scope, $http) {
     $http.get('http://localhost:8083/hoadon/listNV').then(function (response) {
         $scope.nhanViens = response.data;
     });
+
     // $scope.chiTietHoaDons=[];
     $scope.getHoaDonsByTrangThai = function (trangThai, page) {
         $scope.selectedTrangThai = trangThai; // Cập nhật trạng thái đã chọn
         $scope.currentPage = page || 0; // Mặc định trang 0 nếu không có trang nào được cung cấp
 
         // Bắt đầu xây dựng URL với trang hiện tại
+
+        // const tongTienDaGiam = sessionStorage.getItem('tongTienDaGiam');
+        // if (tongTienDaGiam) {
+        //     $scope.tongTienDaGiam = parseFloat(tongTienDaGiam); // Gán giá trị tổng tiền vào $scope
+        // } else {
+        //     $scope.tongTienDaGiam = 0; // Mặc định nếu không tìm thấy
+        // }
+
         let url = 'http://localhost:8083/hoadon/page?page=' + $scope.currentPage;
 
         // Thêm tham số trạng thái nếu không phải là null

@@ -66,10 +66,10 @@ public class NhanVienController {
     @GetMapping("detail/{id}")
     public ResponseEntity<?> detail(@PathVariable String id) {
         if (nvRepo.findById(id).isPresent()) {
-//            if (LoginController.tenQuyen == null ||
-//                    !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
-//                return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ Admin mới có quyền xem chi tiết!"));
-//            }
+            if (LoginController.tenQuyen == null ||
+                    !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+                return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ Admin mới có quyền xem chi tiết!"));
+            }
             return ResponseEntity.ok().body(nvRepo.findById(id).stream().map(NhanVien::toResponse));
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id để hiển thị");

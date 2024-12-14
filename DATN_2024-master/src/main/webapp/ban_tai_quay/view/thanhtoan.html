@@ -20,13 +20,13 @@
             <tr ng-repeat="cthds in listCTHD">
                 <td>{{cthds.tenSP}}</td>
                 <td>
-                    {{ cthds.giaSauGiam}} VND
+                    {{ cthds.giaSauGiam}} VNĐ
                     <span ng-if="cthds.tienGiam && cthds.tienGiam > 0" class="text-danger">
-                        (Giảm: {{ cthds.tienGiam }} VND)
+                        (Giảm: {{ cthds.tienGiam }} VNĐ)
                     </span>
                 </td>
                 <td>{{cthds.soLuong}}</td>
-                <td>{{cthds.giaSauGiam * cthds.soLuong}} VND</td>
+                <td>{{cthds.giaSauGiam * cthds.soLuong}} VNĐ</td>
             </tr>
             </tbody>
         </table>
@@ -100,7 +100,7 @@
                     <thead class="thead-light">
                     <tr>
                         <th>Tên Voucher</th>
-                        <th>Giá giảm</th>
+                        <th>% giảm</th>
                         <th>Đơn tối thiểu</th>
                         <th>Giảm tối đa</th>
                         <th>Hạn sử dụng</th>
@@ -110,9 +110,9 @@
                     <tbody>
                     <tr ng-repeat="voucher in vouchers">
                         <td>{{ voucher.ten }}</td>
-                        <td>{{ voucher.giamGia }}</td>
-                        <td>{{ voucher.giamMin }}</td>
-                        <td>{{ voucher.giamMax }}</td>
+                        <td>{{ voucher.giamGia }}%</td>
+                        <td>{{ voucher.giamMin }} VNĐ</td>
+                        <td>{{ voucher.giamMax }} VNĐ</td>
                         <td>
                 <span ng-if="getDaysLeft(voucher.ngayKetThuc) > 0">
                       {{ getDaysLeft(voucher.ngayKetThuc) }} ngày
@@ -421,7 +421,7 @@
                     <div class="modal-body">
                         <div ng-if="suggestedVoucher" class="voucher-details">
                             <p><i class="fas fa-tag"></i> <strong>Tên Voucher:</strong> {{ suggestedVoucher.ten }}</p>
-                            <p><i class="fas fa-percentage"></i> <strong>Giá giảm:</strong> {{ suggestedVoucher.giamGia }}</p>
+                            <p><i class="fas fa-percentage"></i> <strong>Giá giảm:</strong> {{ suggestedVoucher.giamGia }}%</p>
                             <p><i class="fas fa-cart-plus"></i> <strong>Đơn tối thiểu:</strong> {{ suggestedVoucher.giamMin | number:0 }} VNĐ</p>
                             <p><i class="fas fa-arrow-alt-circle-down"></i> <strong>Giảm tối đa:</strong> {{ suggestedVoucher.giamMax | number:0 }} VNĐ</p>
                         </div>

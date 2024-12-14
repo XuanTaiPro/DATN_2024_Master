@@ -55,19 +55,19 @@ app.config(function ($routeProvider) {
             controller: thongtingiaohangCtrl
         })
         .otherwise({
-            redirectTo: '/login',
+            redirectTo: '/sanpham',
         })
 })
 
 app.controller('myCtrl', function ($scope, $http) {
-    // const login = sessionStorage.getItem('loginOk')
-    // if (!login) {
-    //     window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
-    //     return
-    // }
-    //
-    // const idNV = sessionStorage.getItem('idNV');
-    const idNV='2DAFC81E'
+    const login = sessionStorage.getItem('loginOk')
+    if (!login) {
+        window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
+        return
+    }
+
+    const idNV = sessionStorage.getItem('idNV');
+    // const idNV='CEC76A2E'
     if (!idNV) {
         console.error('Không tìm thấy ID nhân viên trong sessionStorage');
         return;

@@ -56,6 +56,9 @@ window.nhansuCtrl = function ($scope, $http) {
 
 
     $scope.loadPage = function (page) {
+        $scope.idNV = sessionStorage.getItem('idNV')
+      $scope.tenQuyen =  sessionStorage.getItem('tenQuyen')
+        console.log()
         $http.get('http://localhost:8083/nhanvien/page?page=' + page)
             .then(function (response) {
                 $scope.listNhanVien = response.data.nhanViens;

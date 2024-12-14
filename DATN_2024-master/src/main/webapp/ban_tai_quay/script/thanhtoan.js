@@ -419,7 +419,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
                     overlayLoad.style.display = 'none';
                     loader.style.display = 'none';
                     $scope.completePayment();
-                    // showSuccessAlert("Hóa đơn đã được gửi đến mail của khách hàng")
+                    showSuccessAlert("Hóa đơn đã được gửi đến mail của khách hàng")
                     Swal.fire({
                         icon: 'success',
                         title: "Hóa đơn đã được gửi đến mail của khách hàng",
@@ -520,6 +520,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
 
             $scope.previousTotal = totalAmount;
             $scope.tongTien = totalAmount - discountAmount;
+            sessionStorage.setItem('tongTienDaGiam',$scope.tongTien) // lưu lại tổng tiền đã giảm cho hóa đơn
             const alertBox = document.getElementById('success-alert1');
             alertBox.innerHTML = `
         <strong>Áp dụng thành công voucher!</strong>
