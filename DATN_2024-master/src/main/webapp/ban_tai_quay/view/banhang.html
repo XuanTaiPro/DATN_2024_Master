@@ -228,7 +228,7 @@
                     <!--                    <span ng-if="!cthd.giaSauGiam || cthd.giaSauGiam === 0">-->
                     <!--                        {{ cthd.giaBan }} VND-->
                     <!--                    </span>-->
-                    <span ng-if="cthd.tienGiam && cthd.tienGiam !== 0" class="text-danger">
+                    <span ng-if="cthd.tienGiam && cthd.tienGiam > 0" class="text-danger">
                         (Giảm: {{ cthd.tienGiam }} VND)
                     </span>
                 </td>

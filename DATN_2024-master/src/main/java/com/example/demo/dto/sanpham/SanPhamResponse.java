@@ -48,4 +48,6 @@ public class SanPhamResponse {
     private String giamGia;
 
     private String linkAnh;
+
+    private String idDanhMuc;
 }

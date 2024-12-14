@@ -33,15 +33,17 @@
                ng-class="{'active': selectedTrangThai === null}">Tất cả</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" ng-click="getHoaDonsByTrangThai(0, 0)" ng-class="{'active': selectedTrangThai === 0}">Chờ
-                xác nhận</a>
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(0, 0)" ng-class="{'active': selectedTrangThai === 0}">Chờ xác nhận</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" ng-click="getHoaDonsByTrangThai(1, 0)" ng-class="{'active': selectedTrangThai === 1}">Chờ</a>
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(1, 0)" ng-class="{'active': selectedTrangThai === 1}">Chờ thanh toán</a>
         </li>
-        <!--        <li class="nav-item">-->
-        <!--            <a class="nav-link" ng-click="getHoaDonsByTrangThai(2, 0)" ng-class="{'active': selectedTrangThai === 2}">Đã xác nhận</a>-->
-        <!--        </li>-->
+        <li class="nav-item">
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(2, 0)" ng-class="{'active': selectedTrangThai === 2}">Đã xác nhận</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" ng-click="getHoaDonsByTrangThai(5, 0)" ng-class="{'active': selectedTrangThai === 5}">Đang giao hàng</a>
+        </li>
         <li class="nav-item">
             <a class="nav-link" ng-click="getHoaDonsByTrangThai(3, 0)" ng-class="{'active': selectedTrangThai === 3}">Hoàn
                 thành</a>
@@ -146,6 +148,7 @@
                                             {{ hoaDonDetail.trangThai == 0 ? 'Chờ xác nhận' :
                                             hoaDonDetail.trangThai == 1 ? 'Chờ' :
                                             hoaDonDetail.trangThai == 2 ? 'Đã xác nhận' :
+                                            hoaDonDetail.trangThai ==5 ? 'Đang giao hàng':
                                             hoaDonDetail.trangThai == 3 ? 'Hoàn thành' :
                                             hoaDonDetail.trangThai == 4 ? 'Đã hủy' : 'Không xác định' }}
                                         </p>
@@ -166,6 +169,9 @@
                 </div>
                 <button class="btn btn-success" ng-if="hd.trangThai === 0" ng-click="confirmInvoice(hd.id)">
                     <i class="fa fa-check-circle"></i> Xác nhận
+                </button>
+                <button class="btn btn-success" ng-if="hd.trangThai === 2" ng-click="confirmInvoice(hd.id)">
+                    <i class="fa fa-check-circle"></i> Xác nhận giao hàng
                 </button>
                 <button class="btn btn-danger" ng-if="hd.loaiHD ==0 " ng-click="deleteInvoice(hd.id)"><i
                         class="fa fa-trash"></i> <!-- Biểu tượng thùng rác -->

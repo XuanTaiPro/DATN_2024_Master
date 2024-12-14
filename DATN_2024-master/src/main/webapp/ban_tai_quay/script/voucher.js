@@ -333,7 +333,7 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
                 .then(function (response) {
                     $('#productModal').modal('hide');
                     showSuccessAlert('Thêm thành công!');
-                    $scope.loadPage($scope.currentPage);
+                    // $scope.loadPage($scope.currentPage);
                 })
                 .catch(function (error) {
                     $scope.errorMessage = "Thêm thất bại";

@@ -97,11 +97,12 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
                         headers: { 'Content-Type': undefined }
                     })
                         .then(function (response) {
-                            console.log('Chi tiết hóa đơn đã được thêm thành công');
-                            // Cập nhật lại danh sách sản phẩm
+                            showSuccessAlert("Thêm thành công!");
+                                // Cập nhật lại danh sách sản phẩm
                             $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
                         })
                         .catch(function (error) {
+                            showDangerAlert("Thêm thất bại!");
                             console.error('Lỗi khi thêm chi tiết hóa đơn:', error.message);
                             $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
                         });
@@ -123,6 +124,7 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
                             $scope.getHDTaiQuayAndAddCTHD($scope.qrData); // Lấy lại danh sách hóa đơn mới nhất
                         })
                         .catch(function (error) {
+                            showDangerAlert("Thất bại!");
                             console.error('Lỗi:', error);
                             alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
                         });
@@ -203,10 +205,11 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
                             headers: { 'Content-Type': undefined }
                         })
                             .then(function (response) {
-                                console.log('Chi tiết hóa đơn đã được thêm thành công');
+                                showSuccessAlert("Thêm thành công!");
                                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
                             })
                             .catch(function (error) {
+                                showDangerAlert("Thêm sản phẩm thất bại!");
                                 console.log('Lỗi khi thêm chi tiết hóa đơn:', error.message);
                                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
 
@@ -257,28 +260,7 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
                 // alert('Lỗi khi lấy danh sách hóa đơn!');
             });
     };
-    $scope.updateGhiChu = function (hd) {
-        const formData = new FormData();
-        const selectedTab = $scope.tabs[$scope.selectedTab];
-        const selectedIdHD = selectedTab.idHD;
 
-        $http.put('http://localhost:8083/hoadon/update-ghi-chu' + selectedIdHD, formData, {
-            headers: { 'Content-Type': undefined }
-        })
-            .then(function (response) {
-                console.log("Update successful:", response);
-
-                // Gọi lại hàm để load lại danh sách chi tiết hóa đơn của tab hiện tại
-                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
-
-                // alert("Cập nhật thành công!");
-            })
-            .catch(function (error) {
-                const selectedTab = $scope.tabs[$scope.selectedTab];
-                const selectedIdHD = selectedTab.idHD;
-                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
-            });
-    };
     $scope.closeProductModal = function () {
         $('#productModal').modal('toggle');
         $('#confirmAddInvoiceModal').modal('hide');
@@ -416,12 +398,12 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
         $http.put('http://localhost:8083/hoadon/update-ghi-chu/' + selectedIdHD, payload)
             .then(function (response) {
                 console.log("Update successful:", response);
-                // Gọi lại hàm để load danh sách chi tiết hóa đơn của tab hiện tại
+                showSuccessAlert("Cập nhật ghi chú thành công!");
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
             })
             .catch(function (error) {
                 console.error("Update failed:", error);
-                // Xử lý lỗi hoặc gọi lại hàm load danh sách
+                showDangerAlert("Cập nhật thất bại!");
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
             });
     };
@@ -541,7 +523,7 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
         )
             .then(function (response) {
                 console.log(response.data);
-                // Cập nhật dữ liệu hoặc thực hiện hành động sau khi thêm thành công
+                showSuccessAlert("Thêm thành công!");
                 if (selectedTab && selectedTab.idHD) {
                     $scope.getCTSPByIdHD(selectedTab.idHD, selectedTab.currentPage);
                 }
@@ -549,6 +531,7 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
             })
 
             .catch(function (error) {
+                showDangerAlert("Thêm thất bại!");
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
                 console.log('Lỗi:', error.data);
                 $scope.selectSanPham($scope.selectedSanPham);

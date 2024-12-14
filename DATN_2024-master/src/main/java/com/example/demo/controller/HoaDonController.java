@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -142,7 +143,7 @@ public class HoaDonController {
         }
 
         // Trả về phản hồi khi xóa thành công
-        return ResponseEntity.ok("Đã xóa các hóa đơn cũ");
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Đã xóa các hóa đơn cũ");
     }
 
     @GetMapping("/getHDNullKH")
@@ -183,7 +184,7 @@ public class HoaDonController {
         hoaDon.setNgaySua(null);
         hoaDon.setTrangThai(1);
         hoaDon.setLoaiHD(0);
-        hoaDon.setMaVoucher(null); // Không gán giá trị cho maVoucher
+        hoaDon.setVoucher(null); // Không gán giá trị cho maVoucher
         hoaDon.setNgayThanhToan(null); // Không gán giá trị cho ngayThanhToan
         hoaDon.setNgayNhanHang(null); // Không gán giá trị cho ngayNhanHang
         hoaDon.setKhachHang(null);
@@ -293,7 +294,7 @@ public class HoaDonController {
 
             discountCode = (String) payMap.get("discountCode");
             if ("Chưa có".equals(discountCode)) {
-                hd.setMaVoucher(null);
+                hd.setVoucher(null);
             } else {
                 Voucher voucher = vcRepo.findById(discountCode).orElse(null);
 
@@ -306,7 +307,7 @@ public class HoaDonController {
 
                 ctvcRepo.save(ctvc);
 
-                hd.setMaVoucher(discountCode);
+                hd.setVoucher(voucher);
             }
         }
 
@@ -493,7 +494,8 @@ public class HoaDonController {
             }
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(hoaDon.getMaHD());
-            hoaDon.setMaVoucher(req.getMaVoucher());
+            vcRepo.getBYMa(req.getMaVoucher());
+            hoaDon.setVoucher(vcRepo.getBYMa(req.getMaVoucher()));
             hoaDon.setNgayThanhToan(LocalDateTime.now());
             // hoaDon.setNgayNhanHang(req.getNgayNhanHang());
             hoaDon.setTrangThai(3);
@@ -516,7 +518,7 @@ public class HoaDonController {
     }
 
     @PutMapping("/update-ghi-chu/{id}")
-    public ResponseEntity<Void> updateGhiChu(@PathVariable String id, @RequestBody Map<String, String> payload) {
+    public ResponseEntity<?> updateGhiChu(@PathVariable String id, @RequestBody Map<String, String> payload) {
         Optional<HoaDon> hoaDonOptional = hoaDonRepo.findById(id);
         if (hoaDonOptional.isPresent()) {
             HoaDon hoaDon = hoaDonOptional.get();
@@ -530,7 +532,7 @@ public class HoaDonController {
 
             try {
                 hoaDonRepo.save(hoaDon);
-                return ResponseEntity.ok().build();
+                return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật ghi chú hóa đơn thành công.");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
@@ -541,7 +543,7 @@ public class HoaDonController {
 
     // Delete
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteHoaDon(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> deleteHoaDon(@RequestBody Map<String, String> request) {
         String id = request.get("id");
         if (!hoaDonRepo.existsById(id)) {
             return ResponseEntity.notFound().build();

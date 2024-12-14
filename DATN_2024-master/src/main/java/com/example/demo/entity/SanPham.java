@@ -125,7 +125,8 @@ public class SanPham {
                 thuongHieu != null ? thuongHieu.getTen() : null, // Check for null in thuongHieu
                 giamGiaTen,
                 giaDuocGiam,
-                anhLink);
+                anhLink,
+                danhMuc.getId());
     }
 
 }

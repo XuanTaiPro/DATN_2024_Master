@@ -22,8 +22,9 @@ public class HoaDon {
     @Column(name = "MAHD", length = 10)
     private String maHD;
 
-    @Column(name = "MAVOUNCHER", length = 10)
-    private String maVoucher;
+    @ManyToOne
+    @JoinColumn(name = "IDVC")
+    private Voucher voucher;
 
     @Column(name = "NGAYTAO")
     private LocalDateTime ngayTao;
@@ -85,17 +86,32 @@ public class HoaDon {
         Double tongTien = 0.0;
 
         // Iterate through each chiTietHoaDon to calculate the total
-        for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
-            if (maVoucher != null) {
-            }
-            tongTien += Double.valueOf(chiTietHoaDon.getGiaSauGiam()) * chiTietHoaDon.getSoLuong();
-        }
 
+        for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
+            if (voucher != null) {
+                // Áp dụng logic giảm giá dựa trên voucher
+                double giaSauGiam = Double.valueOf(chiTietHoaDon.getGiaSauGiam());
+                double dieuKienGiamGia = Double.valueOf(voucher.getDieuKien());
+
+                // Kiểm tra điều kiện giảm giá
+                if (tongTien >= dieuKienGiamGia) {
+                    double giamGia = Double.valueOf(voucher.getGiamGia());
+                    giaSauGiam = giaSauGiam - (giaSauGiam * (giamGia / 100));
+                }
+
+                // Đảm bảo không âm giá
+                giaSauGiam = Math.max(giaSauGiam, 0);
+                chiTietHoaDon.setGiaSauGiam(String.valueOf(giaSauGiam));
+            }
+
+            // Tính tổng tiền
+            tongTien += (Double.valueOf(chiTietHoaDon.getGiaSauGiam()) * chiTietHoaDon.getSoLuong());
+        }
         // Return the HoaDonRep response with the calculated tongTien
         return new HoaDonRep(
                 id,
                 maHD,
-                maVoucher,
+                voucher.getMa(),
                 ngayTao,
                 ngaySua,
                 ghiChu,
