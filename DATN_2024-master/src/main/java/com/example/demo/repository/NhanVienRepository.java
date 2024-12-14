@@ -16,11 +16,13 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, String> {
             "(:ten IS NULL OR nv.ten LIKE %:ten%) AND " +
             "(:gioiTinh IS NULL OR :gioiTinh = '' OR nv.gioiTinh = :gioiTinh) AND " +
             "(:diaChi IS NULL OR :diaChi = '' OR nv.diaChi LIKE %:diaChi%) AND " +
+            "(:tenQuyen IS NULL OR :tenQuyen = '' OR nv.quyen.ten LIKE %:tenQuyen%) AND" +
             "(:trangThai IS NULL OR nv.trangThai = :trangThai)")
     Page<NhanVien> timKiemVaLocNhanVien(
             @Param("ten") String ten,
             @Param("gioiTinh") String gioiTinh,
             @Param("diaChi") String diaChi,
+            @Param("tenQuyen") String tenQuyen,
             @Param("trangThai") Integer trangThai,
             Pageable pageable);
 

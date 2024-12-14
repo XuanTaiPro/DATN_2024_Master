@@ -13,7 +13,6 @@
                 <thead>
                 <tr>
                     <th>STT</th>
-                    <th>ID</th>
                     <th>Mã</th>
                     <th>Nội dung</th>
                     <th>Ngày gửi</th>
@@ -27,7 +26,6 @@
                 <tbody id="data">
                 <tr ng-repeat="thongBao in listThongBao">
                     <td>{{ getSTT($index) }}</td>
-                    <td>{{ thongBao.id }}</td>
                     <td>{{ thongBao.ma }}</td>
                     <td>{{ thongBao.noiDung }}</td>
                     <td>{{ formatDate(thongBao.ngayGui) }}</td>

@@ -5,7 +5,7 @@ window.voucherCtrl = function ($scope, $http) {
     $scope.listKhachHang = [];
     $scope.currentPage = 0;
     $scope.totalPages = 1;
-    $scope.pageSize = 3;
+    $scope.pageSize = 5;
     $scope.emptyMessage = "";
 
     $scope.loadPage = function (page) {

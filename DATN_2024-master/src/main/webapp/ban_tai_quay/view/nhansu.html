@@ -1,19 +1,19 @@
 <section class="p-3">
     <h1>Quản lý nhân viên</h1>
 
-    <div class="row mb-3">
-        <div class="col-md-3">
+    <div class="row mb-2">
+        <div class="col-md-2">
             <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="searchParams.ten"
                    ng-change="searchAndFilter()">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <select class="form-select" ng-model="searchParams.gioiTinh" ng-change="searchAndFilter()">
                 <option value="">-- Giới tính --</option>
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <input type="text" class="form-control" placeholder="Địa chỉ" ng-model="searchParams.diaChi"
                    ng-change="searchAndFilter()">
         </div>
@@ -24,11 +24,19 @@
                 <option value="0">Ngưng hoạt động</option>
             </select>
         </div>
+        <div class="col-md-2">
+            <select class="form-select" ng-model="searchParams.tenQuyen" ng-change="searchAndFilter()">
+                <option value="">-- Chọn quyền--</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="Employee">Employee</option>
+            </select>
+        </div>
     </div>
     <div class="row mb-3">
-        <div class="col-md-12 text-end">
+        <div class="col-md-12 text-start">
             <!--            <button class="btn btn-primary" ng-click="searchAndFilter()">Tìm kiếm</button>-->
-            <button class="btn btn-secondary" ng-click="resetFilters()">Xóa lọc</button>
+            <button class="btn btn-secondary" ng-click="resetFilters()" >Xóa lọc</button>
         </div>
     </div>
 
@@ -47,7 +55,6 @@
                 <tr>
                     <th>STT</th>
                     <th>IMG</th>
-                    <th>ID</th>
                     <th>Mã</th>
                     <th>Tên</th>
                     <th>Email</th>
@@ -63,7 +70,6 @@
                 <tr ng-repeat="nhanVien in listNhanVien">
                     <td>{{ getSTT($index) }}</td>
                     <td><img ng-src="{{ nhanVien.img }}" alt="Ảnh nhân viên" width="50" height="50"></td>
-                    <td>{{ nhanVien.id }}</td>
                     <td>{{ nhanVien.ma }}</td>
                     <td>{{ nhanVien.ten }}</td>
                     <td>{{ nhanVien.email }}</td>
@@ -73,7 +79,7 @@
                     <td>
                         {{ nhanVien.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động' }}
                     </td>
-                    <td class="actions">
+                    <td>
                         <button class="btn btn-success" ng-click="viewDetail(nhanVien)" data-bs-toggle="modal"
                                 data-bs-target="#DetailForm"><i class="bi bi-eye"></i></button>
                         <button class="btn btn-primary" ng-click="openUpdateModal(nhanVien)" data-bs-toggle="modal"

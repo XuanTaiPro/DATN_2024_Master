@@ -53,25 +53,24 @@ public class LoginController {
 
         String email = tk.getEmail();
         NhanVien loginNV = nvRepo.loginNV(email, tk.getPassw());
+        if (loginNV == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "Tài khoản hoặc mật khẩu không đúng"));
+        }
         if (loginNV.getTrangThai() == 0) {
             return ResponseEntity.badRequest()
                     .body(Map.of("success", false, "message", "Tài khoản đã bị ngưng hoạt động, vui lòng liên hệ quản trị viên"));
         }
-        if (loginNV == null) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", "Tài khoản hoặc mật khẩu không đúng"));
-        } else {
             String otp = genOtp(); // Sinh OTP
             otpCache.put("maOtp", otp);
             sendOtp(email, otp);
-
             tenQuyen = loginNV.getQuyen().getTen();
             getIdNV = loginNV.getId();
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "message", loginNV.toResponse()));
-        }
+
     }
 
     @GetMapping("getIdNV")

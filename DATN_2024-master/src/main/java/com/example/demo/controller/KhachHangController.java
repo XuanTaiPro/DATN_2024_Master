@@ -51,7 +51,7 @@ public class KhachHangController {
     @GetMapping("page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "3") Integer size) {
+            @RequestParam(defaultValue = "5") Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<KhachHang> khachHangPage = khRepo.findAll(pageable);
 
@@ -238,7 +238,7 @@ public class KhachHangController {
             @RequestParam(required = false) String diaChi,
             @RequestParam(required = false) Integer trangThai,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "5") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<KhachHang> khachHangs = khRepo.timKiemVaLocKhachHang(ten, gioiTinh, diaChi, trangThai, pageable);

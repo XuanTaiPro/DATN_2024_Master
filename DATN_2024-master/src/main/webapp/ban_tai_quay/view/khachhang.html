@@ -49,7 +49,6 @@
                 <thead>
                 <tr>
                     <th>STT</th>
-                    <th>ID</th>
                     <th>Mã</th>
                     <th>Tên</th>
                     <th>Email</th>
@@ -64,7 +63,6 @@
                 <tbody id="data">
                 <tr ng-repeat="khachHang in listKhachHang">
                     <td>{{ getSTT($index) }}</td>
-                    <td>{{ khachHang.id }}</td>
                     <td>{{ khachHang.ma }}</td>
                     <td>{{ khachHang.ten }}</td>
                     <td>{{ khachHang.email }}</td>
@@ -373,7 +371,6 @@
 
     .table .actions {
         display: flex;
-        gap: 5px; /* Khoảng cách giữa các nút */
     }
 
     .actions .btn {

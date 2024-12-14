@@ -44,7 +44,7 @@ public class NhanVienController {
     @GetMapping("page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "3") Integer size) {
+            @RequestParam(defaultValue = "5") Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<NhanVien> nhanVienPage = nvRepo.findAll(pageable);
 
@@ -66,6 +66,10 @@ public class NhanVienController {
     @GetMapping("detail/{id}")
     public ResponseEntity<?> detail(@PathVariable String id) {
         if (nvRepo.findById(id).isPresent()) {
+//            if (LoginController.tenQuyen == null ||
+//                    !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+//                return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ Admin mới có quyền xem chi tiết!"));
+//            }
             return ResponseEntity.ok().body(nvRepo.findById(id).stream().map(NhanVien::toResponse));
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id để hiển thị");
@@ -175,12 +179,13 @@ public class NhanVienController {
             @RequestParam(required = false) String ten,
             @RequestParam(required = false) String gioiTinh,
             @RequestParam(required = false) String diaChi,
+            @RequestParam(required = false) String tenQuyen,
             @RequestParam(required = false) Integer trangThai,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "5") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<NhanVien> nhanViens = nvRepo.timKiemVaLocNhanVien(ten, gioiTinh, diaChi, trangThai, pageable);
+        Page<NhanVien> nhanViens = nvRepo.timKiemVaLocNhanVien(ten, gioiTinh, diaChi, tenQuyen, trangThai, pageable);
 
         if (nhanViens.isEmpty()) {
             return ResponseEntity.ok(Map.of(

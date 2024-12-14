@@ -119,7 +119,7 @@ public class VoucherController {
     @GetMapping("page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "3") Integer size) {
+            @RequestParam(defaultValue = "5") Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Voucher> voucherPage = vcRepo.findAll(pageable);
         LocalDate dateNow = LocalDate.now();
@@ -274,7 +274,7 @@ public class VoucherController {
             @RequestParam(required = false) String giamGia,
             @RequestParam(required = false) Integer trangThai,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "5") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Voucher> vouchers = vcRepo.filterVouchers(ten, giamGia, trangThai, pageable);

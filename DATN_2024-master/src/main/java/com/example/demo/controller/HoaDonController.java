@@ -503,6 +503,7 @@ public class HoaDonController {
             vcRepo.getBYMa(req.getMaVoucher());
             hoaDon.setVoucher(vcRepo.getBYMa(req.getMaVoucher()));
             hoaDon.setNgayThanhToan(LocalDateTime.now());
+
             // hoaDon.setNgayNhanHang(req.getNgayNhanHang());
             hoaDon.setTrangThai(3);
             hoaDon.setLoaiHD(req.getLoaiHD());
@@ -588,7 +589,7 @@ public class HoaDonController {
         return ResponseEntity.ok().build();
     }
 
-    public byte[] createInvoicePDF(String idHD,List<ChiTietHoaDon> chiTietHoaDonList, double discountAmount, String customerName, double amountPaid, double totalAmount, double changeAmount) {
+    public byte[] createInvoicePDF(String idHD,List<ChiTietHoaDon> chiTietHoaDonList, double discountAmount, String customerName, double amountPaid, double totalAmount) {
         com.itextpdf.text.Document document = new Document();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -713,15 +714,14 @@ public class HoaDonController {
                     invoiceRequest.getDiscountAmount(),
                     invoiceRequest.getCustomerName(),
                     invoiceRequest.getAmountPaid(),
-                    invoiceRequest.getTotalAmount(),
-                    invoiceRequest.getChangeAmount()
+                    invoiceRequest.getTotalAmount()
             );
 
             emailService.sendEmailWithAttachment(
                     invoiceRequest.getEmail(),
                     "Hóa đơn thanh toán",
                     "Xin chào " + invoiceRequest.getCustomerName() +
-                            "Cảm ơn bạn đã tin tưởng và lựa chọn chúng tôi làm nơi mua sắm. Sự hài lòng của bạn là động lực lớn nhất để chúng tôi không ngừng cải thiện.\n\n" +
+                            ". Cảm ơn bạn đã tin tưởng và lựa chọn chúng tôi làm nơi mua sắm. Sự hài lòng của bạn là động lực lớn nhất để chúng tôi không ngừng cải thiện.\n\n" +
                             "Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua email hoặc số hotline. Chúng tôi luôn sẵn lòng hỗ trợ.\n\n" +
                             "Trân trọng,\n" +
                             "[Thực Phẩm Chức Năng Loopy]"
