@@ -168,22 +168,32 @@ window.khachhangCtrl = function ($scope, $http) {
 
     $scope.delete = function (id) {
         console.log("Xóa");
-        showConfirm('Bạn có chắc chắn muốn xóa khách hàng này?', () => {
+        // showConfirm('Bạn có chắc chắn muốn xóa khách hàng này?', () => {
             $http.delete('http://localhost:8083/khachhang/delete/' + id)
                 .then(function (response) {
-                    // Kiểm tra phản hồi server
-                    console.log(response.data);
-                    const index = $scope.listKhachHang.findIndex(kh => kh.id === id);
-                    if (index !== -1) {
-                        $scope.listKhachHang.splice(index, 1);
-                    }
-                   showSuccessAlert("Xóa thành công")
+                   showWarningAlert("Đã cho tạm ngưng hoạt động khách hàng này !!")
+                    $scope.loadPage($scope.currentPage);
                 })
                 .catch(function (error) {
                     console.error("Lỗi khi xóa :", error);
                    showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
                 });
-        })
+        // })
+    };
+
+    $scope.deleteback = function (id) {
+        console.log("Xóa");
+        // showConfirm('Bạn có chắc chắn muốn xóa khách hàng này?', () => {
+        $http.delete('http://localhost:8083/khachhang/deleteback/' + id)
+            .then(function (response) {
+                showSuccessAlert("Đã khôi phục hoạt động cho khách hàng.")
+                $scope.loadPage($scope.currentPage);
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi xóa :", error);
+                showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
+            });
+        // })
     };
 
 //     // Reset form

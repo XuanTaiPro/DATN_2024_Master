@@ -190,7 +190,7 @@ public class VoucherController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody VoucherRequest voucherRequest,
-            BindingResult bindingResult) {
+                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -270,17 +270,38 @@ public class VoucherController {
 
     @GetMapping("filter")
     public ResponseEntity<?> filterVoucher(
-            @RequestParam(required = false) String giamMin,
-            @RequestParam(required = false) String giamMax,
-            @RequestParam(required = false) String ngayKetThuc) {
+            @RequestParam(required = false) String ten,
+            @RequestParam(required = false) String giamGia,
+            @RequestParam(required = false) Integer trangThai,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
 
-        List<VoucherResponse> list = new ArrayList<>();
-        vcRepo.filterVouchers(giamMin, giamMax, ngayKetThuc).forEach(voucher -> list.add(voucher.toResponse()));
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Voucher> vouchers = vcRepo.filterVouchers(ten, giamGia, trangThai, pageable);
 
-        if (list.isEmpty()) {
-            return ResponseEntity.badRequest().body("Không tìm thấy voucher nào phù hợp.");
+        if (vouchers.isEmpty()) {
+            return ResponseEntity.ok(Map.of(
+                    "message ", "Không tìm thấy voucher với tiêu chí tìm kiếm",
+                    "vouchers", Collections.emptyList(),
+                    "currentPage", page,
+                    "totalPages", 0
+            ));
         }
 
-        return ResponseEntity.ok(list);
+        List<VoucherResponse> voucherResponses = vouchers.stream().map(Voucher::toResponse).toList();
+
+        return ResponseEntity.ok(Map.of(
+                "vouchers", voucherResponses,
+                "currentPage", vouchers.getNumber(),
+                "totalPages", vouchers.getTotalPages()
+        ));
+//        List<VoucherResponse> list = new ArrayList<>();
+//        vcRepo.filterVouchers(giamMin, giamMax, ngayKetThuc).forEach(voucher -> list.add(voucher.toResponse()));
+//
+//        if (list.isEmpty()) {
+//            return ResponseEntity.badRequest().body("Không tìm thấy voucher nào phù hợp.");
+//        }
+//
+//        return ResponseEntity.ok(list);
     }
 }

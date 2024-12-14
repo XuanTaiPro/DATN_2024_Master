@@ -12,6 +12,7 @@ import com.example.demo.service.GenerateCodeAll;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
@@ -586,100 +588,153 @@ public class HoaDonController {
         return ResponseEntity.ok().build();
     }
 
+    public byte[] createInvoicePDF(String idHD,List<ChiTietHoaDon> chiTietHoaDonList, double discountAmount, String customerName, double amountPaid, double totalAmount, double changeAmount) {
+        com.itextpdf.text.Document document = new Document();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-//        public byte[] createInvoicePDF(String customerName, double amountPaid, double totalAmount, double changeAmount) {
-//            Document document = new Document();
-//            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//
-//            try {
-//                PdfWriter.getInstance(document, outputStream);
-//                document.open();
-//
-//                // Đường dẫn font chữ
-//                BaseFont baseFont = BaseFont.createFont(
-//                        "D:\\DATN\\DATN_2024-master (1)\\DATN_2024-master\\src\\main\\resources\\arial.ttf",
-//                        BaseFont.IDENTITY_H,
-//                        BaseFont.EMBEDDED
-//                );
-//                Font titleFont = new Font(baseFont, 18, Font.BOLD);
-//                Font normalFont = new Font(baseFont, 12, Font.NORMAL);
-//                Font boldFont = new Font(baseFont, 12, Font.BOLD);
-//
-//                // Tiêu đề hóa đơn
-//                Paragraph title = new Paragraph("HÓA ĐƠN THANH TOÁN", titleFont);
-//                title.setAlignment(Element.ALIGN_CENTER);
-//                title.setSpacingAfter(20);
-//                document.add(title);
-//
-//                // Thông tin hóa đơn
-//                PdfPTable table = new PdfPTable(2);
-//                table.setWidthPercentage(100);
-//                table.setSpacingBefore(10);
-//                table.setSpacingAfter(10);
-//                table.setWidths(new float[]{1, 2});
-//
-//                // Thêm các ô vào bảng
-//                table.addCell(createCell("Tên khách hàng", boldFont));
-//                table.addCell(createCell(customerName, normalFont));
-//                table.addCell(createCell("Tên khách hàng", boldFont));
-//                table.addCell(createCell("Tổng tiền", boldFont));
-//                table.addCell(createCell(formatCurrency(totalAmount), normalFont));
-//                table.addCell(createCell("Tiền khách đưa", boldFont));
-//                table.addCell(createCell(formatCurrency(amountPaid), normalFont));
-//                table.addCell(createCell("Tiền thừa", boldFont));
-//                table.addCell(createCell(formatCurrency(changeAmount), normalFont));
-//
-//                document.add(table);
-//
-//                // Lời cảm ơn
-//                Paragraph thankYou = new Paragraph("Cảm ơn quý khách đã mua sắm tại cửa hàng!", normalFont);
-//                thankYou.setAlignment(Element.ALIGN_CENTER);
-//                thankYou.setSpacingBefore(20);
-//                document.add(thankYou);
-//
-//                document.close();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            return outputStream.toByteArray();
-//        }
-//
-//        private PdfPCell createCell(String content, Font font) {
-//            PdfPCell cell = new PdfPCell(new Phrase(content, font));
-//            cell.setBorder(Rectangle.NO_BORDER);
-//            cell.setPadding(5);
-//            return cell;
-//        }
-//
-//        private String formatCurrency(double amount) {
-//            return String.format("%,.0f VNĐ", amount);
-//        }
-//
-//        @PostMapping("/send-invoice")
-//        public ResponseEntity<String> sendInvoice(@RequestBody MailKH invoiceRequest) {
-//            try {
-//                // Tạo file PDF
-//                byte[] pdfData = createInvoicePDF(
-//                        invoiceRequest.getCustomerName(),
-//                        invoiceRequest.getAmountPaid(),
-//                        invoiceRequest.getTotalAmount(),
-//                        invoiceRequest.getChangeAmount()
-//                );
-//
-//                emailService.sendEmailWithAttachment(
-//                        invoiceRequest.getEmail(),
-//                        "Hóa đơn thanh toán",
-//                        "Xin chào " + invoiceRequest.getCustomerName() + ",\n\nĐính kèm là hóa đơn thanh toán của bạn.",
-//                        pdfData,
-//                        "hoadon.pdf"
-//                );
-//
-//                return ResponseEntity.ok("Email gửi thành công!");
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi gửi email.");
-//            }
-//        }
+        try {
+            PdfWriter.getInstance(document, outputStream);
+            document.open();
+
+            // Đường dẫn font chữ
+            BaseFont baseFont = BaseFont.createFont(
+                    "D:\\DATN\\DATN_2024-master (1)\\DATN_2024-master\\src\\main\\resources\\arial.ttf",
+                    BaseFont.IDENTITY_H,
+                    BaseFont.EMBEDDED
+            );
+            Font titleFont = new Font(baseFont, 18, Font.BOLD);
+            Font normalFont = new Font(baseFont, 12, Font.NORMAL);
+            Font boldFont = new Font(baseFont, 12, Font.BOLD);
+            HoaDon hoaDon=hoaDonRepo.getReferenceById(idHD);
+            // Tiêu đề hóa đơn
+            Paragraph title = new Paragraph("HÓA ĐƠN THANH TOÁN", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            PdfPTable info=new PdfPTable(2);
+            info.setWidthPercentage(40); // Chiếm 40% chiều rộng
+            info.setHorizontalAlignment(Element.ALIGN_LEFT); // Canh phải
+            info.setSpacingBefore(20);
+
+            info.addCell(createCellWithoutBorder("Mã hóa đơn",boldFont));
+            info.addCell(createCellWithoutBorder(hoaDon.getMaHD(),normalFont));
+            info.addCell(createCellWithoutBorder("Tên khách hàng", boldFont));
+            info.addCell(createCellWithoutBorder(customerName, normalFont));
+            info.addCell(createCellWithoutBorder("Ngày thanh toán",boldFont));
+            info.addCell(createCellWithoutBorder(LocalDateTime.now().format(formatter),normalFont));
+            document.add(info);
+            PdfPTable detailTable = new PdfPTable(7); // 6 cột
+            detailTable.setWidthPercentage(100);
+            detailTable.setSpacingBefore(10);
+            detailTable.setWidths(new float[]{1, 2, 3, 2, 2, 2, 3}); // 7 giá trị
+
+            // Header của bảng chi tiết
+            detailTable.addCell(createCellWithBorder("STT", boldFont));
+            detailTable.addCell(createCellWithBorder("Mã sản phẩm", boldFont));
+            detailTable.addCell(createCellWithBorder("Tên sản phẩm", boldFont));
+            detailTable.addCell(createCellWithBorder("Số lượng", boldFont));
+            detailTable.addCell(createCellWithBorder("Đơn giá", boldFont));
+            detailTable.addCell(createCellWithBorder("Giảm giá", boldFont));
+            detailTable.addCell(createCellWithBorder("Thành tiền", boldFont));
+
+            // Thêm dữ liệu sản phẩm vào bảng
+            int index = 1;
+            double tongTien=0.0;
+            for (ChiTietHoaDon chiTiet : chiTietHoaDonList) {
+
+                detailTable.addCell(createCellWithBorder(String.valueOf(index++), normalFont));
+                detailTable.addCell(createCellWithBorder(chiTiet.getChiTietSanPham().getSanPham().getMaSP(), normalFont));
+                detailTable.addCell(createCellWithBorder(chiTiet.getChiTietSanPham().getSanPham().getTenSP(), normalFont));
+                detailTable.addCell(createCellWithBorder(String.valueOf(chiTiet.getSoLuong()), normalFont));
+                detailTable.addCell(createCellWithBorder(chiTiet.getGiaSauGiam(), normalFont));
+                detailTable.addCell(createCellWithBorder(String.valueOf(chiTiet.toResponse().getTienGiam()),normalFont));
+                detailTable.addCell(createCellWithBorder(formatCurrency(Double.valueOf(Double.valueOf(chiTiet.getGiaSauGiam())*chiTiet.getSoLuong())), normalFont));
+                tongTien+=Double.valueOf(Double.valueOf(chiTiet.getGiaSauGiam())*chiTiet.getSoLuong());
+            }
+            document.add(detailTable);
+            PdfPTable infoTable = new PdfPTable(2);
+            infoTable.setWidthPercentage(40); // Chiếm 40% chiều rộng
+            infoTable.setHorizontalAlignment(Element.ALIGN_RIGHT); // Canh phải
+            infoTable.setSpacingBefore(20);
+
+
+            infoTable.addCell(createCellWithoutBorder("Tổng tiền:", boldFont));
+            infoTable.addCell(createCellWithoutBorder(formatCurrency(tongTien), normalFont));
+            infoTable.addCell(createCellWithoutBorder("Tiền giảm từ voucher:",boldFont));
+            infoTable.addCell(createCellWithoutBorder(formatCurrency(tongTien-totalAmount), normalFont));
+            infoTable.addCell(createCellWithoutBorder("Tiền cần thanh toán:",boldFont));
+            infoTable.addCell(createCellWithoutBorder(formatCurrency(totalAmount), normalFont));
+            infoTable.addCell(createCellWithoutBorder("Tiền khách đưa:", boldFont));
+            infoTable.addCell(createCellWithoutBorder(formatCurrency(amountPaid), normalFont));
+            infoTable.addCell(createCellWithoutBorder("Tiền thừa:", boldFont));
+            infoTable.addCell(createCellWithoutBorder(formatCurrency(amountPaid - totalAmount), normalFont));
+
+            // Thêm bảng thông tin hóa đơn vào cuối trang
+            document.add(infoTable);
+            // Lời cảm ơn
+            Paragraph thankYou = new Paragraph("Cảm ơn quý khách đã mua sắm tại cửa hàng!", normalFont);
+            thankYou.setAlignment(Element.ALIGN_CENTER);
+            thankYou.setSpacingBefore(30);
+            document.add(thankYou);
+
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return outputStream.toByteArray();
+    }
+
+    // Tạo ô có viền
+    private PdfPCell createCellWithBorder(String content, Font font) {
+        PdfPCell cell = new PdfPCell(new Phrase(content, font));
+        cell.setPadding(5); // Khoảng cách giữa viền và nội dung
+        return cell;
+    }
+    private PdfPCell createCellWithoutBorder(String content, Font font) {
+        PdfPCell cell = new PdfPCell(new Phrase(content, font));
+        cell.setPadding(5); // Khoảng cách giữa viền và nội dung
+        cell.setBorder(PdfPCell.NO_BORDER); // Loại bỏ viền
+        return cell;
+    }
+
+    // Định dạng tiền tệ
+    private String formatCurrency(double amount) {
+        return String.format("%,.0f VNĐ", amount);
+    }
+    @PostMapping("/send-invoice")
+    public ResponseEntity<String> sendInvoice(@RequestBody MailKH invoiceRequest) {
+        try {
+            HoaDon hoaDon = hoaDonRepo.getReferenceById(invoiceRequest.getIdHD());
+            byte[] pdfData = createInvoicePDF(
+                    invoiceRequest.getIdHD(),
+                    hoaDon.getChiTietHoaDons(),
+                    invoiceRequest.getDiscountAmount(),
+                    invoiceRequest.getCustomerName(),
+                    invoiceRequest.getAmountPaid(),
+                    invoiceRequest.getTotalAmount(),
+                    invoiceRequest.getChangeAmount()
+            );
+
+            emailService.sendEmailWithAttachment(
+                    invoiceRequest.getEmail(),
+                    "Hóa đơn thanh toán",
+                    "Xin chào " + invoiceRequest.getCustomerName() +
+                            "Cảm ơn bạn đã tin tưởng và lựa chọn chúng tôi làm nơi mua sắm. Sự hài lòng của bạn là động lực lớn nhất để chúng tôi không ngừng cải thiện.\n\n" +
+                            "Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua email hoặc số hotline. Chúng tôi luôn sẵn lòng hỗ trợ.\n\n" +
+                            "Trân trọng,\n" +
+                            "[Thực Phẩm Chức Năng Loopy]"
+                            +",\n\nĐính kèm là hóa đơn thanh toán của bạn.",
+                    pdfData,
+                    "hoadon.pdf"
+            );
+
+            return ResponseEntity.ok("Email gửi thành công!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi gửi email.");
+        }
+    }
 
 }

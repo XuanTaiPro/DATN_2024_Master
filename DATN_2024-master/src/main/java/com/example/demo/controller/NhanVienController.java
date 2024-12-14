@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -147,18 +148,26 @@ public class NhanVienController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
-        if (LoginController.tenQuyen == null ||
-                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
-            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ có Admin mới có quyền xóa!"));
-        }
-        if (nvRepo.findById(id).isPresent()) {
-            nvRepo.deleteById(id);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Xóa thành công");
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.badRequest().body("Không tìm thấy id cần xóa");
-        }
+//        if (LoginController.tenQuyen == null ||
+//                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+//            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ có Admin mới có quyền xóa!"));
+//        }
+        NhanVien nhanVien = nvRepo.getReferenceById(id);
+        nhanVien.setTrangThai(0);
+        nvRepo.save(nhanVien);
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật trạng thái nhân viên thành công!");
+    }
+
+    @DeleteMapping("deleteback/{id}")
+    public ResponseEntity<?> deleteback(@PathVariable String id) {
+//        if (LoginController.tenQuyen == null ||
+//                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+//            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ có Admin mới có quyền xóa!"));
+//        }
+        NhanVien nhanVien = nvRepo.getReferenceById(id);
+        nhanVien.setTrangThai(1);
+        nvRepo.save(nhanVien);
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật trạng thái nhân viên thành công!");
     }
 
     @GetMapping("search-filter")
