@@ -168,7 +168,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
 
             return bestVoucher;
         }
-        ;
+
         $scope.showSuggestedVoucher = function () {//show form gợi ý voucher
             if (!$scope.vouchers || $scope.vouchers.length === 0) {
                 $scope.suggestedVoucher = null; // Không có voucher nào
