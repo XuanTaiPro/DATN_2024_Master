@@ -64,7 +64,7 @@ public class ChiTietHoaDon {
         public ChiTietHoaDonRep toResponse() {
                 double tienGiam = 0;
                 double giaGiam = 0;
-                if (chiTietSanPham.getSanPham().getGiamGia() != null &&
+                if (chiTietSanPham!=null &&chiTietSanPham.getSanPham().getGiamGia() != null &&
                                 chiTietSanPham.getSanPham().getGiamGia().getNgayKetThuc().isAfter(LocalDateTime.now())
                                 &&
                                 chiTietSanPham.getSanPham().getGiamGia().getNgayBatDau()

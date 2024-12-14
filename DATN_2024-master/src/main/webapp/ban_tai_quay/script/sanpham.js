@@ -115,13 +115,14 @@ window.sanPhamCtrl = function ($scope, $http) {
             });
     };
     $scope.deleteProduct = function (productId) {
+        // showConfirm("Bạn có muốn ngưng sản phẩm này không?",()=>{
             $http({
                 method: 'DELETE',
                 url: 'http://localhost:8083/san-pham/delete', // Đường dẫn đến API
                 data: {id: productId}, // Gửi id sản phẩm qua request body
                 headers: {"Content-Type": "application/json;charset=utf-8"}
             }).then(function (response) {
-                $scope.getAllProducts();
+                $scope.getAllProducts($scope.currentPage);
                 showSuccessAlert(response.data);
             }, function (error) {
                 $scope.getAllProducts();
@@ -130,13 +131,14 @@ window.sanPhamCtrl = function ($scope, $http) {
 
     };
     $scope.activateProduct = function (productId) {
+       // showConfirm("Bạn có muốn kích hoạt lại sản phẩm này không?",()=>{
         $http({
             method: 'PUT',
             url: 'http://localhost:8083/san-pham/activateProduct', // Đường dẫn đến API
             data: {id: productId}, // Gửi id sản phẩm qua request body
             headers: {"Content-Type": "application/json;charset=utf-8"}
         }).then(function (response) {
-            $scope.getAllProducts();
+            $scope.getAllProducts($scope.currentPage);
             showSuccessAlert(response.data);
         }, function (error) {
             $scope.getAllProducts();
