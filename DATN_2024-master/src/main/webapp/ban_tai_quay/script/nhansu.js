@@ -7,7 +7,7 @@ window.nhansuCtrl = function ($scope, $http) {
     $scope.listNhanVien = [];
     $scope.currentPage = 0;
     $scope.totalPages = 1;
-    $scope.pageSize = 3;
+    $scope.pageSize = 5;
     $scope.emptyMessage = "";
 
     // Tìm kiếm và lọc
@@ -15,6 +15,7 @@ window.nhansuCtrl = function ($scope, $http) {
         ten: '',
         gioiTinh: '',
         diaChi: '',
+        tenQuyen:'',
         trangThai: ''
     };
 
@@ -55,6 +56,9 @@ window.nhansuCtrl = function ($scope, $http) {
 
 
     $scope.loadPage = function (page) {
+        $scope.idNV = sessionStorage.getItem('idNV')
+      $scope.tenQuyen =  sessionStorage.getItem('tenQuyen')
+        console.log()
         $http.get('http://localhost:8083/nhanvien/page?page=' + page)
             .then(function (response) {
                 $scope.listNhanVien = response.data.nhanViens;
@@ -275,22 +279,19 @@ window.nhansuCtrl = function ($scope, $http) {
     $scope.delete = function (id) {
         console.log(id);
         $('#deleteNhanSuModal').modal('hide');
-        showConfirm('Bạn có chắc chắn muốn ngưng hoạt động nhân viên này?', (check) => {
-            if(check){
-                $http.delete('http://localhost:8083/nhanvien/delete/' + id)
-                    .then(function (response) {
-                        showSuccessAlert("cập nhật thành công")
-                        $scope.loadPage($scope.currentPage);
-                    })
-                    .catch(function (error) {
-                        console.error("Lỗi khi xóa nhân viên:", error);
-                        if (error.status === 403) {
-                            showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
-                        } else {
-                            showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
-                        }
-                    });
-            }
+        showConfirm('Bạn có chắc chắn muốn ngưng hoạt động nhân viên này?', () => {
+            $http.delete('http://localhost:8083/nhanvien/delete/' + id)
+                .then(function (response) {
+                    showSuccessAlert("cập nhật thành công")
+                    $scope.loadPage($scope.currentPage);
+                })
+                .catch(function (error) {
+                    if (error.status === 403) {
+                        showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
+                    } else {
+                        showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
+                    }
+                });
         })
     };
 
@@ -298,21 +299,20 @@ window.nhansuCtrl = function ($scope, $http) {
     $scope.deleteback = function (id) {
         console.log(id);
         $('#deleteNhanSuModal').modal('hide');
-        // showConfirm('Bạn có chắc chắn muốn cấp lại hoạt động nhân viên  này?', () => {
-            $http.delete('http://localhost:8083/nhanvien/deleteback/' + id)
-                .then(function (response) {
-                    showSuccessAlert("cập nhật thành công")
-                    $scope.loadPage($scope.currentPage);
-                })
-                .catch(function (error) {
-                    console.error("Lỗi khi xóa nhân viên:", error);
-                    if (error.status === 403) {
-                        showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
-                    } else {
-                        showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
-                    }
-                });
-        // })
+        showConfirm('Bạn có chắc chắn muốn cấp lại hoạt động nhân viên  này?', () => {
+        $http.delete('http://localhost:8083/nhanvien/deleteback/' + id)
+            .then(function (response) {
+                showSuccessAlert("cập nhật thành công")
+                $scope.loadPage($scope.currentPage);
+            })
+            .catch(function (error) {
+                if (error.status === 403) {
+                    showDangerAlert("Bạn không có quyền thực hiện thao tác này!")
+                } else {
+                    showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
+                }
+            });
+        })
     };
 
     function resetForm() {

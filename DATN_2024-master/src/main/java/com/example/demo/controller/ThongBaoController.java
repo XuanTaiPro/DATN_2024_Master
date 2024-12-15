@@ -41,7 +41,7 @@ public class ThongBaoController {
     @GetMapping("page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "3") Integer size) {
+            @RequestParam(defaultValue = "5") Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ThongBao> voucherPage = tbRepo.findAll(pageable);
 

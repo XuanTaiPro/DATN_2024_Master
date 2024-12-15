@@ -13,7 +13,6 @@ public class MailKH {
     private String customerName;
     private double amountPaid;
     private double totalAmount;
-    private double changeAmount;
     private String idHD;
     private String email;
     private double discountAmount;

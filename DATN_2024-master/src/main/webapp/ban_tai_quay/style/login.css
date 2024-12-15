@@ -332,3 +332,10 @@ button {
         transform: rotate(360deg);
     }
 }
+#confirm-warning {
+    background-color: rgb(255, 190, 70);
+}
+
+#cancel-warning {
+    background-color: rgb(165, 165, 165);
+}

@@ -432,38 +432,126 @@ main {
     background-color: rgb(165, 165, 165);
 }
 
+/*over- load*/
+.overlay-load {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(110, 110, 110, 0.5);
+    z-index: 2000;
+}
 
+.loader {
+    display: none;
+    width: 3rem;
+    height: 3rem;
+    position: fixed;
+    top: 47%;
+    left: 47%;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border-top: 5px solid #fff;
+    border-left: 1px solid #fff;
+    border-right: 15px solid #ff00;
+    animation: loader 1.2s infinite linear;
+    z-index: 2001;
+}
+
+@keyframes loader {
+    to {
+        transform: rotate(360deg);
+    }
+}
 .popup {
     display: none;
 }
 /*confirm*/
 /* Định dạng cho Modal */
+/* Đặt màu nền mờ nhạt cho modal */
 #confirm-modal .modal-content {
+    background-color: #ffffff;
+    border: none;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    padding: 20px;
 }
 
+/* Tiêu đề modal */
 #confirm-modal .modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #ddd;
-    padding: 20px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-bottom: none;
+    text-align: center;
+    padding-bottom: 10px;
 }
 
 #confirm-modal .modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
     color: #333;
-    font-size: 1.25rem;
-    font-weight: 500;
 }
 
+/* Nút đóng modal */
+#confirm-modal .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+#confirm-modal .btn-close:hover {
+    opacity: 1;
+}
+
+/* Nội dung modal */
 #confirm-modal .modal-body {
-    padding: 20px;
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: #555;
     text-align: center;
+    line-height: 1.5;
 }
+
+/* Footer modal */
+#confirm-modal .modal-footer {
+    border-top: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 10px;
+}
+
+/* Nút "Đồng ý" */
+#confirm-modal #confirm-yes {
+    background-color: #4caf50;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+#confirm-modal #confirm-yes:hover {
+    background-color: #45a049;
+}
+
+/* Nút "Hủy" */
+#confirm-modal #confirm-no {
+    background-color: #f44336;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+#confirm-modal #confirm-no:hover {
+    background-color: #e53935;
+}
+
 
 /* Định dạng cho icon */
 #confirm-modal .modal-icon {

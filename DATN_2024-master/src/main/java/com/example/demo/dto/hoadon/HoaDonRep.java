@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 public class HoaDonRep {
     private String id;
     private String maHD;
-    private String maVoucher;
+    private String giaGiamVC;
+    private String giaMax;
     private LocalDateTime ngayTao;
     private LocalDateTime ngaySua;
     private String ghiChu;
@@ -30,5 +31,5 @@ public class HoaDonRep {
     private String sdt;
     private String email;
     private String tenNV;
-    private String tongTien;
+    private Double tongTien;
 }

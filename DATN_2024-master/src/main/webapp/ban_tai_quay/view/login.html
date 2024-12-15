@@ -7,6 +7,8 @@
     <title>Login</title>
 
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     <link rel="stylesheet" href="../style/login.css">
     <!--    <script src="./script/login.js"></script>-->
@@ -15,9 +17,10 @@
 <body>
     <div class="back-ground">
     </div>
-    <div class="overlay-load"></div>
 
+    <div class="overlay-load"></div>
     <div class="loader"></div>
+
     <div class="form-login" id="form-login">
         <h3>Đăng nhập</h3>
         <form class="form-user">
@@ -94,45 +97,69 @@
             }
         })
 
-        btnNextStep.addEventListener('click', (e) => {
-            e.preventDefault()
 
-            errorTK.innerText = ''
-            errorPW.innerText = ''
+        btnNextStep.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Xóa các thông báo lỗi trước đó
+            errorTK.innerText = '';
+            errorPW.innerText = '';
 
             const email = inpUser.value.trim(); // Lấy giá trị từ input
             const password = inpPass.value.trim();
 
+            if (email !== '' && password !== '') {
+                overlayLoad.style.display = 'block';
+                loader.style.display = 'block';
 
-        if (email !== '' && password !== '') {
-        overlayLoad.style.display = 'block'
-        loader.style.display = 'block'
-            fetch('http://localhost:8083/login/manager', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email: email, passw: password, otp: otp})
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        sessionStorage.setItem('idNV', data.message.id);
-                        formUser.classList.add('active-form-user')
-                        formConfirm.classList.add('active-form-confirm')
-                        // sessionStorage.setItem()
-                    } else {
-                        // Hiển thị lỗi nếu đăng nhập thất bại
-                        errorTK.innerText = data.message || 'Đăng nhập thất bại, vui lòng thử lại';
-                    }
+                fetch('http://localhost:8083/login/manager', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, passw: password, otp: otp })
                 })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        if (data.success) {
+                            // Xử lý khi đăng nhập thành công
+                            sessionStorage.setItem('idNV', data.message.id);
+                            // $scope.tenQuyen = response.data.tenQuyen;
+                            // localStorage.setItem("tenQuyen", response.data.tenQuyen);
+                            sessionStorage.setItem('tenQuyen',data.tenQuyen)
+                            formUser.classList.add('active-form-user');
+                            formConfirm.classList.add('active-form-confirm');
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Đăng nhập thất bại!',
+                                text: data.message || 'Vui lòng thử lại.',
+                                confirmButtonText: 'Đóng'
+                            });
+                        }
+                    })
                     .catch(error => {
                         console.error('Error:', error);
-                        errorTK.innerText = 'Đã xảy ra lỗi, vui lòng thử lại';
-                    }).finally(() => {
-                        overlayLoad.style.display = 'none'
-                        loader.style.display = 'none'
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi hệ thống',
+                            text: 'Đã xảy ra lỗi, vui lòng thử lại sau.',
+                            confirmButtonText: 'Đóng'
+                        });
                     })
+                    .finally(() => {
+                        overlayLoad.style.display = 'none';
+                        loader.style.display = 'none';
+                    });
+            } else {
+                if (email === '') {
+                    errorTK.innerText = 'Vui lòng nhập tài khoản!';
+                }
+                if (password === '') {
+                    errorPW.innerText = 'Vui lòng nhập mật khẩu!';
+                }
             }
-        })
+        });
+
 
 
         btnSubmitOtp.addEventListener('click', async (e) => {
@@ -159,9 +186,17 @@
             if (result.success === false) {
                 errorOTP.innerText = result.message || 'Mã OTP không chính xác';
             } else {
-                console.log(result)
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đăng nhập thành công!',
+                    text: 'Chào mừng bạn trở lại.',
+                    showConfirmButton: false,
+                    timer: 2000 // Tự động đóng sau 2 giây
+                });
                 sessionStorage.setItem('loginOk', true)
-                window.location.href = result.redirectUrl
+                setTimeout(() => {
+                    window.location.href = result.redirectUrl
+                },2000)
             }
 
         });

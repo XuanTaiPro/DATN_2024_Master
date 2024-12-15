@@ -55,19 +55,19 @@ app.config(function ($routeProvider) {
             controller: thongtingiaohangCtrl
         })
         .otherwise({
-            redirectTo: '/login',
+            redirectTo: '/sanpham',
         })
 })
 
 app.controller('myCtrl', function ($scope, $http) {
-    // const login = sessionStorage.getItem('loginOk')
-    // if (!login) {
-    //     window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
-    //     return
-    // }
+    const login = sessionStorage.getItem('loginOk')
+    if (!login) {
+        window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
+        return
+    }
 
-    // const idNV = sessionStorage.getItem('idNV');
-    const idNV='2DAFC81E'
+    const idNV = sessionStorage.getItem('idNV');
+    // const idNV='CEC76A2E'
     if (!idNV) {
         console.error('Không tìm thấy ID nhân viên trong sessionStorage');
         return;
@@ -229,24 +229,29 @@ function showWarningAlert(message) {
     }, 3000);
 }
 
-function showConfirm(message, onConfirm) {
-    // Cập nhật thông báo trong modal
+function showConfirm(message, onConfirm, onCancel) {
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirm-modal'), { backdrop: 'static' });
     const messageElement = document.getElementById('confirm-message');
-    messageElement.textContent = message || 'Bạn có chắc chắn muốn thực hiện hành động này?';
-
-    const confirmModal = new bootstrap.Modal(document.getElementById('confirm-modal'));
-    confirmModal.show();
-
-    const confirmYesButton = document.getElementById('confirm-yes');
-
-    confirmYesButton.onclick = null;
-
-    // Thêm sự kiện click cho nút xác nhận
-    confirmYesButton.addEventListener('click', () => {
+    const yesButton = document.getElementById('confirm-yes');
+    const noButton = document.getElementById('confirm-no');
+    // Hiển thị thông báo
+    messageElement.textContent = message;
+    // Gắn sự kiện nút "Đồng ý"
+    yesButton.onclick = () => {
+        if (typeof onConfirm === 'function') onConfirm(); // Gọi hàm callback nếu có
         confirmModal.hide(); // Ẩn modal
-        onConfirm(true); // Gọi callback
-    });
+    };
+    // Gắn sự kiện nút "Hủy"
+    noButton.onclick = () => {
+        if (typeof onCancel === 'function') onCancel(); // Gọi hàm callback nếu có
+        confirmModal.hide(); // Ẩn modal
+    };
+    confirmModal.show();
 }
+
+const overlayLoad = document.querySelector('.overlay-load')
+const loader = document.querySelector('.loader')
+
 
 
 

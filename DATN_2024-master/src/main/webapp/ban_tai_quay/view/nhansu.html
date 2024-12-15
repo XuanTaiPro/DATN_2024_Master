@@ -1,19 +1,19 @@
 <section class="p-3">
     <h1>Quản lý nhân viên</h1>
 
-    <div class="row mb-3">
-        <div class="col-md-3">
+    <div class="row mb-2">
+        <div class="col-md-2">
             <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="searchParams.ten"
                    ng-change="searchAndFilter()">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <select class="form-select" ng-model="searchParams.gioiTinh" ng-change="searchAndFilter()">
                 <option value="">-- Giới tính --</option>
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <input type="text" class="form-control" placeholder="Địa chỉ" ng-model="searchParams.diaChi"
                    ng-change="searchAndFilter()">
         </div>
@@ -24,18 +24,26 @@
                 <option value="0">Ngưng hoạt động</option>
             </select>
         </div>
+        <div class="col-md-2">
+            <select class="form-select" ng-model="searchParams.tenQuyen" ng-change="searchAndFilter()">
+                <option value="">-- Chọn quyền--</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="Employee">Employee</option>
+            </select>
+        </div>
     </div>
     <div class="row mb-3">
-        <div class="col-md-12 text-end">
+        <div class="col-md-12 text-start">
             <!--            <button class="btn btn-primary" ng-click="searchAndFilter()">Tìm kiếm</button>-->
-            <button class="btn btn-secondary" ng-click="resetFilters()">Xóa lọc</button>
+            <button class="btn btn-secondary" ng-click="resetFilters()" >Xóa lọc</button>
         </div>
     </div>
 
 
     <div class="row">
         <div class="col-12">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal"  ng-if="tenQuyen === 'Admin'">
                 <i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên
             </button>
         </div>
@@ -47,15 +55,13 @@
                 <tr>
                     <th>STT</th>
                     <th>IMG</th>
-                    <th>ID</th>
-                    <th>Mã</th>
                     <th>Tên</th>
                     <th>Email</th>
                     <th>Giới Tính</th>
                     <th>Địa Chỉ</th>
                     <th>Quyền</th>
                     <th>Trạng Thái</th>
-                    <th>Thao tác</th>
+                    <th  ng-if="tenQuyen === 'Admin'">Thao tác</th>
                 </tr>
                 </thead>
 
@@ -63,8 +69,6 @@
                 <tr ng-repeat="nhanVien in listNhanVien">
                     <td>{{ getSTT($index) }}</td>
                     <td><img ng-src="{{ nhanVien.img }}" alt="Ảnh nhân viên" width="50" height="50"></td>
-                    <td>{{ nhanVien.id }}</td>
-                    <td>{{ nhanVien.ma }}</td>
                     <td>{{ nhanVien.ten }}</td>
                     <td>{{ nhanVien.email }}</td>
                     <td>{{ nhanVien.gioiTinh }}</td>
@@ -73,7 +77,7 @@
                     <td>
                         {{ nhanVien.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động' }}
                     </td>
-                    <td class="actions">
+                    <td ng-if="tenQuyen === 'Admin'">
                         <button class="btn btn-success" ng-click="viewDetail(nhanVien)" data-bs-toggle="modal"
                                 data-bs-target="#DetailForm"><i class="bi bi-eye"></i></button>
                         <button class="btn btn-primary" ng-click="openUpdateModal(nhanVien)" data-bs-toggle="modal"
@@ -82,7 +86,7 @@
                                 ng-disabled="nhanVien.tenQuyen === 'Admin'" ng-if="nhanVien.trangThai === 1"><i
                                 class="bi bi-trash"></i></button>
                         <button class="btn btn-success" ng-click="deleteback(nhanVien.id)"
-                                ng-disabled="nhanVien.tenQuyen === 'Admin'" ng-if="nhanVien.trangThai === 0"><i
+                                ng-disabled="nhanVien.id === idNV" ng-if="nhanVien.trangThai === 0"><i
                                 class="bi bi-check-circle"></i></button>
                     </td>
                 </tr>
@@ -240,9 +244,9 @@
                             <input type="text" ng-model="selectedNhanVien.diaChi" id="diaChiUpdate" >
                             <span class="text-danger" ng-if="errorMessages.diaChi">{{ errorMessages.diaChi }}</span>
                         </div>
-                        <div>
+                        <div ng-if="selectedNhanVien.id != idNV">
                             <label for="trangThaiUpdate">Trạng thái:</label>
-                            <select ng-model="selectedNhanVien.trangThai" id="trangThaiUpdate" class="short-select"
+                            <select  ng-model="selectedNhanVien.trangThai" id="trangThaiUpdate" class="short-select"
                                     required>
                                 <option value="" disabled>Chọn Trạng Thái</option>
                                 <option value="1">Hoạt động</option>

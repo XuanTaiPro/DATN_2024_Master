@@ -49,12 +49,11 @@
                 <thead>
                 <tr>
                     <th>STT</th>
-                    <th>ID</th>
                     <th>Mã</th>
                     <th>Tên</th>
                     <th>Giá giảm</th>
-                    <th>Giảm min</th>
-                    <th>Giảm max</th>
+                    <th>Đơn tối thiểu</th>
+                    <th>Giảm tối đa</th>
                     <th>Điều kiện</th>
                     <th>Ngày kết thúc</th>
                     <th>Số lượng</th>
@@ -66,12 +65,11 @@
                 <tbody id="data">
                 <tr ng-repeat="voucher in listVoucher">
                     <td>{{ getSTT($index) }}</td>
-                    <td>{{ voucher.id }}</td>
                     <td>{{ voucher.ma }}</td>
                     <td>{{ voucher.ten }}</td>
-                    <td>{{ voucher.giamGia }}</td>
-                    <td>{{ voucher.giamMin }}</td>
-                    <td>{{ voucher.giamMax }}</td>
+                    <td>{{ voucher.giamGia }}%</td>
+                    <td>{{ voucher.giamMin }} VNĐ</td>
+                    <td>{{ voucher.giamMax }} VNĐ</td>
                     <td>{{ voucher.dieuKien }}</td>
                     <td>{{ voucher.ngayKetThuc }}</td>
                     <td>{{ voucher.soLuong }}</td>
@@ -663,12 +661,12 @@
 
     .table .actions {
         display: flex;
-        gap: 5px; /* Khoảng cách giữa các nút */
     }
 
     .actions .btn {
         white-space: nowrap; /* Tránh ngắt dòng nút */
     }
+
 
 
     /* Pagination */

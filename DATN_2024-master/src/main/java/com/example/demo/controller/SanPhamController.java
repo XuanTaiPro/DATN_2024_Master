@@ -72,7 +72,7 @@ public class SanPhamController {
 
     @GetMapping("/getSanPham-online")
     public ResponseEntity<?> getAllProductsWithMinPrice(@RequestParam(defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page, 2);
+        Pageable pageable = PageRequest.of(page, 1);
         Page<SanPhamOnlineResponse> products = sanPhamRepository.findSanPhamWithMinPrice(pageable);
 
         return ResponseEntity.ok().body(products);
@@ -104,7 +104,7 @@ public class SanPhamController {
             }
         }
 
-        Pageable pageable = PageRequest.of(page, 8);
+        Pageable pageable = PageRequest.of(page, 1);
         Page<SanPhamOnlineResponse> result = sanPhamRepository.findSanPhamOnline(getGiaMin, getGiaMax, searchText,
                 danhMuc, pageable);
 
@@ -112,7 +112,7 @@ public class SanPhamController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok().body(result.getContent());
+        return ResponseEntity.ok().body(Map.of("result", result.getContent(), "totalPages", result.getTotalPages()));
     }
 
     @GetMapping("/phanTrang")
@@ -262,7 +262,8 @@ public class SanPhamController {
         sanPhamRepository.save(existingSanPham);
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_PLAIN)
-                .body("Cập nhật sản phẩm thành công!");    }
+                .body("Cập nhật sản phẩm thành công!");
+    }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody Map<String, String> body) {
@@ -273,14 +274,15 @@ public class SanPhamController {
         if (sanPhamRepository.findById(id).isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm có id: " + id);
         }
-        SanPham sanPham=sanPhamRepository.getReferenceById(id);
+        SanPham sanPham = sanPhamRepository.getReferenceById(id);
         sanPham.setTrangThai(0);
         sanPhamRepository.save(sanPham);
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
                 .body("Cập nhật trạng thái thành công!");
     }
+
     @PutMapping("/activateProduct")
-    public ResponseEntity<?>activateProduct(@RequestBody Map<String, String> body){
+    public ResponseEntity<?> activateProduct(@RequestBody Map<String, String> body) {
         String id = body.get("id");
         if (id == null || id.isEmpty()) {
             return ResponseEntity.badRequest().body("ID không được để trống.");
@@ -288,7 +290,7 @@ public class SanPhamController {
         if (sanPhamRepository.findById(id).isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm có id: " + id);
         }
-        SanPham sanPham=sanPhamRepository.getReferenceById(id);
+        SanPham sanPham = sanPhamRepository.getReferenceById(id);
         sanPham.setTrangThai(1);
         sanPhamRepository.save(sanPham);
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
