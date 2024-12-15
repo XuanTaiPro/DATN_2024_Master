@@ -87,7 +87,7 @@ public class VoucherController {
     public ResponseEntity<?> applyVoucher(@RequestBody Map<String, String> data) {
         String voucherId = data.get("id");
         if (voucherId == null || voucherId.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID của voucher không được bỏ trống.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "ID của voucher không được bỏ trống."));
         }
         Voucher voucher = vcRepo.findById(voucherId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Voucher không tồn tại"));
@@ -100,11 +100,12 @@ public class VoucherController {
                 voucher.setTrangThai(1);
             }
             vcRepo.save(voucher);
-            return ResponseEntity.ok("Voucher đã được áp dụng thành công.");
+            return ResponseEntity.ok(Map.of("message", "Voucher đã được áp dụng thành công."));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Voucher này đã hết số lượng.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Voucher này đã hết số lượng."));
         }
     }
+
 
     @GetMapping("/{id}/customers")
     public ResponseEntity<List<KhachHang>> getCustomersByVoucherId(@PathVariable("id") String voucherId) {

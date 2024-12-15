@@ -121,16 +121,54 @@ window.thongbaoCtrl = function ($scope, $http) {
         console.log("Trạng thái hiện tại:", $scope.selectedThongBao.trangThai);
     };
 
-    $scope.isSubmitted = false;
+    $scope.selectedCustomers = [];  // Mảng lưu khách hàng đã chọn
+
+// Cập nhật khách hàng đã chọn
+    $scope.updateSelectedCustomers = function (kh) {
+        if (kh.selected) {
+            $scope.selectedCustomers.push(kh); // Thêm khách hàng vào mảng đã chọn
+        } else {
+            const index = $scope.selectedCustomers.indexOf(kh);
+            if (index > -1) {
+                $scope.selectedCustomers.splice(index, 1); // Xóa khách hàng khỏi mảng đã chọn
+            }
+        }
+    };
+
+// Hàm chọn tất cả khách hàng
+    $scope.selectAllCustomers = function () {
+        $scope.selectedCustomers = angular.copy($scope.listKH); // Chọn tất cả khách hàng
+        $scope.listKH.forEach(function (kh) {
+            kh.selected = true;
+        });
+    };
+
+// Bỏ chọn tất cả khách hàng
+    $scope.deselectAllCustomers = function () {
+        $scope.selectedCustomers = []; // Bỏ chọn tất cả khách hàng
+        $scope.listKH.forEach(function (kh) {
+            kh.selected = false;
+        });
+    };
+
+// Xác nhận chọn khách hàng
+    $scope.confirmSelection = function () {
+        // Đóng modal sau khi xác nhận
+        $('#customerModal').modal('hide');
+        $('#productModal').modal('show');
+
+    };
+
+// Hàm thêm thông báo
     $scope.addThongBao = function () {
-        $scope.isSubmitted = true;
         const newThongBao = {
             noiDung: $scope.noiDung,
-            idKH: $scope.idKH,
+            idKH: $scope.selectedCustomers.map(kh => kh.id),
             trangThai: $scope.trangThai
         };
 
         console.log("Dữ liệu mới:", newThongBao);
+
         $http.post('http://localhost:8083/thongbao/add', newThongBao)
             .then(function (response) {
                 // Đóng modal
@@ -142,8 +180,8 @@ window.thongbaoCtrl = function ($scope, $http) {
             .catch(function (error) {
                 $scope.errorMessage = "Thêm thất bại";
             });
-        resetForm();
 
+        resetForm();
     };
 
     $scope.updateThongBao = function () {

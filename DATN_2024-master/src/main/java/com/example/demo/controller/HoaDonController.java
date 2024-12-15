@@ -7,6 +7,7 @@ import com.example.demo.dto.khachhang.KhachHangResponse;
 import com.example.demo.dto.nhanvien.NhanVienResponse;
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
+import com.example.demo.service.ChiTietHoaDonService;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.GenerateCodeAll;
 
@@ -31,10 +32,8 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.itextpdf.text.pdf.PdfPTable;
@@ -88,6 +87,8 @@ public class HoaDonController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private ChiTietHoaDonService cthdService;
     @GetMapping("/page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
@@ -406,10 +407,32 @@ public class HoaDonController {
 
             for (ChiTietHoaDon cthd : cthdList) {
                 ChiTietSanPham getCheckCTSP = chiTietSanPhamRepo.findById(cthd.getChiTietSanPham().getId()).get();
-                if (cthd.getSoLuong() > getCheckCTSP.getSoLuong()) {
-                    checkSL = false;
-                    tenSPCheck = getCheckCTSP.getSanPham().getTenSP();
-                    break;
+                Integer soLuong = cthd.getSoLuong();
+                if (soLuong > cthdService.getTotalSoLuong(getCheckCTSP.getId())) {
+                    return ResponseEntity.badRequest()
+                            .body("Sản phẩm không đủ để cung cấp." + cthdService.getTotalSoLuong(getCheckCTSP.getId()));
+                }
+
+                List<LoHang> listLo = lHRepo.fByIdCTSP(getCheckCTSP.getId());
+                listLo.sort(Comparator.comparing(LoHang::getHsd));
+
+                List<LoHangWithHoaDon> listLH = new ArrayList<>();
+
+                for (LoHang lo : listLo) {
+                    if (soLuong <= 0)
+                        break;
+
+                    int usedQuantity = Math.min(soLuong, lo.getSoLuong());
+                    soLuong -= usedQuantity;
+
+                    LoHangWithHoaDon lhhd = new LoHangWithHoaDon();
+                    lhhd.setSoLuong(usedQuantity);
+                    lhhd.setLoHang(lo);
+                    listLH.add(lhhd);
+
+                    // update so luong in lo hang
+                    lo.setSoLuong(lo.getSoLuong() - usedQuantity);
+                    lHRepo.save(lo);
                 }
             }
 
@@ -530,8 +553,14 @@ public class HoaDonController {
             }
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(hoaDon.getMaHD());
-            Voucher vc = vcRepo.findById(req.getMaVoucher()).get();
-            hoaDon.setVoucher(vc);
+
+
+            if(req.getMaVoucher() != null){
+                Voucher vc = vcRepo.findById(req.getMaVoucher()).get();
+                hoaDon.setVoucher(vc);
+            }else {
+                hoaDon.setVoucher(null);
+            }
             hoaDon.setNgayThanhToan(LocalDateTime.now());
 
             // hoaDon.setNgayNhanHang(req.getNgayNhanHang());

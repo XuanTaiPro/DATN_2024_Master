@@ -1,4 +1,9 @@
-window.banhangCtrl = function ($scope, $http, $document,$timeout) {
+
+window.banhangCtrl = function ($scope, $http, $document) {
+
+    const overlay = document.getElementsByClassName('modal-backdrop')
+    Array.from(overlay).forEach(item => item.style.display = 'none')
+
     $scope.tabs = []; // Khởi tạo danh sách tab
     $scope.selectedTab = 0; // Chỉ số tab đang chọn
     $scope.searchText = ""; // Khởi tạo biến tìm kiếm

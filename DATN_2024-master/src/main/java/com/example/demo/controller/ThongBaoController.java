@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.thongbao.ThongBaoRequest;
 import com.example.demo.dto.thongbao.ThongBaoResponse;
+import com.example.demo.entity.KhachHang;
 import com.example.demo.entity.ThongBao;
 import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.repository.ThongBaoRepository;
@@ -70,26 +71,23 @@ public class ThongBaoController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<?> add(@Valid @RequestBody ThongBaoRequest thongBaoRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            System.out.println(mess.toString());
-            return ResponseEntity.badRequest().body(mess.toString());
-        }
+    public ResponseEntity<?> add( @RequestBody ThongBaoRequest thongBaoRequest) {
         if (thongBaoRequest.getId() == null || thongBaoRequest.getId().isEmpty()) {
             thongBaoRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
-        if (thongBaoRequest.getMa() == null || thongBaoRequest.getMa().isEmpty()) {// nếu mã chưa đc điền thì tự động
-            // thêm mã
+
+        if (thongBaoRequest.getMa() == null || thongBaoRequest.getMa().isEmpty()) {
             thongBaoRequest.setMa(generateCodeAll.generateMaThongBao());
         }
+
         ThongBao thongBao = thongBaoRequest.toEntity();
-        thongBao.setKhachHang(khRepo.getById(thongBaoRequest.getIdKH()));
+        List<KhachHang> khachHangs = khRepo.findAllById(thongBaoRequest.getIdKHs()); // Lấy danh sách khách hàng theo ID
+        thongBao.setKhachHangs(khachHangs); // Gắn khách hàng vào thông báo
         thongBao.setNgayGui(LocalDateTime.now());
         thongBao.setNgayDoc(LocalDateTime.now());
+
         tbRepo.save(thongBao);
-        return ResponseEntity.ok("thêm thành công");
+        return ResponseEntity.ok("Thêm thành công");
     }
 
     @PutMapping("update/{id}")
@@ -100,21 +98,27 @@ public class ThongBaoController {
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
+
         Optional<ThongBao> optionalThongBao = tbRepo.findById(id);
         if (optionalThongBao.isPresent()) {
-
             ThongBao thongBaoUpdate = thongBaoRequest.toEntity();
             thongBaoRequest.setId(id);
-            thongBaoUpdate.setKhachHang(khRepo.getById(thongBaoRequest.getIdKH()));
+
+            // Cập nhật danh sách khách hàng cho thông báo
+            List<KhachHang> khachHangs = khRepo.findAllById(thongBaoRequest.getIdKHs());
+            thongBaoUpdate.setKhachHangs(khachHangs);
+
             thongBaoUpdate.setMa(optionalThongBao.get().getMa());
             thongBaoUpdate.setNgayGui(optionalThongBao.get().getNgayGui());
             thongBaoUpdate.setNgayDoc(optionalThongBao.get().getNgayDoc());
-            ThongBao savedThongBao = tbRepo.save(thongBaoUpdate); // Lưu thay đổi và lấy đối tượng đã lưu
-            return ResponseEntity.ok(savedThongBao); // Trả về đối tượng đã cập nhật
+
+            ThongBao savedThongBao = tbRepo.save(thongBaoUpdate);
+            return ResponseEntity.ok(savedThongBao);
         } else {
-            return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
+            return ResponseEntity.badRequest().body("Không tìm thấy thông báo cần cập nhật");
         }
     }
+
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
