@@ -31,4 +31,5 @@ public class HoaDonRep {
     private String sdt;
     private String email;
     private String tenNV;
+    private Double tongTien;
 }

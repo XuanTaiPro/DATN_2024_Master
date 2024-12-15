@@ -82,12 +82,12 @@ public class HoaDon {
     private List<ChiTietHoaDon> chiTietHoaDons;
 
     public HoaDonRep toResponse() {
-//        // Initialize tongTien to 0.0 to avoid NullPointerException
-//        Double tongTien = 0.0;
-//
-//        // Iterate through each chiTietHoaDon to calculate the total
-//
-//        for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
+        // Initialize tongTien to 0.0 to avoid NullPointerException
+        Double tongTien = 0.0;
+
+        // Iterate through each chiTietHoaDon to calculate the total
+
+        for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
 //            if (voucher != null) {
 //                // Áp dụng logic giảm giá dựa trên voucher
 //                double giaSauGiam = Double.valueOf(chiTietHoaDon.getGiaSauGiam());
@@ -103,10 +103,10 @@ public class HoaDon {
 //                giaSauGiam = Math.max(giaSauGiam, 0);
 //                chiTietHoaDon.setGiaSauGiam(String.valueOf(giaSauGiam));
 //            }
-//
-//            // Tính tổng tiền
-//            tongTien += (Double.valueOf(chiTietHoaDon.getGiaSauGiam()) * chiTietHoaDon.getSoLuong());
-//        }
+
+            // Tính tổng tiền
+            tongTien += (Double.valueOf(chiTietHoaDon.getGiaSauGiam()) * chiTietHoaDon.getSoLuong());
+        }
         // Return the HoaDonRep response with the calculated tongTien
         return new HoaDonRep(
                 id,
@@ -127,9 +127,9 @@ public class HoaDon {
                 khachHang != null ? khachHang.getTen() : null,
                 khachHang != null ? khachHang.getSdt() : null,
                 khachHang != null ? khachHang.getEmail() : null,
-                nhanVien != null ? nhanVien.getTen() : null
+                nhanVien != null ? nhanVien.getTen() : null,
+                tongTien
         );
-//                String.valueOf(tongTien));
     }
 
 }
