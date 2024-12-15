@@ -1,4 +1,4 @@
-window.voucherCtrl = function ($scope, $http) {
+window.voucherCtrl = function ($scope, $http,$timeout) {
     const url = "http://localhost:8083/voucher";
 
     $scope.listVoucher = [];
@@ -8,6 +8,7 @@ window.voucherCtrl = function ($scope, $http) {
     $scope.pageSize = 5;
     $scope.emptyMessage = "";
 
+    $scope.isSubmitted = false;
     $scope.loadPage = function (page) {
         $http.get('http://localhost:8083/voucher/page?page=' + page)
             .then(function (response) {
@@ -250,7 +251,55 @@ window.voucherCtrl = function ($scope, $http) {
     };
 
 
-    $scope.addVoucher = function (e) {
+    $scope.validationErrors = {};
+
+    $scope.validateDiscounts = function() {
+        $scope.validationErrors = {};
+        const giamGiaRegex = /^\d+%$/;
+        if (!giamGiaRegex.test($scope.giamGia)) {
+            $scope.validationErrors.giamGia = 'Giá giảm phải là số và kết thúc bằng "%", ví dụ: 10%.';
+        }
+        if (isNaN($scope.giamMin)) {
+            $scope.validationErrors.giamMin = 'Giảm min phải là số.';
+        }
+        if (isNaN($scope.giamMax)) {
+            $scope.validationErrors.giamMax = 'Giảm max phải là số.';
+        }
+        // const giamGia = parseFloat($scope.giamGia);
+        const giamMin = parseFloat($scope.giamMin);
+        const giamMax = parseFloat($scope.giamMax);
+        // if (!isNaN(giamGia) && !isNaN(giamMin) && giamGia < giamMin) {
+        //     $scope.validationErrors.giamGia = 'Giá giảm không được nhỏ hơn giá min.';
+        // }
+        // if (!isNaN(giamGia) && !isNaN(giamMax) && giamGia > giamMax) {
+        //     $scope.validationErrors.giamGia = 'Giá giảm không được lớn hơn giá max.';
+        // }
+        if (!isNaN(giamMin) && !isNaN(giamMax) && giamMin >= giamMax) {
+            $scope.validationErrors.giamMin = 'Giảm min phải nhỏ hơn giảm max.';
+            $scope.validationErrors.giamMax = 'Giảm max phải lớn hơn giảm min.';
+        }
+        if ($scope.ngayKetThuc) {
+            const today = new Date();
+            const selectedDate = new Date($scope.ngayKetThuc);
+            if (selectedDate <= today) {
+                $scope.validationErrors.ngayKetThuc = 'Ngày kết thúc phải là ngày trong tương lai.';
+            }
+        }
+        if ($scope.ten) {
+            const isDuplicate = $scope.listVoucher.some(function(voucher) {
+                return voucher.ten.toLowerCase() === $scope.ten.trim().toLowerCase();
+            });
+            if (isDuplicate) {
+                $scope.validationErrors.ten = 'Tên voucher đã tồn tại. Vui lòng chọn tên khác.';
+            }
+        }
+
+
+    };
+
+    $scope.addVoucher = function () {
+        $scope.isSubmitted = true;
+        $scope.validateDiscounts();
         const newVoucher = {
             ten: $scope.ten,
             giamGia: $scope.giamGia,
@@ -265,19 +314,73 @@ window.voucherCtrl = function ($scope, $http) {
         };
 
         console.log("Dữ liệu mới:", newVoucher);
-        $http.post('http://localhost:8083/voucher/add', newVoucher)
-            .then(function (response) {
-                $('#productModal').modal('hide');
-                showSuccessAlert('Thêm thành công!');
-                $scope.loadPage($scope.currentPage);
-            })
-            .catch(function (error) {
-                $scope.errorMessage = "Thêm thất bại";
-            });
+
+
+        // Kiểm tra nếu form hợp lệ trước khi gửi request
+        if ($scope.voucherForm.$valid) {
+            $http.post('http://localhost:8083/voucher/add', newVoucher)
+                .then(function (response) {
+                    $('#productModal').modal('hide');
+                    showSuccessAlert('Thêm thành công!');
+                    // $scope.loadPage($scope.currentPage);
+                })
+                .catch(function (error) {
+                    $scope.errorMessage = "Thêm thất bại";
+                });
+        } else {
+            $scope.errorMessage = "Vui lòng điền đầy đủ thông tin!";
+        }
+
         resetForm();
     };
 
+
+
+    $scope.validateDiscountsud = function() {
+        $scope.validationErrors = {};
+        const giamGiaRegex = /^\d+%$/;
+        if (!giamGiaRegex.test($scope.giamGia)) {
+            $scope.validationErrors.giamGia = 'Giá giảm phải là số và kết thúc bằng "%", ví dụ: 10%.';
+        }
+        if (isNaN($scope.giamMin)) {
+            $scope.validationErrors.giamMin = 'Giảm min phải là số.';
+        }
+        if (isNaN($scope.giamMax)) {
+            $scope.validationErrors.giamMax = 'Giảm max phải là số.';
+        }
+        const giamMin = parseFloat($scope.giamMin);
+        const giamMax = parseFloat($scope.giamMax);
+        if (!isNaN(giamMin) && !isNaN(giamMax) && giamMin >= giamMax) {
+            $scope.validationErrors.giamMin = 'Giảm min phải nhỏ hơn giảm max.';
+            $scope.validationErrors.giamMax = 'Giảm max phải lớn hơn giảm min.';
+        }
+        if ($scope.ngayKetThuc) {
+            const today = new Date();
+            const selectedDate = new Date($scope.ngayKetThuc);
+            if (selectedDate <= today) {
+                $scope.validationErrors.ngayKetThuc = 'Ngày kết thúc phải là ngày trong tương lai.';
+            }
+        }
+        if ($scope.ten) {
+            const isDuplicate = $scope.listVoucher.some(function(voucher) {
+                // Kiểm tra trùng tên và loại trừ id đang chọn
+                return voucher.ten.toLowerCase() === $scope.ten.trim().toLowerCase() &&
+                    voucher.id !== $scope.currentVoucherId; // Loại trừ ID đang chọn
+            });
+
+            if (isDuplicate) {
+                $scope.validationErrors.ten = 'Tên voucher đã tồn tại. Vui lòng chọn tên khác.';
+            } else {
+                delete $scope.validationErrors.ten; // Xóa lỗi nếu hợp lệ
+            }
+        }
+        if (!$scope.selectedCustomersUpdate || $scope.selectedCustomersUpdate.length === 0) {
+            $scope.validationErrors.customer = 'Cần thêm ít nhất một khách hàng.';
+        }
+    };
     $scope.updateVoucher = function () {
+        $scope.isSubmitted = true;
+        $scope.validateDiscountsud();
         if (!$scope.idLoaiVC) {
             alert("Vui lòng chọn quyền cho nhân viên.");
             return;
@@ -313,6 +416,7 @@ window.voucherCtrl = function ($scope, $http) {
                 console.error("Lỗi khi cập nhật voucher:", error);
             });
     };
+
 
 
     $scope.deleteVoucher = function (id) {

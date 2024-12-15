@@ -1,3 +1,7 @@
+
+<div ng-if="showMessage" class="alert alert-warning">
+    {{ showMessage }}
+</div>
 <div class="tab">
     <div class="input-group" style="padding-left: 50px; padding-right: 50px;">
         <input type="text" class="form-control"
@@ -113,7 +117,8 @@
                                 <span> | Giá bán: {{ ctsp.gia }}</span>
                                 <div class="form-group">
                                     <label>Số lượng:</label>
-                                    <input type="number" class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}">
+                                    <input type="number" class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}"  ng-change="validateSoLuong(ctsp)"  ng-pattern="/^\d+$/" required />
+                                    <span ng-show="soLuongError" class="text-danger">Số lượng không hợp lệ hoặc quá lớn</span>
                                     <button ng-click="confirmAddInvoiceDetail(ctsp)">Thêm</button> <!-- Truyền ctsp vào hàm -->
                                 </div>
                             </div>

@@ -45,7 +45,24 @@ public class SanPhamController {
         List<SanPham> sanPhamList = sanPhamRepository.findAll(sort);
         return ResponseEntity.ok(sanPhamList.stream().map(SanPham::toResponse));
     }
+    @PostMapping("/checkTrung")
+    public ResponseEntity<Map<String, Boolean>> checkTrung(@RequestBody Map<String, String> request) {
+        String tenSP = request.get("tenSP");
 
+        if (tenSP == null || tenSP.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("isDuplicate", false));
+        }
+        boolean isDuplicate = sanPhamRepository.getSPByTen(tenSP.trim())!=null;
+
+        return ResponseEntity.ok(Map.of("isDuplicate", isDuplicate));
+    }
+    @PostMapping("/checkTrungUD")
+    public Map<String, Boolean> checkDuplicateName(@RequestBody Map<String, Object> payload) {
+        String tenSP = (String) payload.get("tenSP");
+        String id = (String) payload.get("id");
+        boolean isDuplicate = sanPhamRepository.existsByTenSPAndIdNot(tenSP, id);
+        return Map.of("isDuplicate", isDuplicate);
+    }
     @GetMapping("/getByDanhMuc")
     public ResponseEntity<?> getAll(@RequestParam(name = "idDanhMuc") String idDanhMuc) {
         Sort sort = Sort.by(Sort.Direction.DESC, "ngayTao");

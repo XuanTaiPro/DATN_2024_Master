@@ -106,9 +106,47 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
         console.log("Trạng thái hiện tại:", $scope.selectedTtgh.trangThai);
     };
 
+    $scope.validationErrors = {};
+    $scope.validateDiscounts = function() {
+        $scope.validationErrors = {}; // Xóa lỗi cũ
+
+        // Kiểm tra số điện thoại
+        if (isNaN($scope.sdtNguoiNhan)) {
+            $scope.validationErrors.sdtNguoiNhan = 'Số điện thoại phải là số.';
+        } else if (!/^\d{10}$/.test($scope.sdtNguoiNhan)) {
+            $scope.validationErrors.sdtNguoiNhan = 'Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0.';
+        } else if ($scope.sdtNguoiNhan[0] !== '0') {
+            $scope.validationErrors.sdtNguoiNhan = 'Số điện thoại phải bắt đầu bằng số 0.';
+        }
+
+        // Kiểm tra các trường khác
+        if (!$scope.tenNguoiNhan) {
+            $scope.validationErrors.tenNguoiNhan = 'Tên người nhận không được để trống.';
+        }
+
+        if (!$scope.dcNguoiNhan) {
+            $scope.validationErrors.dcNguoiNhan = 'Địa chỉ người nhận không được để trống.';
+        }
+
+        if (!$scope.trangThai) {
+            $scope.validationErrors.trangThai = 'Trạng thái không được để trống.';
+        }
+
+        if (!$scope.idKH) {
+            $scope.validationErrors.idKH = 'Cần phải chọn khách hàng.';
+        }
+    };
 
     $scope.addTtgh = function () {
-        console.log("Thêm Khách hàng được gọi!");
+
+        $scope.isSubmitted = true;
+        $scope.validateDiscounts();
+
+
+        if (Object.keys($scope.validationErrors).length > 0) {
+            return; // Dừng lại nếu có lỗi
+        }
+
         const newTtgh = {
             sdtNguoiNhan: $scope.sdtNguoiNhan,
             tenNguoiNhan: $scope.tenNguoiNhan,
@@ -116,20 +154,20 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
             trangThai: $scope.trangThai,
             idKH: $scope.idKH,
         };
-        console.log("Dữ liệu voucher mới:", newTtgh);
+        console.log("Dữ liệu thông tin giao hàng mới:", newTtgh);
+
         $http.post('http://localhost:8083/thongtingiaohang/add', newTtgh)
             .then(function (response) {
-                // Đóng modal
                 $('#productModal').modal('hide');
-                setTimeout(function () {
-                    location.reload();
-                }, 500);
             })
             .catch(function (error) {
-                $scope.errorMessage = "Thêm thất bại";
+                // Thông báo thất bại
+                $scope.errorMessage = "Thêm thất bại. Vui lòng kiểm tra lại!";
+                console.error("Lỗi khi thêm Thông tin:", error);
             });
-        resetForm();
+
     };
+
 
 
     $scope.updateTtgh = function () {
@@ -166,9 +204,6 @@ window.thongtingiaohangCtrl = function ($scope, $http) {
         }
     };
 
-
-    // Reset form
-    // Reset form
     function resetForm() {
         $scope.sdtNguoiNhan = "";
         $scope.tenNguoiNhan = "";

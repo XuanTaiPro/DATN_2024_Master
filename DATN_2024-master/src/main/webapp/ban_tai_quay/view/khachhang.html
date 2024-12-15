@@ -119,39 +119,47 @@
                     <div class="inputField">
                         <div>
                             <label for="ten">Họ và tên:</label>
-                            <input type="text" ng-model="ten" id="ten" required>
+                            <input type="text" ng-model="ten" id="ten" >
+                            <span class="text-danger" ng-if="errorMessages.ten">{{ errorMessages.ten }}</span>
+
                         </div>
                         <div>
                             <label for="email">Email:</label>
-                            <input type="email" ng-model="email" id="email" required>
+                            <input type="email" ng-model="email" id="email" >
+                            <span class="text-danger" ng-if="errorMessages.email">{{ errorMessages.email }}</span>
                         </div>
                         <div>
                             <label for="passw">PassWord:</label>
-                            <input type="text" ng-model="passw" id="passw" required>
+                            <input type="text" ng-model="passw" id="passw" >
+                            <span class="text-danger" ng-if="errorMessages.passw">{{ errorMessages.passw }}</span>
                         </div>
                         <div>
                             <label for="gioiTinh">Giới tính:</label>
-                            <select ng-model="gioiTinh" id="gioiTinh" class="short-select" required>
+                            <select ng-model="gioiTinh" id="gioiTinh" class="short-select" >
                                 <option value="" disabled selected>Chọn Giới Tính</option>
                                 <option value="Nam">Nam</option>
                                 <option value="Nữ">Nữ</option>
                             </select>
+                            <span class="text-danger" ng-if="errorMessages.gioiTinh">{{ errorMessages.gioiTinh }}</span>
                         </div>
                         <div>
                             <label for="sdt">SDT :</label>
-                            <input type="text" ng-model="sdt" id="sdt" required>
+                            <input type="text" ng-model="sdt" id="sdt" >
+                            <span class="text-danger" ng-if="errorMessages.sdt">{{ errorMessages.sdt }}</span>
                         </div>
                         <div>
                             <label for="diaChi">Địa chỉ:</label>
-                            <input type="text" ng-model="diaChi" id="diaChi" required>
+                            <input type="text" ng-model="diaChi" name="diaChi" id="diaChi" >
+                            <span class="text-danger" ng-if="errorMessages.diaChi">{{ errorMessages.diaChi }}</span>
                         </div>
                         <div>
                             <label for="trangThai">Trạng thái:</label>
-                            <select ng-model="trangThai" id="trangThai" class="short-select" required>
+                            <select ng-model="trangThai" id="trangThai" name="trangThai" class="short-select" >
                                 <option value="" disabled selected>Chọn Trạng Thái</option>
                                 <option value="1">Hoạt động</option>
                                 <option value="0">Ngưng hoạt động</option>
                             </select>
+                            <span class="text-danger" ng-if="errorMessages.trangThai">{{ errorMessages.trangThai }}</span>
                         </div>
                     </div>
                 </form>
@@ -177,46 +185,50 @@
                     <div class="inputField">
                         <div>
                             <label>Họ và tên:</label>
-                            <input type="text" ng-model="selectedKhachHang.ten">
+                            <input type="text" ng-model="selectedKhachHang.ten" id="tenUpdate">
+                            <span class="text-danger" ng-if="errorMessages.ten">{{ errorMessages.ten }}</span>
                         </div>
                         <div>
                             <label>Email:</label>
-                            <input type="email" ng-model="selectedKhachHang.email">
+                            <input type="email" ng-model="selectedKhachHang.email" id="emailUpdate">
+                            <span class="text-danger" ng-if="errorMessages.email">{{ errorMessages.email }}</span>
                         </div>
                         <div>
                             <label>Mật khẩu:</label>
                             <input type="text" ng-model="selectedKhachHang.passw" id="passwUpdate">
+                            <span class="text-danger" ng-if="errorMessages.passw">{{ errorMessages.passw }}</span>
                         </div>
                         <div>
                             <label for="gioiTinhUpdate">Giới tính:</label>
-                            <select ng-model="selectedKhachHang.gioiTinh" id="gioiTinhUpdate" class="short-select"
-                                    required>
+                            <select ng-model="selectedKhachHang.gioiTinh" id="gioiTinhUpdate" class="short-select">
                                 <option value="" disabled selected>Chọn Giới Tính</option>
                                 <option value="Nam">Nam</option>
                                 <option value="Nữ">Nữ</option>
                             </select>
+                            <span class="text-danger" ng-if="errorMessages.gioiTinh">{{ errorMessages.gioiTinh }}</span>
                         </div>
                         <div>
-                            <label>SDT :</label>
-                            <input type="text" ng-model="selectedKhachHang.sdt" id="sdtUpdate" required>
+                            <label>SDT:</label>
+                            <input type="text" ng-model="selectedKhachHang.sdt" id="sdtUpdate">
+                            <span class="text-danger" ng-if="errorMessages.sdt">{{ errorMessages.sdt }}</span>
                         </div>
                         <div>
                             <label>Địa chỉ:</label>
                             <input type="text" ng-model="selectedKhachHang.diaChi" id="diaChiUpdate">
+                            <span class="text-danger" ng-if="errorMessages.diaChi">{{ errorMessages.diaChi }}</span>
                         </div>
                         <div>
                             <label for="trangThaiUpdate">Trạng thái:</label>
-                            <select ng-model="selectedKhachHang.trangThai" id="trangThaiUpdate" class="short-select"
-                                    required>
+                            <select ng-model="selectedKhachHang.trangThai" id="trangThaiUpdate" class="short-select">
                                 <option value="" disabled>Chọn Trạng Thái</option>
                                 <option value="1">Hoạt động</option>
                                 <option value="0">Ngưng hoạt động</option>
                             </select>
+                            <span class="text-danger" ng-if="errorMessages.trangThai">{{ errorMessages.trangThai }}</span>
                         </div>
                     </div>
                 </form>
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" form="updateKhachHang" class="btn btn-primary submit">Cập Nhật</button>

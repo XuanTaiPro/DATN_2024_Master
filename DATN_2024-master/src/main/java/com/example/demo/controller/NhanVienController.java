@@ -2,8 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.nhanvien.NhanVienRequest;
 import com.example.demo.dto.nhanvien.NhanVienResponse;
+import com.example.demo.dto.nhanvien.ResponseMessage;
 import com.example.demo.entity.NhanVien;
 import com.example.demo.repository.NhanVienRepository;
+import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.repository.QuyenRepository;
 import com.example.demo.service.GenerateCodeAll;
 import jakarta.validation.Valid;
@@ -27,6 +29,8 @@ public class NhanVienController {
 
     @Autowired
     private NhanVienRepository nvRepo;
+    @Autowired
+    private KhachHangRepository khachHangRepository;
 
     @Autowired
     private QuyenRepository qRepo;
@@ -40,7 +44,20 @@ public class NhanVienController {
         nvRepo.findAll().forEach(c -> list.add(c.toResponse()));
         return ResponseEntity.ok(list);
     }
-
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        boolean existsInNhanVien = nvRepo.existsByEmail(email);
+        boolean existsInKhachHang = khachHangRepository.existsByEmail(email);
+        boolean exists = existsInNhanVien || existsInKhachHang;
+        return ResponseEntity.ok(exists);
+    }
+    @GetMapping("/nhavienud/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email, @RequestParam String id) {
+        boolean existsInKhachHang= khachHangRepository.existsByEmailAndIdNot(email, id);
+        boolean existsInNhanVien= nvRepo.existsByMaAndIdNot(email, id);
+        boolean exists = existsInNhanVien || existsInKhachHang;
+        return ResponseEntity.ok(exists);
+    }
     @GetMapping("page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
@@ -92,7 +109,9 @@ public class NhanVienController {
 //                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
 //            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ Admin mới có quyền Thêm!"));
 //        }
-
+        if (nvRepo.existsByEmail(nhanVienRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(Map.of("email", "Email đã tồn tại"));
+        }
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
@@ -112,7 +131,14 @@ public class NhanVienController {
         nhanVien.setNgayTao(LocalDateTime.now());
         nvRepo.save(nhanVien);
 
-        return ResponseEntity.ok("thêm thành công");
+        try {
+            nvRepo.save(nhanVien); // Lưu nhân viên vào cơ sở dữ liệu
+        } catch (Exception e) {
+            e.printStackTrace();  // In lỗi chi tiết vào console để dễ dàng kiểm tra
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseMessage("Lỗi khi thêm nhân viên: " + e.getMessage()));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage("Thêm nhân viên thành công"));
     }
 
     @PutMapping("update/{id}")
@@ -142,9 +168,17 @@ public class NhanVienController {
             nhanVienUpdate.setMa(optionalNhanVien.get().getMa());
             nhanVienUpdate.setNgaySua(LocalDateTime.now());
             nhanVienUpdate.setNgayTao(optionalNhanVien.get().getNgayTao());
-            NhanVien savedNhanVien = nvRepo.save(nhanVienUpdate);
+//            NhanVien savedNhanVien = nvRepo.save(nhanVienUpdate);
+//
+//            return ResponseEntity.ok(savedNhanVien);
+            try {
+                nvRepo.save(nhanVienUpdate);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseMessage("Lỗi khi update nhân viên: " + e.getMessage()));
+            }
 
-            return ResponseEntity.ok(savedNhanVien);
+            return ResponseEntity.ok(new ResponseMessage("update nhân viên thành công"));
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
         }

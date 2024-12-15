@@ -81,7 +81,80 @@ window.sanPhamCtrl = function ($scope, $http) {
             });
     };
 
+
+
+
+
+    $scope.checkDuplicateName = function() {
+        if (!$scope.isTenValid()) {
+            $scope.isDuplicateName = false;
+            return;
+        }
+        $http.post('http://localhost:8083/san-pham/checkTrung', { tenSP: $scope.product.tenSP.trim() })
+            .then(function(response) {
+                $scope.isDuplicateName = response.data.isDuplicate;
+            })
+            .catch(function(error) {
+                console.error('Lỗi khi kiểm tra trùng tên:', error);
+            });
+    };
+    const specialCharRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+
+    $scope.isTenValid = function() {
+        if (!$scope.product.tenSP || $scope.product.tenSP.trim() === '') {
+            return false; // Tên không được để trống
+        } else if (!specialCharRegex.test($scope.product.tenSP.trim())) {
+            return false; // Tên chứa ký tự đặc biệt
+        }
+        return true; // Tên hợp lệ
+    };
+
+
+    $scope.isTPValid = function() {
+        return $scope.product.thanhPhan && $scope.product.thanhPhan.trim() !== '';
+    };
+
+    $scope.isCDValid = function() {
+        return $scope.product.congDung && $scope.product.congDung.trim() !== '';
+    };
+
+    $scope.ishdsdValid = function() {
+        return $scope.product.hdsd && $scope.product.hdsd.trim() !== '';
+    };
+
+    $scope.ages = {
+        tuoiMin: null,
+        tuoiMax: null
+    };
+    $scope.isAgeInvalid = function() {
+        return $scope.ages.tuoiMin && $scope.ages.tuoiMax && $scope.ages.tuoiMin > $scope.ages.tuoiMax;
+    };
+    $scope.isAgeGreaterThan100 = function() {
+        return ( $scope.ages.tuoiMax<0&&$scope.ages.tuoiMin<0&&$scope.ages.tuoiMax > 100);
+    };
+    $scope.isAgeGreaterThan1001 = function() {
+        return ( $scope.ages.tuoiMin<0&&$scope.ages.tuoiMin > 100);
+    };
+    $scope.formSubmitted = false;
     $scope.addProduct = function (product) {
+
+
+        $scope.formSubmitted = true;
+        if(!$scope.isTenValid()||!$scope.isTPValid()||!$scope.isCDValid()||!$scope.ishdsdValid()||!$scope.isAgeGreaterThan100()||!$scope.isAgeGreaterThan1001()||!$scope.isAgeInvalid()){
+            return
+        }
+        const formData = new FormData();
+        formData.append('tenSP', product.tenSP || '');
+        formData.append('thanhPhan', product.thanhPhan || '');
+        formData.append('congDung', product.congDung || '');
+        formData.append('tuoiMin', product.tuoiMin || 0);
+        formData.append('tuoiMax', product.tuoiMax || 0);
+        formData.append('hdsd', product.hdsd);
+        formData.append('moTa', product.moTa || '');
+        formData.append('idDanhMuc', product.idDanhMuc || '');
+        formData.append('trangThai', 1);
+        formData.append('idThuongHieu', "95B16137");
+
         const data = {
             tenSP: product.tenSP || '',
             thanhPhan: product.thanhPhan || '',
@@ -146,8 +219,44 @@ window.sanPhamCtrl = function ($scope, $http) {
         });
 
     };
+    $scope.checkDuplicateNameUD = function() {
+        if (!$scope.isTenValid()) {
+            $scope.isDuplicateName = false;
+            return;
+        }
+        const requestData = {
+            tenSP: $scope.product.tenSP.trim(),
+            id: $scope.product.id
+        };
+        $http.post('http://localhost:8083/san-pham/checkTrungUD', requestData)
+            .then(function(response) {
+                $scope.isDuplicateName = response.data.isDuplicate;
+            })
+            .catch(function(error) {
+                console.error('Lỗi khi kiểm tra trùng tên:', error);
+            });
+    };
 
+    $scope.isSubmitted = false;
     $scope.updateProduct = function () {
+        $scope.isSubmitted = true;
+        $scope.formSubmitted = true;
+        if(!$scope.isTenValid()||!$scope.isTPValid()||!$scope.isCDValid()||!$scope.ishdsdValid()||!$scope.isAgeGreaterThan100()||!$scope.isAgeGreaterThan1001()||!$scope.isAgeInvalid()){
+            return
+        }
+        const formData = new FormData();
+        formData.append('id', $scope.productDetail.id || '');
+        formData.append('tenSP', $scope.productDetail.tenSP || '');
+        formData.append('thanhPhan', $scope.productDetail.thanhPhan || '');
+        formData.append('congDung', $scope.productDetail.congDung || '');
+        formData.append('tuoiMin', $scope.productDetail.tuoiMin || 0);
+        formData.append('tuoiMax', $scope.productDetail.tuoiMax || 0);
+        formData.append('hdsd', $scope.productDetail.hdsd);
+        formData.append('moTa', $scope.productDetail.moTa || '');
+        formData.append('idDanhMuc', $scope.productDetail.idDanhMuc || '');
+        formData.append('trangThai', 1);
+        formData.append('idThuongHieu', "95B16137");
+
         const data = {
             id: $scope.productDetail.id || '',
             tenSP: $scope.productDetail.tenSP || '',
@@ -161,6 +270,7 @@ window.sanPhamCtrl = function ($scope, $http) {
             trangThai: 1,
             idThuongHieu: "95B16137"
         };
+
 
         $http.put('http://localhost:8083/san-pham/update', data)
             .then(function (response) {
@@ -177,7 +287,7 @@ window.sanPhamCtrl = function ($scope, $http) {
         $scope.productDetail = {}; // Xóa dữ liệu chi tiết sản phẩm
         $scope.product = {};
         $('#userForm').modal('hide'); // Đóng modal
-        $('#productModal').modal('hide'); // Đóng modal
+        // $('#productModal').modal('hide'); // Đóng modal
     };
     // Xem chi tiết sản phẩm
     $scope.viewDetail = function (productId) {

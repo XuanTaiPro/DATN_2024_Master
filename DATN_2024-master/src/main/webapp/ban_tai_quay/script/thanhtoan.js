@@ -10,7 +10,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     $scope.changeAmount = 0;
     $scope.showError = false;
     $scope.tongTien = 0;
-    $scope.previousTotal = 0; // Thêm biến để lưu tổng tiền trước đó
+    $scope.previousTotal = 0;
 
     const overlayLoad = document.querySelector('.overlay-load')
     const loader = document.querySelector('.loader')
