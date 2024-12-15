@@ -443,7 +443,6 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
 
     // Hoàn tất thanh toán chuyển khoản
     $scope.completePaymentCK = function () {
-
         $scope.isSubmitted = true;
         // Kiểm tra nếu tên hoặc số điện thoại bị trống
         if (!$scope.selectedCustomerName || !$scope.selectedCustomerPhone) {
@@ -559,19 +558,23 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
             .then(function (response) {
                 showSuccessAlert("Thanh toán thành công!");
                 if ($scope.appliedVoucherId) {
-                    $http.post(`http://localhost:8083/voucher/apply`, {id: $scope.appliedVoucherId})
-                        .then(function () {
-                            console.log("Voucher đã được trừ số lượng.");
+                    $http.post(`http://localhost:8083/voucher/apply`, { id: $scope.appliedVoucherId })
+                        .then(function (response) {
+                            console.log(response.data.message); // Hiển thị thông báo từ phản hồi JSON
                         })
                         .catch(function (error) {
-                            console.error("Lỗi khi áp dụng voucher:", error);
+                            if (error.data && error.data.message) {
+                                console.error("Lỗi khi áp dụng voucher:", error.data.message);
+                            } else {
+                                console.error("Lỗi không xác định khi áp dụng voucher:", error);
+                            }
                         });
                 }
                 showSuccessAlert("Thanh toán thành công cho khác hàng : " + $scope.selectedCustomerName)
                 new bootstrap.Modal(document.getElementById('confirmModal')).hide();
                 setTimeout(() => {
-                    window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html?_ijt=b52rmmgrr07e4fbs2cavr9s5sd#!/banhang'
-                }, 2000)
+                    window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html#!/banhang';
+                }, 500);
             })
             .catch(function (error) {
                 console.error("Lỗi khi cập nhật hóa đơn:", error);
