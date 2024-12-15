@@ -76,7 +76,7 @@
             <td>{{hd.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
             <td>{{hd.loaiHD == 1 ? 'Online' : 'Tại quầy' }}</td>
             <td>{{ hd.tt }} VND</td>
-            <td >{{ hd.ttLastMoney }} VND</td>
+            <td >{{ hd.tt-hd.ttLastMoney }} VND</td>
             <td>
                 <button class="btn btn-success" ng-click="detailHoaDon(hd.id)" data-bs-toggle="modal"
                         data-bs-target="#readData">
@@ -89,6 +89,31 @@
                                 <h5 class="modal-title" id="readDataLabel">Chi tiết hóa đơn</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
+                            </div>
+                            <div class="process-tracker" ng-if="hoaDonDetail.loaiHD===1 && hoaDonDetail.trangThai!=4">
+                                <div class="step" ng-class="{ 'completed': hoaDonDetail.trangThai >= 0 }">
+                                    <div class="icon"><i class="fas fa-hourglass-start"></i></div>
+                                    <p>Chờ xác nhận</p>
+                                </div>
+                                <div class="line" ng-class="{ 'completed': hoaDonDetail.trangThai >= 2 }"></div>
+                                <div class="step" ng-class="{ 'completed': hoaDonDetail.trangThai >= 2 }">
+                                    <div class="icon"><i class="fas fa-clipboard-check"></i></div>
+                                    <p>Xác nhận</p>
+                                </div>
+                                <div class="line" ng-class="{ 'completed': hoaDonDetail.trangThai >= 5 || hoaDonDetail.trangThai === 3 }"></div>
+                                <div class="step" ng-class="{ 'completed': hoaDonDetail.trangThai >= 5 || hoaDonDetail.trangThai === 3 }">
+                                    <div class="icon"><i class="fas fa-shipping-fast"></i></div>
+                                    <p>Giao hàng</p>
+                                </div>
+                                <div class="line" ng-class="{ 'completed': hoaDonDetail.trangThai === 3 }"></div>
+                                <div class="step" ng-class="{ 'completed': hoaDonDetail.trangThai === 3 }">
+                                    <div class="icon"><i class="fas fa-thumbs-up"></i></div>
+                                    <p>Hoàn thành</p>
+                                </div>
+                            </div>
+                            <div ng-if="hoaDonDetail.loaiHD===1 && hoaDonDetail.trangThai===4" class="canceled">
+                                <div class="icon"><i class="fas fa-times-circle"></i></div>
+                                <p>Đã hủy</p>
                             </div>
                             <div class="modal-body">
                                 <h5 class="title">Thông tin các sản phẩm</h5>
@@ -145,7 +170,7 @@
                                     <div class="col-md-3">
                                         <p><strong>Loại hóa đơn:</strong> {{hoaDonDetail.loaiHD == 1 ? 'Online' : 'Tại
                                             quầy' }} </p>
-                                        <p><strong>Tổng tiền:</strong> {{ hoaDonDetail.thanhTien }} </p>
+                                        <p><strong>Tổng tiền:</strong> {{ getTotalAmount(chiTietHoaDons) }} VND </p>
                                         <p><strong>Trạng thái:</strong>
                                             {{ hoaDonDetail.trangThai == 0 ? 'Chờ xác nhận' :
                                             hoaDonDetail.trangThai == 1 ? 'Chờ' :
@@ -172,11 +197,14 @@
                 <button class="btn btn-success" ng-if="hd.trangThai === 0" ng-click="confirmInvoice(hd.id)">
                     <i class="fa fa-check-circle"></i> Xác nhận
                 </button>
-                <button class="btn btn-success" ng-if="hd.trangThai === 2" ng-click="confirmInvoice(hd.id)">
-                    <i class="fa fa-check-circle"></i> Xác nhận giao hàng
+                <button class="btn btn-success" ng-if="hd.trangThai === 2" ng-click="xacNhanGH(hd.id)">
+                    <i class="fa fa-truck"></i> Xác nhận giao hàng
                 </button>
-                <button class="btn btn-danger" ng-if="hd.loaiHD ==0 " ng-click="deleteInvoice(hd.id)"><i
-                        class="fa fa-trash"></i> <!-- Biểu tượng thùng rác -->
+                <button class="btn btn-success" ng-if="hd.trangThai === 5" ng-click="xacNhanTC(hd.id)">
+                    <i class="fas fa-thumbs-up"></i> Xác nhận hoàn thành
+                </button>
+                <button class="btn btn-danger" ng-if="hd.loaiHD ==0 &&hd.trangThai==1" ng-click="deleteInvoice(hd.id)"><i
+                        class="fa fa-trash"></i>
                 </button>
             </td>
         </tr>
@@ -198,3 +226,99 @@
         </nav>
     </div>
 </div>
+<style>
+    .process-tracker {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        margin: 20px 0;
+        font-family: Arial, sans-serif;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        color: #aaa;
+        text-align: center;
+        flex: 1;
+        font-size: 14px;
+    }
+
+    .step p {
+        margin-top: 5px;
+    }
+
+    .step.completed .icon {
+        background-color: #28a745;
+        color: white;
+        border: 2px solid #28a745;
+    }
+
+    .step.completed p {
+        color: #28a745;
+    }
+
+    .icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 18px;
+        border: 2px solid #aaa;
+        transition: all 0.3s ease;
+    }
+
+    .line {
+        height: 3px;
+        background-color: #ccc;
+        flex: 1;
+        margin: 0 -10px;
+        position: relative;
+        z-index: 1;
+        transition: background-color 0.3s ease;
+    }
+
+    .line.completed {
+        background-color: #28a745;
+    }
+
+    .line:first-child {
+        margin-left: 0;
+    }
+
+    .line:last-child {
+        margin-right: 0;
+    }
+
+    .canceled {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #dc3545;
+        font-size: 16px;
+    }
+
+    .canceled .icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #dc3545;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        margin-right: 10px;
+    }
+
+    .canceled p {
+        font-weight: bold;
+    }
+
+</style>

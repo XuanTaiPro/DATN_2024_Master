@@ -397,7 +397,7 @@ public class HoaDonController {
 
         if (hoaDonOptional.isPresent()) {
             HoaDon hoaDonExisting = hoaDonOptional.get();
-            hoaDonExisting.setTrangThai(3);
+            hoaDonExisting.setTrangThai(2);
             hoaDonRepo.save(hoaDonExisting);
 
             KhachHang getKH = hoaDonExisting.getKhachHang();
@@ -428,7 +428,8 @@ public class HoaDonController {
                     chiTietSanPhamRepo.save(getCTSP);
                     dgRepo.save(dg);
                 }
-                return ResponseEntity.ok("Xác nhận hóa đơn thành công.");
+                return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
+                        .body("Xác nhận hóa đơn "+idHD+" thành công.");
             } else {
                 return ResponseEntity.badRequest()
                         .body("Sản phẩm '" + tenSPCheck + "' trong hóa đơn quá lượng trong kho.");
@@ -439,6 +440,24 @@ public class HoaDonController {
         }
     }
 
+    @PutMapping("/xacNhanGH")
+    public ResponseEntity<?>xacNhanGH(@RequestParam(name = "idHD") String idHD){
+       HoaDon hoaDonExisting=hoaDonRepo.getReferenceById(idHD);
+       if (hoaDonExisting!=null){
+           hoaDonExisting.setTrangThai(5);
+           hoaDonRepo.save(hoaDonExisting);
+       }
+       return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Xác nhận giao hàng cho hóa đơn: "+idHD);
+    }
+    @PutMapping("/xacNhanTC")
+    public ResponseEntity<?>xacNhanTC(@RequestParam(name = "idHD") String idHD){
+        HoaDon hoaDonExisting=hoaDonRepo.getReferenceById(idHD);
+        if (hoaDonExisting!=null){
+            hoaDonExisting.setTrangThai(3);
+            hoaDonRepo.save(hoaDonExisting);
+        }
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Xác nhận hoàn thành cho hóa đơn: "+idHD);
+    }
     @GetMapping("/listNV")
     public List<NhanVienResponse> getAllNhanVien() {
         NhanVien nhanVien = new NhanVien();
