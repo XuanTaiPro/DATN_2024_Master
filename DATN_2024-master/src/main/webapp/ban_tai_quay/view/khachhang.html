@@ -3,20 +3,22 @@
 
     <div class="row mb-3">
         <div class="col-md-3">
-            <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten">
+            <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten"
+                   ng-change="searchAndFilter()">
         </div>
         <div class="col-md-3">
-            <select class="form-select" ng-model="search.gioiTinh">
+            <select class="form-select" ng-model="search.gioiTinh" ng-change="searchAndFilter()">
                 <option value="">-- Giới tính --</option>
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
             </select>
         </div>
         <div class="col-md-3">
-            <input type="text" class="form-control" placeholder="Địa chỉ" ng-model="search.diaChi">
+            <input type="text" class="form-control" placeholder="Địa chỉ" ng-model="search.diaChi"
+                   ng-change="searchAndFilter()">
         </div>
         <div class="col-md-3">
-            <select class="form-select" ng-model="search.trangThai">
+            <select class="form-select" ng-model="search.trangThai" ng-change="searchAndFilter()">
                 <option value="">-- Trạng thái --</option>
                 <option value="1">Hoạt động</option>
                 <option value="0">Ngưng hoạt động</option>
@@ -25,7 +27,7 @@
     </div>
     <div class="row mb-3">
         <div class="col-md-12 text-end">
-            <button class="btn btn-primary" ng-click="searchAndFilter()">Tìm kiếm</button>
+            <!--            <button class="btn btn-primary" ng-click="searchAndFilter()">Tìm kiếm</button>-->
             <button class="btn btn-secondary" ng-click="resetFilters()">Xóa lọc</button>
         </div>
     </div>
@@ -33,7 +35,7 @@
     <div class="row">
         <div class="col-12">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
-                Thêm Khách Hàng
+                <i class="fa-solid fa-user-plus"></i> Thêm Khách Hàng
             </button>
         </div>
     </div>
@@ -78,7 +80,12 @@
                                 data-bs-target="#DetailForm"><i class="bi bi-eye"></i></button>
                         <button class="btn btn-primary" ng-click="openUpdateModal(khachHang)" data-bs-toggle="modal"
                                 data-bs-target="#UpdateForm"><i class="bi bi-pencil-square"></i></button>
-                        <button class="btn btn-danger" ng-click="delete(khachHang.id)"><i class="bi bi-trash"></i>
+                        <button class="btn btn-danger" ng-click="delete(khachHang.id)"
+                                ng-if="khachHang.trangThai === 1"><i
+                                class="bi bi-trash"></i></button>
+                        <button class="btn btn-success" ng-click="deleteback(khachHang.id)"
+                                ng-if="khachHang.trangThai === 0"><i
+                                class="bi bi-check-circle"></i></button>
                         </button>
                     </td>
                 </tr>
@@ -101,7 +108,7 @@
     </div>
 </section>
 
-<!--add nhân viên-->
+<!--add khách hàng-->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">

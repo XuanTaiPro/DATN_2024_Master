@@ -4,6 +4,7 @@ import com.example.demo.dto.khachhang.KhachHangRequest;
 import com.example.demo.dto.khachhang.KhachHangRequestOnline;
 import com.example.demo.dto.khachhang.KhachHangResponse;
 import com.example.demo.entity.KhachHang;
+import com.example.demo.entity.NhanVien;
 import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.repository.NhanVienRepository;
 import com.example.demo.service.GenerateCodeAll;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -130,16 +132,15 @@ public class KhachHangController {
     }
 
     @PostMapping("dangKy")
-    public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest,
-                                    BindingResult bindingResult) {
+    public ResponseEntity<?> dangKy( @RequestBody KhachHangRequestOnline khachHangRequest) {
         // Kiểm tra lỗi trong BindingResult
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getAllErrors()
-                    .stream()
-                    .map(error -> error.getDefaultMessage())
-                    .toList();
-            return ResponseEntity.badRequest().body(String.join("\n", errors));
-        }
+//        if (bindingResult.hasErrors()) {
+//            List<String> errors = bindingResult.getAllErrors()
+//                    .stream()
+//                    .map(error -> error.getDefaultMessage())
+//                    .toList();
+//            return ResponseEntity.badRequest().body(String.join("\n", errors));
+//        }
 
         // Gán ID nếu chưa có
         khachHangRequest.setId(Optional.ofNullable(khachHangRequest.getId())
@@ -221,19 +222,43 @@ public class KhachHangController {
         }
     }
 
+//    @DeleteMapping("delete/{id}")
+//    public ResponseEntity<?> delete(@PathVariable String id) {
+//        Map<String, String> response = new HashMap<>(); // Khởi tạo Map để trả về JSON hợp lệ
+//        if (khRepo.findById(id).isPresent()) {
+//            khRepo.deleteById(id);
+//            response.put("message", "Xóa thành công");
+//            return ResponseEntity.ok(response); // Trả về phản hồi JSON
+//        } else {
+//            response.put("message", "Không tìm thấy id cần xóa");
+//            return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON khi lỗi
+//        }
+//    }
+
+
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
-        Map<String, String> response = new HashMap<>(); // Khởi tạo Map để trả về JSON hợp lệ
-        if (khRepo.findById(id).isPresent()) {
-            khRepo.deleteById(id);
-            response.put("message", "Xóa thành công");
-            return ResponseEntity.ok(response); // Trả về phản hồi JSON
-        } else {
-            response.put("message", "Không tìm thấy id cần xóa");
-            return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON khi lỗi
-        }
+//        if (LoginController.tenQuyen == null ||
+//                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+//            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ có Admin mới có quyền xóa!"));
+//        }
+        KhachHang khachHang = khRepo.getReferenceById(id);
+        khachHang.setTrangThai(0);
+        khRepo.save(khachHang);
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật trạng thái thành công!");
     }
 
+    @DeleteMapping("deleteback/{id}")
+    public ResponseEntity<?> deleteback(@PathVariable String id) {
+//        if (LoginController.tenQuyen == null ||
+//                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+//            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ có Admin mới có quyền xóa!"));
+//        }
+        KhachHang khachHang = khRepo.getReferenceById(id);
+        khachHang.setTrangThai(1);
+        khRepo.save(khachHang);
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật trạng thái thành công!");
+    }
     @GetMapping("search-filter")
     public ResponseEntity<?> searchAndFilterKhachHang(
             @RequestParam(required = false) String ten,

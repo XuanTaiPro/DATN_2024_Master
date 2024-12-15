@@ -14,6 +14,7 @@ import java.util.List;
 public interface SanPhamRepository extends JpaRepository<SanPham, String> {
         @Query("SELECT sp FROM SanPham  sp where sp.maSP=:ma")
         SanPham getByMa(@Param("ma") String ma);
+        boolean existsByTenSPAndIdNot(String tenSP, String id);
 
 
         @Query("SELECT sp FROM SanPham sp WHERE LOWER(sp.tenSP) = LOWER(:tenSP)")

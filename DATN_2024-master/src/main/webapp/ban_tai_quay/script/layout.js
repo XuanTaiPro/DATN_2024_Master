@@ -60,13 +60,14 @@ app.config(function ($routeProvider) {
 })
 
 app.controller('myCtrl', function ($scope, $http) {
-    const login = sessionStorage.getItem('loginOk')
-    if (!login) {
-        window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
-        return
-    }
+    // const login = sessionStorage.getItem('loginOk')
+    // if (!login) {
+    //     window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
+    //     return
+    // }
 
-    const idNV = sessionStorage.getItem('idNV');
+    // const idNV = sessionStorage.getItem('idNV');
+    const idNV='2DAFC81E'
     if (!idNV) {
         console.error('Không tìm thấy ID nhân viên trong sessionStorage');
         return;
@@ -238,13 +239,12 @@ function showConfirm(message, onConfirm) {
 
     const confirmYesButton = document.getElementById('confirm-yes');
 
-    // Xóa sự kiện click cũ để tránh trùng lặp
     confirmYesButton.onclick = null;
 
     // Thêm sự kiện click cho nút xác nhận
     confirmYesButton.addEventListener('click', () => {
         confirmModal.hide(); // Ẩn modal
-        if (onConfirm) onConfirm(); // Gọi callback
+        onConfirm(true); // Gọi callback
     });
 }
 

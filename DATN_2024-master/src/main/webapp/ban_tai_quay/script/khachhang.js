@@ -126,13 +126,15 @@ window.khachhangCtrl = function ($scope, $http) {
     $scope.addKhachHang = function () {
         $scope.errorMessages = {}; // Đặt lại thông báo lỗi
         $scope.successMessage = ''; // Đặt lại thông báo thành công
-
+        const specialCharRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
         // Kiểm tra thông tin đầu vào
 
         if (!$scope.ten || $scope.ten.trim() === '') {
             $scope.errorMessages.ten = "Họ và tên không được để trống!";
         } else if ($scope.ten.trim().length < 3 || $scope.ten.trim().length > 50) {
             $scope.errorMessages.ten = "Họ và tên không hợp lệ! Tối thiểu 3 kí tự Tối đa 50 ";
+        } else if (!specialCharRegex.test($scope.ten.trim())) {
+            $scope.errorMessages.ten = "Họ và tên không được chứa ký tự đặc biệt.";
         }
         if (!$scope.email || $scope.email.trim() === '') {
             $scope.errorMessages.email = "Email không được để trống!";
@@ -159,17 +161,15 @@ window.khachhangCtrl = function ($scope, $http) {
         const phoneRegex = /^0\d{9}$/;
         if (!phoneRegex.test($scope.sdt)) {
             $scope.errorMessages.sdt = "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0!";
-            return;
+            // return;
         }
         if (!$scope.sdt || $scope.sdt.trim() === '') {
             $scope.errorMessages.sdt = "Số điện thoại không được để trống!";
             // return;
         }
 
-        // Kiểm tra email và số điện thoại trùng lặp
         const checkDuplicatePromises = [
             $http.get('http://localhost:8083/khachhang/check-email', { params: { email: $scope.email } }),
-            // $http.get('http://localhost:8083/khachhang/CheckEmail/check-email', { params: { email: $scope.email } }),
             $http.get('http://localhost:8083/khachhang/check-phone', { params: { sdt: $scope.sdt } })
         ];
 
@@ -287,22 +287,32 @@ window.khachhangCtrl = function ($scope, $http) {
 
     $scope.delete = function (id) {
         console.log("Xóa");
-        showConfirm('Bạn có chắc chắn muốn xóa khách hàng này?', () => {
+        // showConfirm('Bạn có chắc chắn muốn xóa khách hàng này?', () => {
             $http.delete('http://localhost:8083/khachhang/delete/' + id)
                 .then(function (response) {
-                    // Kiểm tra phản hồi server
-                    console.log(response.data);
-                    const index = $scope.listKhachHang.findIndex(kh => kh.id === id);
-                    if (index !== -1) {
-                        $scope.listKhachHang.splice(index, 1);
-                    }
-                   showSuccessAlert("Xóa thành công")
+                   showWarningAlert("Đã cho tạm ngưng hoạt động khách hàng này !!")
+                    $scope.loadPage($scope.currentPage);
                 })
                 .catch(function (error) {
                     console.error("Lỗi khi xóa :", error);
                    showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
                 });
-        })
+        // })
+    };
+
+    $scope.deleteback = function (id) {
+        console.log("Xóa");
+        // showConfirm('Bạn có chắc chắn muốn xóa khách hàng này?', () => {
+        $http.delete('http://localhost:8083/khachhang/deleteback/' + id)
+            .then(function (response) {
+                showSuccessAlert("Đã khôi phục hoạt động cho khách hàng.")
+                $scope.loadPage($scope.currentPage);
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi xóa :", error);
+                showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
+            });
+        // })
     };
 
 //     // Reset form

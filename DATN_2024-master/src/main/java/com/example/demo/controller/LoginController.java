@@ -53,6 +53,10 @@ public class LoginController {
 
         String email = tk.getEmail();
         NhanVien loginNV = nvRepo.loginNV(email, tk.getPassw());
+        if (loginNV.getTrangThai() == 0) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "Tài khoản đã bị ngưng hoạt động, vui lòng liên hệ quản trị viên"));
+        }
         if (loginNV == null) {
             return ResponseEntity.badRequest()
                     .body(Map.of("success", false, "message", "Tài khoản hoặc mật khẩu không đúng"));
@@ -139,6 +143,9 @@ public class LoginController {
         }
         String email = tk.getEmail();
         KhachHang loginKH = khRepo.loginKH(email, tk.getPassw());
+        if (loginKH.getTrangThai() == 0) {
+            return ResponseEntity.badRequest().body("Tài khoản này đã ngưng hoạt động");
+        }
         if (loginKH == null) {
             return ResponseEntity.badRequest()
                     .body(Map.of("success", false, "message", "Tài khoản hoặc mật khẩu không đúng"));

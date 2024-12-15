@@ -111,7 +111,7 @@ public class HoaDon {
         return new HoaDonRep(
                 id,
                 maHD,
-                voucher.getMa(),
+                voucher != null ? voucher.getMa() : null,
                 ngayTao,
                 ngaySua,
                 ghiChu,

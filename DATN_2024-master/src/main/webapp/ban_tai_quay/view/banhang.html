@@ -117,7 +117,8 @@
                                 <span> | Giá bán: {{ ctsp.gia }}</span>
                                 <div class="form-group">
                                     <label>Số lượng:</label>
-                                    <input type="number" class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}">
+                                    <input type="number" class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}"  ng-change="validateSoLuong(ctsp)"  ng-pattern="/^\d+$/" required />
+                                    <span ng-show="soLuongError" class="text-danger">Số lượng không hợp lệ hoặc quá lớn</span>
                                     <button ng-click="confirmAddInvoiceDetail(ctsp)">Thêm</button> <!-- Truyền ctsp vào hàm -->
                                 </div>
                             </div>
@@ -222,12 +223,8 @@
                 <td>{{cthd.tenSP}}</td>
                 <td>{{cthd.soNgaySuDung}}</td>
                 <td>
-                    <!--                    <span ng-if="cthd.giaSauGiam && cthd.giaSauGiam !== 0">-->
                     {{ cthd.giaSauGiam }} VND
-                    <!--                    </span>-->
-                    <!--                    <span ng-if="!cthd.giaSauGiam || cthd.giaSauGiam === 0">-->
-                    <!--                        {{ cthd.giaBan }} VND-->
-                    <!--                    </span>-->
+
                     <span ng-if="cthd.tienGiam && cthd.tienGiam > 0" class="text-danger">
                         (Giảm: {{ cthd.tienGiam }} VND)
                     </span>

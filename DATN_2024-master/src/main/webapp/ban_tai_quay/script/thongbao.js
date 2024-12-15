@@ -121,8 +121,9 @@ window.thongbaoCtrl = function ($scope, $http) {
         console.log("Trạng thái hiện tại:", $scope.selectedThongBao.trangThai);
     };
 
-
+    $scope.isSubmitted = false;
     $scope.addThongBao = function () {
+        $scope.isSubmitted = true;
         const newThongBao = {
             noiDung: $scope.noiDung,
             idKH: $scope.idKH,
@@ -146,6 +147,7 @@ window.thongbaoCtrl = function ($scope, $http) {
     };
 
     $scope.updateThongBao = function () {
+        $scope.isSubmitted = true;
         if (!$scope.idKH) {
             alert("Vui lòng chọn khách hàng");
             return;

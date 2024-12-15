@@ -1,8 +1,95 @@
-document.getElementById('registerForm')?.addEventListener('submit', function (event) {
+const inpName = document.querySelector('#name');
+const lbName = document.querySelector('label[for="name"]');
+
+const inpEmail = document.querySelector('#email');
+const lbEmail = document.querySelector('label[for="email"]');
+
+const inpPassword = document.querySelector('#password');
+const lbPassword = document.querySelector('label[for="password"]');
+
+const inpPhone = document.querySelector('#phone');
+const lbPhone = document.querySelector('label[for="phone"]');
+
+const inpAddress = document.querySelector('#address');
+const lbAddress = document.querySelector('label[for="address"]');
+
+const btnNextStep = document.querySelector('.btn-next-step')
+const formUser = document.querySelector('.form-user')
+const formConfirm = document.querySelector('.form-confirm')
+
+
+const inpOtp = document.querySelector('#otp');
+const btnSubmitOtp = document.querySelector('.btn-submit-otp');
+const errorOTP = document.querySelector('#error-OTP');
+
+// Thêm class cho các label khi trang tải
+lbName.classList.add('active-label');
+lbEmail.classList.add('active-label');
+lbPassword.classList.add('active-label');
+lbPhone.classList.add('active-label');
+lbAddress.classList.add('active-label');
+
+// Xử lý sự kiện focus và blur cho các trường nhập liệu
+inpName.addEventListener('focus', () => {
+    lbName.classList.add('no-active-label');
+    lbName.classList.remove('active-label');
+});
+inpName.addEventListener('blur', () => {
+    if (inpName.value === '') {
+        lbName.classList.remove('no-active-label');
+        lbName.classList.add('active-label');
+    }
+});
+
+inpEmail.addEventListener('focus', () => {
+    lbEmail.classList.add('no-active-label');
+    lbEmail.classList.remove('active-label');
+});
+inpEmail.addEventListener('blur', () => {
+    if (inpEmail.value === '') {
+        lbEmail.classList.remove('no-active-label');
+        lbEmail.classList.add('active-label');
+    }
+});
+
+inpPassword.addEventListener('focus', () => {
+    lbPassword.classList.add('no-active-label');
+    lbPassword.classList.remove('active-label');
+});
+inpPassword.addEventListener('blur', () => {
+    if (inpPassword.value === '') {
+        lbPassword.classList.remove('no-active-label');
+        lbPassword.classList.add('active-label');
+    }
+});
+
+inpPhone.addEventListener('focus', () => {
+    lbPhone.classList.add('no-active-label');
+    lbPhone.classList.remove('active-label');
+});
+inpPhone.addEventListener('blur', () => {
+    if (inpPhone.value === '') {
+        lbPhone.classList.remove('no-active-label');
+        lbPhone.classList.add('active-label');
+    }
+});
+
+inpAddress.addEventListener('focus', () => {
+    lbAddress.classList.add('no-active-label');
+    lbAddress.classList.remove('active-label');
+});
+inpAddress.addEventListener('blur', () => {
+    if (inpAddress.value === '') {
+        lbAddress.classList.remove('no-active-label');
+        lbAddress.classList.add('active-label');
+    }
+});
+
+btnNextStep.addEventListener('click', function (event) {
     event.preventDefault(); // Ngăn chặn form gửi đi
 
     // Reset các lỗi trước đó
-    resetErrors();
+    // resetErrors();
 
     // Lấy giá trị từ các trường
     var name = document.getElementById('name')?.value.trim();
@@ -22,8 +109,16 @@ document.getElementById('registerForm')?.addEventListener('submit', function (ev
     }
 
     // Kiểm tra email
-    if (!email || !validateEmail(email)) {
+    if (!email && !validateEmail(email)) {
         showError('EMAIL', 'Email không hợp lệ');
+        isValid = false;
+    }
+    if (email !== "" && checkEmailDuplicate(email)) {
+        showError('EMAIL', 'Email đã được sử dụng');
+        isValid = false;
+    }
+   if (phone !== "" && checkPhoneDuplicate(phone)) {
+        showError('PHONE', 'Số điện thoại đã được sử dụng');
         isValid = false;
     }
 
@@ -101,7 +196,21 @@ function validateEmail(email) {
     var re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return re.test(email);
 }
-
+// Hàm kiểm tra email trùng trên backend
+function checkEmailDuplicate(email) {
+    return fetch(`http://localhost:8083/khachhang/check-email?email=${encodeURIComponent(email)}`)
+        .then(response => {
+            if (response.ok) return response.json();
+            throw new Error('Lỗi kiểm tra email');
+        });
+}
+function checkPhoneDuplicate(phone) {
+    return fetch(`http://localhost:8083/khachhang/check-phone?phone=${phone}`)
+        .then(response => {
+            if (response.ok) return response.json();
+            throw new Error('Lỗi kiểm tra số điện thoại');
+        });
+}
 function validatePhone(phone) {
     var re = /^[0-9]{10,15}$/;
     return re.test(phone);

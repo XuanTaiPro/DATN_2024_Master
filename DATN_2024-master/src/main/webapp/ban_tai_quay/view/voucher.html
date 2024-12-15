@@ -6,15 +6,40 @@
         <strong>Cập nhật thành công!</strong> Voucher đã được cập nhật.
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div id="success-alert2" class="alert alert-success alert-dismissible fade" role="alert"
-         style="display: none; position: fixed; top: 0; left: 0; width: 100%; z-index: 1050; text-align: center;">
-        <strong>Thêm thành công!</strong> Voucher đã Thêm.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+
+    <div class="row mb-3" style="margin-top: 10px">
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="searchParams.ten" ng-change="searchAndFilter()">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" ng-model="searchParams.giamGia" ng-change="searchAndFilter()">
+                <option value="">-- Chọn giá giảm --</option>
+                <option value="10">10%</option>
+                <option value="20">20%</option>
+                <option value="30">50%</option>
+                <option value="70">70%</option>
+                <option value="80">80%</option>
+                <option value="100">100%</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" ng-model="searchParams.trangThai" ng-change="searchAndFilter()">
+                <option value="">-- Trạng thái --</option>
+                <option value="1">Hoạt động</option>
+                <option value="0">Ngưng hoạt động</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12 ">
+            <button class="btn btn-secondary" ng-click="resetFilters()">Xóa lọc</button>
+        </div>
     </div>
     <div class="row">
         <div class="col-12">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
-                Thêm Voucher
+                <i class="fa-solid fa-ticket"></i> Thêm Voucher
             </button>
         </div>
     </div>
@@ -65,7 +90,7 @@
                 </tr>
                 </tbody>
             </table>
-            <p class="text-center text-muted" ng-if="listNhanVien.length === 0">{{ emptyMessage }}</p>
+            <p class="text-center text-muted" ng-if="listVoucher.length === 0">{{ emptyMessage }}</p>
             <ul class="pagination justify-content-center">
                 <li class="page-item" ng-class="{disabled: currentPage == 0}">
                     <a class="page-link" href="" ng-click="prevPage()">«</a>
@@ -119,9 +144,9 @@
                             <label>Giảm min:</label>
                             <input type="text" ng-model="giamMin" ng-change="validateDiscounts()" />
                             <div style="color: red;" ng-show="isSubmitted && !giamMin">
-                                Phải điền giá min.
+                                Gía min không được để trống.
                             </div>
-                            <div style="color: red;" ng-show="validationErrors.giamMin">
+                            <div style="color: #ff0000;" ng-show="validationErrors.giamMin">
                                 {{ validationErrors.giamMin }}
                             </div>
                         </div>
@@ -131,16 +156,12 @@
                             <label>Giảm max:</label>
                             <input type="text" ng-model="giamMax" ng-change="validateDiscounts()" />
                             <div style="color: red;" ng-show="isSubmitted && !giamMax">
-                                Phải điền giá max.
+                                Gía max không được để trống.
                             </div>
                             <div style="color: red;" ng-show="validationErrors.giamMax">
                                 {{ validationErrors.giamMax }}
                             </div>
                         </div>
-
-                        <!--                        &lt;!&ndash; Nút xác nhận &ndash;&gt;-->
-                        <!--                        <button type="button" ng-click="submitForm()">Xác nhận</button>-->
-
                         <div>
                             <label>Điều kiện :</label>
                             <input type="text" ng-model="dieuKien">
@@ -297,7 +318,7 @@
                     <div class="inputField">
                         <div>
                             <label>Tên Voucher:</label>
-                            <input type="text" ng-model="selectedVoucher.ten"ng-change="validateDiscounts()" >
+                            <input type="text" ng-model="selectedVoucher.ten"ng-change="validateDiscountsud()" >
                             <div style="color: red;" ng-show="isSubmitted && !ten">
                                 Tên  không được để trống.
                             </div>
@@ -307,7 +328,7 @@
                         </div>
                         <div>
                             <label>Giá giảm:</label>
-                            <input type="text" ng-model="selectedVoucher.giamGia"ng-change="validateDiscounts()" >
+                            <input type="text" ng-model="selectedVoucher.giamGia"ng-change="validateDiscountsud()" >
                             <div style="color: red;" ng-show="isSubmitted && !giamGia">
                                 Giá giảm không được để trống.
                             </div>
@@ -317,17 +338,18 @@
                         </div>
                         <div>
                             <label>Giảm min:</label>
-                            <input type="text" ng-model="selectedVoucher.giamMin"ng-change="validateDiscounts()" >
+                            <input type="text" ng-model="selectedVoucher.giamMin"ng-change="validateDiscountsud()" >
                             <div style="color: red;" ng-show="isSubmitted && !giamMin">
                                 Phải điền giá min.
                             </div>
                             <div style="color: red;" ng-show="validationErrors.giamMin">
                                 {{ validationErrors.giamMin }}
                             </div>
+                            <input type="text" ng-model="selectedVoucher.giamMin">
                         </div>
                         <div>
                             <label>Giảm max:</label>
-                            <input type="text" ng-model="selectedVoucher.giamMax"ng-change="validateDiscounts()" >
+                            <input type="text" ng-model="selectedVoucher.giamMax"ng-change="validateDiscountsud()" >
                             <div style="color: red;" ng-show="isSubmitted && !giamMax">
                                 Phải điền giá max.
                             </div>
@@ -337,7 +359,7 @@
                         </div>
                         <div>
                             <label>Điều kiện :</label>
-                            <input type="text" ng-model="selectedVoucher.dieuKien">
+                            <input type="text" ng-model="selectedVoucher.dieuKien" ng-change="validateDiscountsud()">
                             <div style="color: red;" ng-show="isSubmitted && !dieuKien">
                                 Không được để trống điều kiện.
                             </div>
@@ -348,7 +370,7 @@
                         <!--                        </div>-->
                         <div>
                             <label>Số lượng:</label>
-                            <input type="number" ng-model="selectedVoucher.soLuong" min="1">
+                            <input type="number" ng-model="selectedVoucher.soLuong" min="1" ng-change="validateDiscountsud()">
                             <div style="color: red;" ng-show="isSubmitted && !soLuong">
                                 Số lượng không được để trống.
                             </div>
@@ -358,7 +380,7 @@
                         </div>
                         <div>
                             <label>Loại voucher:</label>
-                            <select ng-model="idLoaiVC" class="short-select" required>
+                            <select ng-model="idLoaiVC" class="short-select" ng-change="validateDiscountsud()">
                                 <option value="" disabled selected>Chọn Loại Voucher</option>
                                 <option ng-repeat="lvc in listLVC" value="{{lvc.id}}">{{lvc.ten}}</option>
                             </select>
@@ -379,6 +401,9 @@
                                     {{customer.ten}}
                                 </option>
                             </select>
+                            <div style="color: red;" ng-show="validationErrors.customer">
+                                {{ validationErrors.customer }}
+                            </div>
                         </div>
                         <div>
                             <label for="trangThaiUpdate">Trạng thái:</label>
@@ -779,7 +804,7 @@
     .imgholder .upload {
         position: absolute;
         bottom: 0;
-        left: 10;
+        left: 10px;
         width: 100%;
         height: 100px;
         background: rgba(0, 0, 0, 0.3);

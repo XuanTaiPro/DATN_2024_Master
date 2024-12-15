@@ -42,13 +42,13 @@
 <!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
             </div>
             <div class="modal-body">
-                <form name="myForm" ng-submit="addProduct(product); clearForm()"  novalidate>
+                <form name="myForm" ng-submit="addProduct(product)"  novalidate>
                     <div class="mb-3">
                         <label for="tenSP" class="form-label">Tên sản phẩm:</label>
                         <input type="text" id="tenSP" name="tenSP" ng-model="product.tenSP" class="form-control" ng-class="{'is-invalid': (!isTenValid() || isDuplicateName) &&( myForm.tenSP.$touched|| formSubmitted)}" ng-blur="checkDuplicateName()" />
 
                         <div ng-show="!isTenValid() && (myForm.tenSP.$touched|| formSubmitted)" class="error text-danger">
-                            Cần phải điền tên sản phẩm
+                            Tên sản phảm không đc để trống hoặc chứa các ký tự đặc biệt
                         </div>
                         <div ng-show="isDuplicateName && (myForm.tenSP.$touched || formSubmitted)" class="error text-danger">
                             Tên sản phẩm đã tồn tại.
@@ -69,8 +69,6 @@
                             Cần phải điền công dụng
                         </div>
                     </div>
-
-                    <!-- Hướng dẫn sử dụng -->
                     <div class="mb-3">
                         <label class="form-label">Hướng dẫn sử dụng:</label>
                         <input type="text" name="hdsd" class="form-control" ng-model="product.hdsd" ng-class="{'is-invalid': !ishdsdValid() && (myForm.hdsd.$touched|| formSubmitted)}" />
@@ -241,44 +239,79 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form ng-submit="updateProduct(); clearForm()">
-                                <!-- Thêm trường ID ẩn -->
+                            <form ng-submit="updateProduct()" name="FormUpdate" novalidate>
                                 <input type="hidden" ng-model="productDetail.id" required>
-
                                 <div class="mb-3">
                                     <label class="form-label">Tên sản phẩm:</label>
-                                    <input type="text" class="form-control" ng-model="productDetail.tenSP" required>
+                                    <input type="text" class="form-control" ng-model="productDetail.tenSP"  ng-blur="checkDuplicateNameUD()" />
+                                    <div class="error text-danger" ng-show="isSubmitted && !tenSP">
+                                         Tên sản phảm không đc để trống
+                                    </div>
+                                    <div ng-show="!isTenValid() && (FormUpdate.tenSP.$touched|| formSubmitted)" class="error text-danger">
+                                        Tên sản phảm không đc  chứa các ký tự đặc biệt
+                                    </div>
+                                    <div ng-show="isDuplicateName && (FormUpdate.tenSP.$touched || formSubmitted)" class="error text-danger">
+                                        Tên sản phẩm đã tồn tại.
+                                    </div>
+
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Thành phần:</label>
-                                    <input type="text" class="form-control" ng-model="productDetail.thanhPhan" required>
+                                    <input type="text" class="form-control" ng-model="productDetail.thanhPhan" >
+                                    <div class="error text-danger" ng-show="isSubmitted && !thanhPhan">
+                                        Phải điền thành phần.
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Công dụng:</label>
-                                    <input type="text" class="form-control" ng-model="productDetail.congDung" required>
+                                    <input type="text" class="form-control" ng-model="productDetail.congDung" >
+                                    <div class="error text-danger" ng-show="isSubmitted && !congDung">
+                                        Phải điền Công dụng.
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Hướng dẫn sử dụng:</label>
-                                    <input type="text" class="form-control" ng-model="productDetail.hdsd" required>
+                                    <input type="text" class="form-control" ng-model="productDetail.hdsd" >
+                                    <div class="error text-danger" ng-show="isSubmitted && !hdsd">
+                                        Phải điền hướng dẫn sử dụng.
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Tuổi tối thiểu:</label>
-                                    <input type="number" class="form-control" ng-model="productDetail.tuoiMin" required>
+                                    <input type="number" class="form-control" ng-model="productDetail.tuoiMin" >
+                                    <div class="error text-danger" ng-show="isSubmitted && !tuoiMin">
+                                        Phải điền tuổi tối thiểu.
+                                    </div>
+                                    <div ng-show=" formSubmitted || FormUpdate.tuoiMin.$touched" ng-if="isAgeGreaterThan1001()" class="error text-danger">
+                                        Tuổi tối thiểu không được lớn hơn 100  và nhỏ hơn 1.
+                                    </div>
                                     <label class="form-label">Tuổi tối đa:</label>
-                                    <input type="number" class="form-control" ng-model="productDetail.tuoiMax" required>
+                                    <input type="number" class="form-control" ng-model="productDetail.tuoiMax" >
+                                    <div class="error text-danger" ng-show="isSubmitted && !tuoiMax">
+                                        Phải điền tuổi tối đa.
+                                    </div>
+                                    <div ng-show="FormUpdate.$submitted || FormUpdate.tuoiMin.$touched || FormUpdate.tuoiMax.$touched" ng-if="isAgeInvalid()" class="error text-danger">
+                                        Tuổi tối thiểu phải nhỏ hơn tuổi tối đa.
+                                    </div>
+                                    <div ng-show="FormUpdate.$submitted || FormUpdate.tuoiMax.$touched" ng-if="isAgeGreaterThan100()" class="error text-danger">
+                                        Tuổi tối đa không được lớn hơn 100 va nhỏ hơn 1.
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Danh mục:</label>
-                                    <select class="form-control" ng-model="productDetail.idDanhMuc" required>
+                                    <select class="form-control" ng-model="productDetail.idDanhMuc" >
                                         <option value="" disabled selected>Vui lòng chọn danh mục</option>
                                         <option ng-repeat="danhMuc in listDanhMuc" value="{{danhMuc.id}}" ng-selected="danhMuc.id === productDetail.idDanhMuc">
                                             {{danhMuc.ten}}
                                         </option>
                                     </select>
+                                    <div class="error text-danger" ng-show="isSubmitted && !idDanhMuc">
+                                        Cần phải chọn danh mục.
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Mô tả:</label>
-                                    <input type="tel" class="form-control" ng-model="productDetail.moTa" required>
+                                    <input type="tel" class="form-control" ng-model="productDetail.moTa" >
                                 </div>
                                 <button type="submit" class="btn btn-outline-success">Cập Nhật</button>
                             </form>

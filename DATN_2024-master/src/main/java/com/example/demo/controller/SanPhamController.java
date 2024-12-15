@@ -56,7 +56,13 @@ public class SanPhamController {
 
         return ResponseEntity.ok(Map.of("isDuplicate", isDuplicate));
     }
-
+    @PostMapping("/checkTrungUD")
+    public Map<String, Boolean> checkDuplicateName(@RequestBody Map<String, Object> payload) {
+        String tenSP = (String) payload.get("tenSP");
+        String id = (String) payload.get("id");
+        boolean isDuplicate = sanPhamRepository.existsByTenSPAndIdNot(tenSP, id);
+        return Map.of("isDuplicate", isDuplicate);
+    }
     @GetMapping("/getByDanhMuc")
     public ResponseEntity<?> getAll(@RequestParam(name = "idDanhMuc") String idDanhMuc) {
         Sort sort = Sort.by(Sort.Direction.DESC, "ngayTao");

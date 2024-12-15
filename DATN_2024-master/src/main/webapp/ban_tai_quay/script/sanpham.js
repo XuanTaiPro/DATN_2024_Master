@@ -98,10 +98,17 @@ window.sanPhamCtrl = function ($scope, $http) {
                 console.error('Lỗi khi kiểm tra trùng tên:', error);
             });
     };
+    const specialCharRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
 
     $scope.isTenValid = function() {
-        return $scope.product.tenSP && $scope.product.tenSP.trim() !== '';
+        if (!$scope.product.tenSP || $scope.product.tenSP.trim() === '') {
+            return false; // Tên không được để trống
+        } else if (!specialCharRegex.test($scope.product.tenSP.trim())) {
+            return false; // Tên chứa ký tự đặc biệt
+        }
+        return true; // Tên hợp lệ
     };
+
 
     $scope.isTPValid = function() {
         return $scope.product.thanhPhan && $scope.product.thanhPhan.trim() !== '';
@@ -181,13 +188,14 @@ window.sanPhamCtrl = function ($scope, $http) {
             });
     };
     $scope.deleteProduct = function (productId) {
+        // showConfirm("Bạn có muốn ngưng sản phẩm này không?",()=>{
             $http({
                 method: 'DELETE',
                 url: 'http://localhost:8083/san-pham/delete', // Đường dẫn đến API
                 data: {id: productId}, // Gửi id sản phẩm qua request body
                 headers: {"Content-Type": "application/json;charset=utf-8"}
             }).then(function (response) {
-                $scope.getAllProducts();
+                $scope.getAllProducts($scope.currentPage);
                 showSuccessAlert(response.data);
             }, function (error) {
                 $scope.getAllProducts();
@@ -196,13 +204,14 @@ window.sanPhamCtrl = function ($scope, $http) {
 
     };
     $scope.activateProduct = function (productId) {
+       // showConfirm("Bạn có muốn kích hoạt lại sản phẩm này không?",()=>{
         $http({
             method: 'PUT',
             url: 'http://localhost:8083/san-pham/activateProduct', // Đường dẫn đến API
             data: {id: productId}, // Gửi id sản phẩm qua request body
             headers: {"Content-Type": "application/json;charset=utf-8"}
         }).then(function (response) {
-            $scope.getAllProducts();
+            $scope.getAllProducts($scope.currentPage);
             showSuccessAlert(response.data);
         }, function (error) {
             $scope.getAllProducts();
@@ -210,9 +219,27 @@ window.sanPhamCtrl = function ($scope, $http) {
         });
 
     };
+    $scope.checkDuplicateNameUD = function() {
+        if (!$scope.isTenValid()) {
+            $scope.isDuplicateName = false;
+            return;
+        }
+        const requestData = {
+            tenSP: $scope.product.tenSP.trim(),
+            id: $scope.product.id
+        };
+        $http.post('http://localhost:8083/san-pham/checkTrungUD', requestData)
+            .then(function(response) {
+                $scope.isDuplicateName = response.data.isDuplicate;
+            })
+            .catch(function(error) {
+                console.error('Lỗi khi kiểm tra trùng tên:', error);
+            });
+    };
 
+    $scope.isSubmitted = false;
     $scope.updateProduct = function () {
-
+        $scope.isSubmitted = true;
         $scope.formSubmitted = true;
         if(!$scope.isTenValid()||!$scope.isTPValid()||!$scope.isCDValid()||!$scope.ishdsdValid()||!$scope.isAgeGreaterThan100()||!$scope.isAgeGreaterThan1001()||!$scope.isAgeInvalid()){
             return

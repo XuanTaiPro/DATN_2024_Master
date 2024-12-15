@@ -14,6 +14,19 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
     $scope.soLuongError = false;
 
 
+
+
+    $scope.soLuongError = false;
+
+    $scope.validateSoLuong = function(ctsp) {
+
+        if (!ctsp.soLuongCTHD || ctsp.soLuongCTHD <= 0 || ctsp.soLuongCTHD > ctsp.soLuong) {
+            $scope.soLuongError = true;
+        } else {
+            $scope.soLuongError = false;
+        }
+    };
+
     // Hàm bắt đầu quét mã QR khi nút được nhấn
     $scope.startQRCodeScan = function () {
         $scope.isScanning = true;
@@ -284,7 +297,9 @@ window.banhangCtrl = function ($scope, $http, $document,$timeout) {
 
     $scope.confirmAddInvoiceDetail = function (ctsp) {
 
+
             $scope.selectedCTSP = ctsp;
+
             $('#confirmAddInvoiceDetailModal').modal('show');
 
 

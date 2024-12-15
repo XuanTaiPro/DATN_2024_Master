@@ -59,7 +59,7 @@ public class ChiTietSanPham {
 
     @ManyToOne
     @JoinColumn(name = "idSP")
-    @JsonIgnore // Bỏ qua tham chiếu này khi serialize
+    @JsonIgnore
     private SanPham sanPham;
 
     @OneToMany(mappedBy = "chiTietSanPham", cascade = CascadeType.ALL, orphanRemoval = true)
