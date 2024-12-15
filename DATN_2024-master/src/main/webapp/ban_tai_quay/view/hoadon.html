@@ -62,8 +62,7 @@
             <th>Số điện thoại khách hàng</th>
             <th>Ngày tạo</th>
             <th>Loại hóa đơn</th>
-            <th>Tổng tiền</th>
-            <th>Tổng tiền đã giảm</th>
+            <th>Tổng tiền </th>
             <th >Thao tác</th>
         </tr>
         </thead>
@@ -75,8 +74,7 @@
             <td>{{hd.sdt}}</td>
             <td>{{hd.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
             <td>{{hd.loaiHD == 1 ? 'Online' : 'Tại quầy' }}</td>
-            <td>{{ hd.tt }} VND</td>
-            <td >{{ hd.tt-hd.ttLastMoney }} VND</td>
+            <td >{{ hd.ttLastMoney }} VND</td>
             <td>
                 <button class="btn btn-success" ng-click="detailHoaDon(hd.id)" data-bs-toggle="modal"
                         data-bs-target="#readData">
@@ -152,11 +150,10 @@
                                                        placeholder="Nhập ghi chú...">
                                             </td>
                                             <td colspan="3" class="text-center">
-                                                {{ getTotalAmount(chiTietHoaDons) }} VND
+                                                {{ hd.ttLastMoney  }} VND
                                             </td>
                                         </tr>
                                         </tbody>
-
                                     </table>
 
                                 </div>
@@ -202,6 +199,9 @@
                 </button>
                 <button class="btn btn-success" ng-if="hd.trangThai === 5" ng-click="xacNhanTC(hd.id)">
                     <i class="fas fa-thumbs-up"></i> Xác nhận hoàn thành
+                </button>
+                <button class="btn btn-danger" ng-if="hd.loaiHD ==1 && hd.trangThai==0" ng-click="huyHD(hd.id)">
+                    <i class="fa fa-times-circle"></i> Hủy hóa đơn
                 </button>
                 <button class="btn btn-danger" ng-if="hd.loaiHD ==0 &&hd.trangThai==1" ng-click="deleteInvoice(hd.id)"><i
                         class="fa fa-trash"></i>

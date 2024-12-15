@@ -65,7 +65,6 @@ window.hoaDonCtrl = function ($scope, $http) {
                         const response = await fetch(`http://localhost:8083/chitiethoadon/getAllByOrderId?idHD=` + item.id);
                         const resultCTHD = await response.json();
 
-                        if (item.trangThai === 3) {
                             const tt = $scope.getTotalAmount(resultCTHD);
                             const giaGiamVC = item.giaGiamVC || 0;
                             const giaMax = item.giaMax || 0;
@@ -73,14 +72,15 @@ window.hoaDonCtrl = function ($scope, $http) {
                             let totalAfterVC = tt - tt * (giaGiamVC / 100);
                             item['ttLastMoney'] = tt - Math.min(totalAfterVC, giaMax);
                             item['tt'] = tt;
-                        }
+                            console.log(tt);
+
+
                         return item;
                     } catch (error) {
                         console.error(`Lỗi khi xử lý hóa đơn ID: ${item.id}`, error);
                         return item; // Trả về item dù có lỗi để không gián đoạn toàn bộ
                     }
                 });
-
                 $scope.hoaDons = await Promise.all(requests);
                 $scope.totalPages = response.data.totalPages;
                 $scope.pages = Array.from({ length: $scope.totalPages }, (v, i) => i);
@@ -115,7 +115,9 @@ window.hoaDonCtrl = function ($scope, $http) {
                 $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
             })
             .catch(function (error) {
-                showDangerAlert("Xác nhận thất bại!");
+                // showDangerAlert(response);
+                showDangerAlert(error);
+                console.log(error)
                 $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
             });})
     };
@@ -144,6 +146,20 @@ window.hoaDonCtrl = function ($scope, $http) {
                 })
                 .catch(function (error) {
                     showDangerAlert("Xác nhận hoàn thành thất bại!");
+                    $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
+                });})
+    }
+    $scope.huyHD=function (id){
+        showConfirm("Bạn có chắc chắn muốn hủy hóa đơn này không?",()=>{
+            $http.put('http://localhost:8083/hoadon/huyHD?idHD=' + id)
+                .then(function (response) {
+                    console.log(response.data);
+                    // Có thể làm gì đó với phản hồi thành công ở đây
+                    showSuccessAlert("Đã hủy hóa đơn: "+id);
+                    $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
+                })
+                .catch(function (error) {
+                    showDangerAlert("Hủy thất bại!");
                     $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
                 });})
     }

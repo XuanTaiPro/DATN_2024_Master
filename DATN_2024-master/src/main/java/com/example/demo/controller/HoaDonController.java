@@ -89,6 +89,7 @@ public class HoaDonController {
 
     @Autowired
     private ChiTietHoaDonService cthdService;
+
     @GetMapping("/page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
@@ -397,9 +398,10 @@ public class HoaDonController {
         String tenSPCheck = null;
 
         if (hoaDonOptional.isPresent()) {
+            if (hoaDonOptional.get().getTrangThai() == 3) {
+                return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Hóa đơn đã xác nhận rồi!");
+            }
             HoaDon hoaDonExisting = hoaDonOptional.get();
-            hoaDonExisting.setTrangThai(2);
-            hoaDonRepo.save(hoaDonExisting);
 
             KhachHang getKH = hoaDonExisting.getKhachHang();
 
@@ -436,27 +438,25 @@ public class HoaDonController {
                 }
             }
 
-            if (checkSL) {
-                for (ChiTietHoaDon cthd : cthdList) {
-                    DanhGia dg = new DanhGia();
-                    ChiTietSanPham getCTSP = chiTietSanPhamRepo.findById(cthd.getChiTietSanPham().getId()).get();
-                    dg.setChiTietSanPham(getCTSP);
+            for (ChiTietHoaDon cthd : cthdList) {
+                DanhGia dg = new DanhGia();
+                ChiTietSanPham getCTSP = chiTietSanPhamRepo.findById(cthd.getChiTietSanPham().getId()).get();
+                dg.setChiTietSanPham(getCTSP);
 
-                    getCTSP.setSoLuong(getCTSP.getSoLuong() - cthd.getSoLuong());
+                getCTSP.setSoLuong(getCTSP.getSoLuong() - cthd.getSoLuong());
 
-                    dg.setKhachHang(getKH);
-                    dg.setNgayDanhGia(LocalDateTime.now());
-                    dg.setTrangThai(0);
+                dg.setKhachHang(getKH);
+                dg.setNgayDanhGia(LocalDateTime.now());
+                dg.setTrangThai(0);
 
-                    chiTietSanPhamRepo.save(getCTSP);
-                    dgRepo.save(dg);
-                }
-                return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
-                        .body("Xác nhận hóa đơn "+idHD+" thành công.");
-            } else {
-                return ResponseEntity.badRequest()
-                        .body("Sản phẩm '" + tenSPCheck + "' trong hóa đơn quá lượng trong kho.");
+                chiTietSanPhamRepo.save(getCTSP);
+                dgRepo.save(dg);
             }
+
+            hoaDonExisting.setTrangThai(2);
+            hoaDonRepo.save(hoaDonExisting);
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
+                    .body("Xác nhận hóa đơn " + idHD + " thành công.");
 
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
@@ -464,23 +464,36 @@ public class HoaDonController {
     }
 
     @PutMapping("/xacNhanGH")
-    public ResponseEntity<?>xacNhanGH(@RequestParam(name = "idHD") String idHD){
-       HoaDon hoaDonExisting=hoaDonRepo.getReferenceById(idHD);
-       if (hoaDonExisting!=null){
-           hoaDonExisting.setTrangThai(5);
-           hoaDonRepo.save(hoaDonExisting);
-       }
-       return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Xác nhận giao hàng cho hóa đơn: "+idHD);
+    public ResponseEntity<?> xacNhanGH(@RequestParam(name = "idHD") String idHD) {
+        HoaDon hoaDonExisting = hoaDonRepo.getReferenceById(idHD);
+        if (hoaDonExisting != null) {
+            hoaDonExisting.setTrangThai(5);
+            hoaDonRepo.save(hoaDonExisting);
+        }
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Xác nhận giao hàng cho hóa đơn: " + idHD);
     }
+
     @PutMapping("/xacNhanTC")
-    public ResponseEntity<?>xacNhanTC(@RequestParam(name = "idHD") String idHD){
-        HoaDon hoaDonExisting=hoaDonRepo.getReferenceById(idHD);
-        if (hoaDonExisting!=null){
+    public ResponseEntity<?> xacNhanTC(@RequestParam(name = "idHD") String idHD) {
+        HoaDon hoaDonExisting = hoaDonRepo.getReferenceById(idHD);
+        if (hoaDonExisting != null) {
             hoaDonExisting.setTrangThai(3);
             hoaDonRepo.save(hoaDonExisting);
         }
-        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Xác nhận hoàn thành cho hóa đơn: "+idHD);
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Xác nhận hoàn thành cho hóa đơn: " + idHD);
     }
+
+    @PutMapping("/huyHD")
+    public ResponseEntity<?> huyHD(@RequestParam(name = "idHD") String idHD) {
+        HoaDon hoaDonExisting = hoaDonRepo.getReferenceById(idHD);
+        if (hoaDonExisting != null) {
+            hoaDonExisting.setTrangThai(4);
+            hoaDonRepo.save(hoaDonExisting);
+        }
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Đã huy hóa đơn: " + idHD);
+
+    }
+
     @GetMapping("/listNV")
     public List<NhanVienResponse> getAllNhanVien() {
         NhanVien nhanVien = new NhanVien();
@@ -555,10 +568,10 @@ public class HoaDonController {
             hoaDon.setMaHD(hoaDon.getMaHD());
 
 
-            if(req.getMaVoucher() != null){
+            if (req.getMaVoucher() != null) {
                 Voucher vc = vcRepo.findById(req.getMaVoucher()).get();
                 hoaDon.setVoucher(vc);
-            }else {
+            } else {
                 hoaDon.setVoucher(null);
             }
             hoaDon.setNgayThanhToan(LocalDateTime.now());
@@ -650,7 +663,7 @@ public class HoaDonController {
     }
 
     public byte[] createInvoicePDF(String idHD, List<ChiTietHoaDon> chiTietHoaDonList, double discountAmount,
-            String customerName, double amountPaid, double totalAmount) {
+                                   String customerName, double amountPaid, double totalAmount) {
         com.itextpdf.text.Document document = new Document();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -688,7 +701,7 @@ public class HoaDonController {
             PdfPTable detailTable = new PdfPTable(7); // 6 cột
             detailTable.setWidthPercentage(100);
             detailTable.setSpacingBefore(10);
-            detailTable.setWidths(new float[] { 1, 2, 3, 2, 2, 2, 3 }); // 7 giá trị
+            detailTable.setWidths(new float[]{1, 2, 3, 2, 2, 2, 3}); // 7 giá trị
 
             // Header của bảng chi tiết
             detailTable.addCell(createCellWithBorder("STT", boldFont));
