@@ -64,4 +64,3 @@ payment:
     version: ${VERSION:2.1.0}
     command: ${COMMAND:pay}
     orderType: ${ORDER_TYPE:other}
-

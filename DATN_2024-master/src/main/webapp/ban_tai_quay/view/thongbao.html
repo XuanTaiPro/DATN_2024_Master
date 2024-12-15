@@ -82,6 +82,9 @@
                         <div>
                             <label>Nội dung:</label>
                             <input type="text" ng-model="noiDung" id="noiDung">
+                            <div class="error text-danger" ng-show="isSubmitted && !noiDung">
+                                Không được để trống nội dung.
+                            </div>
                         </div>
                         <div>
                             <label for="trangThai">Trạng thái:</label>
@@ -90,6 +93,9 @@
                                 <option value="1">Hoạt động</option>
                                 <option value="0">Ngưng hoạt động</option>
                             </select>
+                            <div class="error text-danger" ng-show="isSubmitted && !trangThai">
+                                Phải chọn trạng thái.
+                            </div>
                         </div>
                         <div>
                             <label>Khách hàng:</label>
@@ -99,6 +105,9 @@
                                     {{customer.ten}}
                                 </option>
                             </select>
+                            <div class="error text-danger" ng-show="isSubmitted && !idKH">
+                                Phải chọn khách hàng.
+                            </div>
                         </div>
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#customerModal">Chọn Khách Hàng</button>
                     </div>
@@ -174,6 +183,9 @@
                         <div>
                             <label>Nội dung:</label>
                             <input type="text" ng-model="selectedThongBao.noiDung">
+                            <div class="error text-danger" ng-show="isSubmitted && !noiDung">
+                                Nội dung ko được để trống.
+                            </div>
                         </div>
                         <div>
                             <label for="trangThaiUpdate">Trạng thái:</label>
@@ -183,6 +195,9 @@
                                 <option value="1">Hoạt động</option>
                                 <option value="0">Ngưng hoạt động</option>
                             </select>
+                            <div class="error text-danger" ng-show="isSubmitted && !trangThai">
+                                Cần phải chọn trạng thái.
+                            </div>
                         </div>
                         <div>
                             <label>Khách hàng:</label>
@@ -190,6 +205,10 @@
                                 <option value="" disabled selected>Chọn Khách hàng</option>
                                 <option ng-repeat="kh in listKH" value="{{kh.id}}">{{kh.ten}}</option>
                             </select>
+                            <div class="error text-danger" ng-show="isSubmitted && !idKH">
+                                Phải chọn khách hàng.
+                            </div>
+
                         </div>
                     </div>
                 </form>

@@ -89,8 +89,28 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
         }
     };
 
+
+    $scope.isGiaValid = function(gia) {
+        return gia !== undefined && gia >= 1 ;
+    };
+    $scope.isImgValid = function(img) {
+        return img !== undefined  ;
+    };
+    $scope.isSoLuongValid = function(soLuong) {
+        return !isNaN(soLuong) && Number(soLuong) >= 1;
+    };
+    $scope.isImageListValid = function() {
+        return product.imagePreviews && product.imagePreviews.length > 0;
+    };
+    $scope.formSubmitted = false;
     $scope.addProduct = function (product) {
-        // Chuẩn bị đối tượng dữ liệu JSON để gửi
+
+        $scope.formSubmitted = true;
+
+        if (!$scope.isImageListValid()||!$scope.isImgValid()||!$scope.isGiaValid()) {
+            return;
+
+        }
         const productData = {
             gia: product.gia,
             soNgaySuDung: product.soNgaySuDung != null ? product.soNgaySuDung : product.soNgaySuDungInput,
@@ -223,7 +243,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
             linkAnhList: [] // Reset danh sách lưu trữ đường dẫn
         };
         $('#userForm').modal('hide'); // Đóng modal
-        $('#productModal').modal('hide'); // Đóng modal
+        // $('#productModal').modal('hide'); // Đóng modal
     };
     $scope.calculateTotalPrice = function () {
         const gia = parseFloat($scope.productDetail.gia) || 0;
@@ -342,8 +362,115 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
         $scope.showAddLoHangForm = !$scope.showAddLoHangForm;
     };
 
+
+    $scope.newLoHangErrors = {};
+
+    $scope.validateNgayNhap = function(ngayNhap, nsx, hsd) {
+        const now = new Date();
+        const ngayNhapDate = new Date(ngayNhap);
+        const nsxDate = new Date(nsx);
+        const hsdDate = new Date(hsd);
+
+        if (!ngayNhap) {
+            $scope.newLoHangErrors.ngayNhap = "Ngày nhập không được bỏ trống.";
+        } else if (ngayNhapDate > now) {
+            $scope.newLoHangErrors.ngayNhap = "Ngày nhập phải là ngày hiện tại hoặc trong quá khứ.";
+        } else if (ngayNhapDate < nsxDate) {
+            $scope.newLoHangErrors.ngayNhap = "Ngày nhập không được trước ngày sản xuất.";
+        } else if (ngayNhapDate > hsdDate) {
+            $scope.newLoHangErrors.ngayNhap = "Ngày nhập không được sau hạn sử dụng.";
+        } else {
+            $scope.newLoHangErrors.ngayNhap = null; // Không có lỗi
+        }
+    };
+
+    $scope.validateNSX = function(nsx, ngayNhap) {
+        const now = new Date();
+        const nsxDate = new Date(nsx);
+        const ngayNhapDate = new Date(ngayNhap);
+
+        if (!nsx) {
+            $scope.newLoHangErrors.nsx = "Ngày sản xuất không được bỏ trống.";
+        } else if (nsxDate > now) {
+            $scope.newLoHangErrors.nsx = "Ngày sản xuất không được lớn hơn ngày hiện tại.";
+        } else if (ngayNhap && nsxDate > ngayNhapDate) {
+            $scope.newLoHangErrors.nsx = "Ngày sản xuất không được sau ngày nhập.";
+        } else {
+            $scope.newLoHangErrors.nsx = null; // Không có lỗi
+        }
+    };
+
+    $scope.validateHSD = function(hsd, nsx, ngayNhap) {
+        const now = new Date();
+        const hsdDate = new Date(hsd);
+        const nsxDate = new Date(nsx);
+        const ngayNhapDate = new Date(ngayNhap);
+        const minDifferenceInDays = 30;
+
+        if (!hsd) {
+            $scope.newLoHangErrors.hsd = "Hạn sử dụng không được bỏ trống.";
+        } else if (hsdDate < now) {
+            $scope.newLoHangErrors.hsd = "Hạn sử dụng phải là ngày hiện tại hoặc trong tương lai.";
+        } else if (nsx && hsdDate < nsxDate) {
+            $scope.newLoHangErrors.hsd = "Hạn sử dụng không được trước ngày sản xuất.";
+        } else if (ngayNhap && hsdDate < ngayNhapDate) {
+            $scope.newLoHangErrors.hsd = "Hạn sử dụng không được trước ngày nhập.";
+        } else if (nsx && (hsdDate - nsxDate) / (24 * 60 * 60 * 1000) < minDifferenceInDays) {
+            $scope.newLoHangErrors.hsd = "Hạn sử dụng phải sau ngày sản xuất ít nhất 30 ngày.";
+        } else {
+            $scope.newLoHangErrors.hsd = null; // Không có lỗi
+        }
+    };
+
+    $scope.validateNSXvsHSD = function(nsx, hsd) {
+        const nsxDate = new Date(nsx);
+        const hsdDate = new Date(hsd);
+
+        if (nsxDate > hsdDate) {
+            $scope.newLoHangErrors.nsxHsd = "Ngày sản xuất không được sau hạn sử dụng.";
+        } else {
+            $scope.newLoHangErrors.nsxHsd = null; // Không có lỗi
+        }
+    };
+    $scope.$watch('newLoHang.nsx', function(newValue) {
+        $scope.validateNSX(newValue, $scope.newLoHang.ngayNhap);
+        $scope.validateNSXvsHSD(newValue, $scope.newLoHang.hsd);
+    });
+
+    $scope.$watch('newLoHang.hsd', function(newValue) {
+        $scope.validateHSD(newValue, $scope.newLoHang.nsx, $scope.newLoHang.ngayNhap);
+        $scope.validateNSXvsHSD($scope.newLoHang.nsx, newValue);
+    });
+
+    $scope.$watch('newLoHang.ngayNhap', function(newValue) {
+        $scope.validateNgayNhap(newValue, $scope.newLoHang.nsx, $scope.newLoHang.hsd);
+    });
+
+    $scope.validateSoLuong = function(soLuong) {
+        if (!soLuong || isNaN(soLuong) || soLuong <= 1 || !Number.isInteger(+soLuong)) {
+            $scope.newLoHangErrors.soLuong = "Số lượng phải là một số nguyên lớn hơn 1.";
+        } else {
+            $scope.newLoHangErrors.soLuong = null; // Không có lỗi
+        }
+    };
+    $scope.$watch('newLoHang.soLuong', function(newValue) {
+        $scope.validateSoLuong(newValue);
+    });
+
+    $scope.validateLoHang = function() {
+        $scope.validateNSX($scope.newLoHang.nsx, $scope.newLoHang.ngayNhap);
+        $scope.validateNgayNhap($scope.newLoHang.ngayNhap, $scope.newLoHang.nsx, $scope.newLoHang.hsd);
+        $scope.validateHSD($scope.newLoHang.hsd, $scope.newLoHang.nsx, $scope.newLoHang.ngayNhap);
+        $scope.validateNSXvsHSD($scope.newLoHang.nsx, $scope.newLoHang.hsd);
+        $scope.validateSoLuong($scope.newLoHang.soLuong);
+    };
+
+
+
+    $scope.showAddLoHangForm = false; // Ẩn form thêm lô hàng mặc định
     $scope.newLoHang = {}; // Biến chứa thông tin lô hàng mới
     $scope.addLoHang = function () {
+        $scope.formSubmitted = true;
         if (!$scope.newLoHang.ngayNhap || !$scope.newLoHang.nsx || !$scope.newLoHang.hsd || !$scope.newLoHang.soLuong) {
             alert("Vui lòng nhập đầy đủ thông tin lô hàng!");
             return;

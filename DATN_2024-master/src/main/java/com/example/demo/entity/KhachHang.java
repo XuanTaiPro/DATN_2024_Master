@@ -54,4 +54,10 @@ public class KhachHang {
     public KhachHangResponse toResponse() {
         return new KhachHangResponse(id, ma, ten, email, passw, gioiTinh, sdt, diaChi, trangThai);
     }
+
+    public String toString() {
+        return "{\"id\":\"" + id + "\",\"ma\":\"" + ma + "\",\"ten\":\"" + ten + "\",\"email\":\"" + email
+                + "\",\"passw\":\"" + passw + "\",\"gioiTinh\":\"" + gioiTinh + "\",\"sdt\":\"" + sdt
+                + "\",\"diaChi\":\"" + diaChi + "\",\"trangThai\":" + trangThai + "}";
+    }
 }

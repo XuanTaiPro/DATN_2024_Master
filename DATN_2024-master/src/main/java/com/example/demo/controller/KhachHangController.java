@@ -4,8 +4,8 @@ import com.example.demo.dto.khachhang.KhachHangRequest;
 import com.example.demo.dto.khachhang.KhachHangRequestOnline;
 import com.example.demo.dto.khachhang.KhachHangResponse;
 import com.example.demo.entity.KhachHang;
-import com.example.demo.entity.NhanVien;
 import com.example.demo.repository.KhachHangRepository;
+import com.example.demo.repository.NhanVienRepository;
 import com.example.demo.service.GenerateCodeAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +30,39 @@ public class KhachHangController {
 
     @Autowired
     private GenerateCodeAll generateCodeAll;
+    @Autowired
+    private NhanVienRepository nhanVienRepository;
 
     @GetMapping
     public List<KhachHang> findAll() {
         return khRepo.findAll();
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        boolean existsInNhanVien = nhanVienRepository.existsByEmail(email);
+        boolean existsInKhachHang = khRepo.existsByEmail(email);
+        boolean exists = existsInNhanVien || existsInKhachHang;
+        return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/khachhangud/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email, @RequestParam String id) {
+        boolean existsInKhachHang = khRepo.existsByEmailAndIdNot(email, id);
+        boolean existsInNhanVien = nhanVienRepository.existsByMaAndIdNot(email, id);
+        boolean exists = existsInNhanVien || existsInKhachHang;
+        return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/khachhangud/check-phone")
+    public boolean checkPhone(@RequestParam String sdt, @RequestParam String id) {
+        return khRepo.existsBySdtAndIdNot(sdt, id);
+    }
+
+    @GetMapping("/check-phone")
+    public ResponseEntity<Boolean> checkPhoneExists(@RequestParam("sdt") String sdt) {
+        boolean exists = khRepo.existsBySdt(sdt);
+        return ResponseEntity.ok(exists);
     }
 
     @GetMapping("getId")
@@ -88,7 +117,7 @@ public class KhachHangController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<?> add( @RequestBody KhachHangRequest khachHangRequest) {
+    public ResponseEntity<?> add(@RequestBody KhachHangRequest khachHangRequest) {
 
         if (khachHangRequest.getMa() == null || khachHangRequest.getMa().isEmpty()) {
             khachHangRequest.setMa(generateCodeAll.generateMaKhachHang());
@@ -103,16 +132,16 @@ public class KhachHangController {
     }
 
     @PostMapping("dangKy")
-    public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest,
-                                    BindingResult bindingResult) {
+    public ResponseEntity<?> dangKy(@RequestBody KhachHangRequestOnline khachHangRequest) {
+
         // Kiểm tra lỗi trong BindingResult
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getAllErrors()
-                    .stream()
-                    .map(error -> error.getDefaultMessage())
-                    .toList();
-            return ResponseEntity.badRequest().body(String.join("\n", errors));
-        }
+        // if (bindingResult.hasErrors()) {
+        // List<String> errors = bindingResult.getAllErrors()
+        // .stream()
+        // .map(error -> error.getDefaultMessage())
+        // .toList();
+        // return ResponseEntity.badRequest().body(String.join("\n", errors));
+        // }
 
         // Gán ID nếu chưa có
         khachHangRequest.setId(Optional.ofNullable(khachHangRequest.getId())
@@ -147,7 +176,7 @@ public class KhachHangController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody KhachHangRequest khachHangRequest,
-                                    BindingResult bindingResult) {
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -170,7 +199,7 @@ public class KhachHangController {
 
     @PutMapping("updateOnline/{id}")
     public ResponseEntity<?> updateOnline(@PathVariable String id,
-                                          @Valid @RequestBody KhachHangRequestOnline kHRequestOnline, BindingResult result) {
+            @Valid @RequestBody KhachHangRequestOnline kHRequestOnline, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             result.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -194,26 +223,28 @@ public class KhachHangController {
         }
     }
 
-//    @DeleteMapping("delete/{id}")
-//    public ResponseEntity<?> delete(@PathVariable String id) {
-//        Map<String, String> response = new HashMap<>(); // Khởi tạo Map để trả về JSON hợp lệ
-//        if (khRepo.findById(id).isPresent()) {
-//            khRepo.deleteById(id);
-//            response.put("message", "Xóa thành công");
-//            return ResponseEntity.ok(response); // Trả về phản hồi JSON
-//        } else {
-//            response.put("message", "Không tìm thấy id cần xóa");
-//            return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON khi lỗi
-//        }
-//    }
-
+    // @DeleteMapping("delete/{id}")
+    // public ResponseEntity<?> delete(@PathVariable String id) {
+    // Map<String, String> response = new HashMap<>(); // Khởi tạo Map để trả về
+    // JSON hợp lệ
+    // if (khRepo.findById(id).isPresent()) {
+    // khRepo.deleteById(id);
+    // response.put("message", "Xóa thành công");
+    // return ResponseEntity.ok(response); // Trả về phản hồi JSON
+    // } else {
+    // response.put("message", "Không tìm thấy id cần xóa");
+    // return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON
+    // khi lỗi
+    // }
+    // }
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
-//        if (LoginController.tenQuyen == null ||
-//                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
-//            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ có Admin mới có quyền xóa!"));
-//        }
+        // if (LoginController.tenQuyen == null ||
+        // !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+        // return ResponseEntity.status(403).body(Map.of("success", false, "message",
+        // "Chỉ có Admin mới có quyền xóa!"));
+        // }
         KhachHang khachHang = khRepo.getReferenceById(id);
         khachHang.setTrangThai(0);
         khRepo.save(khachHang);
@@ -222,15 +253,17 @@ public class KhachHangController {
 
     @DeleteMapping("deleteback/{id}")
     public ResponseEntity<?> deleteback(@PathVariable String id) {
-//        if (LoginController.tenQuyen == null ||
-//                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
-//            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ có Admin mới có quyền xóa!"));
-//        }
+        // if (LoginController.tenQuyen == null ||
+        // !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
+        // return ResponseEntity.status(403).body(Map.of("success", false, "message",
+        // "Chỉ có Admin mới có quyền xóa!"));
+        // }
         KhachHang khachHang = khRepo.getReferenceById(id);
         khachHang.setTrangThai(1);
         khRepo.save(khachHang);
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật trạng thái thành công!");
     }
+
     @GetMapping("search-filter")
     public ResponseEntity<?> searchAndFilterKhachHang(
             @RequestParam(required = false) String ten,
@@ -262,9 +295,8 @@ public class KhachHangController {
     public ResponseEntity<?> tkVaLocKH(
             @RequestParam(required = false) String ten,
             @RequestParam(required = false) String gioiTinh,
-            @RequestParam(required = false) String sdt
-    ){
-        List<KhachHang> khachHangList = khRepo.tkVaLocKhachHang(ten,gioiTinh,sdt);
+            @RequestParam(required = false) String sdt) {
+        List<KhachHang> khachHangList = khRepo.tkVaLocKhachHang(ten, gioiTinh, sdt);
         List<KhachHangResponse> khachHangResponses = khachHangList.stream().map(KhachHang::toResponse).toList();
         return ResponseEntity.ok(khachHangResponses);
     }

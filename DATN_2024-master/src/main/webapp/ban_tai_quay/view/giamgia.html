@@ -33,30 +33,37 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addModalLabel">Thêm Giảm Giá</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
             </div>
             <div class="modal-body">
-                <form ng-submit="addGiamGia(giamGia); clearForm()">
-                    <div class="mb-3">
-                        <label class="form-label">Mã:</label>
-                        <input type="text" class="form-control" ng-model="giamGia.ma"
-                               placeholder="GG30THANG04 có thể nhập hoặc bỏ trống!">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tên:</label>
-                        <input type="text" class="form-control" ng-model="giamGia.ten" required>
+                <form name="giamGiaForm"  ng-submit="addGiamGia(giamGia)" novalidate>
+                    <div class="form-group">
+                        <label for="ten">Tên Giảm Giá</label>
+                        <input type="text" id="ten" name="ten" ng-model="giamGia.ten" class="form-control" ng-class="{'is-invalid': !isTenValid(giamGia.ten) &&( giamGiaForm.ten.$touched|| formSubmitted)}" />
+                        <div ng-show="!isTenValid(giamGia.ten) && (giamGiaForm.ten.$touched|| formSubmitted)" class="error text-danger">
+                            Tên là bắt buộc.
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Ngày bắt đầu:</label>
-                        <input type="datetime-local" class="form-control" ng-model="giamGia.ngayBatDau" required>
+                        <input type="date" name="ngayBatDau" class="form-control" ng-model="giamGia.ngayBatDau" ng-class="{'is-invalid': !isNgayBatDauValid(giamGia.ngayBatDau) && (giamGiaForm.ngayBatDau.$touched|| formSubmitted)}" />
+                        <div ng-show="!isNgayBatDauValid(giamGia.ngayBatDau) && (giamGiaForm.ngayBatDau.$touched|| formSubmitted)" class="error text-danger">
+                            Ngày bắt đầu phải là hôm nay hoặc tương lai.
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Ngày kết thúc:</label>
-                        <input type="datetime-local" class="form-control" ng-model="giamGia.ngayKetThuc" required>
+                        <input type="date" name="ngayKetThuc" class="form-control" ng-model="giamGia.ngayKetThuc" ng-class="{'is-invalid': !isNgayKetThucValid(giamGia.ngayKetThuc, giamGia.ngayBatDau) && (giamGiaForm.ngayKetThuc.$touched|| formSubmitted)}" />
+                        <div ng-show="!isNgayKetThucValid(giamGia.ngayKetThuc, giamGia.ngayBatDau) && (giamGiaForm.ngayKetThuc.$touched|| formSubmitted)" class="error text-danger">
+                            Ngày kết thúc phải sau ngày bắt đầu.
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Phần trăm giảm giá:</label>
-                        <input type="number" class="form-control" ng-model="giamGia.giaGiam" required>
+                        <input type="number" name="giaGiam" class="form-control" ng-model="giamGia.giaGiam" ng-class="{'is-invalid': !isGiaGiamValid(giamGia.giaGiam) && (giamGiaForm.giaGiam.$touched|| formSubmitted)}" min="1" max="100" />
+                        <div ng-show="!isGiaGiamValid(giamGia.giaGiam) && (giamGiaForm.giaGiam.$touched|| formSubmitted)" class="error text-danger">
+                            Giá giảm phải từ 1% đến 100%.
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Chọn sản phẩm áp dụng giảm giá:</label>
@@ -73,9 +80,9 @@
                     </div>
                     <!-- Hiển thị khi người dùng chọn "Chọn sản phẩm" -->
                     <div ng-show="giamGia.selectedProductsType === 'selected'">
-                        <label class="form-label">Chọn danh mục:</label>
+                        <label class="form-label">Chọn danh mục:</label >
                         <!-- Danh mục sản phẩm -->
-                        <select class="form-control" ng-model="idDanhMuc" ng-change="getSanPhamByDanhMuc(idDanhMuc)">
+                        <select class="form-control" ng-model="idDanhMuc" ng-change="getSanPhamByDanhMuc(idDanhMuc)" >
                             <option value="">-- Chọn danh mục --</option>
                             <option ng-repeat="dm in listDanhMuc" value="{{dm.id}}">{{dm.ten}}</option>
                         </select>
@@ -98,8 +105,12 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Mô tả:</label>
-                        <textarea type="text" class="form-control" ng-model="giamGia.moTa" required></textarea>
+                        <textarea name="moTa" class="form-control" ng-model="giamGia.moTa" ng-class="{'is-invalid': !isMoTaValid(giamGia.moTa) && giamGiaForm.moTa.$touched}"></textarea>
+                        <div ng-show="!isMoTaValid(giamGia.moTa) && giamGiaForm.moTa.$touched" class="error text-danger">
+                            Mô tả là bắt buộc.
+                        </div>
                     </div>
+
 
                     <button type="submit" class="btn btn-outline-success">Thêm</button>
                 </form>
@@ -202,14 +213,14 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form ng-submit="updateGiamGia(giamGiaDetail); clearForm()">
+                            <form name="myUpdate" ng-submit="updateGiamGia(giamGiaDetail)" novalidate>
                                 <input type="hidden" ng-model="giamGiaDetail.id">
 
-                                <div class="mb-3">
-                                    <label class="form-label">Mã:</label>
-                                    <input type="text" class="form-control" ng-model="giamGiaDetail.ma"
-                                           placeholder="GG30THANG04 có thể nhập hoặc bỏ trống!">
-                                </div>
+<!--                                <div class="mb-3">-->
+<!--                                    <label class="form-label">Mã:</label>-->
+<!--                                    <input type="text" class="form-control" ng-model="giamGiaDetail.ma"-->
+<!--                                           placeholder="GG30THANG04 có thể nhập hoặc bỏ trống!">-->
+<!--                                </div>-->
                                 <div class="mb-3">
                                     <label class="form-label">Tên:</label>
                                     <input type="text" class="form-control" ng-model="giamGiaDetail.ten" required>

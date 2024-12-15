@@ -6,7 +6,7 @@
     <title>Register</title>
     <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../style/dangky.css">
-    <script src="../script/dangky.js"></script>
+
 </head>
 <body>
 <div class="back-ground"></div>
@@ -68,176 +68,92 @@
     </form>
 </div>
 
-<script>
-    const inpName = document.querySelector('#name');
-    const lbName = document.querySelector('label[for="name"]');
-
-    const inpEmail = document.querySelector('#email');
-    const lbEmail = document.querySelector('label[for="email"]');
-
-    const inpPassword = document.querySelector('#password');
-    const lbPassword = document.querySelector('label[for="password"]');
-
-    const inpPhone = document.querySelector('#phone');
-    const lbPhone = document.querySelector('label[for="phone"]');
-
-    const inpAddress = document.querySelector('#address');
-    const lbAddress = document.querySelector('label[for="address"]');
-
-    const btnNextStep = document.querySelector('.btn-next-step')
-    const formUser = document.querySelector('.form-user')
-    const formConfirm = document.querySelector('.form-confirm')
+<script src="../script/dangky.js"></script>
+<!--<script>-->
 
 
-    const inpOtp = document.querySelector('#otp');
-    const btnSubmitOtp = document.querySelector('.btn-submit-otp');
-    const errorOTP = document.querySelector('#error-OTP');
+<!--    // btnNextStep.addEventListener('click', async (e) => {-->
+<!--    //     e.preventDefault();-->
+<!--    //-->
+<!--    //     const name = inpName.value.trim();-->
+<!--    //     const email = inpEmail.value.trim();-->
+<!--    //     const password = inpPassword.value.trim();-->
+<!--    //     const phone = inpPhone.value.trim();-->
+<!--    //     const address = inpAddress.value.trim();-->
+<!--    //     const gender = document.querySelector('input[name="gender"]:checked')?.value;-->
+<!--    //-->
+<!--    //     if (!name || !email || !password || !phone || !address || !gender) {-->
+<!--    //         alert('Vui lòng điền đầy đủ thông tin!');-->
+<!--    //         return;-->
+<!--    //     }-->
+<!--    //-->
+<!--    //     const requestData = {-->
+<!--    //         ten: name,-->
+<!--    //         email: email,-->
+<!--    //         passw: password,-->
+<!--    //         sdt: phone,-->
+<!--    //         diaChi: address,-->
+<!--    //         gioiTinh: gender-->
+<!--    //     };-->
+<!--    //-->
+<!--    //     try {-->
+<!--    //         const response = await fetch('http://localhost:8083/login/dangKy', {-->
+<!--    //             method: 'POST',-->
+<!--    //             headers: {-->
+<!--    //                 'Content-Type': 'application/json'-->
+<!--    //             },-->
+<!--    //             body: JSON.stringify(requestData)-->
+<!--    //         });-->
+<!--    //-->
+<!--    //         // Xử lý phản hồi-->
+<!--    //         if (response.ok) {-->
+<!--    //             const data = await response.json();-->
+<!--    //             alert(data.message || 'Đăng ký thành công! Vui lòng kiểm tra email để nhận OTP.');-->
+<!--    //-->
+<!--    //             // Chuyển sang bước xác nhận OTP-->
+<!--    //             formUser.classList.add('active-form-user');-->
+<!--    //             formConfirm.classList.add('active-form-confirm');-->
+<!--    //         } else {-->
+<!--    //             const error = await response.text();-->
+<!--    //             alert(error);-->
+<!--    //         }-->
+<!--    //     } catch (err) {-->
+<!--    //         console.error('Lỗi khi gọi API:', err);-->
+<!--    //         alert('Đã xảy ra lỗi. Vui lòng thử lại sau.');-->
+<!--    //     }-->
+<!--    // });-->
+<!--    //-->
+<!--    //-->
+<!--    // btnSubmitOtp.addEventListener('click', async (e) => {-->
+<!--    //     e.preventDefault();-->
+<!--    //     errorOTP.innerText = '';-->
+<!--    //     const otpValue = inpOtp.value.trim();-->
+<!--    //     if (otpValue === '') {-->
+<!--    //         errorOTP.innerText = 'Vui lòng nhập mã OTP';-->
+<!--    //         return;-->
+<!--    //     }-->
+<!--    //-->
+<!--    //     // Lấy thông tin email từ session hoặc từ form trước đó-->
+<!--    //     const email = inpEmail.value;-->
+<!--    //-->
+<!--    //     // Gửi yêu cầu kiểm tra OTP-->
+<!--    //     const otpRequest = {email: email, otp: otpValue};-->
+<!--    //     const response = await fetch('http://localhost:8083/login/checkOtpDK', {-->
+<!--    //         method: 'POST',-->
+<!--    //         headers: {'Content-Type': 'application/json'},-->
+<!--    //         body: JSON.stringify(otpRequest)-->
+<!--    //     });-->
+<!--    //-->
+<!--    //     const result = await response.json();-->
+<!--    //     if (result.success === false) {-->
+<!--    //         errorOTP.innerText = result.message || 'Mã OTP không chính xác';-->
+<!--    //     } else {-->
+<!--    //         console.log(result)-->
+<!--    //         window.location.href = result.redirectUrl-->
+<!--    //     }-->
+<!--    //-->
+<!--    // });-->
 
-    // Thêm class cho các label khi trang tải
-    lbName.classList.add('active-label');
-    lbEmail.classList.add('active-label');
-    lbPassword.classList.add('active-label');
-    lbPhone.classList.add('active-label');
-    lbAddress.classList.add('active-label');
-
-    // Xử lý sự kiện focus và blur cho các trường nhập liệu
-    inpName.addEventListener('focus', () => {
-        lbName.classList.add('no-active-label');
-        lbName.classList.remove('active-label');
-    });
-    inpName.addEventListener('blur', () => {
-        if (inpName.value === '') {
-            lbName.classList.remove('no-active-label');
-            lbName.classList.add('active-label');
-        }
-    });
-
-    inpEmail.addEventListener('focus', () => {
-        lbEmail.classList.add('no-active-label');
-        lbEmail.classList.remove('active-label');
-    });
-    inpEmail.addEventListener('blur', () => {
-        if (inpEmail.value === '') {
-            lbEmail.classList.remove('no-active-label');
-            lbEmail.classList.add('active-label');
-        }
-    });
-
-    inpPassword.addEventListener('focus', () => {
-        lbPassword.classList.add('no-active-label');
-        lbPassword.classList.remove('active-label');
-    });
-    inpPassword.addEventListener('blur', () => {
-        if (inpPassword.value === '') {
-            lbPassword.classList.remove('no-active-label');
-            lbPassword.classList.add('active-label');
-        }
-    });
-
-    inpPhone.addEventListener('focus', () => {
-        lbPhone.classList.add('no-active-label');
-        lbPhone.classList.remove('active-label');
-    });
-    inpPhone.addEventListener('blur', () => {
-        if (inpPhone.value === '') {
-            lbPhone.classList.remove('no-active-label');
-            lbPhone.classList.add('active-label');
-        }
-    });
-
-    inpAddress.addEventListener('focus', () => {
-        lbAddress.classList.add('no-active-label');
-        lbAddress.classList.remove('active-label');
-    });
-    inpAddress.addEventListener('blur', () => {
-        if (inpAddress.value === '') {
-            lbAddress.classList.remove('no-active-label');
-            lbAddress.classList.add('active-label');
-        }
-    });
-
-    btnNextStep.addEventListener('click', async (e) => {
-        e.preventDefault();
-
-        const name = inpName.value.trim();
-        const email = inpEmail.value.trim();
-        const password = inpPassword.value.trim();
-        const phone = inpPhone.value.trim();
-        const address = inpAddress.value.trim();
-        const gender = document.querySelector('input[name="gender"]:checked')?.value;
-
-        if (!name || !email || !password || !phone || !address || !gender) {
-            alert('Vui lòng điền đầy đủ thông tin!');
-            return;
-        }
-
-        const requestData = {
-            ten: name,
-            email: email,
-            passw: password,
-            sdt: phone,
-            diaChi: address,
-            gioiTinh: gender
-        };
-
-        try {
-            const response = await fetch('http://localhost:8083/login/dangKy', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            });
-
-            // Xử lý phản hồi
-            if (response.ok) {
-                const data = await response.json();
-                alert(data.message || 'Đăng ký thành công! Vui lòng kiểm tra email để nhận OTP.');
-
-                // Chuyển sang bước xác nhận OTP
-                formUser.classList.add('active-form-user');
-                formConfirm.classList.add('active-form-confirm');
-            } else {
-                const error = await response.text();
-                alert(error);
-            }
-        } catch (err) {
-            console.error('Lỗi khi gọi API:', err);
-            alert('Đã xảy ra lỗi. Vui lòng thử lại sau.');
-        }
-    });
-
-
-    btnSubmitOtp.addEventListener('click', async (e) => {
-        e.preventDefault();
-        errorOTP.innerText = '';
-        const otpValue = inpOtp.value.trim();
-        if (otpValue === '') {
-            errorOTP.innerText = 'Vui lòng nhập mã OTP';
-            return;
-        }
-
-        // Lấy thông tin email từ session hoặc từ form trước đó
-        const email = inpEmail.value;
-
-        // Gửi yêu cầu kiểm tra OTP
-        const otpRequest = {email: email, otp: otpValue};
-        const response = await fetch('http://localhost:8083/login/checkOtpDK', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(otpRequest)
-        });
-
-        const result = await response.json();
-        if (result.success === false) {
-            errorOTP.innerText = result.message || 'Mã OTP không chính xác';
-        } else {
-            console.log(result)
-            window.location.href = result.redirectUrl
-        }
-
-    });
-
-</script>
+<!--</script>-->
 </body>
 </html>

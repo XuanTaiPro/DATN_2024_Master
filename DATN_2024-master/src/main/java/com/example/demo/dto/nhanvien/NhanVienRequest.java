@@ -20,6 +20,7 @@ public class NhanVienRequest {
     private String ma;
 
     @NotBlank(message = "Tên Không được để trống")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "Tên không được chứa ký tự đặc biệt")
     private String ten;
 
     @Column(name = "EMAIL", unique = true)

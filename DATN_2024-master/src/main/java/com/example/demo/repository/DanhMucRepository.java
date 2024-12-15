@@ -27,5 +27,6 @@ public interface DanhMucRepository extends JpaRepository<DanhMuc, String> {
             "JOIN sp.listCTSP ctp " +
             "JOIN ctp.listLoHang lh " +
             "WHERE lh.soLuong > 0")
+
     List<DanhMuc> findDanhMucWithValidProducts();
 }

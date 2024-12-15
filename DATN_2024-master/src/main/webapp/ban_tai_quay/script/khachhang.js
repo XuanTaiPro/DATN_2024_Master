@@ -123,48 +123,167 @@ window.khachhangCtrl = function ($scope, $http) {
         console.log("Trạng thái hiện tại:", $scope.selectedKhachHang.trangThai);// Sao chép dữ liệu nhân viên cần cập nhật
     };
 
-
     $scope.addKhachHang = function () {
-        if (!$scope.gioiTinh) {
-            $scope.gioiTinh = "Nam";
-        }
-        const newKhachHang = {
-            ten: $scope.ten,
-            email: $scope.email,
-            passw: $scope.passw,
-            gioiTinh: $scope.gioiTinh,
-            sdt: $scope.sdt,
-            diaChi: $scope.diaChi,
-            trangThai: $scope.trangThai
+        $scope.errorMessages = {}; // Đặt lại thông báo lỗi
+        $scope.successMessage = ''; // Đặt lại thông báo thành công
+        const specialCharRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+        // Kiểm tra thông tin đầu vào
 
-        };
-        console.log("Dữ liệu nhân viên mới:", newKhachHang);
-        $http.post('http://localhost:8083/khachhang/add', newKhachHang)
-            .then(function (response) {
-                $scope.listKhachHang.push(response.data);
-                // Đóng modal
-                $('#productModal').modal('hide');
-                showSuccessAlert('Thêm thành công!');
-                $scope.loadPage($scope.currentPage);
+        if (!$scope.ten || $scope.ten.trim() === '') {
+            $scope.errorMessages.ten = "Họ và tên không được để trống!";
+        } else if ($scope.ten.trim().length < 3 || $scope.ten.trim().length > 50) {
+            $scope.errorMessages.ten = "Họ và tên không hợp lệ! Tối thiểu 3 kí tự Tối đa 50 ";
+        } else if (!specialCharRegex.test($scope.ten.trim())) {
+            $scope.errorMessages.ten = "Họ và tên không được chứa ký tự đặc biệt.";
+        }
+        if (!$scope.email || $scope.email.trim() === '') {
+            $scope.errorMessages.email = "Email không được để trống!";
+            // return;
+        }
+        if (!$scope.passw || $scope.passw.trim() === '') {
+            $scope.errorMessages.passw = "Mật khẩu không được để trống!";
+            // return;
+        }
+        if (!$scope.gioiTinh || $scope.gioiTinh.trim() === '') {
+            $scope.errorMessages.gioiTinh = "Phải chọn giới tính!";
+            // return;
+        }
+        if (!$scope.diaChi || $scope.diaChi.trim() === '') {
+            $scope.errorMessages.diaChi = "Địa chỉ không được để trống!";
+            // return;
+        }
+        if (!$scope.trangThai || $scope.trangThai.trim() === '') {
+            $scope.errorMessages.trangThai = "Trạng thái không được để trống!";
+            // return;
+        }
+
+
+        const phoneRegex = /^0\d{9}$/;
+        if (!phoneRegex.test($scope.sdt)) {
+            $scope.errorMessages.sdt = "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0!";
+            // return;
+        }
+        if (!$scope.sdt || $scope.sdt.trim() === '') {
+            $scope.errorMessages.sdt = "Số điện thoại không được để trống!";
+            // return;
+        }
+
+        const checkDuplicatePromises = [
+            $http.get('http://localhost:8083/khachhang/check-email', { params: { email: $scope.email } }),
+            $http.get('http://localhost:8083/khachhang/check-phone', { params: { sdt: $scope.sdt } })
+        ];
+
+        Promise.all(checkDuplicatePromises)
+            .then(function (responses) {
+                const emailExists = responses[0].data;
+                const phoneExists = responses[1].data;
+
+                if (emailExists) {
+                    $scope.errorMessages.email = "Email này đã được sử dụng!";
+                }
+                if (phoneExists) {
+                    $scope.errorMessages.sdt = "Số điện thoại này đã được sử dụng!";
+                    console.log($scope.errorMessages.sdt )
+                    $scope.$apply();
+                }
+
+                // Nếu không có lỗi, tiếp tục thêm khách hàng
+                if (!emailExists && !phoneExists) {
+                    const newKhachHang = {
+                        ten: $scope.ten,
+                        email: $scope.email,
+                        passw: $scope.passw,
+                        gioiTinh: $scope.gioiTinh,
+                        sdt: $scope.sdt,
+                        diaChi: $scope.diaChi,
+                        trangThai: $scope.trangThai
+                    };
+
+                    $http.post('http://localhost:8083/khachhang/add', newKhachHang)
+                        .then(function (response) {
+                            $scope.listKhachHang.push(response.data);
+                            $('#productModal').modal('hide');
+                            showSuccessAlert('Thêm thành công!');
+                            // $scope.loadPage($scope.currentPage);
+                        })
+                        .catch(function (error) {
+                            $scope.errorMessage = "Thêm thất bại";
+                        });
+                }
             })
             .catch(function (error) {
-                $scope.errorMessage = "Thêm thất bại";
+                console.error("Lỗi kiểm tra email hoặc số điện thoại:", error);
+                $scope.errorMessages.email = "Lỗi khi kiểm tra email!";
+                $scope.errorMessages.sdt = "Lỗi khi kiểm tra số điện thoại!";
             });
-        resetForm();
     };
 
     $scope.updateKhachHang = function () {
-        console.log("Cập nhật Khách Hàng:", $scope.selectedKhachHang);  // Kiểm tra dữ liệu trước khi gửi
-        $http.put('http://localhost:8083/khachhang/update/' + $scope.selectedKhachHang.id, $scope.selectedKhachHang)
-            .then(function (response) {
-                $('#UpdateForm').modal('hide');
-                showSuccessAlert('Update thành công!');
-                $scope.loadPage($scope.currentPage);
+        console.log("Cập nhật Khách Hàng:", $scope.selectedKhachHang);
+        $scope.errorMessages = {}; // Đặt lại thông báo lỗi
+        if (!$scope.selectedKhachHang.ten || $scope.selectedKhachHang.ten.trim() === '') {
+            $scope.errorMessages.ten = "Họ và tên không được để trống!";
+        } else if ($scope.selectedKhachHang.ten.trim().length < 3 || $scope.selectedKhachHang.ten.trim().length > 50) {
+            $scope.errorMessages.ten = "Họ và tên không hợp lệ! Tối thiểu 3 kí tự, tối đa 50 kí tự.";
+        }
+
+        if (!$scope.selectedKhachHang.email || $scope.selectedKhachHang.email.trim() === '') {
+            $scope.errorMessages.email = "Email không được để trống!";
+        }
+
+        const phoneRegex = /^0\d{9}$/;
+        if (!phoneRegex.test($scope.selectedKhachHang.sdt)) {
+            $scope.errorMessages.sdt = "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0!";
+        }
+
+        // Nếu có lỗi, ngừng thực thi và hiển thị lỗi
+        if (Object.keys($scope.errorMessages).length > 0) {
+            return; // Dừng lại nếu có lỗi
+        }
+
+        // Nếu không có lỗi client-side, kiểm tra trùng lặp trên server
+        const checkDuplicatePromises = [
+            $http.get('http://localhost:8083/khachhang/khachhangud/check-email', {
+                params: { email: $scope.selectedKhachHang.email, id: $scope.selectedKhachHang.id }
+            }),
+            $http.get('http://localhost:8083/khachhang/khachhangud/check-phone', {
+                params: { sdt: $scope.selectedKhachHang.sdt, id: $scope.selectedKhachHang.id }
+            })
+        ];
+
+        Promise.all(checkDuplicatePromises)
+            .then(function (responses) {
+                const emailExists = responses[0].data;
+                const phoneExists = responses[1].data;
+
+                if (emailExists) {
+                    $scope.errorMessages.email = "Email này đã được sử dụng!";
+                }
+                if (phoneExists) {
+                    $scope.errorMessages.sdt = "Số điện thoại này đã được sử dụng!";
+                }
+
+                if (!emailExists && !phoneExists) {
+                    // Gửi yêu cầu cập nhật nếu không có lỗi
+                    $http.put('http://localhost:8083/khachhang/update/' + $scope.selectedKhachHang.id, $scope.selectedKhachHang)
+                        .then(function (response) {
+                            $('#UpdateForm').modal('hide');
+                            showSuccessAlert('Cập nhật thành công!');
+                            $scope.loadPage($scope.currentPage);
+                        })
+                        .catch(function (error) {
+                            console.error("Lỗi cập nhật khách hàng:", error);
+                            $scope.errorMessage = "Cập nhật thất bại!";
+                        });
+                }
             })
             .catch(function (error) {
-
+                console.error("Lỗi kiểm tra email hoặc số điện thoại:", error);
+                $scope.errorMessages.email = "Lỗi khi kiểm tra email!";
+                $scope.errorMessages.sdt = "Lỗi khi kiểm tra số điện thoại!";
             });
     };
+
 
     $scope.delete = function (id) {
         console.log("Xóa");

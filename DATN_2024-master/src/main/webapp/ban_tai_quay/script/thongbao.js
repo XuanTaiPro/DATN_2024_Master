@@ -121,7 +121,6 @@ window.thongbaoCtrl = function ($scope, $http) {
         console.log("Trạng thái hiện tại:", $scope.selectedThongBao.trangThai);
     };
 
-
     $scope.selectedCustomers = [];  // Mảng lưu khách hàng đã chọn
 
 // Cập nhật khách hàng đã chọn
@@ -162,7 +161,6 @@ window.thongbaoCtrl = function ($scope, $http) {
 
 // Hàm thêm thông báo
     $scope.addThongBao = function () {
-
         const newThongBao = {
             noiDung: $scope.noiDung,
             idKH: $scope.selectedCustomers.map(kh => kh.id),
@@ -187,6 +185,7 @@ window.thongbaoCtrl = function ($scope, $http) {
     };
 
     $scope.updateThongBao = function () {
+        $scope.isSubmitted = true;
         if (!$scope.idKH) {
             alert("Vui lòng chọn khách hàng");
             return;

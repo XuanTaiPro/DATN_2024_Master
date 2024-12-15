@@ -43,6 +43,8 @@ public class LoginController {
 
     public static String getIdNV;
 
+    public static String getKH;
+
     @PostMapping("manager")
     public ResponseEntity<?> loginNV(@Valid @RequestBody Account tk, BindingResult bindingResult, HttpSession ses) {
         if (bindingResult.hasErrors()) {
@@ -59,18 +61,19 @@ public class LoginController {
         }
         if (loginNV.getTrangThai() == 0) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", "Tài khoản đã bị ngưng hoạt động, vui lòng liên hệ quản trị viên"));
+                    .body(Map.of("success", false, "message",
+                            "Tài khoản đã bị ngưng hoạt động, vui lòng liên hệ quản trị viên"));
         }
-            String otp = genOtp(); // Sinh OTP
-            otpCache.put("maOtp", otp);
-            sendOtp(email, otp);
-            tenQuyen = loginNV.getQuyen().getTen();
-            getIdNV = loginNV.getId();
+        String otp = genOtp(); // Sinh OTP
+        otpCache.put("maOtp", otp);
+        sendOtp(email, otp);
+        tenQuyen = loginNV.getQuyen().getTen();
+        getIdNV = loginNV.getId();
 
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", loginNV.toResponse(),
-                    "tenQuyen", tenQuyen));
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", loginNV.toResponse(),
+                "tenQuyen", tenQuyen));
 
     }
 
@@ -98,7 +101,6 @@ public class LoginController {
                 "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/layout.html"));
     }
 
-
     @PostMapping("checkOtpOl")
     public ResponseEntity<?> checkOtpOl(@RequestBody Map<String, String> otpRequest, HttpSession ses) {
         String otp = otpRequest.get("otp");
@@ -112,7 +114,8 @@ public class LoginController {
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
-                "redirectUrl", "https://youtube.com"));
+                "getKH", getKH,
+                "redirectUrl", "http://127.0.0.1:5501/ban_online/layout.html#!/home"));
     }
 
     private String genOtp() {
@@ -143,22 +146,26 @@ public class LoginController {
         }
         String email = tk.getEmail();
         KhachHang loginKH = khRepo.loginKH(email, tk.getPassw());
-        if (loginKH.getTrangThai() == 0) {
-            return ResponseEntity.badRequest().body("Tài khoản này đã ngưng hoạt động");
-        }
+
         if (loginKH == null) {
             return ResponseEntity.badRequest()
                     .body(Map.of("success", false, "message", "Tài khoản hoặc mật khẩu không đúng"));
-        } else {
-
-            String otp = genOtp(); // Sinh OTP
-            otpCache.put("maOtp", otp);
-            sendOtp(email, otp);
-
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "OTP đã được gửi tới email của bạn"));
         }
+
+        if (loginKH.getTrangThai() == 0) {
+            return ResponseEntity.badRequest().body("Tài khoản này đã ngưng hoạt động");
+        }
+
+        getKH = loginKH.toString();
+
+        String otp = genOtp(); // Sinh OTP
+        otpCache.put("maOtp", otp);
+        sendOtp(email, otp);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "OTP đã được gửi tới email của bạn"));
+
     }
 
     @GetMapping("getmail")
@@ -201,15 +208,13 @@ public class LoginController {
         if (!newPassW.equals(nhapLaiPassW)) {
             return ResponseEntity.badRequest().body(Map.of(
                     "success", false,
-                    "message", "Mật khẩu không khớp, vui lòng nhập lại"
-            ));
+                    "message", "Mật khẩu không khớp, vui lòng nhập lại"));
         }
         KhachHang khachHang = khRepo.getKhachHangByEmail(email);
         if (khachHang == null) {
             return ResponseEntity.badRequest().body(Map.of(
                     "success", false,
-                    "message", "Không tìm thấy khách hàng với email này"
-            ));
+                    "message", "Không tìm thấy khách hàng với email này"));
         }
         khachHang.setPassw(newPassW);
         khachHang.setNgaySua(LocalDateTime.now());
@@ -217,14 +222,12 @@ public class LoginController {
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
-                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/loginOnline.html"
-        ));
+                "redirectUrl", "http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/loginOnline.html"));
     }
-
 
     @PostMapping("dangKy")
     public ResponseEntity<?> dangKy(@Valid @RequestBody KhachHangRequestOnline khachHangRequest,
-                                    BindingResult bindingResult) {
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
                     .stream()
@@ -277,5 +280,8 @@ public class LoginController {
         return getIdNV;
     }
 
+    public String returnIDKH() {
+        return getKH;
+    }
 
 }
