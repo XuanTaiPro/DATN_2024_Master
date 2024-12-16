@@ -18,11 +18,9 @@ window.banhangCtrl = function ($scope, $http, $document) {
     $scope.soLuongError = false;
 
 
-
-
     $scope.soLuongError = false;
 
-    $scope.validateSoLuong = function(ctsp) {
+    $scope.validateSoLuong = function (ctsp) {
 
         if (!ctsp.soLuongCTHD || ctsp.soLuongCTHD <= 0 || ctsp.soLuongCTHD > ctsp.soLuong) {
             $scope.soLuongError = true;
@@ -36,7 +34,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $scope.isScanning = true;
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
+            navigator.mediaDevices.getUserMedia({video: true})
                 .then(function (stream) {
                     var videoElement = document.getElementById('videoElement');
                     videoElement.srcObject = stream;
@@ -111,11 +109,11 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 if (selectedIdHD != null) {
                     // Nếu idHD hợp lệ, gọi API để thêm chi tiết hóa đơn
                     $http.post('http://localhost:8083/chitiethoadon/add', formData, {
-                        headers: { 'Content-Type': undefined }
+                        headers: {'Content-Type': undefined}
                     })
                         .then(function (response) {
                             showSuccessAlert("Thêm thành công!");
-                                // Cập nhật lại danh sách sản phẩm
+                            // Cập nhật lại danh sách sản phẩm
                             $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
                         })
                         .catch(function (error) {
@@ -135,7 +133,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
                     // Gọi API để thêm hóa đơn mới
                     $http.post('http://localhost:8083/hoadon/add', formData, {
                         transformRequest: angular.identity,
-                        headers: { 'Content-Type': undefined }
+                        headers: {'Content-Type': undefined}
                     })
                         .then(function (response) {
                             $scope.getHDTaiQuayAndAddCTHD($scope.qrData); // Lấy lại danh sách hóa đơn mới nhất
@@ -219,7 +217,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
 
                         // Thêm chi tiết hóa đơn sau khi tạo hóa đơn mới
                         $http.post('http://localhost:8083/chitiethoadon/add', formData, {
-                            headers: { 'Content-Type': undefined }
+                            headers: {'Content-Type': undefined}
                         })
                             .then(function (response) {
                                 showSuccessAlert("Thêm thành công!");
@@ -241,7 +239,18 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 console.error('Lỗi khi lấy hóa đơn tại quầy:', error.data);
             });
     };
+    $scope.hasProducts = function (idHD) {
+        // Kiểm tra nếu tổng số lượng sản phẩm > 0
+        const products = $scope.cthds.filter(cthd => cthd.idHD === idHD);
+        return products.length > 0 && products.some(cthd => cthd.soLuong > 0);
+    };
 
+    $scope.validateThanhToan = function (idHD) {
+        if (!$scope.hasProducts(idHD)) {
+            alert("Danh sách sản phẩm của hóa đơn này trống hoặc không hợp lệ. Vui lòng kiểm tra lại!");
+            return false; // Ngăn việc chuyển hướng
+        }
+    };
     $scope.addInvoiceTab = function () {
         $('#confirmAddInvoiceModal').modal('hide');
 
@@ -249,25 +258,25 @@ window.banhangCtrl = function ($scope, $http, $document) {
         formData.append('idNV', 'CEC76A2E'); // Thay đổi theo nhu cầu
         $http.get('http://localhost:8083/hoadon/getHDTaiQuay')
             .then(function (response) {
-                if (response.data && response.data.length >= 4) {
+                if (response.data && response.data.length >= 10) {
                     $scope.showMessage = "Đã đủ 10 hóa đơn tại quầy, không thể thêm nữa!";
                     $timeout(function () {
                         $scope.showMessage = '';
                     }, 2000);
                     return;
                 } else {
-                                $http.post('http://localhost:8083/hoadon/add', formData, {
-                                    transformRequest: angular.identity,
-                                    headers: { 'Content-Type': undefined }
-                                })
-                                    .then(function (response) {
-                                        $('#addInvoiceModal').modal('show'); // Hiển thị modal
-                                        $scope.getHDTaiQuay(); // Lấy lại danh sách hóa đơn mới nhất
-                                    })
-                                    .catch(function (error) {
-                                        console.error('Lỗi:', error);
-                                        alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
-                                    });
+                    $http.post('http://localhost:8083/hoadon/add', formData, {
+                        transformRequest: angular.identity,
+                        headers: {'Content-Type': undefined}
+                    })
+                        .then(function (response) {
+                            $('#addInvoiceModal').modal('show'); // Hiển thị modal
+                            $scope.getHDTaiQuay(); // Lấy lại danh sách hóa đơn mới nhất
+                        })
+                        .catch(function (error) {
+                            console.error('Lỗi:', error);
+                            alert('Lỗi khi thêm hóa đơn: ' + (error.data && error.data.message ? error.data.message : 'Không xác định'));
+                        });
 
 
                 }
@@ -302,9 +311,9 @@ window.banhangCtrl = function ($scope, $http, $document) {
     $scope.confirmAddInvoiceDetail = function (ctsp) {
 
 
-            $scope.selectedCTSP = ctsp;
+        $scope.selectedCTSP = ctsp;
 
-            $('#confirmAddInvoiceDetailModal').modal('show');
+        $('#confirmAddInvoiceDetailModal').modal('show');
 
 
     };
@@ -363,7 +372,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
             .then(function (response) {
                 $scope.cthds = response.data.cthds; // Dữ liệu chi tiết hóa đơn
                 $scope.totalPages = response.data.totalPages; // Tổng số trang
-                $scope.pages = Array.from({ length: $scope.totalPages }, (v, i) => i); // Mảng trang
+                $scope.pages = Array.from({length: $scope.totalPages}, (v, i) => i); // Mảng trang
             })
             .catch(function (error) {
                 $scope.errorMessage = 'Lỗi khi lấy chi tiết hóa đơn: ' + (error.data?.message || JSON.stringify(error.data));
@@ -458,13 +467,13 @@ window.banhangCtrl = function ($scope, $http, $document) {
         fetch(`http://localhost:8083/chitiethoadon/updateSoLuong`, {
             method: "PUT",
             headers: {
-                "Content-Type":"application/json"
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(request)
         })
             .then(async response => {
                 console.log(response)
-                if (response.status== 400){
+                if (response.status == 400) {
                     showDangerAlert(await response.text())
                 }
                 return
@@ -535,10 +544,10 @@ window.banhangCtrl = function ($scope, $http, $document) {
         }
         $http.post('http://localhost:8083/chitiethoadon/add', formData, {
 
-            headers: {
-                'Content-Type': undefined
+                headers: {
+                    'Content-Type': undefined
+                }
             }
-        }
         )
             .then(function (response) {
                 console.log(response.data);
@@ -563,8 +572,8 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $http({
             method: 'DELETE',
             url: 'http://localhost:8083/chitiethoadon/delete', // Đường dẫn đến API
-            data: { id: idCTHD }, // Gửi id sản phẩm qua request body
-            headers: { "Content-Type": "application/json;charset=utf-8" }
+            data: {id: idCTHD}, // Gửi id sản phẩm qua request body
+            headers: {"Content-Type": "application/json;charset=utf-8"}
         }).then(function (response) {
             console.log(response.data);
             $('#confirmDeleteInvoiceDetailModal').modal('hide');
@@ -614,8 +623,8 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $http({
             method: 'DELETE',
             url: 'http://localhost:8083/hoadon/delete', // Đường dẫn tới API
-            data: { id: selectedIdHD }, // Gửi id hóa đơn qua request body
-            headers: { "Content-Type": "application/json;charset=utf-8" }
+            data: {id: selectedIdHD}, // Gửi id hóa đơn qua request body
+            headers: {"Content-Type": "application/json;charset=utf-8"}
         })
             .then(function (response) {
                 // Xử lý khi xóa thành công

@@ -22,6 +22,8 @@ public class ChiTietHoaDonRep {
 
     private String tienGiam;
 
+    private int loaiHD;
+
     private int trangThai;
 
     private LocalDateTime ngayTao;

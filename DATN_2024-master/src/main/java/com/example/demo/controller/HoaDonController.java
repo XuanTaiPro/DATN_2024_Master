@@ -89,6 +89,7 @@ public class HoaDonController {
 
     @Autowired
     private ChiTietHoaDonService cthdService;
+
     @GetMapping("/page")
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
@@ -324,6 +325,7 @@ public class HoaDonController {
                 }
 
                 ChiTietVoucher ctvc = ctvcRepo.getByIdVCAndIdKh(voucher.getId(), idKh);
+                voucher.setSoLuong(voucher.getSoLuong() - 1);
                 ctvc.setTrangThai(2);
 
                 ctvcRepo.save(ctvc);
@@ -400,9 +402,10 @@ public class HoaDonController {
         String tenSPCheck = null;
 
         if (hoaDonOptional.isPresent()) {
+            if (hoaDonOptional.get().getTrangThai() == 3) {
+                return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Hóa đơn đã xác nhận rồi!");
+            }
             HoaDon hoaDonExisting = hoaDonOptional.get();
-            hoaDonExisting.setTrangThai(3);
-            hoaDonRepo.save(hoaDonExisting);
 
             KhachHang getKH = hoaDonExisting.getKhachHang();
 
@@ -439,30 +442,60 @@ public class HoaDonController {
                 }
             }
 
-            if (checkSL) {
-                for (ChiTietHoaDon cthd : cthdList) {
-                    DanhGia dg = new DanhGia();
-                    ChiTietSanPham getCTSP = chiTietSanPhamRepo.findById(cthd.getChiTietSanPham().getId()).get();
-                    dg.setChiTietSanPham(getCTSP);
+            for (ChiTietHoaDon cthd : cthdList) {
+                DanhGia dg = new DanhGia();
+                ChiTietSanPham getCTSP = chiTietSanPhamRepo.findById(cthd.getChiTietSanPham().getId()).get();
+                dg.setChiTietSanPham(getCTSP);
 
-                    getCTSP.setSoLuong(getCTSP.getSoLuong() - cthd.getSoLuong());
+                getCTSP.setSoLuong(getCTSP.getSoLuong() - cthd.getSoLuong());
 
-                    dg.setKhachHang(getKH);
-                    dg.setNgayDanhGia(LocalDateTime.now());
-                    dg.setTrangThai(0);
+                dg.setKhachHang(getKH);
+                dg.setNgayDanhGia(LocalDateTime.now());
+                dg.setTrangThai(0);
 
-                    chiTietSanPhamRepo.save(getCTSP);
-                    dgRepo.save(dg);
-                }
-                return ResponseEntity.ok("Xác nhận hóa đơn thành công.");
-            } else {
-                return ResponseEntity.badRequest()
-                        .body("Sản phẩm '" + tenSPCheck + "' trong hóa đơn quá lượng trong kho.");
+                chiTietSanPhamRepo.save(getCTSP);
+                dgRepo.save(dg);
             }
+
+            hoaDonExisting.setTrangThai(2);
+            hoaDonRepo.save(hoaDonExisting);
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
+                    .body("Xác nhận hóa đơn " + idHD + " thành công.");
 
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
         }
+    }
+
+    @PutMapping("/xacNhanGH")
+    public ResponseEntity<?> xacNhanGH(@RequestParam(name = "idHD") String idHD) {
+        HoaDon hoaDonExisting = hoaDonRepo.getReferenceById(idHD);
+        if (hoaDonExisting != null) {
+            hoaDonExisting.setTrangThai(5);
+            hoaDonRepo.save(hoaDonExisting);
+        }
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Xác nhận giao hàng cho hóa đơn: " + idHD);
+    }
+
+    @PutMapping("/xacNhanTC")
+    public ResponseEntity<?> xacNhanTC(@RequestParam(name = "idHD") String idHD) {
+        HoaDon hoaDonExisting = hoaDonRepo.getReferenceById(idHD);
+        if (hoaDonExisting != null) {
+            hoaDonExisting.setTrangThai(3);
+            hoaDonRepo.save(hoaDonExisting);
+        }
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Xác nhận hoàn thành cho hóa đơn: " + idHD);
+    }
+
+    @PutMapping("/huyHD")
+    public ResponseEntity<?> huyHD(@RequestParam(name = "idHD") String idHD) {
+        HoaDon hoaDonExisting = hoaDonRepo.getReferenceById(idHD);
+        if (hoaDonExisting != null) {
+            hoaDonExisting.setTrangThai(4);
+            hoaDonRepo.save(hoaDonExisting);
+        }
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Đã huy hóa đơn: " + idHD);
+
     }
 
     @GetMapping("/listNV")
@@ -538,11 +571,10 @@ public class HoaDonController {
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(hoaDon.getMaHD());
 
-
-            if(req.getMaVoucher() != null){
+            if (req.getMaVoucher() != null) {
                 Voucher vc = vcRepo.findById(req.getMaVoucher()).get();
                 hoaDon.setVoucher(vc);
-            }else {
+            } else {
                 hoaDon.setVoucher(null);
             }
             hoaDon.setNgayThanhToan(LocalDateTime.now());

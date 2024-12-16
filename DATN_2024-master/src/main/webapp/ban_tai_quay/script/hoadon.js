@@ -21,6 +21,7 @@ window.hoaDonCtrl = function ($scope, $http) {
         $scope.nhanViens = response.data;
     });
 
+
     // $scope.chiTietHoaDons=[];
     $scope.getHoaDonsByTrangThai = function (trangThai, page) {
         $scope.selectedTrangThai = trangThai; // Cập nhật trạng thái đã chọn
@@ -64,7 +65,6 @@ window.hoaDonCtrl = function ($scope, $http) {
                         const response = await fetch(`http://localhost:8083/chitiethoadon/getAllByOrderId?idHD=` + item.id);
                         const resultCTHD = await response.json();
 
-                        if (item.trangThai === 3) {
                             const tt = $scope.getTotalAmount(resultCTHD);
                             const giaGiamVC = item.giaGiamVC || 0;
                             const giaMax = item.giaMax || 0;
@@ -72,14 +72,15 @@ window.hoaDonCtrl = function ($scope, $http) {
                             let totalAfterVC = tt - tt * (giaGiamVC / 100);
                             item['ttLastMoney'] = tt - Math.min(totalAfterVC, giaMax);
                             item['tt'] = tt;
-                        }
+                            console.log(tt);
+
+
                         return item;
                     } catch (error) {
                         console.error(`Lỗi khi xử lý hóa đơn ID: ${item.id}`, error);
                         return item; // Trả về item dù có lỗi để không gián đoạn toàn bộ
                     }
                 });
-
                 $scope.hoaDons = await Promise.all(requests);
                 $scope.totalPages = response.data.totalPages;
                 $scope.pages = Array.from({ length: $scope.totalPages }, (v, i) => i);
@@ -105,20 +106,63 @@ window.hoaDonCtrl = function ($scope, $http) {
     };
     $scope.confirmInvoice = function (id) {
         console.log('Confirming invoice with ID:', id);
-
-        // Gọi API để xác nhận hóa đơn
+        showConfirm("Bạn có muốn xác nhận hóa đơn này không?",()=>{
         $http.put('http://localhost:8083/hoadon/xacNhanHD?idHD=' + id)
             .then(function (response) {
                 console.log(response.data);
                 // Có thể làm gì đó với phản hồi thành công ở đây
-                alert("Xác nhận hóa đơn " + id + " thành công.");
-                // Tải lại hóa đơn hoặc cập nhật danh sách
-                $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage - 1);
+                showSuccessAlert("Xác nhận thành công hóa đơn: "+id);
+                $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
             })
             .catch(function (error) {
-                $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage - 1);
-            });
+                // showDangerAlert(response);
+                showDangerAlert(error);
+                console.log(error)
+                $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
+            });})
     };
+    $scope.xacNhanGH=function (id){
+        showConfirm("Bạn có muốn xác nhận giao hàng cho hóa đơn này không?",()=>{
+            $http.put('http://localhost:8083/hoadon/xacNhanGH?idHD=' + id)
+                .then(function (response) {
+                    console.log(response.data);
+                    // Có thể làm gì đó với phản hồi thành công ở đây
+                    showSuccessAlert("Xác nhận giao hàng cho hóa đơn: "+id);
+                    $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
+                })
+                .catch(function (error) {
+                    showDangerAlert("Xác nhận giao hàng thất bại!");
+                    $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
+                });})
+    }
+    $scope.xacNhanTC=function (id){
+        showConfirm("Bạn có muốn xác nhận hoàn thành hóa đơn này không?",()=>{
+            $http.put('http://localhost:8083/hoadon/xacNhanTC?idHD=' + id)
+                .then(function (response) {
+                    console.log(response.data);
+                    // Có thể làm gì đó với phản hồi thành công ở đây
+                    showSuccessAlert("Xác nhận hoàn thành cho hóa đơn: "+id);
+                    $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
+                })
+                .catch(function (error) {
+                    showDangerAlert("Xác nhận hoàn thành thất bại!");
+                    $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
+                });})
+    }
+    $scope.huyHD=function (id){
+        showConfirm("Bạn có chắc chắn muốn hủy hóa đơn này không?",()=>{
+            $http.put('http://localhost:8083/hoadon/huyHD?idHD=' + id)
+                .then(function (response) {
+                    console.log(response.data);
+                    // Có thể làm gì đó với phản hồi thành công ở đây
+                    showSuccessAlert("Đã hủy hóa đơn: "+id);
+                    $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
+                })
+                .catch(function (error) {
+                    showDangerAlert("Hủy thất bại!");
+                    $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
+                });})
+    }
     $scope.updateGhiChu = function (hd) {
         const payload = {
             ghiChu: hd.ghiChu // Assuming `hd.ghiChu` contains the updated note
@@ -141,7 +185,7 @@ window.hoaDonCtrl = function ($scope, $http) {
                     $scope.hoaDonDetail = response.data.hoaDonRep; // Lưu thông tin hóa đơn
                     $scope.chiTietHoaDons = response.data.chiTietHoaDons; // Lưu danh sách chi tiết hóa đơn
                 }
-
+                console.log($scope.hoaDonDetail.loaiHD);
                 $('#readData').modal('show'); // Hiển thị modal
             })
             .catch(function (error) {
@@ -199,14 +243,16 @@ window.hoaDonCtrl = function ($scope, $http) {
     };
 
     $scope.deleteInvoice = function (idHD) {
-        $http({
+        showConfirm("Bạn có chắc chắn muốn xóa hóa đơn này không?",()=>{
+            $http({
             method: 'DELETE',
             url: 'http://localhost:8083/hoadon/delete', // Đường dẫn tới API
             data: {id: idHD}, // Gửi id hóa đơn qua request body
             headers: {"Content-Type": "application/json;charset=utf-8"}
         })
             .then(function (response) {
-                $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage - 1);
+                $scope.getHoaDonsByTrangThai($scope.selectedTrangThai, $scope.currentPage );
+
             })
             .catch(function (error) {
                 // Xử lý lỗi
@@ -215,7 +261,7 @@ window.hoaDonCtrl = function ($scope, $http) {
                 } else {
                     alert('Không thể xóa hóa đơn, vui lòng thử lại sau.');
                 }
-            });
+            });})
 
     };
 

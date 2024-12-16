@@ -188,7 +188,7 @@ window.sanPhamCtrl = function ($scope, $http) {
             });
     };
     $scope.deleteProduct = function (productId) {
-        // showConfirm("Bạn có muốn ngưng sản phẩm này không?",()=>{
+        showConfirm("Bạn có muốn ngưng sản phẩm này không?",()=>{
             $http({
                 method: 'DELETE',
                 url: 'http://localhost:8083/san-pham/delete', // Đường dẫn đến API
@@ -200,11 +200,11 @@ window.sanPhamCtrl = function ($scope, $http) {
             }, function (error) {
                 $scope.getAllProducts();
                 showDangerAlert("Thất bại!");
-            });
+            });})
 
     };
     $scope.activateProduct = function (productId) {
-       // showConfirm("Bạn có muốn kích hoạt lại sản phẩm này không?",()=>{
+       showConfirm("Bạn có muốn kích hoạt lại sản phẩm này không?",()=>{
         $http({
             method: 'PUT',
             url: 'http://localhost:8083/san-pham/activateProduct', // Đường dẫn đến API
@@ -216,7 +216,7 @@ window.sanPhamCtrl = function ($scope, $http) {
         }, function (error) {
             $scope.getAllProducts();
             showDangerAlert("Thất bại!");
-        });
+        });})
 
     };
     $scope.checkDuplicateNameUD = function() {
