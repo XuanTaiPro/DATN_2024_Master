@@ -322,6 +322,7 @@ public class HoaDonController {
                 }
 
                 ChiTietVoucher ctvc = ctvcRepo.getByIdVCAndIdKh(voucher.getId(), idKh);
+                voucher.setSoLuong(voucher.getSoLuong() - 1);
                 ctvc.setTrangThai(2);
 
                 ctvcRepo.save(ctvc);
@@ -567,7 +568,6 @@ public class HoaDonController {
             // Cập nhật các thông tin khác
             hoaDon.setMaHD(hoaDon.getMaHD());
 
-
             if (req.getMaVoucher() != null) {
                 Voucher vc = vcRepo.findById(req.getMaVoucher()).get();
                 hoaDon.setVoucher(vc);
@@ -663,7 +663,7 @@ public class HoaDonController {
     }
 
     public byte[] createInvoicePDF(String idHD, List<ChiTietHoaDon> chiTietHoaDonList, double discountAmount,
-                                   String customerName, double amountPaid, double totalAmount) {
+            String customerName, double amountPaid, double totalAmount) {
         com.itextpdf.text.Document document = new Document();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -701,7 +701,7 @@ public class HoaDonController {
             PdfPTable detailTable = new PdfPTable(7); // 6 cột
             detailTable.setWidthPercentage(100);
             detailTable.setSpacingBefore(10);
-            detailTable.setWidths(new float[]{1, 2, 3, 2, 2, 2, 3}); // 7 giá trị
+            detailTable.setWidths(new float[] { 1, 2, 3, 2, 2, 2, 3 }); // 7 giá trị
 
             // Header của bảng chi tiết
             detailTable.addCell(createCellWithBorder("STT", boldFont));
