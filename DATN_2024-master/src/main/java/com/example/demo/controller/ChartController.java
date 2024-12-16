@@ -28,7 +28,6 @@ public class ChartController {
 
         List<Object[]> result = hoaDonRepo.getTotalAmountAndNgayThanhToan(year, month, week, day);
 
-        // Chuyển đổi List<Object[]> thành List<Map<String, Object>>
         List<Map<String, Object>> response = new ArrayList<>();
         for (Object[] row : result) {
             Map<String, Object> map = new HashMap<>();
@@ -37,7 +36,6 @@ public class ChartController {
             response.add(map);
         }
 
-        System.out.println("Data returned: " + response); // Debug dữ liệu
         return ResponseEntity.ok(response);
     }
 
