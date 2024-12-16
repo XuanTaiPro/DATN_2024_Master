@@ -2,8 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.thongbao.ThongBaoRequest;
 import com.example.demo.dto.thongbao.ThongBaoResponse;
+import com.example.demo.entity.ChiTietThongBao;
 import com.example.demo.entity.KhachHang;
 import com.example.demo.entity.ThongBao;
+import com.example.demo.repository.ChiTietThongBaoRepository;
 import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.repository.ThongBaoRepository;
 import com.example.demo.service.GenerateCodeAll;
@@ -28,6 +30,9 @@ public class ThongBaoController {
 
     @Autowired
     private KhachHangRepository khRepo;
+
+    @Autowired
+    private ChiTietThongBaoRepository cttbRepo;
 
     @Autowired
     private GenerateCodeAll generateCodeAll;
@@ -71,27 +76,49 @@ public class ThongBaoController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<?> add( @RequestBody ThongBaoRequest thongBaoRequest) {
+    public ResponseEntity<?> add(@RequestBody ThongBaoRequest thongBaoRequest) {
+        // Tự động tạo ID nếu không có
         if (thongBaoRequest.getId() == null || thongBaoRequest.getId().isEmpty()) {
             thongBaoRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
 
+        // Tự động tạo mã thông báo nếu không có
         if (thongBaoRequest.getMa() == null || thongBaoRequest.getMa().isEmpty()) {
             thongBaoRequest.setMa(generateCodeAll.generateMaThongBao());
         }
-
         ThongBao thongBao = thongBaoRequest.toEntity();
-        List<KhachHang> khachHangs = khRepo.findAllById(thongBaoRequest.getIdKHs()); // Lấy danh sách khách hàng theo ID
-        thongBao.setKhachHangs(khachHangs); // Gắn khách hàng vào thông báo
+
+        List<KhachHang> khachHangs = khRepo.findAllById(thongBaoRequest.getIdKHs());
+        if (khachHangs.isEmpty()) {
+            return ResponseEntity.badRequest().body("Danh sách khách hàng không hợp lệ");
+        }
+        thongBao.setKhachHangs(khachHangs);
         thongBao.setNgayGui(LocalDateTime.now());
         thongBao.setNgayDoc(LocalDateTime.now());
 
+        // Lưu vào cơ sở dữ liệu
         tbRepo.save(thongBao);
-        return ResponseEntity.ok("Thêm thành công");
+
+        if(thongBaoRequest.getIdKHs() != null && ! thongBaoRequest.getIdKHs().isEmpty()){
+            for(String customerID : thongBaoRequest.getIdKHs()){
+                Optional<KhachHang> optionalKhachHang = khRepo.findById(customerID);
+                if(optionalKhachHang.isPresent()){
+                    ChiTietThongBao chiTietThongBao = new ChiTietThongBao();
+                    chiTietThongBao.setId(UUID.randomUUID().toString().substring(0,8).toUpperCase());
+                    chiTietThongBao.setThongBao(thongBao);
+                    chiTietThongBao.setKhachHang(optionalKhachHang.get());
+                    cttbRepo.save(chiTietThongBao);
+                }else {
+                    return ResponseEntity.badRequest().body("không tồn tại id khách hàng với id" + customerID);
+                }
+            }
+        }
+        return ResponseEntity.ok(Map.of("message", "Thêm thành công"));
     }
 
+
     @PutMapping("update/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody ThongBaoRequest thongBaoRequest,
+        public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody ThongBaoRequest thongBaoRequest,
                                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
@@ -102,21 +129,48 @@ public class ThongBaoController {
         Optional<ThongBao> optionalThongBao = tbRepo.findById(id);
         if (optionalThongBao.isPresent()) {
             ThongBao thongBaoUpdate = thongBaoRequest.toEntity();
-            thongBaoRequest.setId(id);
-
-            // Cập nhật danh sách khách hàng cho thông báo
+            thongBaoUpdate.setId(id);
             List<KhachHang> khachHangs = khRepo.findAllById(thongBaoRequest.getIdKHs());
+            if (khachHangs.isEmpty()) {
+                return ResponseEntity.badRequest().body("Danh sách khách hàng không hợp lệ");
+            }
             thongBaoUpdate.setKhachHangs(khachHangs);
-
             thongBaoUpdate.setMa(optionalThongBao.get().getMa());
-            thongBaoUpdate.setNgayGui(optionalThongBao.get().getNgayGui());
-            thongBaoUpdate.setNgayDoc(optionalThongBao.get().getNgayDoc());
-
+            thongBaoUpdate.setNgayGui(
+                    thongBaoRequest.getNgayGui() != null ? thongBaoRequest.getNgayGui() : optionalThongBao.get().getNgayGui()
+            );
+            thongBaoUpdate.setNgayDoc(
+                    thongBaoRequest.getNgayDoc() != null ? thongBaoRequest.getNgayDoc() : optionalThongBao.get().getNgayDoc()
+            );
             ThongBao savedThongBao = tbRepo.save(thongBaoUpdate);
+
+            if(!cttbRepo.getCTTB(id).isEmpty()){
+                cttbRepo.deleteByThongBaoID(id);
+            }
+            // Đảm bảo `idKHs` không bị null hoặc trống trước khi cập nhật
+            if (thongBaoRequest.getIdKHs() != null && !thongBaoRequest.getIdKHs().isEmpty()) {
+                thongBaoRequest.getIdKHs().forEach(idKH -> {
+                    Optional<KhachHang> optionalKhachHang = khRepo.findById(idKH);
+                    if (optionalKhachHang.isPresent()) {
+                        ChiTietThongBao chiTietThongBao = new ChiTietThongBao();
+                        chiTietThongBao.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+                        chiTietThongBao.setKhachHang(optionalKhachHang.get());
+                        chiTietThongBao.setThongBao(thongBaoUpdate);
+                        cttbRepo.save(chiTietThongBao);
+                    }
+                });
+            }
             return ResponseEntity.ok(savedThongBao);
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy thông báo cần cập nhật");
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getKHByIdThongBao(@PathVariable("id") String thongBaoID) {
+        List<String> idKH = cttbRepo.findKHBythongBaoId(thongBaoID);
+        List<KhachHang> khachHangList = khRepo.findAllById(idKH);
+        return ResponseEntity.ok(khachHangList);
     }
 
 

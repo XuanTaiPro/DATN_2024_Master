@@ -237,7 +237,7 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
             .then(response => response.json())
             .then(data => {
                 $scope.$apply(() => {
-                    $scope.selectedCustomersUpdate = data; // Gán danh sách khách hàng vào scope
+                        $scope.selectedCustomersUpdate = data; // Gán danh sách khách hàng vào scope
 
                     if ($scope.selectedCustomersUpdate.length > 0) {
                         $scope.selectedCustomerUpdate = $scope.selectedCustomersUpdate[0].id;

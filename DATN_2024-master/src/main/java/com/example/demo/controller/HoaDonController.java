@@ -272,6 +272,9 @@ public class HoaDonController {
                 return ResponseEntity.badRequest().body("Số điện thoại người nhận chỉ bao gồm số");
             }
 
+            if(sdtNN.length() !=10){
+                return ResponseEntity.badRequest().body("Số điện thoại phải đúng 10 số");
+            }
             if ("".equals(dcNN.trim())) {
                 return ResponseEntity.badRequest().body("Địa chỉ người nhận không được để trống.");
             }

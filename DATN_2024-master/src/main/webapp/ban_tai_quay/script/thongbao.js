@@ -91,6 +91,17 @@ window.thongbaoCtrl = function ($scope, $http) {
         $scope.selectedThongBao.trangThai = thongBao.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động';
         $scope.formattedNgayGui = new Date(thongBao.ngayGui);
         $scope.formattedNgayDoc = new Date(thongBao.ngayDoc);
+
+        fetch(`http://localhost:8083/thongbao/` + thongBao.id)
+            .then(respponse => respponse.json())
+            .then(data => {
+                $scope.$apply(() =>{
+                    $scope.listCustomer = data
+                })
+            })
+            .catch(function (error){
+                console.error(error)
+            })
     };
 
     $scope.openUpdateModal = function (thongBao) {
@@ -99,23 +110,33 @@ window.thongbaoCtrl = function ($scope, $http) {
         $scope.idKH = null;
         console.log($scope.selectedKhachHang);
 
-        fetch('http://localhost:8083/khachhang/getId?ten=' + $scope.selectedKhachHang)
-            .then(function (response) {
-                return response.json();  // Chuyển đổi sang JSON vì API trả về danh sách
+        // fetch('http://localhost:8083/khachhang/getId?ten=' + $scope.selectedKhachHang)
+        //     .then(function (response) {
+        //         return response.json();  // Chuyển đổi sang JSON vì API trả về danh sách
+        //     })
+        //     .then(function (data) {
+        //         if (data.length > 0) {
+        //             $scope.$apply(function () {
+        //                 $scope.idKH = data[0];  // Chọn ID đầu tiên trong danh sách
+        //                 console.log($scope.idKH);
+        //             });
+        //         } else {
+        //             console.warn("Không tìm thấy khách hàng nào với tên:", $scope.selectedKhachHang);
+        //         }
+        //     })
+        //     .catch(function (error) {
+        //         // console.error("Lỗi khi gọi API:", error);
+        //     });
+        fetch(`http://localhost:8083/thongbao/` + thongBao.id)
+            .then(response => response.json())
+            .then(data => {
+                $scope.$apply(() =>{
+                    $scope.selectedCustomersForUpdate = data
+                })
             })
-            .then(function (data) {
-                if (data.length > 0) {
-                    $scope.$apply(function () {
-                        $scope.idKH = data[0];  // Chọn ID đầu tiên trong danh sách
-                        console.log($scope.idKH);
-                    });
-                } else {
-                    console.warn("Không tìm thấy khách hàng nào với tên:", $scope.selectedKhachHang);
-                }
+            .catch(function (error){
+                console.error(error)
             })
-            .catch(function (error) {
-                // console.error("Lỗi khi gọi API:", error);
-            });
 
         $scope.selectedThongBao.trangThai = thongBao.trangThai.toString();
         console.log("Trạng thái hiện tại:", $scope.selectedThongBao.trangThai);
@@ -163,39 +184,80 @@ window.thongbaoCtrl = function ($scope, $http) {
     $scope.addThongBao = function () {
         const newThongBao = {
             noiDung: $scope.noiDung,
-            idKH: $scope.selectedCustomers.map(kh => kh.id),
+            idKHs: $scope.selectedCustomers.map(kh => kh.id), // Gửi danh sách ID khách hàng
             trangThai: $scope.trangThai
         };
 
-        console.log("Dữ liệu mới:", newThongBao);
+        console.log("Dữ liệu gửi lên:", newThongBao);
 
         $http.post('http://localhost:8083/thongbao/add', newThongBao)
             .then(function (response) {
-                // Đóng modal
+               showSuccessAlert("Thêm thành công thông báo")
                 $('#productModal').modal('hide');
                 setTimeout(function () {
-                    location.reload();
+                    $scope.loadPage(0)
                 }, 500);
             })
             .catch(function (error) {
-                $scope.errorMessage = "Thêm thất bại";
+                console.error("Lỗi khi thêm thông báo:", error);
+                $scope.errorMessage = error.data.message || "Thêm thất bại, vui lòng thử lại!";
             });
-
+        // Đặt lại form
         resetForm();
     };
 
-    $scope.updateThongBao = function () {
-        $scope.isSubmitted = true;
-        if (!$scope.idKH) {
-            alert("Vui lòng chọn khách hàng");
-            return;
+
+    $scope.selectedCustomersForUpdate = []; // Danh sách khách hàng đã chọn
+
+// Hàm cập nhật danh sách khách hàng
+    $scope.updateSelectedCustomersForUpdate = function (kh) {
+        if (kh.selectedForUpdate) {
+            $scope.selectedCustomersForUpdate.push(kh);
+        } else {
+            $scope.selectedCustomersForUpdate = $scope.selectedCustomersForUpdate.filter(c => c.id !== kh.id);
         }
-        $scope.selectedThongBao.idKH = $scope.idKH;
-        $http.put('http://localhost:8083/thongbao/update/' + $scope.selectedThongBao.id, $scope.selectedThongBao)
+    };
+
+// Hàm chọn tất cả khách hàng
+    $scope.selectAllCustomersForUpdate = function () {
+        $scope.listKH.forEach(kh => {
+            kh.selectedForUpdate = true;
+            if (!$scope.selectedCustomersForUpdate.some(c => c.id === kh.id)) {
+                $scope.selectedCustomersForUpdate.push(kh);
+            }
+        });
+    };
+
+// Hàm bỏ chọn tất cả khách hàng
+    $scope.deselectAllCustomersForUpdate = function () {
+        $scope.listKH.forEach(kh => (kh.selectedForUpdate = false));
+        $scope.selectedCustomersForUpdate = [];
+    };
+
+// Hàm xác nhận lựa chọn khách hàng
+    $scope.confirmSelectionForUpdate = function () {
+        $('#customerUpdateModal').modal('hide'); // Đóng modal chọn khách hàng
+        $scope.selectedCustomersForUpdate = $scope.listKH.filter(kh => kh.selectedForUpdate);
+        $('#UpdateForm').modal('show');
+    };
+
+// Hàm cập nhật thông báo
+    $scope.updateThongBao = function () {
+        const updatedThongBao = {
+            id: $scope.selectedThongBao.id,
+            noiDung: $scope.selectedThongBao.noiDung,
+            trangThai: $scope.selectedThongBao.trangThai,
+            idKHs: $scope.selectedCustomersForUpdate.map(kh => kh.id)
+        };
+
+        $http.put(`http://localhost:8083/thongbao/update/${updatedThongBao.id}`, updatedThongBao)
             .then(function (response) {
-                location.reload()
+                showSuccessAlert("Update thành công")
+                $('#UpdateForm').modal('hide');
+                $scope.loadPage(0)
             })
-            .catch(function () {
+            .catch(function (error) {
+                $scope.errorMessage = error.data || "Cập nhật thất bại!";
             });
     };
 
@@ -205,7 +267,7 @@ window.thongbaoCtrl = function ($scope, $http) {
             $http.delete('http://localhost:8083/thongbao/delete/' + id)
                 .then(function (response) {
                     console.log(response.data);
-                    location.reload()
+                    $scope.loadPage(0)
                     const index = $scope.listThongBao.findIndex(tb => tb.id === id);
                     if (index !== -1) {
                         $scope.listThongBao.splice(index, 1);
@@ -220,25 +282,35 @@ window.thongbaoCtrl = function ($scope, $http) {
     };
 
 
-    $scope.sendEmail = function (thongBao) {
+    $scope.sendEmailsToAll = function (thongBao) {
+        if (!thongBao || !thongBao.emailKH) {
+            alert("Danh sách khách hàng không hợp lệ hoặc không có dữ liệu!");
+            console.error("Dữ liệu thông báo không hợp lệ:", thongBao);
+            return;
+        }
+        // Tách chuỗi email thành mảng
+        const emailList = thongBao.emailKH.split(",").map(email => email.trim()); // Tách email và loại bỏ khoảng trắng
+
         const emailRequest = {
-            emailNguoiNhan: thongBao.emailKH,
+            emailNguoiNhan: emailList, // Danh sách email khách hàng
             tieuDe: "Thông báo từ Shop bán thực phẩm chức năng Loopy",
             noiDung: thongBao.noiDung
         };
 
-        $http.post('http://localhost:8083/mail/sentKH', emailRequest)
+        $http.post('http://localhost:8083/mail/sentAllKH', emailRequest)
             .then(function (response) {
-                // Hiển thị thông báo thành công từ phản hồi JSON
                 alert(response.data.message);
+                console.log("Email đã gửi thành công:", response.data);
             })
             .catch(function (error) {
-                // Hiển thị thông báo lỗi từ phản hồi JSON
                 const errorMessage = error.data && error.data.message ? error.data.message : "Không thể gửi email. Vui lòng thử lại!";
                 alert(errorMessage);
                 console.error("Lỗi khi gửi email:", error);
             });
     };
+
+
+
 
 
     function resetForm() {

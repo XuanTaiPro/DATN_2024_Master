@@ -21,7 +21,7 @@ public interface ChiTietVoucherRepository extends JpaRepository<ChiTietVoucher, 
     @Query("delete  From ChiTietVoucher ctvc where ctvc.voucher.id = :voucherID")
     void deleteByVoucherId(@Param("voucherID") String voucherID);
 
-    @Query("select ctvc.id from ChiTietVoucher  ctvc  where ctvc.voucher.id = :voucherID")
+    @Query("select ctvc.id from ChiTietVoucher ctvc  where ctvc.voucher.id = :voucherID")
     List<String> getCTVC(@Param("voucherID") String voucherID);
 
     @Query("SELECT c.khachHang.id FROM ChiTietVoucher c WHERE c.voucher.id = :voucherId")

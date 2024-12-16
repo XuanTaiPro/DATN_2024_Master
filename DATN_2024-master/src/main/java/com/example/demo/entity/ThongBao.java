@@ -47,7 +47,7 @@ public class ThongBao {
             inverseJoinColumns = @JoinColumn(name = "IDKHACHHANG")
     )
     @JsonIgnore
-    private List<KhachHang> khachHangs;;
+    private List<KhachHang> khachHangs;
 
     public ThongBaoResponse toResponse() {
         return new ThongBaoResponse(id, ma, noiDung, ngayGui, ngayDoc, trangThai, khachHangs.stream()
