@@ -139,7 +139,7 @@ window.nhansuCtrl = function ($scope, $http) {
         var file = files[0];
         if (file && file.size < 10000000) {  // Kiểm tra kích thước file < 1MB
             var fileName = file.name;  // Lấy tên file
-            var filePath = "img/" + fileName;  // Đường dẫn bạn lưu ảnh trong thư mục img
+            var filePath = "img/NhanVien/" + fileName;  // Đường dẫn bạn lưu ảnh trong thư mục img
 
             // Cập nhật đường dẫn ảnh trong Angular
             $scope.$apply(function () {
