@@ -193,8 +193,12 @@
             <!-- Tiêu đề và Nút -->
             <div class="d-flex flex-column align-items-center me-3">
                 <h3>{{ tab.title }}</h3>
-                <button class="btn btn-primary btn-lg" style="border-radius: 5px; padding: 10px 20px;">
-                    <a ng-href="#!/thanhtoan/{{tab.idHD}}" style="text-decoration: none; color: white;">Thanh toán</a>
+                <button class="btn btn-primary btn-lg"
+                        style="border-radius: 5px; padding: 10px 20px;"
+                        ng-disabled="!hasProducts(tab.idHD)"
+                        ng-click="validateThanhToan(tab.idHD)">
+                    <a ng-href="#!/thanhtoan/{{tab.idHD}}"
+                       style="text-decoration: none; color: white;">Thanh toán</a>
                 </button>
             </div>
             <div style="padding-right:30px;padding-top: 5px">

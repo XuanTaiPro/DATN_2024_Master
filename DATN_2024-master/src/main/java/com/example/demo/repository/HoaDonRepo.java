@@ -37,11 +37,16 @@ public interface HoaDonRepo extends JpaRepository<HoaDon, String> {
     @Query("SELECT hd FROM HoaDon hd WHERE hd.trangThai = :trangThai ORDER BY hd.ngayTao DESC")
     List<HoaDon> getHDTaiQuay(@Param("trangThai") Integer trangThai);
 
-    @Query(value = "SELECT SUM(CAST(COALESCE(TRY_CAST(c.giaSauGiam AS decimal(18, 2)), 0) AS decimal(18, 2)) * " +
-            "CAST(COALESCE(TRY_CAST(c.soLuong AS int), 0) AS int)) AS totalAmount, " +
+    @Query(value = "SELECT " +
+            "SUM(" +
+            "    CAST(COALESCE(TRY_CAST(c.giaSauGiam AS decimal(18, 2)), 0) AS decimal(18, 2)) * " +
+            "    CAST(COALESCE(TRY_CAST(c.soLuong AS int), 0) AS int) * " +
+            "    (1 - COALESCE(v.giaGiam, 0) / 100.0)" +
+            ") AS totalAmount, " +
             "CAST(h.ngayThanhToan AS DATE) AS ngayThanhToan " +
             "FROM HOADON h " +
             "JOIN CHITIETHOADON c ON h.id = c.idHoaDon " +
+            "LEFT JOIN Voucher v ON h.idVC = v.id " +
             "WHERE h.trangThai = 3 " +
             "AND (:year IS NULL OR YEAR(h.ngayThanhToan) = :year) " +
             "AND (:month IS NULL OR MONTH(h.ngayThanhToan) = :month) " +

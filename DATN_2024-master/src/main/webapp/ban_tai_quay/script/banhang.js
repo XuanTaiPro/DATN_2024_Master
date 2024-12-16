@@ -239,7 +239,18 @@ window.banhangCtrl = function ($scope, $http, $document) {
                 console.error('Lỗi khi lấy hóa đơn tại quầy:', error.data);
             });
     };
+    $scope.hasProducts = function (idHD) {
+        // Kiểm tra nếu tổng số lượng sản phẩm > 0
+        const products = $scope.cthds.filter(cthd => cthd.idHD === idHD);
+        return products.length > 0 && products.some(cthd => cthd.soLuong > 0);
+    };
 
+    $scope.validateThanhToan = function (idHD) {
+        if (!$scope.hasProducts(idHD)) {
+            alert("Danh sách sản phẩm của hóa đơn này trống hoặc không hợp lệ. Vui lòng kiểm tra lại!");
+            return false; // Ngăn việc chuyển hướng
+        }
+    };
     $scope.addInvoiceTab = function () {
         $('#confirmAddInvoiceModal').modal('hide');
 
