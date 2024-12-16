@@ -49,20 +49,23 @@
                 <form>
                     <div class="form-group mb-4">
                         <label for="customerName" class="form-label">Tên khách hàng:</label>
-                        <input type="text" class="form-control" id="customerName" name="customerName" ng-model="selectedCustomerName">
+                        <input type="text" class="form-control" id="customerName" name="customerName"
+                               ng-model="selectedCustomerName">
                         <div class="error-message" ng-show="isSubmitted && !selectedCustomerName">
                             <i class="fas fa-exclamation-circle"></i> Tên khách hàng không được để trống.
                         </div>
                     </div>
                     <div class="form-group mb-4">
                         <label for="customerPhone" class="form-label">Số điện thoại:</label>
-                        <input type="text" class="form-control" id="customerPhone" name="customerPhone" ng-model="selectedCustomerPhone">
+                        <input type="text" class="form-control" id="customerPhone" name="customerPhone"
+                               ng-model="selectedCustomerPhone">
                         <div class="error-message" ng-show="isSubmitted && !selectedCustomerPhone">
                             <i class="fas fa-exclamation-circle"></i> Số điện thoại không được để trống.
                         </div>
                     </div>
                     <div class="form-actions d-flex gap-3">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#customerModal">
                             <i class="fas fa-user-check"></i> Chọn khách hàng
                         </button>
                         <button type="button" class="btn btn-secondary" ng-click="khachVangLai()">
@@ -160,17 +163,18 @@
         <div class="form-group mt-3">
             <label class="payment-label">Hình thức thanh toán:</label>
             <div class="payment-methods mt-2">
-                <div class="payment-option" ng-click="selectPaymentMethod('cash')" data-bs-toggle="modal" data-bs-target="#cashModal">
+                <div class="payment-option" ng-click="selectPaymentMethod('cash')" data-bs-toggle="modal"
+                     data-bs-target="#cashModal">
                     <i class="fas fa-wallet"></i>
                     <span>Tiền mặt</span>
                 </div>
-                <div class="payment-option" ng-click="selectPaymentMethod('bankTransfer')" data-bs-toggle="modal" data-bs-target="#bankTransferModal">
+                <div class="payment-option" ng-click="selectPaymentMethod('bankTransfer')" data-bs-toggle="modal"
+                     data-bs-target="#bankTransferModal">
                     <i class="fas fa-university"></i>
                     <span>Chuyển khoản</span>
                 </div>
             </div>
         </div>
-
 
 
         <div class="modal fade" id="bankTransferModal" tabindex="-1" aria-labelledby="bankTransferModalLabel"
@@ -186,9 +190,14 @@
                         <img src="https://media-cdn-v2.laodong.vn/storage/newsportal/2021/6/15/920631/4128Nh_2021-06-15_Lu.jpeg"
                              alt="QR Code" class="img-fluid">
                     </div>
-                    <div class="ck">
+                    <div >
                         <button type="button" class="btn btn-success btn-custom-complete"
-                                ng-click="completePaymentCK()">Hoàn tất thanh toán
+                                ng-click="completePaymentCK()">Hoàn tất và gửi hóa đơn
+                        </button>
+                    </div>
+                    <div class="ck">
+                        <button type="button" class="btn btn-primary " style="position: absolute;left: 10px;bottom: 10px "
+                                ng-click="completePaymentSendM()">Hoàn tất thanh toán
                         </button>
                     </div>
                 </div>
@@ -199,7 +208,8 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="cashModalLabel"><i class="fa-solid fa-money-bill-wave"></i>Thanh toán tiền mặt</h5>
+                        <h5 class="modal-title" id="cashModalLabel"><i class="fa-solid fa-money-bill-wave"></i>Thanh
+                            toán tiền mặt</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -223,7 +233,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" class="btn btn-primary" ng-click="showConfirmation()">Xác nhận</button>
+                        <button type="button" class="btn btn-primary" ng-click="showConfirmation()">Xác nhận</button>
                     </div>
                 </div>
             </div>
@@ -263,7 +273,9 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                         <button type="button" class="btn btn-success" ng-click="completePayment()">Hoàn tất thanh toán
                         </button>
-                        <button type="button" class="btn btn-primary" ng-click="generateAndSendInvoice()">Gửi Hóa Đơn Cho Khách</button>
+                        <button type="button" class="btn btn-primary" ng-click="generateAndSendInvoice(true)">Gửi Hóa
+                            Đơn Cho Khách
+                        </button>
                     </div>
                 </div>
             </div>
@@ -271,7 +283,8 @@
 
         <!--        <button class="btn btn-success mt-3" onclick="submitThanhtoan()" id="xacnhan">Xác nhận</button>-->
 
-        <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" style="display: none;" aria-hidden="true">
+        <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel"
+             style="display: none;" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -287,7 +300,8 @@
                                 <div class="col-md-3">
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten" ng-change="searchKH()">
+                                        <input type="text" class="form-control" placeholder="Tìm theo tên"
+                                               ng-model="search.ten" ng-change="searchKH()">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -303,7 +317,8 @@
                                 <div class="col-md-3">
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                                        <input type="text" class="form-control" placeholder="Số điện thoại" ng-model="search.sdt" ng-change="searchKH()">
+                                        <input type="text" class="form-control" placeholder="Số điện thoại"
+                                               ng-model="search.sdt" ng-change="searchKH()">
                                     </div>
                                 </div>
                             </div>
@@ -349,7 +364,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#addCustomerModal">
                             <i class="fa-regular fa-address-card"></i> Thêm Khách Hàng mới
                         </button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -362,7 +378,8 @@
 
 
         <!-- Modal Thêm Khách Hàng Mới -->
-        <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" style="display: none;" aria-hidden="true">
+        <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel"
+             style="display: none;" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -376,19 +393,19 @@
                         <form ng-submit="addCustomer()">
                             <div class="mb-3">
                                 <label for="customerName" class="form-label">Tên</label>
-                                <input type="text" class="form-control" id="customerNameAdd" ng-model="newKH.ten" >
+                                <input type="text" class="form-control" id="customerNameAdd" ng-model="newKH.ten">
                             </div>
                             <div class="mb-3">
                                 <label for="customerEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="customerEmail" ng-model="newKH.email" >
+                                <input type="email" class="form-control" id="customerEmail" ng-model="newKH.email">
                             </div>
                             <div class="mb-3">
                                 <label for="customerPhone" class="form-label">Số điện thoại</label>
-                                <input type="text" class="form-control" id="customerPhoneAdd" ng-model="newKH.sdt" >
+                                <input type="text" class="form-control" id="customerPhoneAdd" ng-model="newKH.sdt">
                             </div>
                             <div class="mb-3">
                                 <label for="customerGender" class="form-label">Giới tính</label>
-                                <select class="form-select" id="customerGender" ng-model="newKH.gioiTinh" >
+                                <select class="form-select" id="customerGender" ng-model="newKH.gioiTinh">
                                     <option value="Nam">Nam</option>
                                     <option value="Nữ">Nữ</option>
                                 </select>
@@ -408,29 +425,34 @@
         </div>
 
 
-
-        <div class="modal fade" id="suggestedVoucherModal" tabindex="-1" aria-labelledby="suggestedVoucherModalLabel" aria-hidden="true">
+        <div class="modal fade" id="suggestedVoucherModal" tabindex="-1" aria-labelledby="suggestedVoucherModalLabel"
+             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="suggestedVoucherModalLabel">
                             <i class="fas fa-gift"></i> Voucher tối ưu nhất cho bạn
                         </h5>
-                        <button type="button" id="" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" id="" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div ng-if="suggestedVoucher" class="voucher-details">
                             <p><i class="fas fa-tag"></i> <strong>Tên Voucher:</strong> {{ suggestedVoucher.ten }}</p>
-                            <p><i class="fas fa-percentage"></i> <strong>Giá giảm:</strong> {{ suggestedVoucher.giamGia }}%</p>
-                            <p><i class="fas fa-cart-plus"></i> <strong>Đơn tối thiểu:</strong> {{ suggestedVoucher.giamMin | number:0 }} VNĐ</p>
-                            <p><i class="fas fa-arrow-alt-circle-down"></i> <strong>Giảm tối đa:</strong> {{ suggestedVoucher.giamMax | number:0 }} VNĐ</p>
+                            <p><i class="fas fa-percentage"></i> <strong>Giá giảm:</strong> {{ suggestedVoucher.giamGia
+                                }}%</p>
+                            <p><i class="fas fa-cart-plus"></i> <strong>Đơn tối thiểu:</strong> {{
+                                suggestedVoucher.giamMin | number:0 }} VNĐ</p>
+                            <p><i class="fas fa-arrow-alt-circle-down"></i> <strong>Giảm tối đa:</strong> {{
+                                suggestedVoucher.giamMax | number:0 }} VNĐ</p>
                         </div>
                         <div ng-if="!suggestedVoucher" class="text-center text-muted">
                             <i class="fas fa-exclamation-circle"></i> Không có voucher nào phù hợp để gợi ý.
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" ng-click="applySuggestedVoucher()" data-bs-dismiss="modal" ng-disabled="!suggestedVoucher">
+                        <button type="button" class="btn btn-success" ng-click="applySuggestedVoucher()"
+                                data-bs-dismiss="modal" ng-disabled="!suggestedVoucher">
                             <i class="fas fa-check-circle"></i> Áp dụng
                         </button>
                         <button type="button" class="btn btn-secondary" ng-click="closeVCTU()">
@@ -555,7 +577,8 @@
         font-size: 14px;
         color: #f6f6f6;
     }
-    .table{
+
+    .table {
         border-spacing: 20px;
     }
 
@@ -698,6 +721,7 @@
         font-weight: bold;
         color: #333;
     }
+
     /*form nhập khách hàng*/
     .bordered-form {
         border: 2px solid #dee2e6;
@@ -745,9 +769,10 @@
         border: 1px solid #ced4da;
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
-   .form-select{
-       padding: 10px;
-   }
+
+    .form-select {
+        padding: 10px;
+    }
 
     input.form-control:focus {
         border-color: #007bff;
@@ -782,7 +807,7 @@
         padding: 10px;
     }
 
-    #tbw th:nth-child(1),#tbw td:nth-child(1) { /* Tên Sản Phẩm */
+    #tbw th:nth-child(1), #tbw td:nth-child(1) { /* Tên Sản Phẩm */
         width: 20%;
     }
 

@@ -384,7 +384,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     //
     // };
 
-    $scope.generateAndSendInvoice = function () {
+    $scope.generateAndSendInvoice = function (checkCK) {
         if (!$scope.selectedCustomerEmail || $scope.selectedCustomerEmail === '') {
             showDangerAlert("Khách hàng vãng lai không có Email để gửi hóa đơn");
             return;
@@ -418,7 +418,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
                 if (response.ok) {
                     overlayLoad.style.display = 'none';
                     loader.style.display = 'none';
-                    $scope.completePayment();
+                    $scope.completePayment(checkCK);
                     showSuccessAlert("Hóa đơn đã được gửi đến mail của khách hàng")
                     Swal.fire({
                         icon: 'success',
@@ -443,18 +443,11 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
 
     // Hoàn tất thanh toán chuyển khoản
     $scope.completePaymentCK = function () {
-        $scope.isSubmitted = true;
-        // Kiểm tra nếu tên hoặc số điện thoại bị trống
-        if (!$scope.selectedCustomerName || !$scope.selectedCustomerPhone) {
-            showDangerAlert("Vui lòng điền đầy đủ Tên khách hàng và Số điện thoại.")
-            return; // Chặn không cho chuyển modal
-        }
-        console.log("Thanh toán hoàn tất cho khách hàng:", $scope.selectedCustomerName);
-        showSuccessAlert("Thanh toán thành công!")
-        new bootstrap.Modal(document.getElementById('confirmModal')).hide();
-        location.reload();
-
+       $scope.generateAndSendInvoice(false)
     };
+    $scope.completePaymentSendM = function (){
+        $scope.completePayment(false)
+    }
     $scope.cancelVoucher = function () {
         if ($scope.appliedVoucher) {
             $scope.tongTien = $scope.previousTotal; // Khôi phục tổng tiền gốc
@@ -541,12 +534,12 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
 
     };
 
-    $scope.completePayment = function () {
-        if ($scope.amountPaid < $scope.tongTien) {
+
+    $scope.completePayment = function (checkThanhToan) {
+        if ($scope.amountPaid < $scope.tongTien && checkThanhToan) {
             showDangerAlert("Không thể hoàn tất thanh toán vì số tiền không đủ.");
             return;
         }
-
         let hoaDonData = {
             idKH: $scope.selectedCustomerId || null,  // Đặt null nếu không chọn khách hàng
             tenNguoiNhan: $scope.selectedCustomerId ? null : $scope.selectedCustomerName,
