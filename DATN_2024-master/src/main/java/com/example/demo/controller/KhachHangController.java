@@ -128,7 +128,28 @@ public class KhachHangController {
         KhachHang khachHang = khachHangRequest.toEntity();
         khachHang.setNgayTao(LocalDateTime.now());
         khRepo.save(khachHang);
-        return ResponseEntity.ok(khachHang);
+        return ResponseEntity.ok(khRepo.findAll());
+    }
+
+    @PostMapping("addKH")
+    public ResponseEntity<?> addKH(@RequestBody KhachHangRequest khachHangRequest) {
+
+        if (khachHangRequest.getMa() == null || khachHangRequest.getMa().isEmpty()) {
+            khachHangRequest.setMa(generateCodeAll.generateMaKhachHang());
+        }
+        if (khachHangRequest.getId() == null || khachHangRequest.getId().isEmpty()) {
+            khachHangRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        }
+        KhachHang khachHang = khachHangRequest.toEntity();
+        khachHang.setNgayTao(LocalDateTime.now());
+        khachHang.setTrangThai(1);
+        khRepo.save(khachHang);
+        return ResponseEntity.ok(khRepo.findAll());
+    }
+
+    @GetMapping("detailByEmail")
+    public ResponseEntity<?> khByEmail(@RequestParam String email){
+        return ResponseEntity.ok(khRepo.getKhachHangByEmail(email));
     }
 
     @PostMapping("dangKy")

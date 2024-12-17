@@ -52,7 +52,8 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         $scope.selectedCustomerName = "Không liên hệ";
         $scope.selectedCustomerPhone = "0123456789";
         $scope.selectedCustomerId = "";
-        $scope.selectedCustomerEmail = "";
+        $scope.selectedCustomerEmailVL = "";
+
 
         // Xóa danh sách voucher
         $scope.vouchers = [];
@@ -66,11 +67,12 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     };
 
 
+
     $scope.selectCustomer = function (ten, sdt, id, email) {
         $scope.selectedCustomerName = ten;
         $scope.selectedCustomerPhone = sdt;
         $scope.selectedCustomerId = id; // Lưu ID khách hàng
-        $scope.selectedCustomerEmail = email;
+        $scope.selectedCustomerEmailVL = email;
 
         // Khôi phục tổng tiền về giá trị gốc
         if ($scope.previousTotal) {
@@ -332,60 +334,9 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     };
 
 
-    // // gừi hóa đơn qua mail
-    // $scope.generateAndSendInvoice = function () {
-    //
-    //     if (!$scope.selectedCustomerEmail || $scope.selectedCustomerEmail === '') {
-    //         showDangerAlert("Khách hàng vãng lai không có Email để gửi hóa đơn")
-    //         return
-    //     }
-    //     const invoiceData = {
-    //         idHD: $scope.idHD,
-    //         customerName: $scope.selectedCustomerName,
-    //         amountPaid: $scope.amountPaid,
-    //         totalAmount: $scope.tongTien,
-    //         discountAmount: $scope.discountAmount,
-    //         email: $scope.selectedCustomerEmail // Gán email khách hàng
-    //     };
-    //
-    //     overlayLoad.style.display = 'block';
-    //     loader.style.display = 'block';
-    //
-    //     $('.modal-content').modal('hide')
-    //     fetch('http://localhost:8083/hoadon/send-invoice', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(invoiceData)
-    //
-    //     })
-    //         .then(response => {
-    //             if (response.ok) {
-    //                 overlayLoad.style.display = 'none';
-    //                 loader.style.display = 'none';
-    //                 // $scope.completePayment();
-    //                 // showSuccessAlert("Hóa đơn đã được gửi đến mail của khách hàng")
-    //                 Swal.fire({
-    //                     icon: 'success',
-    //                     title: "Hóa đơn đã được gửi đến mail của khách hàng",
-    //                     text: '',
-    //                     showConfirmButton: false,
-    //                     timer: 2000
-    //                 });
-    //             } else {
-    //                 showDangerAlert("Mail khách hàng không tồn tại!!")
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error("Lỗi khi gửi hóa đơn:", error);
-    //             alert("Đã xảy ra lỗi.");
-    //         });
-    //
-    // };
-
+//Gửi mail
     $scope.generateAndSendInvoice = function (checkCK) {
-        if (!$scope.selectedCustomerEmail || $scope.selectedCustomerEmail === '') {
+        if (!$scope.selectedCustomerEmailVL || $scope.selectedCustomerEmailVL === '') {
             showDangerAlert("Khách hàng vãng lai không có Email để gửi hóa đơn");
             return;
         }
@@ -395,7 +346,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
             amountPaid: $scope.amountPaid,
             totalAmount: $scope.tongTien,
             discountAmount: $scope.discountAmount,
-            email: $scope.selectedCustomerEmail
+            email: $scope.selectedCustomerEmailVL
         };
         overlayLoad.style.display = 'block';
         loader.style.display = 'block';
@@ -581,17 +532,27 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         if ($scope.newKH.ten && $scope.newKH.email && $scope.newKH.sdt && $scope.newKH.gioiTinh) {
             $http({
                 method: 'POST',
-                url: 'http://localhost:8083/khachhang/add',
+                url: 'http://localhost:8083/khachhang/addKH',
                 data: $scope.newKH
             })
                 .then(function (response) {
-
-                    $scope.selectCustomer(response.data.ten, response.data.sdt)
+                    $scope.selectCustomer($scope.newKH.ten, $scope.newKH.sdt)
                     showSuccessAlert("Thêm mới thành công khách hàng")
                     $('#addCustomerModal').modal('hide')
+                    $scope.listKhachHang = response.data
+                    $scope.selectedCustomerEmail = $scope.newKH.email
                     $scope.newKH = {}
-                }),
-                (function (error) {
+                    fetch(`http://localhost:8083/khachhang/detailByEmail` + $scope.selectedCustomerEmail )
+                        .then(function (response){
+                            return response.json()
+                        })
+                        .then(function (data){
+                            $scope.$apply(function (){
+                                $scope.selectedCustomerId = data.id
+                            })
+                        })
+                })
+                .catch(function (error) {
                     showDangerAlert("khách hàng không thể thêm mới")
                 })
         } else {
