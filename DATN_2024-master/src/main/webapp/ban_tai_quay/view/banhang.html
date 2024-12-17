@@ -235,9 +235,13 @@
                 </td>
                 <td>
                     <input type="hidden" ng-model="cthd.id">
-                    <input type="number" class="form-control" ng-model="cthd.soLuong" min="1"
-                            ng-change="updateTotal(cthd)" style="width: 90px"/>
-
+                    <input type="number"
+                           class="form-control"
+                           ng-model="cthd.soLuong"
+                           min="1"
+                           ng-focus="cthd.originalSoLuong = cthd.soLuong"
+                    ng-change="updateTotal(cthd)"
+                    style="width: 90px" />
                 </td>
                 <td>{{ calculateTotalAmount(cthd)  }} VND
                 </td>

@@ -140,9 +140,9 @@ window.sanPhamCtrl = function ($scope, $http) {
 
 
         $scope.formSubmitted = true;
-        if(!$scope.isTenValid()||!$scope.isTPValid()||!$scope.isCDValid()||!$scope.ishdsdValid()||!$scope.isAgeGreaterThan100()||!$scope.isAgeGreaterThan1001()||!$scope.isAgeInvalid()){
-            return
-        }
+        // if(!$scope.isTenValid()||!$scope.isTPValid()||!$scope.isCDValid()||!$scope.ishdsdValid()||!$scope.isAgeGreaterThan100()||!$scope.isAgeGreaterThan1001()||!$scope.isAgeInvalid()){
+        //     return
+        // }
         const formData = new FormData();
         formData.append('tenSP', product.tenSP || '');
         formData.append('thanhPhan', product.thanhPhan || '');
@@ -304,6 +304,7 @@ window.sanPhamCtrl = function ($scope, $http) {
         } else {
             console.error('Không tìm thấy sản phẩm với ID:', productId);
         }
+        console.log($scope.productDetail);
     };
     // Khởi tạo
     $scope.getAllProducts(0);

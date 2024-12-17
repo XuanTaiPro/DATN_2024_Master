@@ -255,7 +255,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $('#confirmAddInvoiceModal').modal('hide');
 
         const formData = new FormData();
-        formData.append('idNV', '915DDA4C'); // Thay đổi theo nhu cầu
+        formData.append('idNV', '1D4AFC32'); // Thay đổi theo nhu cầu
         $http.get('http://localhost:8083/hoadon/getHDTaiQuay')
             .then(function (response) {
                 if (response.data && response.data.length >= 10) {
@@ -436,34 +436,13 @@ window.banhangCtrl = function ($scope, $http, $document) {
             });
     };
     $scope.updateTotal = function (cthd) {
-        const formData = new FormData();
-        formData.append('soLuong', cthd.soLuong);
-
-        // $http.put('http://localhost:8083/chitiethoadon/updateSoLuong?id=' + cthd.id, formData, {
-        //     headers: { 'Content-Type': undefined }
-        // })
-        //     .then(function (response) {
-        //         console.log("Update successful:", response);
-
-        //         // Lấy idHD của tab hiện tại
-        //         const selectedTab = $scope.tabs[$scope.selectedTab];
-        //         const selectedIdHD = selectedTab.idHD;
-
-        //         // Gọi lại hàm để load lại danh sách chi tiết hóa đơn của tab hiện tại
-        //         $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
-
-        //         // alert("Cập nhật thành công!");
-        //     })
-        //     .catch(function (error) {
-        //         const selectedTab = $scope.tabs[$scope.selectedTab];
-        //         const selectedIdHD = selectedTab.idHD;
-        //         $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
-        //     });
+        const originalSoLuong = cthd.originalSoLuong || cthd.soLuong; // Lấy giá trị ban đầu
 
         const request = {
             id: cthd.id,
             soLuong: cthd.soLuong
-        }
+        };
+
         fetch(`http://localhost:8083/chitiethoadon/updateSoLuong`, {
             method: "PUT",
             headers: {
@@ -472,19 +451,29 @@ window.banhangCtrl = function ($scope, $http, $document) {
             body: JSON.stringify(request)
         })
             .then(async response => {
-                console.log(response)
-                if (response.status == 400) {
-                    showDangerAlert(await response.text())
+                if (response.ok) {
+                    const result = await response.text();
+                    showSuccessAlert(result);
+
+                    // Tải lại danh sách chi tiết hóa đơn
+                    const selectedTab = $scope.tabs[$scope.selectedTab];
+                    const selectedIdHD = selectedTab.idHD;
+                    $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
+                } else if (response.status === 400) {
+                    const errorMessage = await response.text();
+                    showDangerAlert(errorMessage);
+                    // Khôi phục giá trị cũ
+                    cthd.soLuong = originalSoLuong;
+                    $scope.$apply(); // Áp dụng lại thay đổi lên giao diện
                 }
-                return
-                const selectedTab = $scope.tabs[$scope.selectedTab];
-                const selectedIdHD = selectedTab.idHD;
-
-                // Gọi lại hàm để load lại danh sách chi tiết hóa đơn của tab hiện tại
-                $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage);
             })
+            .catch(error => {
+                console.error("Lỗi kết nối:", error);
 
-
+                // Khôi phục giá trị cũ
+                cthd.soLuong = originalSoLuong;
+                $scope.$apply();
+            });
     };
     $scope.calculateTotalAmount = function (cthd) {
         if (!cthd) return 0; // Kiểm tra nếu đối tượng không tồn tại
@@ -559,7 +548,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
             })
 
             .catch(function (error) {
-                showDangerAlert("Thêm thất bại!");
+                showDangerAlert("Thêm thất bại!Vui lòng kiểm tra lại số lượng hoặc các thông tin khác!");
                 $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
                 console.log('Lỗi:', error.data);
                 $scope.selectSanPham($scope.selectedSanPham);
