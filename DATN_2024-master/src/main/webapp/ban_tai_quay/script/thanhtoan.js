@@ -151,7 +151,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         let maxDiscountAmount = 0;
 
         vouchers.forEach(voucher => {
-            if (voucher.trangThai === 1 && voucher.soLuong > 0) { // Voucher hợp lệ
+            if (voucher.trangThai === 1 && voucher.soLuong > 0) {
                 let discountRate = parseFloat(voucher.giamGia.replace('%', '')) / 100;
                 let minAmount = parseInt(voucher.giamMin);
                 let maxDiscount = parseInt(voucher.giamMax);
@@ -389,7 +389,6 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
             showDangerAlert("Khách hàng vãng lai không có Email để gửi hóa đơn");
             return;
         }
-
         const invoiceData = {
             idHD: $scope.idHD,
             customerName: $scope.selectedCustomerName,
@@ -398,12 +397,9 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
             discountAmount: $scope.discountAmount,
             email: $scope.selectedCustomerEmail
         };
-
-        // Hiển thị loading
         overlayLoad.style.display = 'block';
         loader.style.display = 'block';
 
-        // Đóng modal
         const modalElement = document.getElementById('confirmModal');
         modalElement.style.display = 'none'
 
@@ -553,7 +549,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
                 if ($scope.appliedVoucherId) {
                     $http.post(`http://localhost:8083/voucher/apply`, { id: $scope.appliedVoucherId })
                         .then(function (response) {
-                            console.log(response.data.message); // Hiển thị thông báo từ phản hồi JSON
+                            console.log(response.data.message);
                         })
                         .catch(function (error) {
                             if (error.data && error.data.message) {
