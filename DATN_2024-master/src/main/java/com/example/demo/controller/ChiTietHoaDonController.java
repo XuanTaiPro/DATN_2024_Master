@@ -195,15 +195,15 @@ public class ChiTietHoaDonController {
 
         Integer sLRequest = (Integer) req.get("soLuong");
 
-        if (sLRequest > cthdService.getTotalSoLuong(idCTSP)) {
-            return ResponseEntity.badRequest().body("Sản phẩm không đủ để cung cấp.");
-        }
 
         // check tang hay giam
         boolean isIncrease = sLRequest > cTHDExisting.getSoLuong();
         int quantityDiff = Math.abs(sLRequest - cTHDExisting.getSoLuong());
 
         if (isIncrease) {
+            if (sLRequest > cthdService.getTotalSoLuong(idCTSP)) {
+                return ResponseEntity.badRequest().body("Sản phẩm không đủ để cung cấp.");
+            }
             List<LoHang> listLH = lHRepo.findBySoLuongGreaterThanZero(idCTSP);
             listLH.sort(Comparator.comparing(LoHang::getHsd));
             for (LoHang lh : listLH) {

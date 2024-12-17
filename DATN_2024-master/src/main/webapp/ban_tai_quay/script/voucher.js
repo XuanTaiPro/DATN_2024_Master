@@ -166,14 +166,11 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
     };
 
     $scope.confirmSelection = function () {
-        // Đóng modal "Chọn khách hàng" sau khi xác nhận
         $('#customerModal').modal('hide');
-        // Giữ modal "Thêm Voucher" mở
         $('#productModal').modal('show');
     };
     $scope.confirmSelectionUpdate = function () {
         $('#customerModalUpdate').modal('hide');
-//cập nhật khách đã chọn
         $scope.selectedCustomersUpdate = $scope.listKhachHang.filter(kh => kh.selectedUpdate);
         $('#UpdateForm').modal('show');
     };
