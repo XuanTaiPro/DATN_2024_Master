@@ -1,3 +1,4 @@
+<section class="p-3">
 <div class="text-center">
     <h2>Quản Lý Sản Phẩm</h2>
 </div>
@@ -42,7 +43,7 @@
 <!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
             </div>
             <div class="modal-body">
-                <form name="myForm" ng-submit="addProduct(product)"  novalidate>
+                <form name="myForm" ng-submit="addProduct(product)"  >
                     <div class="mb-3">
                         <label for="tenSP" class="form-label">Tên sản phẩm:</label>
                         <input type="text" id="tenSP" name="tenSP" ng-model="product.tenSP" class="form-control" ng-class="{'is-invalid': (!isTenValid() || isDuplicateName) &&( myForm.tenSP.$touched|| formSubmitted)}" ng-blur="checkDuplicateName()" />
@@ -79,7 +80,7 @@
                     <div class="mb-3">
                         <div class="form-group">
                             <label for="minAge">Tuổi tối thiểu:</label>
-                            <input type="number" id="minAge" name="tuoiMin" ng-model="ages.tuoiMin" class="form-control" required />
+                            <input type="number" id="minAge" name="tuoiMin" ng-model="product.tuoiMin" class="form-control" required />
                             <div ng-show="(myForm.tuoiMin.$touched || formSubmitted)&& myForm.tuoiMin.$invalid " class="error text-danger">
                                 Tuổi tối thiểu không hợp lệ.
                             </div>
@@ -90,7 +91,7 @@
 
                         <div class="form-group">
                             <label for="maxAge">Tuổi tối đa:</label>
-                            <input type="number" id="maxAge" name="tuoiMax" ng-model="ages.tuoiMax" class="form-control" required />
+                            <input type="number" id="maxAge" name="tuoiMax" ng-model="product.tuoiMax" class="form-control" required />
                             <div ng-show="(myForm.tuoiMax.$touched|| formSubmitted) && myForm.tuoiMax.$invalid " class="error text-danger">
                                 Tuổi tối đa không hợp lệ.
                             </div>
@@ -352,7 +353,15 @@
     </ul>
 </div>
 </div>
+</section>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-
+<style>
+    .table td {
+        /*max-width: 100px; !* Giới hạn chiều rộng cột *!*/
+        /*white-space: nowrap; !* Không cho phép xuống dòng *!*/
+        overflow: hidden; /* Ẩn phần nội dung tràn */
+        /*text-overflow: ellipsis; !* Hiển thị dấu ba chấm *!*/
+    }
+</style>

@@ -271,20 +271,20 @@ public class ChiTietSanPhamController {
 //        }
 //
 //        if (chiTietSanPhamRequest.getListLoHang() != null) {
-//            List<Map<String, Object>> listLH = chiTietSanPhamRequest.getListLoHang();
-//
-//            for (Map<String, Object> loHang : listLH) {
-//
-//                LoHang getLoHang = lHRepo.findById((String) loHang.get("idLoHang")).get();
-//
-//                // check số lượng để update
-//                Object sLuong = loHang.get("soLuong");
-//                Integer sLuongInt;
-//                if (sLuong instanceof Integer) {
-//                    sLuongInt = (Integer) sLuong;
-//                } else {
-//                    try {
-//                        sLuongInt = Integer.parseInt((String) loHang.get("soLuong"));
+////            List<Map<String, Object>> listLH = chiTietSanPhamRequest.getListLoHang();
+////
+////            for (Map<String, Object> loHang : listLH) {
+////
+////                LoHang getLoHang = lHRepo.findById((String) loHang.get("idLoHang")).get();
+////
+////                // check số lượng để update
+////                Object sLuong = loHang.get("soLuong");
+////                Integer sLuongInt;
+////                if (sLuong instanceof Integer) {
+////                    sLuongInt = (Integer) sLuong;
+////                } else {
+////                    try {
+////                        sLuongInt = Integer.parseInt((String) loHang.get("soLuong"));
 //                    } catch (NumberFormatException e) {
 //                        return ResponseEntity.badRequest().body("Số lượng phải là số.");
 //                    }
@@ -335,7 +335,7 @@ public class ChiTietSanPhamController {
         }
 
         if (chiTietSanPhamRequest.getLinkAnhList() == null) {
-            existingChiTietSanPham.getAnhCTSP().clear(); // Xóa ảnh cũ
+            existingChiTietSanPham.getAnhCTSP().clear();
         }
 
         BeanUtils.copyProperties(chiTietSanPhamRequest, existingChiTietSanPham, "id", "ma", "ngayTao");
