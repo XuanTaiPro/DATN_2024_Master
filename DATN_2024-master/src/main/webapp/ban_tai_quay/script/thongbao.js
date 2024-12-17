@@ -2,6 +2,7 @@ window.thongbaoCtrl = function ($scope, $http) {
     const url = "http://localhost:8083/thongbao";
 
     $scope.listThongBao = [];
+    $scope.listKH = [];
     $scope.currentPage = 0;
     $scope.totalPages = 1;
     $scope.pageSize = 5;
@@ -10,36 +11,36 @@ window.thongbaoCtrl = function ($scope, $http) {
     const overlayLoad = document.querySelector('.overlay-load')
     const loader = document.querySelector('.loader')
 
-    $scope.searchParams ={
-        noiDung : '',
-        trangThai :''
+    $scope.searchParams = {
+        noiDung: '',
+        trangThai: ''
     }
-    $scope.searchAndFilter = function (page = 0){
+    $scope.searchAndFilter = function (page = 0) {
         const params = {
             ...$scope.searchParams,
-            page:page,
-            size :$scope.pageSize
+            page: page,
+            size: $scope.pageSize
         }
         $http.get(`http://localhost:8083/thongbao/searchTB`, {params})
-            .then(function (response){
+            .then(function (response) {
                 $scope.listThongBao = response.data.thongBaos
                 $scope.currentPage = response.data.currentPage
                 $scope.totalPages = response.data.totalPages
 
-                if($scope.listThongBao.length ===0 ){
+                if ($scope.listThongBao.length === 0) {
                     $scope.emptyMessage = response.data.message || "Không tìm thấy thông báo"
-                }else {
+                } else {
                     $scope.emptyMessage = ''
                 }
             })
-            .catch(function (error){
-                console.error("Lỗi khi tìm kiếm",error)
+            .catch(function (error) {
+                console.error("Lỗi khi tìm kiếm", error)
             })
     }
-    $scope.resetFilters = function (){
-        $scope.searchParams ={
-            noiDung : '',
-            trangThai : ''
+    $scope.resetFilters = function () {
+        $scope.searchParams = {
+            noiDung: '',
+            trangThai: ''
         }
         $scope.loadPage(0)
     }
@@ -99,7 +100,6 @@ window.thongbaoCtrl = function ($scope, $http) {
     $scope.loadPage(0);
 
 
-    $scope.listKH = [];
     $http.get("http://localhost:8083/khachhang")
         .then(function (response) {
             $scope.listKH = response.data;
@@ -131,11 +131,11 @@ window.thongbaoCtrl = function ($scope, $http) {
         fetch(`http://localhost:8083/thongbao/` + thongBao.id)
             .then(respponse => respponse.json())
             .then(data => {
-                $scope.$apply(() =>{
+                $scope.$apply(() => {
                     $scope.listCustomer = data
                 })
             })
-            .catch(function (error){
+            .catch(function (error) {
                 console.error(error)
             })
     };
@@ -166,11 +166,11 @@ window.thongbaoCtrl = function ($scope, $http) {
         fetch(`http://localhost:8083/thongbao/` + thongBao.id)
             .then(response => response.json())
             .then(data => {
-                $scope.$apply(() =>{
+                $scope.$apply(() => {
                     $scope.selectedCustomersForUpdate = data
                 })
             })
-            .catch(function (error){
+            .catch(function (error) {
                 console.error(error)
             })
 
@@ -228,7 +228,7 @@ window.thongbaoCtrl = function ($scope, $http) {
 
         $http.post('http://localhost:8083/thongbao/add', newThongBao)
             .then(function (response) {
-               showSuccessAlert("Thêm thành công thông báo")
+                showSuccessAlert("Thêm thành công thông báo")
                 $('#productModal').modal('hide');
                 setTimeout(function () {
                     $scope.loadPage($scope.currentPage)
@@ -317,6 +317,31 @@ window.thongbaoCtrl = function ($scope, $http) {
         }
     };
 
+    $scope.search = {
+        ten: '',
+        gioiTinh: '',
+        sdt: ''
+    }
+
+    $scope.searchKH = function () {
+        const params = {
+            ten: $scope.search.ten || null,
+            gioiTinh: $scope.search.gioiTinh || null,
+            sdt: $scope.search.sdt || null
+        }
+        $http.get('http://localhost:8083/khachhang/search', {params})
+            .then(function (response) {
+                $scope.listKH = response.data
+                if ($scope.listKH == null) {
+                    $scope.emptyMessage = response.data.message || "không tìm thấy khách hàng với tiêu chí được chọn"
+                } else {
+                    $scope.emptyMessage = ''
+                }
+            })
+            .catch(function (error){
+                console.log(error)
+            })
+    }
 
     $scope.sendEmailsToAll = function (thongBao) {
         if (!thongBao || !thongBao.emailKH) {
@@ -337,9 +362,16 @@ window.thongbaoCtrl = function ($scope, $http) {
 
         $http.post('http://localhost:8083/mail/sentAllKH', emailRequest)
             .then(function (response) {
-                overlayLoad.style.display ='none'
+                overlayLoad.style.display = 'none'
                 loader.style.display = 'none'
                 showSuccessAlert(response.data.message)
+                Swal.fire({
+                    icon: 'success',
+                    title: "Thông báo đã được gửi đến mail của khách hàng",
+                    text: '',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
                 console.log("Email đã gửi thành công:", response.data);
             })
             .catch(function (error) {
@@ -347,14 +379,11 @@ window.thongbaoCtrl = function ($scope, $http) {
                 alert(errorMessage);
                 console.error("Lỗi khi gửi email:", error);
             })
-            .finally(() =>{
+            .finally(() => {
                 overlayLoad.style.display = 'none'
                 loader.style.display = 'none'
             })
     };
-
-
-
 
 
     function resetForm() {

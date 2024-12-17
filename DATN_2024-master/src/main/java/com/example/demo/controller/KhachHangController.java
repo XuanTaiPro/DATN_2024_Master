@@ -133,17 +133,6 @@ public class KhachHangController {
 
     @PostMapping("dangKy")
     public ResponseEntity<?> dangKy(@RequestBody KhachHangRequestOnline khachHangRequest) {
-
-        // Kiểm tra lỗi trong BindingResult
-        // if (bindingResult.hasErrors()) {
-        // List<String> errors = bindingResult.getAllErrors()
-        // .stream()
-        // .map(error -> error.getDefaultMessage())
-        // .toList();
-        // return ResponseEntity.badRequest().body(String.join("\n", errors));
-        // }
-
-        // Gán ID nếu chưa có
         khachHangRequest.setId(Optional.ofNullable(khachHangRequest.getId())
                 .filter(id -> !id.isEmpty())
                 .orElse(UUID.randomUUID().toString().substring(0, 8).toUpperCase()));
@@ -159,12 +148,11 @@ public class KhachHangController {
         khachHang.setTrangThai(1);
         khachHang.setSdt(khachHangRequest.getSdt());
 
-        // Lưu khách hàng vào cơ sở dữ liệu
         khRepo.save(khachHang);
         return ResponseEntity.ok("Thêm thành công");
     }
 
-    // Hàm tạo mã khách hàng duy nhất
+    // Hàm tạo mã khách hàng đăng ký
     private String generateUniqueMa() {
         String generatedMa;
         do {

@@ -56,7 +56,7 @@
                                 data-bs-target="#UpdateForm"><i class="bi bi-pencil-square"></i></button>
                         <button class="btn btn-danger" ng-click="delete(thongBao.id)"><i class="bi bi-trash"></i>
                         </button>
-                        <button class="btn btn-warning" ng-click="sendEmailsToAll(thongBao)">
+                        <button class="btn btn-warning" ng-click="sendEmailsToAll(thongBao)" ng-disabled="thongBao.trangThai == 0">
                             <i class="bi bi-envelope"></i> Gửi Email
                         </button>
                     </td>
@@ -142,11 +142,36 @@
             </div>
             <div class="modal-body">
                 <label>Chọn khách hàng:</label>
+                <div class="search mb-3">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten" ng-change="searchKH()">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                                <select class="form-select" ng-model="search.gioiTinh" ng-change="searchKH()">
+                                    <option value="">-- Giới tính --</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" class="form-control" placeholder="Số điện thoại" ng-model="search.sdt" ng-change="searchKH()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="mb-3">
                     <button ng-click="selectAllCustomers()" class="btn btn-outline-primary">Chọn Tất Cả</button>
                     <button ng-click="deselectAllCustomers()" class="btn btn-outline-danger">Bỏ Chọn Tất Cả</button>
                 </div>
-                <!-- Bảng cuộn khách hàng -->
                 <div style="max-height: 300px; overflow-y: auto;">
                     <table class="table table-bordered">
                         <thead>
@@ -164,6 +189,11 @@
                             <td>{{kh.sdt}}</td>
                             <td>
                                 <input type="checkbox" ng-model="kh.selected" ng-change="updateSelectedCustomers(kh)">
+                            </td>
+                        </tr>
+                        <tr ng-if="listKH.length === 0">
+                            <td colspan="5" class="text-center text-muted">
+                                <i class="fas fa-exclamation-circle"></i> Danh sách trống
                             </td>
                         </tr>
                         </tbody>
@@ -312,8 +342,8 @@
                         <div>
                             <label>Khách hàng sở hữu</label>
                         </div>
-                        <div class="mt-3">
-                            <table class="table table-bordered">
+                        <div class="mt-3" style="max-height: 550px; overflow-y: auto; width: 750px">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
                                         <td>Tên khách hàng</td>

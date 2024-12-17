@@ -88,7 +88,6 @@ public class LoginController {
     @PostMapping("checkOtp")
     public ResponseEntity<?> checkOtp(@RequestBody Map<String, String> otpRequest, HttpSession ses) {
         String otp = otpRequest.get("otp");
-        System.out.println(otpCache.get("maOtp") + " và " + otp);
 
         if (!otpCache.get("maOtp").equals(otp)) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Mã OTP không chính xác"));
