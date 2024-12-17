@@ -7,6 +7,42 @@ window.thongbaoCtrl = function ($scope, $http) {
     $scope.pageSize = 5;
     $scope.emptyMessage = "";
 
+    const overlayLoad = document.querySelector('.overlay-load')
+    const loader = document.querySelector('.loader')
+
+    $scope.searchParams ={
+        noiDung : '',
+        trangThai :''
+    }
+    $scope.searchAndFilter = function (page = 0){
+        const params = {
+            ...$scope.searchParams,
+            page:page,
+            size :$scope.pageSize
+        }
+        $http.get(`http://localhost:8083/thongbao/searchTB`, {params})
+            .then(function (response){
+                $scope.listThongBao = response.data.thongBaos
+                $scope.currentPage = response.data.currentPage
+                $scope.totalPages = response.data.totalPages
+
+                if($scope.listThongBao.length ===0 ){
+                    $scope.emptyMessage = response.data.message || "Không tìm thấy thông báo"
+                }else {
+                    $scope.emptyMessage = ''
+                }
+            })
+            .catch(function (error){
+                console.error("Lỗi khi tìm kiếm",error)
+            })
+    }
+    $scope.resetFilters = function (){
+        $scope.searchParams ={
+            noiDung : '',
+            trangThai : ''
+        }
+        $scope.loadPage(0)
+    }
     $scope.loadPage = function (page) {
         $http.get('http://localhost:8083/thongbao/page?page=' + page)
             .then(function (response) {
@@ -195,7 +231,7 @@ window.thongbaoCtrl = function ($scope, $http) {
                showSuccessAlert("Thêm thành công thông báo")
                 $('#productModal').modal('hide');
                 setTimeout(function () {
-                    $scope.loadPage(0)
+                    $scope.loadPage($scope.currentPage)
                 }, 500);
             })
             .catch(function (error) {
@@ -254,7 +290,7 @@ window.thongbaoCtrl = function ($scope, $http) {
             .then(function (response) {
                 showSuccessAlert("Update thành công")
                 $('#UpdateForm').modal('hide');
-                $scope.loadPage(0)
+                $scope.loadPage($scope.currentPage)
             })
             .catch(function (error) {
                 $scope.errorMessage = error.data || "Cập nhật thất bại!";
@@ -267,7 +303,7 @@ window.thongbaoCtrl = function ($scope, $http) {
             $http.delete('http://localhost:8083/thongbao/delete/' + id)
                 .then(function (response) {
                     console.log(response.data);
-                    $scope.loadPage(0)
+                    $scope.loadPage($scope.currentPage)
                     const index = $scope.listThongBao.findIndex(tb => tb.id === id);
                     if (index !== -1) {
                         $scope.listThongBao.splice(index, 1);
@@ -296,17 +332,25 @@ window.thongbaoCtrl = function ($scope, $http) {
             tieuDe: "Thông báo từ Shop bán thực phẩm chức năng Loopy",
             noiDung: thongBao.noiDung
         };
+        overlayLoad.style.display = 'block';
+        loader.style.display = 'block';
 
         $http.post('http://localhost:8083/mail/sentAllKH', emailRequest)
             .then(function (response) {
-                alert(response.data.message);
+                overlayLoad.style.display ='none'
+                loader.style.display = 'none'
+                showSuccessAlert(response.data.message)
                 console.log("Email đã gửi thành công:", response.data);
             })
             .catch(function (error) {
                 const errorMessage = error.data && error.data.message ? error.data.message : "Không thể gửi email. Vui lòng thử lại!";
                 alert(errorMessage);
                 console.error("Lỗi khi gửi email:", error);
-            });
+            })
+            .finally(() =>{
+                overlayLoad.style.display = 'none'
+                loader.style.display = 'none'
+            })
     };
 
 

@@ -99,16 +99,16 @@ public class ThongBaoController {
         // Lưu vào cơ sở dữ liệu
         tbRepo.save(thongBao);
 
-        if(thongBaoRequest.getIdKHs() != null && ! thongBaoRequest.getIdKHs().isEmpty()){
-            for(String customerID : thongBaoRequest.getIdKHs()){
+        if (thongBaoRequest.getIdKHs() != null && !thongBaoRequest.getIdKHs().isEmpty()) {
+            for (String customerID : thongBaoRequest.getIdKHs()) {
                 Optional<KhachHang> optionalKhachHang = khRepo.findById(customerID);
-                if(optionalKhachHang.isPresent()){
+                if (optionalKhachHang.isPresent()) {
                     ChiTietThongBao chiTietThongBao = new ChiTietThongBao();
-                    chiTietThongBao.setId(UUID.randomUUID().toString().substring(0,8).toUpperCase());
+                    chiTietThongBao.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
                     chiTietThongBao.setThongBao(thongBao);
                     chiTietThongBao.setKhachHang(optionalKhachHang.get());
                     cttbRepo.save(chiTietThongBao);
-                }else {
+                } else {
                     return ResponseEntity.badRequest().body("không tồn tại id khách hàng với id" + customerID);
                 }
             }
@@ -118,7 +118,7 @@ public class ThongBaoController {
 
 
     @PutMapping("update/{id}")
-        public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody ThongBaoRequest thongBaoRequest,
+    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody ThongBaoRequest thongBaoRequest,
                                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
@@ -144,7 +144,7 @@ public class ThongBaoController {
             );
             ThongBao savedThongBao = tbRepo.save(thongBaoUpdate);
 
-            if(!cttbRepo.getCTTB(id).isEmpty()){
+            if (!cttbRepo.getCTTB(id).isEmpty()) {
                 cttbRepo.deleteByThongBaoID(id);
             }
             // Đảm bảo `idKHs` không bị null hoặc trống trước khi cập nhật
@@ -185,5 +185,30 @@ public class ThongBaoController {
             response.put("message", "Không tìm thấy id cần xóa");
             return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON khi lỗi
         }
+    }
+
+    @GetMapping("searchTB")
+    public ResponseEntity<?> searchTB(
+            @RequestParam(required = false) String noiDung,
+            @RequestParam(required = false) Integer trangThai,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "5") Integer size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongBao> thongBaos = tbRepo.searchTB(noiDung, trangThai, pageable);
+        if (thongBaos.isEmpty()) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "Không tìm thấy nhân viên",
+                    "thongBaos", Collections.emptyList(),
+                    "currentPage", page,
+                    "totalPages", 0
+            ));
+        }
+        List<ThongBaoResponse> thongBaoResponses = thongBaos.stream().map(ThongBao::toResponse).toList();
+        return ResponseEntity.ok(Map.of(
+                "thongBaos", thongBaoResponses,
+                "currentPage", page,
+                "totalPages", thongBaos.getTotalPages()
+        ));
     }
 }

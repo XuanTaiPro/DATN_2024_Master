@@ -128,7 +128,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
                     videoElement.srcObject = null; // Hủy kết nối video
                 } else {
                     const formData = new FormData();
-                    formData.append('idNV', 'CEC76A2E'); // Thay đổi theo nhu cầu
+                    formData.append('idNV', '915DDA4C'); // Thay đổi theo nhu cầu
 
                     // Gọi API để thêm hóa đơn mới
                     $http.post('http://localhost:8083/hoadon/add', formData, {
@@ -255,7 +255,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
         $('#confirmAddInvoiceModal').modal('hide');
 
         const formData = new FormData();
-        formData.append('idNV', 'CEC76A2E'); // Thay đổi theo nhu cầu
+        formData.append('idNV', '915DDA4C'); // Thay đổi theo nhu cầu
         $http.get('http://localhost:8083/hoadon/getHDTaiQuay')
             .then(function (response) {
                 if (response.data && response.data.length >= 10) {

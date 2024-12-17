@@ -67,7 +67,7 @@ app.controller('myCtrl', function ($scope, $http) {
     }
 
     const idNV = sessionStorage.getItem('idNV');
-    // const idNV='CEC76A2E'
+    // const idNV='915DDA4C'
     if (!idNV) {
         console.error('Không tìm thấy ID nhân viên trong sessionStorage');
         return;

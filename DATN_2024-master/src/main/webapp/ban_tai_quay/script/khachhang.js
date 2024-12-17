@@ -204,7 +204,7 @@ window.khachhangCtrl = function ($scope, $http) {
                             $scope.listKhachHang.push(response.data);
                             $('#productModal').modal('hide');
                             showSuccessAlert('Thêm thành công!');
-                            // $scope.loadPage($scope.currentPage);
+                            $scope.loadPage($scope.currentPage);
                         })
                         .catch(function (error) {
                             $scope.errorMessage = "Thêm thất bại";

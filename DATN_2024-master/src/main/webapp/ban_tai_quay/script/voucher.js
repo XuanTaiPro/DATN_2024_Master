@@ -314,15 +314,13 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
         };
 
         console.log("Dữ liệu mới:", newVoucher);
-
-
         // Kiểm tra nếu form hợp lệ trước khi gửi request
         if ($scope.voucherForm.$valid) {
             $http.post('http://localhost:8083/voucher/add', newVoucher)
                 .then(function (response) {
                     $('#productModal').modal('hide');
                     showSuccessAlert('Thêm thành công!');
-                    // $scope.loadPage($scope.currentPage);
+                    $scope.loadPage($scope.currentPage);
                 })
                 .catch(function (error) {
                     $scope.errorMessage = "Thêm thất bại";
@@ -426,7 +424,7 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
                 .then(function (response) {
                     // Kiểm tra phản hồi server
                     console.log(response.data);
-                    location.reload()
+                    $scope.loadPage($scope.currentPage)
                     const index = $scope.listVoucher.findIndex(vc => vc.id === id);
                     if (index !== -1) {
                         $scope.listVoucher.splice(index, 1);

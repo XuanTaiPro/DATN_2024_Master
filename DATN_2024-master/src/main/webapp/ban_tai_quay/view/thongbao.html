@@ -1,5 +1,23 @@
 <section class="p-3">
     <h1>Quản lý Thông báo</h1>
+    <div class="row mb-2">
+        <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="searchParams.noiDung"
+                   ng-change="searchAndFilter()">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" ng-model="searchParams.trangThai" ng-change="searchAndFilter()">
+                <option value="">-- Trạng thái --</option>
+                <option value="1">Hoạt động</option>
+                <option value="0">Ngưng hoạt động</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12 text-start">
+            <button class="btn btn-secondary" ng-click="resetFilters()" >Xóa lọc</button>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">

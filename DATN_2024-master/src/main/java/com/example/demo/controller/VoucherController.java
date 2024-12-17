@@ -153,18 +153,11 @@ public class VoucherController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<?> add(@Valid @RequestBody VoucherRequest voucherRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            System.out.println(mess.toString());
-            return ResponseEntity.badRequest().body(mess.toString());
-        }
+    public ResponseEntity<?> add(@RequestBody VoucherRequest voucherRequest) {
         if (voucherRequest.getId() == null || voucherRequest.getId().isEmpty()) {
             voucherRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
-        if (voucherRequest.getMa() == null || voucherRequest.getMa().isEmpty()) {// nếu mã chưa đc điền thì tự động thêm
-            // mã
+        if (voucherRequest.getMa() == null || voucherRequest.getMa().isEmpty()) {
             voucherRequest.setMa(generateCodeAll.generateMaVoucher());
         }
         Voucher voucher = voucherRequest.toEntity();
@@ -180,7 +173,7 @@ public class VoucherController {
                     chiTietVoucher.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
                     chiTietVoucher.setKhachHang(khachHang.get());
                     chiTietVoucher.setVoucher(voucher);
-                    ctvcRepo.save(chiTietVoucher); // Lưu chi tiết voucher cho từng khách hàng
+                    ctvcRepo.save(chiTietVoucher);
                 } else {
                     return ResponseEntity.badRequest().body("Khách hàng với ID " + customerId + " không tồn tại");
                 }
@@ -190,13 +183,7 @@ public class VoucherController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody VoucherRequest voucherRequest,
-                                    BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            return ResponseEntity.badRequest().body(mess.toString());
-        }
+    public ResponseEntity<?> update(@PathVariable String id,@RequestBody VoucherRequest voucherRequest) {
         Optional<Voucher> optionalVoucher = vcRepo.findById(id);
         if (optionalVoucher.isPresent()) {
 

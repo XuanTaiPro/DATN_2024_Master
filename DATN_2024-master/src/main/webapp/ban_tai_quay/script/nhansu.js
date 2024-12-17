@@ -117,13 +117,6 @@ window.nhansuCtrl = function ($scope, $http) {
     // Load initial page
     $scope.loadPage(0);
 
-
-    // $http.get('http://localhost:8080/nhanvien').then(function (response) {
-    //     $scope.listNhanVien = response.data;
-    //     console.log("Lấy dữ liệu thành công");
-    // }).catch((error) => {
-    //     console.error('Lỗi:', error);
-    // });
     $scope.listQuyen = [];
     $http.get("http://localhost:8083/quyen")
         .then(function (response) {
@@ -137,8 +130,8 @@ window.nhansuCtrl = function ($scope, $http) {
 
     $scope.updateImage = function (files) {
         var file = files[0];
-        if (file && file.size < 10000000) {  // Kiểm tra kích thước file < 1MB
-            var fileName = file.name;  // Lấy tên file
+        if (file && file.size < 10000000) {
+            var fileName = file.name;
             var filePath = "img/NhanVien/" + fileName;  // Đường dẫn bạn lưu ảnh trong thư mục img
 
             // Cập nhật đường dẫn ảnh trong Angular
@@ -218,7 +211,7 @@ window.nhansuCtrl = function ($scope, $http) {
                                     $scope.errorMessage = '';
                                 }, 2000);
                             }
-                        });
+                        })
 
                 }
             })
@@ -264,14 +257,12 @@ window.nhansuCtrl = function ($scope, $http) {
                         })
                         .catch(function (error) {
                             console.error("Lỗi khi cập nhật nhân viên:", error);
-                            alert(error.data?.message || "Cập nhật nhân viên thất bại. Vui lòng thử lại sau.");
                         });
                 }
             })
             .catch(function (error) {
                 console.error("Lỗi khi kiểm tra email:", error);
                 $scope.errorMessages.email = "Lỗi khi kiểm tra email!";
-                alert(error.data?.message || "Kiểm tra email thất bại. Vui lòng thử lại sau.");
             });
     };
 
