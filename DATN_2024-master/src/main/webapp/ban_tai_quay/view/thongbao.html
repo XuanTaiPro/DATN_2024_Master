@@ -272,6 +272,32 @@
             </div>
             <div class="modal-body">
                 <label>Chọn khách hàng:</label>
+                <div class="search mb-3">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten" ng-change="searchKH()">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                                <select class="form-select" ng-model="search.gioiTinh" ng-change="searchKH()">
+                                    <option value="">-- Giới tính --</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" class="form-control" placeholder="Số điện thoại" ng-model="search.sdt" ng-change="searchKH()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="mb-3">
                     <button ng-click="selectAllCustomersForUpdate()" class="btn btn-outline-primary">Chọn Tất Cả</button>
                     <button ng-click="deselectAllCustomersForUpdate()" class="btn btn-outline-danger">Bỏ Chọn Tất Cả</button>
