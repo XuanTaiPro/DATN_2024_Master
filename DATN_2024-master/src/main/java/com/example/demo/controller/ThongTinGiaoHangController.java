@@ -142,10 +142,10 @@ public class ThongTinGiaoHangController {
         // } else {
         // return ResponseEntity.badRequest().body("Không tìm thấy id cần xóa");
         // }
-        if (ttghRepo.findById(id).isPresent()) {
-            ttghRepo.deleteById(id);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Xóa thành công");
+        ThongTinGiaoHang response = ttghRepo.findById(id).get();
+        if (response != null) {
+            response.setTrangThai(0);
+            ttghRepo.save(response);
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.badRequest().body("Không tìm thấy id cần xóa");
