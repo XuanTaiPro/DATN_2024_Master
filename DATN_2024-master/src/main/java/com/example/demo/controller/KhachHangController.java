@@ -233,20 +233,20 @@ public class KhachHangController {
         }
     }
 
-    // @DeleteMapping("delete/{id}")
-    // public ResponseEntity<?> delete(@PathVariable String id) {
-    // Map<String, String> response = new HashMap<>(); // Khởi tạo Map để trả về
-    // JSON hợp lệ
-    // if (khRepo.findById(id).isPresent()) {
-    // khRepo.deleteById(id);
-    // response.put("message", "Xóa thành công");
-    // return ResponseEntity.ok(response); // Trả về phản hồi JSON
-    // } else {
-    // response.put("message", "Không tìm thấy id cần xóa");
-    // return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON
-    // khi lỗi
-    // }
-    // }
+//     @DeleteMapping("delete/{id}")
+//     public ResponseEntity<?> delete(@PathVariable String id) {
+//     Map<String, String> response = new HashMap<>(); // Khởi tạo Map để trả về
+//     JSON hợp lệ
+//     if (khRepo.findById(id).isPresent()) {
+//     khRepo.deleteById(id);
+//     response.put("message", "Xóa thành công");
+//     return ResponseEntity.ok(response); // Trả về phản hồi JSON
+//     } else {
+//     response.put("message", "Không tìm thấy id cần xóa");
+//     return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON
+//     khi lỗi
+//     }
+//     }
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
