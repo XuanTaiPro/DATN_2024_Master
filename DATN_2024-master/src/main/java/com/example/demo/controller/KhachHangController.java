@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -81,7 +82,7 @@ public class KhachHangController {
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
         Page<KhachHang> khachHangPage = khRepo.findAll(pageable);
 
         List<KhachHangResponse> list = new ArrayList<>();
@@ -128,7 +129,28 @@ public class KhachHangController {
         KhachHang khachHang = khachHangRequest.toEntity();
         khachHang.setNgayTao(LocalDateTime.now());
         khRepo.save(khachHang);
-        return ResponseEntity.ok(khachHang);
+        return ResponseEntity.ok(khRepo.findAll());
+    }
+
+    @PostMapping("addKH")
+    public ResponseEntity<?> addKH(@RequestBody KhachHangRequest khachHangRequest) {
+
+        if (khachHangRequest.getMa() == null || khachHangRequest.getMa().isEmpty()) {
+            khachHangRequest.setMa(generateCodeAll.generateMaKhachHang());
+        }
+        if (khachHangRequest.getId() == null || khachHangRequest.getId().isEmpty()) {
+            khachHangRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        }
+        KhachHang khachHang = khachHangRequest.toEntity();
+        khachHang.setNgayTao(LocalDateTime.now());
+        khachHang.setTrangThai(1);
+        khRepo.save(khachHang);
+        return ResponseEntity.ok(khRepo.findAll());
+    }
+
+    @GetMapping("detailByEmail")
+    public ResponseEntity<?> khByEmail(@RequestParam String email){
+        return ResponseEntity.ok(khRepo.getKhachHangByEmail(email));
     }
 
     @PostMapping("dangKy")

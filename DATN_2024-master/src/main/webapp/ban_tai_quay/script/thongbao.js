@@ -106,7 +106,7 @@ window.thongbaoCtrl = function ($scope, $http) {
             console.log("Lấy danh sách khách hàng thành công", $scope.listKH);
         })
         .catch(function (error) {
-            console.error("Lỗi khi lấy danh sách LVC:", error);
+            console.error("Lỗi khi lấy danh sách KH:", error);
         });
 
     $scope.formatDate = function (dateString) {

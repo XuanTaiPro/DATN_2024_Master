@@ -273,7 +273,7 @@ public class HoaDonController {
                 return ResponseEntity.badRequest().body("Số điện thoại người nhận chỉ bao gồm số");
             }
 
-            if(sdtNN.length() !=10){
+            if (sdtNN.length() != 10) {
                 return ResponseEntity.badRequest().body("Số điện thoại phải đúng 10 số");
             }
             if ("".equals(dcNN.trim())) {
@@ -488,12 +488,24 @@ public class HoaDonController {
     }
 
     @PutMapping("/huyHD")
-    public ResponseEntity<?> huyHD(@RequestParam(name = "idHD") String idHD) {
+    public ResponseEntity<?> huyHD(@RequestBody Map<String, String> mapHuyHD) {
+        String idHD = mapHuyHD.get("idHD");
+        String reason = mapHuyHD.get("reason");
         HoaDon hoaDonExisting = hoaDonRepo.getReferenceById(idHD);
-        if (hoaDonExisting != null) {
-            hoaDonExisting.setTrangThai(4);
-            hoaDonRepo.save(hoaDonExisting);
+
+        if (reason.length() < 5 || reason.length() > 255) {
+            return ResponseEntity.badRequest()
+                    .body("Lý do hủy hóa đơn phải từ 5 đến 255 ký tự.");
         }
+
+        if (hoaDonExisting == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hóa đơn không tồn tại.");
+        }
+
+        hoaDonExisting.setTrangThai(4);
+        hoaDonExisting.setGhiChu(reason);
+        hoaDonRepo.save(hoaDonExisting);
+
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Đã huy hóa đơn: " + idHD);
 
     }
