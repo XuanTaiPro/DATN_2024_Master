@@ -201,9 +201,8 @@ public class ChiTietHoaDonController {
 
         if (isIncrease) {
 
-            if (sLRequest >= cthdService.getTotalSoLuong(idCTSP)+sLRequest) {
+            if (quantityDiff> cthdService.getTotalSoLuong(idCTSP)) {
                 return ResponseEntity.badRequest().body("Sản phẩm không đủ để cung cấp.");
-
             }
             List<LoHang> listLH = lHRepo.findBySoLuongGreaterThanZero(idCTSP);
             listLH.sort(Comparator.comparing(LoHang::getHsd));

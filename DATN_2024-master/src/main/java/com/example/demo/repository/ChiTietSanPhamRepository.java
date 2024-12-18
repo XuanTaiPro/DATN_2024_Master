@@ -32,14 +32,17 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                         @Param("soNgaySuDung") String soNgaySuDung);
 
         @Query("SELECT ctsp FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id = :idSP " +
-                        "AND (:giaMin IS NULL OR CAST(ctsp.gia AS double) >= :giaMin) " +
-                        "AND (:giaMax IS NULL OR CAST(ctsp.gia AS double) <= :giaMax) " +
-                        "AND (:trangThai IS NULL OR ctsp.trangThai = :trangThai)")
+                "AND (:giaMin IS NULL OR CAST(ctsp.gia AS double) >= :giaMin) " +
+                "AND (:giaMax IS NULL OR CAST(ctsp.gia AS double) <= :giaMax) " +
+                "AND (:trangThai IS NULL OR ctsp.trangThai = :trangThai) " +
+                "AND (:soNgaySuDung IS NULL OR ctsp.soNgaySuDung = :soNgaySuDung)")
         Page<ChiTietSanPham> filterCTSP(@Param("idSP") String idSP,
-                        @Param("giaMin") Double giaMin,
-                        @Param("giaMax") Double giaMax,
-                        @Param("trangThai") Integer trangThai,
-                        Pageable pageable);
+                                        @Param("giaMin") Double giaMin,
+                                        @Param("giaMax") Double giaMax,
+                                        @Param("trangThai") Integer trangThai,
+                                        @Param("soNgaySuDung") Integer soNgaySuDung,
+                                        Pageable pageable);
+
 
         @Query("SELECT DISTINCT ctsp.soNgaySuDung FROM ChiTietSanPham ctsp WHERE ctsp.sanPham.id = :idSP")
         List<String> findUniqueSoNgaySuDung(@Param("idSP") String idSP);

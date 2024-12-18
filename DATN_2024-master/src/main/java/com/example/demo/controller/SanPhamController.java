@@ -125,7 +125,7 @@ public class SanPhamController {
             @RequestParam(name = "tuoiMax", required = false) Integer tuoiMax) {
 
         // Tạo đối tượng Pageable với sắp xếp theo ngày tạo giảm dần
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "ngayTao"));
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "ngayTao"));
 
         // Gọi repository filterSanPham
         Page<SanPham> sanPhamPage = sanPhamRepository.filterSanPham(searchText, tenDanhMuc, trangThai, tuoiMax, tuoiMin,

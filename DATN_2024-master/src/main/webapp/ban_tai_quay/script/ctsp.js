@@ -36,24 +36,28 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
     $scope.getAllProducts = function (page) {
         $scope.currentPage = page || 0; // Nếu không có page được truyền vào, dùng trang 0
 
-        // Kiểm tra nếu đã chọn khoảng giá
+        // Kiểm tra và xử lý khoảng giá
         if ($scope.filters.giaRange) {
             var giaParts = $scope.filters.giaRange.split(',');
 
-            // Kiểm tra và chuyển giaMin và giaMax sang kiểu Number, nếu không hợp lệ thì gán null
-            $scope.filters.giaMin = giaParts[0] !== 'null' && giaParts[0] !== 'undefined' ? parseFloat(giaParts[0]) : null;
-            $scope.filters.giaMax = giaParts[1] === 'null' || giaParts[1] === 'undefined' ? null : parseFloat(giaParts[1]);
+            // Chuyển giaMin và giaMax sang kiểu Number, nếu không hợp lệ thì gán null
+            $scope.filters.giaMin = !isNaN(giaParts[0]) ? parseFloat(giaParts[0]) : null;
+            $scope.filters.giaMax = giaParts[1] === 'null' || giaParts[1] === 'undefined' || isNaN(giaParts[1]) ? null : parseFloat(giaParts[1]);
+        }
+        else {
+            // Nếu không có khoảng giá chọn, gán giaMin và giaMax là null
+            $scope.filters.giaMin = 0;
+            $scope.filters.giaMax = 1000000;
         }
 
-        // Kiểm tra nếu đã chọn số ngày sử dụng
-        var soNgaySuDung = $scope.filters.soNgaySuDung || '';
+        // Kiểm tra và xử lý số ngày sử dụng
+        var soNgaySuDung = $scope.filters.soNgaySuDung || ''; // Nếu không có giá trị thì là chuỗi rỗng
 
         // Gọi API với các tham số đã cập nhật
-        $http.get(`http://localhost:8083/chi-tiet-san-pham/page?page=${$scope.currentPage}&idSP=${$scope.idSP}&soNgaySuDung=${soNgaySuDung}&giaMin=${$scope.filters.giaMin}&giaMax=${$scope.filters.giaMax}&trangThai=${$scope.filters.trangThai}`)
+        $http.get(`http://localhost:8083/chi-tiet-san-pham/page?page=${$scope.currentPage}&idSP=${$scope.idSP}&soNgaySuDung=${soNgaySuDung}&giaMin=${$scope.filters.giaMin || ''}&giaMax=${$scope.filters.giaMax || ''}&trangThai=${$scope.filters.trangThai || ''}`)
             .then(function(response) {
                 console.log(response.data); // Kiểm tra dữ liệu trả về
                 $scope.products = response.data.content; // Gán danh sách sản phẩm từ dữ liệu trả về
-                // $scope.uniqueSoNgaySuDung = [...new Set($scope.products.map(p => p.soNgaySuDung))]; // Lọc các giá trị số ngày sử dụng độc nhất
                 $scope.totalPages = response.data.totalPages; // Lưu tổng số trang
                 $scope.pages = Array.from({length: $scope.totalPages}, (v, i) => i); // Tạo danh sách các số trang
                 console.log($scope.pages);
@@ -185,8 +189,8 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
     $scope.formSubmitted = false;
     $scope.addProduct = function (product) {
 
-        $scope.formSubmitted = true;
-        $scope.usageDaysError = true;
+        // $scope.formSubmitted = true;
+        // $scope.usageDaysError = true;
 
 
         const productData = {
@@ -213,6 +217,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
                 $scope.getUniqueSoNgaySuDung();
                 $scope.getAllProducts();
                 showSuccessAlert("Thêm thành công!");
+                // $scope.clearForm();
             })
             .catch(function (error) {
                 $scope.getAllProducts($scope.currentPage); // Gọi lại hàm với trang hiện tại
@@ -230,6 +235,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
 
     // Cập nhật chi tiết sản phẩm
     $scope.deleteProduct = function (productId) {
+        showConfirm("Bạn có muốn ngưng sản phẩm này không?",()=>{
             $http({
                 method: 'DELETE',
                 url: 'http://localhost:8083/chi-tiet-san-pham/delete', // Đường dẫn đến API
@@ -242,12 +248,13 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
             }, function (error) {
                 $scope.getAllProducts();
                 showDangerAlert("Cập nhật trạng thái thất bại!");
-            });
+            });})
 
     };
 
     $scope.activateProduct = function (productId) {
-        $http({
+        showConfirm("Bạn có muốn kích hoạt sản phẩm này không?",()=>{
+            $http({
             method: 'PUT',
             url: 'http://localhost:8083/chi-tiet-san-pham/activateProduct', // Đường dẫn đến API
             data: {id: productId}, // Gửi id sản phẩm qua request body
@@ -259,7 +266,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
         }, function (error) {
             $scope.getAllProducts();
             showDangerAlert("Cập nhật trạng thái thất bại!");
-        });
+        });})
 
     };
     $scope.usageDaysError = false;
