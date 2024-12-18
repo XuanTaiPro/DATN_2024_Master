@@ -318,7 +318,7 @@ public class HoaDonController {
             if ("Chưa có".equals(discountCode)) {
                 hd.setVoucher(null);
             } else {
-                Voucher voucher = vcRepo.findById(discountCode).orElse(null);
+                Voucher voucher = vcRepo.getBYMa(discountCode);
 
                 if (voucher == null) {
                     return ResponseEntity.badRequest().body("Voucher Code sai");
@@ -758,12 +758,12 @@ public class HoaDonController {
             infoTable.addCell(createCellWithoutBorder(formatCurrency(tongTien - totalAmount), normalFont));
             infoTable.addCell(createCellWithoutBorder("Tiền cần thanh toán:", boldFont));
             infoTable.addCell(createCellWithoutBorder(formatCurrency(totalAmount), normalFont));
-            if(amountPaid > 0 && amountPaid >= totalAmount) {
+            if (amountPaid > 0 && amountPaid >= totalAmount) {
                 infoTable.addCell(createCellWithoutBorder("Tiền khách đưa:", boldFont));
                 infoTable.addCell(createCellWithoutBorder(formatCurrency(amountPaid), normalFont));
                 infoTable.addCell(createCellWithoutBorder("Tiền thừa:", boldFont));
                 infoTable.addCell(createCellWithoutBorder(formatCurrency(amountPaid - totalAmount), normalFont));
-            }else {
+            } else {
                 infoTable.addCell(createCellWithoutBorder("Tiền khách đưa:", boldFont));
                 infoTable.addCell(createCellWithoutBorder("Khách thanh toán Online", normalFont));
                 infoTable.addCell(createCellWithoutBorder("Tiền thừa:", boldFont));

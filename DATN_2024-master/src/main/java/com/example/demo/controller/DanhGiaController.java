@@ -64,7 +64,7 @@ public class DanhGiaController {
         List<DanhGia> danhGiasNoDone = danhGias.stream().filter(dg -> dg.getTrangThai() == 0).toList();
 
         if (danhGiasNoDone.isEmpty()) {
-            return ResponseEntity.ok().body(null);
+            return ResponseEntity.ok().body(new ArrayList<>());
         }
 
         List<DanhGiaRespOnline> listDGO = new ArrayList<>();
@@ -97,7 +97,7 @@ public class DanhGiaController {
         List<DanhGia> danhGiasDone = danhGias.stream().filter(dg -> dg.getTrangThai() == 1).toList();
 
         if (danhGiasDone.isEmpty()) {
-            return ResponseEntity.ok().body(null);
+            return ResponseEntity.ok().body(new ArrayList<>());
         }
 
         List<DanhGiaRespOnline> listDGO = new ArrayList<>();
@@ -226,7 +226,7 @@ public class DanhGiaController {
         List<DanhGia> danhGiasNoDone = danhGias.stream().filter(dg -> dg.getTrangThai() == 0).toList();
 
         if (danhGiasNoDone.isEmpty()) {
-            return ResponseEntity.ok().body(null);
+            return ResponseEntity.ok().body(new ArrayList<>());
         }
 
         List<DanhGiaRespOnline> listDGO = new ArrayList<>();
