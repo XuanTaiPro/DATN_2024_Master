@@ -97,15 +97,34 @@ public class ChiTietSanPhamController {
             @RequestParam(name = "idSP", required = false) String idSP,
             @RequestParam(name = "giaMin", required = false) String giaMinStr,
             @RequestParam(name = "giaMax", required = false) String giaMaxStr,
+            @RequestParam(name = "soNgaySuDung", required = false) Integer soNgaySuDung,
             @RequestParam(name = "trangThai", required = false) Integer trangThai) {
 
         // Chuyển giaMin và giaMax sang Double, xử lý trường hợp giá trị không hợp lệ
-        Double giaMin = (giaMinStr != null && !giaMinStr.equals("undefined")) ? Double.parseDouble(giaMinStr) : null;
-        Double giaMax = (giaMaxStr != null && !giaMaxStr.equals("undefined")) ? Double.parseDouble(giaMaxStr) : null;
+        Double giaMin = null;
+        Double giaMax = null;
+
+        if (giaMinStr != null && !giaMinStr.isEmpty() && !giaMinStr.equals("undefined")) {
+            try {
+                giaMin = Double.parseDouble(giaMinStr);
+            } catch (NumberFormatException e) {
+                // Log lỗi nếu cần và bỏ qua giá trị không hợp lệ
+                System.err.println("Lỗi chuyển đổi giaMin: " + giaMinStr);
+            }
+        }
+
+        if (giaMaxStr != null && !giaMaxStr.isEmpty() && !giaMaxStr.equals("undefined")) {
+            try {
+                giaMax = Double.parseDouble(giaMaxStr);
+            } catch (NumberFormatException e) {
+                // Log lỗi nếu cần và bỏ qua giá trị không hợp lệ
+                System.err.println("Lỗi chuyển đổi giaMax: " + giaMaxStr);
+            }
+        }
 
         // Tạo PageRequest và gọi repository
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("ngayTao")));
-        Page<ChiTietSanPham> chiTietSanPhamPage = chiTietSanPhamRepository.filterCTSP(idSP, giaMin, giaMax, trangThai, pageRequest);
+        Page<ChiTietSanPham> chiTietSanPhamPage = chiTietSanPhamRepository.filterCTSP(idSP, giaMin, giaMax, trangThai, soNgaySuDung, pageRequest);
 
         // Xử lý dữ liệu và trả về kết quả
         List<ChiTietSanPhamResponse> responseList = chiTietSanPhamPage.stream()

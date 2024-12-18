@@ -561,7 +561,9 @@ window.banhangCtrl = function ($scope, $http, $document) {
     $scope.deleteCTHD = function (idCTHD) {
         const selectedTab = $scope.tabs[$scope.selectedTab];
         const selectedIdHD = selectedTab.idHD;
-        $http({
+        showConfirm("Bạn có muốn xóa sản phẩm này không?",()=>{
+
+            $http({
             method: 'DELETE',
             url: 'http://localhost:8083/chitiethoadon/delete', // Đường dẫn đến API
             data: {id: idCTHD}, // Gửi id sản phẩm qua request body
@@ -569,12 +571,15 @@ window.banhangCtrl = function ($scope, $http, $document) {
         }).then(function (response) {
             console.log(response.data);
             $('#confirmDeleteInvoiceDetailModal').modal('hide');
+            showSuccessAlert("Xóa thành công!");
             $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
         }, function (error) {
             $('#confirmDeleteInvoiceDetailModal').modal('hide');
+            showDangerAlert("Có lỗi xảy ra!");
             $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+
             // alert(response.data); // Hiển thị thông báo thành công
-        });
+        });})
 
     }
     $scope.selectedTabIndex = 0; // Chỉ số tab hiện tại
@@ -634,12 +639,21 @@ window.banhangCtrl = function ($scope, $http, $document) {
 
     };
     $scope.test = function () {
-        $http.get('http://localhost:8083/hoadon/tuDongXoaHoaDon')
-            .then(function (response) {
-                console.log('Xóa hóa đơn thành công', response);
-            }, function (error) {
-                console.error('Có lỗi xảy ra khi xóa hóa đơn', error);
-            });
+        showConfirm("Bạn có chắc chắn muốn xóa các hóa đơn cũ(1 ngày trước) đi không?", () => {
+            $http.get('http://localhost:8083/hoadon/tuDongXoaHoaDon')
+                .then(function (response) {
+                    // Sau khi xóa thành công, làm mới trang
+                    $scope.getHDTaiQuay();  // Lấy lại dữ liệu hóa đơn
+                    showSuccessAlert("Đã xóa các hóa đơn cũ");
+                    // Nếu cần load lại toàn bộ trang
+                    window.location.reload();  // Hoặc có thể sử dụng $scope.currentPage để quay lại trang hiện tại.
+
+                }, function (error) {
+                    showDangerAlert("Đã có lỗi xảy ra! Vui lòng kiểm tra hệ thống!");
+                    $scope.getHDTaiQuay();
+                    $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
+                });
+        })
     };
     // Gọi hàm lấy hóa đơn khi khởi tạo controller
     $scope.getHDTaiQuay();
