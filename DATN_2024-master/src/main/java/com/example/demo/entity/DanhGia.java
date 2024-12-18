@@ -2,6 +2,9 @@ package com.example.demo.entity;
 
 import com.example.demo.dto.danhgia.DanhGiaRespOnline;
 import com.example.demo.dto.danhgia.DanhGiaRespone;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,17 +58,17 @@ public class DanhGia {
 
     public DanhGiaRespone toRespone() {
         return new DanhGiaRespone(id, sao, nhanXet, trangThai, ngayDanhGia, ngaySua,
-                chiTietSanPham != null ? chiTietSanPham.getMa() : null, khachHang.getMa());
+                chiTietSanPham != null ? chiTietSanPham.getMa() : null, khachHang.getTen());
     }
 
     public DanhGiaRespOnline convertFromDanhGia() {
         return new DanhGiaRespOnline(
                 id,
-                null,
-                null,
-                null,
+                sao,
+                nhanXet,
+                trangThai,
                 ngayDanhGia,
-                null,
+                ngaySua,
                 null,
                 chiTietSanPham,
                 khachHang);

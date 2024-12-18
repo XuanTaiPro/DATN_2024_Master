@@ -114,6 +114,7 @@ window.khachhangCtrl = function ($scope, $http) {
     };
 
     $scope.addKhachHang = function () {
+        event.preventDefault();
         $scope.errorMessages = {}; // Đặt lại thông báo lỗi
         $scope.successMessage = ''; // Đặt lại thông báo thành công
         const specialCharRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
@@ -195,6 +196,7 @@ window.khachhangCtrl = function ($scope, $http) {
                             $('#productModal').modal('hide');
                             showSuccessAlert('Thêm thành công!');
                             $scope.loadPage($scope.currentPage);
+                            resetForm();
                         })
                         .catch(function (error) {
                             $scope.errorMessage = "Thêm thất bại";
@@ -209,6 +211,7 @@ window.khachhangCtrl = function ($scope, $http) {
     };
 
     $scope.updateKhachHang = function () {
+        event.preventDefault();
         console.log("Cập nhật Khách Hàng:", $scope.selectedKhachHang);
         $scope.errorMessages = {}; // Đặt lại thông báo lỗi
         if (!$scope.selectedKhachHang.ten || $scope.selectedKhachHang.ten.trim() === '') {
@@ -226,7 +229,7 @@ window.khachhangCtrl = function ($scope, $http) {
             $scope.errorMessages.sdt = "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0!";
         }
 
-        // Nếu có lỗi, ngừng thực thi và hiển thị lỗi
+
         if (Object.keys($scope.errorMessages).length > 0) {
             return; // Dừng lại nếu có lỗi
         }

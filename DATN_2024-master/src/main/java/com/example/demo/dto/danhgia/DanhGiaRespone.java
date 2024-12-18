@@ -24,5 +24,5 @@ public class DanhGiaRespone {
 
     private String maCTSP;
 
-    private String maKH;
+    private String tenKhach;
 }

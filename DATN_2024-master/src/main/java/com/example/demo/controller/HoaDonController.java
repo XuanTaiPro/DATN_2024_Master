@@ -134,16 +134,27 @@ public class HoaDonController {
                 // Lấy danh sách chi tiết hóa đơn trước khi xóa hóa đơn
                 List<ChiTietHoaDon> listCTHD = chiTietHoaDonRepo.getByIdHD(hoaDon.getId());
 
-                // Cập nhật số lượng sản phẩm trước khi xóa chi tiết hóa đơn
-                for (ChiTietHoaDon cthd : listCTHD) {
-                    ChiTietSanPham chiTietSanPham = cthd.getChiTietSanPham();
-                    // Cập nhật lại số lượng sản phẩm
-                    chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + cthd.getSoLuong());
-                    chiTietSanPhamRepo.save(chiTietSanPham);
-                }
+                if (listCTHD != null && !listCTHD.isEmpty()) {
+                    for (ChiTietHoaDon cthd : listCTHD) {
+                        if (chiTietHoaDonRepo.existsById(cthd.getId())) {
+                            Sort sort = Sort.by(Sort.Order.desc("loHang.hsd"));
+                            List<LoHangWithHoaDon> loHangs = lhhdRepo.getByIdCTHD(cthd.getId(), sort);
 
-                // Xóa tất cả các chi tiết hóa đơn
-                chiTietHoaDonRepo.deleteAll(listCTHD);
+                            if (loHangs != null) {
+                                for (LoHangWithHoaDon lhwhh : loHangs) {
+                                    LoHang lh = lhwhh.getLoHang();
+                                    // Cập nhật lại số lượng của lô hàng trước khi xóa
+                                    lh.setSoLuong(lh.getSoLuong() + lhwhh.getSoLuong());
+                                    lHRepo.save(lh);  // Lưu lại lô hàng đã cập nhật
+                                    lhhdRepo.deleteById(lhwhh.getId());  // Xóa Lô hàng với hóa đơn
+                                }
+                            }
+
+                            // Xóa chi tiết hóa đơn hiện tại
+                            chiTietHoaDonRepo.deleteById(cthd.getId());
+                        }
+                    }
+                }
 
                 // Sau khi cập nhật xong, xóa hóa đơn
                 hoaDonRepo.delete(hoaDon);
@@ -318,7 +329,7 @@ public class HoaDonController {
             if ("Chưa có".equals(discountCode)) {
                 hd.setVoucher(null);
             } else {
-                Voucher voucher = vcRepo.findById(discountCode).orElse(null);
+                Voucher voucher = vcRepo.getBYMa(discountCode);
 
                 if (voucher == null) {
                     return ResponseEntity.badRequest().body("Voucher Code sai");
@@ -767,12 +778,12 @@ public class HoaDonController {
             }
             infoTable.addCell(createCellWithoutBorder("Tiền cần thanh toán:", boldFont));
             infoTable.addCell(createCellWithoutBorder(formatCurrency(totalAmount), normalFont));
-            if(amountPaid > 0 && amountPaid >= totalAmount) {
+            if (amountPaid > 0 && amountPaid >= totalAmount) {
                 infoTable.addCell(createCellWithoutBorder("Tiền khách đưa:", boldFont));
                 infoTable.addCell(createCellWithoutBorder(formatCurrency(amountPaid), normalFont));
                 infoTable.addCell(createCellWithoutBorder("Tiền thừa:", boldFont));
                 infoTable.addCell(createCellWithoutBorder(formatCurrency(amountPaid - totalAmount), normalFont));
-            }else {
+            } else {
                 infoTable.addCell(createCellWithoutBorder("Tiền khách đưa:", boldFont));
                 infoTable.addCell(createCellWithoutBorder("Khách thanh toán Online", normalFont));
                 infoTable.addCell(createCellWithoutBorder("Tiền thừa:", boldFont));

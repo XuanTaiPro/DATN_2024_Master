@@ -117,7 +117,7 @@ btnNextStep.addEventListener('click', function (event) {
         showError('EMAIL', 'Email đã được sử dụng');
         isValid = false;
     }
-   if (phone !== "" && checkPhoneDuplicate(phone)) {
+    if (phone !== "" && checkPhoneDuplicate(phone)) {
         showError('PHONE', 'Số điện thoại đã được sử dụng');
         isValid = false;
     }

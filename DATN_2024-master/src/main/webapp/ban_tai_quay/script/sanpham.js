@@ -5,8 +5,10 @@ window.sanPhamCtrl = function ($scope, $http) {
     $scope.successMessage = "";
     $scope.errorMessage = "";
     $scope.currentPage = 0;
-    $scope.itemsPerPage = 10; // Số sản phẩm trên mỗi trang
+    $scope.itemsPerPage = 5; // Số sản phẩm trên mỗi trang
     $scope.totalPages = 0;
+    $scope.productDetail = $scope.productDetail || {};
+
     $scope.ageRanges = [
         { label: "Dưới 18", min: null, max: 18 },
         { label: "18 - 25", min: 18, max: 25 },
@@ -102,25 +104,83 @@ window.sanPhamCtrl = function ($scope, $http) {
 
     $scope.isTenValid = function() {
         if (!$scope.product.tenSP || $scope.product.tenSP.trim() === '') {
-            return false; // Tên không được để trống
+            return false;
         } else if (!specialCharRegex.test($scope.product.tenSP.trim())) {
-            return false; // Tên chứa ký tự đặc biệt
+            return false;
         }
-        return true; // Tên hợp lệ
+        return true;
+    };
+    $scope.isTenKyTu = function() {
+        console.log($scope.product.tenSP )
+        if (!$scope.product.tenSP || $scope.product.tenSP .trim() === '') {
+            return false;
+        }
+        return $scope.product.tenSP .trim().length <= 3|| $scope.product.tenSP.trim().length >= 255;
     };
 
+    $scope.isTPKyTu = function() {
+        console.log($scope.product.thanhPhan )
+        if (!$scope.product.thanhPhan || $scope.product.thanhPhan .trim() === '') {
+            return false;
+        }
+        return $scope.product.thanhPhan .trim().length <= 3|| $scope.product.thanhPhan.trim().length >= 255;
+    };
+    $scope.isCDKyTu = function() {
+        console.log($scope.product.congDung )
+        if (!$scope.product.congDung || $scope.product.congDung .trim() === '') {
+            return false;
+        }
+        return $scope.product.congDung .trim().length <= 3|| $scope.product.congDung.trim().length >= 255;
+    };
+    $scope.isHDSDKyTu = function() {
+        console.log($scope.product.hdsd )
+        if (!$scope.product.hdsd || $scope.product.hdsd .trim() === '') {
+            return false;
+        }
+        return $scope.product.hdsd .trim().length <= 3|| $scope.product.hdsd.trim().length >= 255;
+    };
+    // $scope.isTPValid = function() {
+    //     return $scope.product.thanhPhan && $scope.product.thanhPhan.trim() !== '';
+    // };
 
-    $scope.isTPValid = function() {
-        return $scope.product.thanhPhan && $scope.product.thanhPhan.trim() !== '';
+
+    $scope.isDanhMuc = function() {
+        return $scope.product.idDanhMuc ;
     };
 
-    $scope.isCDValid = function() {
-        return $scope.product.congDung && $scope.product.congDung.trim() !== '';
-    };
+    // $scope.isCDValid = function() {
+    //     return $scope.product.congDung && $scope.product.congDung.trim() !== '';
+    // };
+    //
+    // $scope.ishdsdValid = function() {
+    //     return $scope.product.hdsd && $scope.product.hdsd.trim() !== '';
+    // };
 
-    $scope.ishdsdValid = function() {
-        return $scope.product.hdsd && $scope.product.hdsd.trim() !== '';
-    };
+    let tuoiMax = document.querySelector('#maxAge,#tuoiMaxUD')
+    tuoiMax.addEventListener('input',function (){
+        tuoiMax.value = tuoiMax.value.replace(/\D/g, '')
+        if(tuoiMin.value>tuoiMax.value){
+            tuoiMinErrors.style.display='block'
+        }else{
+            tuoiMinErrors.style.display='none'
+        }
+        console.log(tuoiMax.value)
+    })
+
+
+    let tuoiMinErrors =document.querySelector('#tMError,#ErrorTuoiUD')
+    let tuoiMin = document.querySelector('#minAge,#tuoiMinUD')
+    tuoiMin.addEventListener('input',function (){
+        tuoiMin.value = tuoiMin.value.replace(/\D/g, '')
+        if(tuoiMin.value>tuoiMax.value){
+            tuoiMinErrors.style.display='block'
+        }else{
+            tuoiMinErrors.style.display='none'
+        }
+        console.log(tuoiMin.value + "-----"+ tuoiMax.value)
+    })
+
+
 
     $scope.ages = {
         tuoiMin: null,
@@ -135,14 +195,15 @@ window.sanPhamCtrl = function ($scope, $http) {
     $scope.isAgeGreaterThan1001 = function() {
         return ( $scope.ages.tuoiMin<0&&$scope.ages.tuoiMin > 100);
     };
+
+
+
     $scope.formSubmitted = false;
     $scope.addProduct = function (product) {
 
 
         $scope.formSubmitted = true;
-        // if(!$scope.isTenValid()||!$scope.isTPValid()||!$scope.isCDValid()||!$scope.ishdsdValid()||!$scope.isAgeGreaterThan100()||!$scope.isAgeGreaterThan1001()||!$scope.isAgeInvalid()){
-        //     return
-        // }
+
         const formData = new FormData();
         formData.append('tenSP', product.tenSP || '');
         formData.append('thanhPhan', product.thanhPhan || '');
@@ -166,6 +227,7 @@ window.sanPhamCtrl = function ($scope, $http) {
             idDanhMuc: product.idDanhMuc || '',
             trangThai: 1,
             idThuongHieu: "6CC12260"
+
         };
 
         $http.post('http://localhost:8083/san-pham/add', data,
@@ -220,14 +282,16 @@ window.sanPhamCtrl = function ($scope, $http) {
 
     };
     $scope.checkDuplicateNameUD = function() {
-        if (!$scope.isTenValid()) {
+        if (!$scope.isTenValidUD()) {
             $scope.isDuplicateName = false;
             return;
         }
+
         const requestData = {
-            tenSP: $scope.product.tenSP.trim(),
-            id: $scope.product.id
+            tenSP: $scope.productDetail.tenSP.trim(),
+            id: $scope.productDetail.id
         };
+
         $http.post('http://localhost:8083/san-pham/checkTrungUD', requestData)
             .then(function(response) {
                 $scope.isDuplicateName = response.data.isDuplicate;
@@ -236,14 +300,59 @@ window.sanPhamCtrl = function ($scope, $http) {
                 console.error('Lỗi khi kiểm tra trùng tên:', error);
             });
     };
-
-    $scope.isSubmitted = false;
-    $scope.updateProduct = function () {
-        $scope.isSubmitted = true;
-        $scope.formSubmitted = true;
-        if(!$scope.isTenValid()||!$scope.isTPValid()||!$scope.isCDValid()||!$scope.ishdsdValid()||!$scope.isAgeGreaterThan100()||!$scope.isAgeGreaterThan1001()||!$scope.isAgeInvalid()){
-            return
+    $scope.isTenValidUD = function() {
+        if (!$scope.productDetail.tenSP || $scope.productDetail.tenSP.trim() === '') {
+            return false;
+        } else if (!specialCharRegex.test($scope.productDetail.tenSP.trim())) {
+            return false;
         }
+        return true;
+    };
+    $scope.isTPValidUD = function() {
+        return $scope.productDetail.thanhPhan && $scope.productDetail.thanhPhan.trim() !== '';
+    };
+
+    $scope.isCDValidUD = function() {
+        return $scope.productDetail.congDung && $scope.productDetail.congDung.trim() !== '';
+    };
+
+    $scope.ishdsdValidUD = function() {
+        return $scope.productDetail.hdsd && $scope.productDetail.hdsd.trim() !== '';
+    };
+
+    $scope.isTenKyTuUD = function() {
+        console.log($scope.productDetail.tenSP )
+        if (!$scope.productDetail.tenSP || $scope.productDetail.tenSP .trim() === '') {
+            return false;
+        }
+        return $scope.productDetail.tenSP .trim().length <= 3|| $scope.productDetail.tenSP.trim().length >= 255;
+    };
+
+    $scope.isTPKyTuUD = function() {
+        console.log($scope.productDetail.thanhPhan )
+        if (!$scope.productDetail.thanhPhan || $scope.productDetail.thanhPhan .trim() === '') {
+            return false;
+        }
+        return $scope.productDetail.thanhPhan .trim().length <= 3|| $scope.productDetail.thanhPhan.trim().length >= 255;
+    };
+    $scope.isCDKyTuUD = function() {
+        console.log($scope.productDetail.congDung )
+        if (!$scope.productDetail.congDung || $scope.productDetail.congDung .trim() === '') {
+            return false;
+        }
+        return $scope.productDetail.congDung .trim().length <= 3|| $scope.productDetail.congDung.trim().length >= 255;
+    };
+    $scope.isHDSDKyTuUD = function() {
+        console.log($scope.productDetail.hdsd )
+        if (!$scope.productDetail.hdsd || $scope.productDetail.hdsd .trim() === '') {
+            return false;
+        }
+        return $scope.productDetail.hdsd .trim().length <= 3|| $scope.productDetail.hdsd.trim().length >= 255;
+    };
+
+    $scope.updateProduct = function () {
+        $scope.formSubmitted = true;
+
         const formData = new FormData();
         formData.append('id', $scope.productDetail.id || '');
         formData.append('tenSP', $scope.productDetail.tenSP || '');
@@ -269,18 +378,19 @@ window.sanPhamCtrl = function ($scope, $http) {
             idDanhMuc: $scope.productDetail.idDanhMuc || '',
             trangThai: 1,
             idThuongHieu: "6CC12260"
+
         };
 
 
         $http.put('http://localhost:8083/san-pham/update', data)
             .then(function (response) {
-                $scope.getAllProducts(); // Tải lại danh sách sản phẩm
-                $('#userForm').modal('hide'); // Đóng modal sau khi cập nhật
+                $scope.getAllProducts();
+                $('#userForm').modal('hide');
                 showSuccessAlert(response.data);
             })
             .catch(function (error) {
                 showDangerAlert("Thất bại rồi!")
-                $scope.getAllProducts(); // Tải lại danh sách sản phẩm
+                // $scope.getAllProducts(); // Tải lại danh sách sản phẩm
             });
     };
     $scope.clearForm = function () {

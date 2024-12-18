@@ -171,6 +171,7 @@ window.nhansuCtrl = function ($scope, $http) {
     };
 
     $scope.addNhanVien = function () {
+
         $scope.errorMessage = '';
         $scope.errorMessages = {};
         $scope.successMessage = '';

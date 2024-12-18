@@ -113,27 +113,13 @@ window.loaivoucherCtrl = function ($scope, $http,$timeout) {
 
         $http.post('http://localhost:8083/loaivoucher/add', newVoucherType)
             .then(function (response) {
-                $('#UpdateForm').modal('hide');
-                $scope.successMessage = response.data.message;
-                $scope.errorMessages = {}; // Xóa thông báo lỗi
-
-                // Ẩn thông báo sau 2 giây
-                $timeout(function () {
-                    $scope.successMessage = '';
-                }, 2000);
-
-                // Đặt lại form
+                $('#productModal').modal('hide');
+                showSuccessAlert('Thêm thành công!');
+                $scope.loadPage($scope.currentPage);
                 resetForm();
             })
             .catch(function (error) {
-                if (error.status === 400) {
-                    $scope.errorMessages = error.data;
-                } else {
-                    $scope.errorMessage = 'Thêm Loại VC thất bại!';
-                    $timeout(function () {
-                        $scope.errorMessage = '';
-                    }, 2000);
-                }
+                $scope.errorMessage = "Thêm thất bại";
             });
     };
 

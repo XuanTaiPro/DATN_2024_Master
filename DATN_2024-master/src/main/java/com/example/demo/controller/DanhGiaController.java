@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.danhgia.DanhGiaRequest;
 import com.example.demo.dto.danhgia.DanhGiaRespOnline;
+import com.example.demo.dto.danhgia.DanhGiaRespone;
 import com.example.demo.entity.ChiTietSanPham;
 import com.example.demo.entity.DanhGia;
 import com.example.demo.entity.KhachHang;
@@ -64,7 +65,7 @@ public class DanhGiaController {
         List<DanhGia> danhGiasNoDone = danhGias.stream().filter(dg -> dg.getTrangThai() == 0).toList();
 
         if (danhGiasNoDone.isEmpty()) {
-            return ResponseEntity.ok().body(null);
+            return ResponseEntity.ok().body(new ArrayList<>());
         }
 
         List<DanhGiaRespOnline> listDGO = new ArrayList<>();
@@ -97,7 +98,7 @@ public class DanhGiaController {
         List<DanhGia> danhGiasDone = danhGias.stream().filter(dg -> dg.getTrangThai() == 1).toList();
 
         if (danhGiasDone.isEmpty()) {
-            return ResponseEntity.ok().body(null);
+            return ResponseEntity.ok().body(new ArrayList<>());
         }
 
         List<DanhGiaRespOnline> listDGO = new ArrayList<>();
@@ -135,7 +136,16 @@ public class DanhGiaController {
 
         List<DanhGia> list = danhGiaRepository.getByIdCTSP(idCTSP);
 
-        return ResponseEntity.ok().body(list);
+        if (list.size() == 0) {
+            return ResponseEntity.ok().body(new ArrayList<>());
+        }
+
+        List<DanhGiaRespone> listDG = new ArrayList<DanhGiaRespone>();
+        for (DanhGia dg : list) {
+            listDG.add(dg.toRespone());
+        }
+
+        return ResponseEntity.ok().body(listDG);
     }
 
     @PostMapping("/detail")
@@ -226,7 +236,7 @@ public class DanhGiaController {
         List<DanhGia> danhGiasNoDone = danhGias.stream().filter(dg -> dg.getTrangThai() == 0).toList();
 
         if (danhGiasNoDone.isEmpty()) {
-            return ResponseEntity.ok().body(null);
+            return ResponseEntity.ok().body(new ArrayList<>());
         }
 
         List<DanhGiaRespOnline> listDGO = new ArrayList<>();

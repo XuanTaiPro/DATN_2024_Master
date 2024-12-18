@@ -117,8 +117,10 @@
                                 <span> | Giá bán: {{ ctsp.gia }}</span>
                                 <div class="form-group">
                                     <label>Số lượng:</label>
+                                    <div>
                                     <input type="number" class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}"  ng-change="validateSoLuong(ctsp)"  ng-pattern="/^\d+$/" required />
                                     <span ng-show="soLuongError" class="text-danger">Số lượng không hợp lệ hoặc quá lớn</span>
+                                    </div>
                                     <button ng-click="confirmAddInvoiceDetail(ctsp)">Thêm</button> <!-- Truyền ctsp vào hàm -->
                                 </div>
                             </div>

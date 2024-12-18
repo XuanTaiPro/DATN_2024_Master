@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -66,13 +67,21 @@ public class GiamGiaController {
     }
 
     @GetMapping("/phanTrang")
-    public ResponseEntity<?> phanTrang(@RequestParam(name = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<?> phanTrang(
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "searchText", required = false) String searchText,
+            @RequestParam(name = "trangThai", required = false) Integer trangThai,
+            @RequestParam(name = "ngayBatDau", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ngayBatDau,
+            @RequestParam(name = "ngayKetThuc", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ngayKetThuc
+    ) {
         PageRequest pageRequest = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "ngayTao"));
-        Page<GiamGia> giamGiaPage = giamGiaRepository.findAll(pageRequest);
+        Page<GiamGia> giamGiaPage = giamGiaRepository.filterGiamGia(searchText, trangThai, ngayBatDau, ngayKetThuc, pageRequest);
+
         Map<String, Object> response = new HashMap<>();
         response.put("giamGias", giamGiaPage.getContent());
         response.put("totalPages", giamGiaPage.getTotalPages());
         response.put("totalElements", giamGiaPage.getTotalElements());
+
         return ResponseEntity.ok(response);
     }
 
@@ -304,6 +313,7 @@ public class GiamGiaController {
         giamGiaRepository.save(giamGia);
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật trạng thái giảm giá thành công!");
     }
+
     @DeleteMapping("/active")
     public ResponseEntity<?> active(@RequestBody Map<String, String> body) {
         String id = body.get("id");
