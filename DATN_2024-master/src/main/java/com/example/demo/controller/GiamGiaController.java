@@ -301,6 +301,22 @@ public class GiamGiaController {
         }
         GiamGia giamGia=giamGiaRepository.getReferenceById(id);
         giamGia.setTrangThai(0);
+        giamGiaRepository.save(giamGia);
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật trạng thái giảm giá thành công!");
+    }
+    @DeleteMapping("/active")
+    public ResponseEntity<?> active(@RequestBody Map<String, String> body) {
+        String id = body.get("id");
+        if (id == null || id.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID không được để trống.");
+        }
+        if (giamGiaRepository.findById(id).isEmpty()) {
+            return ResponseEntity.badRequest().body("Không tìm thấy giảm giá có id: " + id);
+        }
+        GiamGia giamGia=giamGiaRepository.getReferenceById(id);
+        giamGia.setTrangThai(1);
+        giamGiaRepository.save(giamGia);
+
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Cập nhật trạng thái giảm giá thành công!");
     }
 

@@ -167,7 +167,7 @@
                                     <div class="col-md-3">
                                         <p><strong>Loại hóa đơn:</strong> {{hoaDonDetail.loaiHD == 1 ? 'Online' : 'Tại
                                             quầy' }} </p>
-                                        <p><strong>Tổng tiền:</strong> {{ getTotalAmount(chiTietHoaDons) }} VND </p>
+                                        <p><strong>Tổng tiền:</strong> {{ hd.ttLastMoney }} VND </p>
                                         <p><strong>Trạng thái:</strong>
                                             {{ hoaDonDetail.trangThai == 0 ? 'Chờ xác nhận' :
                                             hoaDonDetail.trangThai == 1 ? 'Chờ' :

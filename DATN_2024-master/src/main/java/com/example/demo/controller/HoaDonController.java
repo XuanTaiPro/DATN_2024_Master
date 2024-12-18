@@ -738,9 +738,13 @@ public class HoaDonController {
                 detailTable
                         .addCell(createCellWithBorder(chiTiet.getChiTietSanPham().getSanPham().getTenSP(), normalFont));
                 detailTable.addCell(createCellWithBorder(String.valueOf(chiTiet.getSoLuong()), normalFont));
-                detailTable.addCell(createCellWithBorder(chiTiet.getGiaSauGiam(), normalFont));
+                if(Double.valueOf(chiTiet.toResponse().getTienGiam()) > 0){
+                    detailTable.addCell(createCellWithBorder(chiTiet.getGiaSauGiam() +"(Đã giảm)", normalFont));
+                }else {
+                    detailTable.addCell(createCellWithBorder(chiTiet.getGiaSauGiam(), normalFont));
+                }
                 detailTable
-                        .addCell(createCellWithBorder(String.valueOf(chiTiet.toResponse().getTienGiam()), normalFont));
+                        .addCell(createCellWithBorder(String.valueOf(chiTiet.toResponse().getTienGiam()) , normalFont));
                 detailTable.addCell(createCellWithBorder(
                         formatCurrency(Double.valueOf(Double.valueOf(chiTiet.getGiaSauGiam()) * chiTiet.getSoLuong())),
                         normalFont));
@@ -754,8 +758,13 @@ public class HoaDonController {
 
             infoTable.addCell(createCellWithoutBorder("Tổng tiền:", boldFont));
             infoTable.addCell(createCellWithoutBorder(formatCurrency(tongTien), normalFont));
-            infoTable.addCell(createCellWithoutBorder("Tiền giảm từ voucher:", boldFont));
-            infoTable.addCell(createCellWithoutBorder(formatCurrency(tongTien - totalAmount), normalFont));
+            if(tongTien - totalAmount == 0){
+                infoTable.addCell(createCellWithoutBorder("Tiền giảm từ voucher:", boldFont));
+                infoTable.addCell(createCellWithoutBorder("Not Voucher", normalFont));
+            }else {
+                infoTable.addCell(createCellWithoutBorder("Tiền giảm từ voucher:", boldFont));
+                infoTable.addCell(createCellWithoutBorder(formatCurrency(tongTien - totalAmount), normalFont));
+            }
             infoTable.addCell(createCellWithoutBorder("Tiền cần thanh toán:", boldFont));
             infoTable.addCell(createCellWithoutBorder(formatCurrency(totalAmount), normalFont));
             if(amountPaid > 0 && amountPaid >= totalAmount) {

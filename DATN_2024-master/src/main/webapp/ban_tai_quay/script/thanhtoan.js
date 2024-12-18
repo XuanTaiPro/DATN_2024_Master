@@ -53,7 +53,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         $scope.selectedCustomerName = "Không liên hệ";
         $scope.selectedCustomerPhone = "0123456789";
         $scope.selectedCustomerId = "";
-        $scope.selectedCustomerEmailVL = "";
+        $scope.selectedCustomerEmail = "";
 
         // Xóa danh sách voucher
         $scope.vouchers = [];
@@ -71,7 +71,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         $scope.selectedCustomerName = ten;
         $scope.selectedCustomerPhone = sdt;
         $scope.selectedCustomerId = id; // Lưu ID khách hàng
-        $scope.selectedCustomerEmailVL = email;
+        $scope.selectedCustomerEmail = email;
 
         // Khôi phục tổng tiền về giá trị gốc
         if ($scope.previousTotal) {
@@ -323,7 +323,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
 
 //Gửi mail cho khách
     $scope.generateAndSendInvoice = function (checkCK) {
-        if (!$scope.selectedCustomerEmailVL || $scope.selectedCustomerEmailVL === '') {
+        if (!$scope.selectedCustomerEmail || $scope.selectedCustomerEmail === '') {
             showDangerAlert("Khách hàng vãng lai không có Email để gửi hóa đơn");
             return;
         }
@@ -333,7 +333,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
             amountPaid: $scope.amountPaid,
             totalAmount: $scope.tongTien,
             discountAmount: $scope.discountAmount,
-            email: $scope.selectedCustomerEmailVL
+            email: $scope.selectedCustomerEmail
         };
         overlayLoad.style.display = 'block';
         loader.style.display = 'block';
@@ -514,7 +514,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
                 data: $scope.newKH
             })
                 .then(function (response) {
-                    $scope.selectCustomer($scope.newKH.ten, $scope.newKH.sdt)
+                    $scope.selectCustomer($scope.newKH.ten, $scope.newKH.sdt,$scope.newKH.email)
                     showSuccessAlert("Thêm mới thành công khách hàng")
                     $('#addCustomerModal').modal('hide')
                     $scope.listKhachHang = response.data

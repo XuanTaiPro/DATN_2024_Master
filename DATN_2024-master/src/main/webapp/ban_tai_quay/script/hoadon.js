@@ -72,7 +72,9 @@ window.hoaDonCtrl = function ($scope, $http) {
                             let totalAfterVC = tt - tt * (giaGiamVC / 100);
                             item['ttLastMoney'] = tt - Math.min(totalAfterVC, giaMax);
                             item['tt'] = tt;
-                            console.log(tt);
+
+                            console.log("tổng tiền : "+tt);
+                            console.log(tt - Math.min(totalAfterVC, giaMax))
 
 
                         return item;

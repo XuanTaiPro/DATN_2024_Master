@@ -175,9 +175,9 @@ window.giamGiaCtrl = function ($scope, $http) {
 
     $scope.addGiamGia = function (giamGia) {
         $scope.formSubmitted = true;
-        if(!$scope.isTenValid()||!$scope.isNgayBatDauValid()||!$scope.isNgayKetThucValid()||!$scope.isGiaGiamValid()){
-            $scope.showDangerAlert = "Cần điền đầy đủ thông tin";
-        }else {
+        // if(!$scope.isTenValid()||!$scope.isNgayBatDauValid()||!$scope.isNgayKetThucValid()||!$scope.isGiaGiamValid()){
+        //     $scope.showDangerAlert = "Cần điền đầy đủ thông tin";
+        // }else {
             const formData = new FormData();
             // Thêm thông tin sản phẩm vào FormData
             formData.append('ten', giamGia.ten || '');
@@ -236,11 +236,11 @@ window.giamGiaCtrl = function ($scope, $http) {
                         $scope.errorMessage = 'Lỗi không xác định: ' + JSON.stringify(error);
                     }
                 });
-        }
+        // }
     };
 
     $scope.deleteGiamGia = function (ggId) {
-        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
+        showConfirm("Bạn có muốn ngưng giảm giá này không?",()=>{
             $http({
                 method: 'DELETE',
                 url: 'http://localhost:8083/giam-gia/delete', // Đường dẫn đến API
@@ -249,15 +249,35 @@ window.giamGiaCtrl = function ($scope, $http) {
             }).then(function (response) {
                 showSuccessAlert(response.data); // Hiển thị thông báo thành công
                 // Cập nhật lại danh sách sản phẩm
-                $scope.getAllGiamGias();
+                $scope.getAllGiamGias($scope.currentPage);
 
 
             }, function (error) {
-                $scope.getAllGiamGias();
+                $scope.getAllGiamGias($scope.currentPage);
                 showDangerAlert("Cập nhật trạng thái thất bại!");
                 // alert(response.data); // Hiển thị thông báo thành công
             });
-        }
+        });
+    };
+    $scope.activateGiamGia = function (ggId) {
+        showConfirm("Bạn có muốn kích hoạt lại giảm giá này không?",()=>{
+            $http({
+                method: 'DELETE',
+                url: 'http://localhost:8083/giam-gia/active', // Đường dẫn đến API
+                data: {id: ggId}, // Gửi id sản phẩm qua request body
+                headers: {"Content-Type": "application/json;charset=utf-8"}
+            }).then(function (response) {
+                showSuccessAlert(response.data); // Hiển thị thông báo thành công
+                // Cập nhật lại danh sách sản phẩm
+                $scope.getAllGiamGias($scope.currentPage);
+
+
+            }, function (error) {
+                $scope.getAllGiamGias($scope.currentPage);
+                showDangerAlert("Cập nhật trạng thái thất bại!");
+                // alert(response.data); // Hiển thị thông báo thành công
+            });
+        });
     };
 
     $scope.updateGiamGia = function (giamGiaDetail) {

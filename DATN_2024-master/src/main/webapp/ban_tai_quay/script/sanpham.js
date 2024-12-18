@@ -153,7 +153,7 @@ window.sanPhamCtrl = function ($scope, $http) {
         formData.append('moTa', product.moTa || '');
         formData.append('idDanhMuc', product.idDanhMuc || '');
         formData.append('trangThai', 1);
-        formData.append('idThuongHieu', "95B16137");
+        formData.append('idThuongHieu', "6CC12260");
 
         const data = {
             tenSP: product.tenSP || '',
@@ -165,7 +165,7 @@ window.sanPhamCtrl = function ($scope, $http) {
             moTa: product.moTa || '',
             idDanhMuc: product.idDanhMuc || '',
             trangThai: 1,
-            idThuongHieu: "95B16137"
+            idThuongHieu: "6CC12260"
         };
 
         $http.post('http://localhost:8083/san-pham/add', data,
@@ -255,7 +255,7 @@ window.sanPhamCtrl = function ($scope, $http) {
         formData.append('moTa', $scope.productDetail.moTa || '');
         formData.append('idDanhMuc', $scope.productDetail.idDanhMuc || '');
         formData.append('trangThai', 1);
-        formData.append('idThuongHieu', "95B16137");
+        formData.append('idThuongHieu', "6CC12260");
 
         const data = {
             id: $scope.productDetail.id || '',
@@ -268,7 +268,7 @@ window.sanPhamCtrl = function ($scope, $http) {
             moTa: $scope.productDetail.moTa || '',
             idDanhMuc: $scope.productDetail.idDanhMuc || '',
             trangThai: 1,
-            idThuongHieu: "95B16137"
+            idThuongHieu: "6CC12260"
         };
 
 
