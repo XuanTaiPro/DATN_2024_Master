@@ -160,20 +160,19 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
 
     $scope.openCustomerModal = function () {
         $('#customerModal').modal('show');
+        $('#productModal').modal('hide');
     };
     $scope.openCustomerModalUpdate = function () {
         $('#customerModalUpdate').modal('show');
+        $('#UpdateForm').modal('hide');
     };
 
     $scope.confirmSelection = function () {
-        // Đóng modal "Chọn khách hàng" sau khi xác nhận
         $('#customerModal').modal('hide');
-        // Giữ modal "Thêm Voucher" mở
         $('#productModal').modal('show');
     };
     $scope.confirmSelectionUpdate = function () {
         $('#customerModalUpdate').modal('hide');
-//cập nhật khách đã chọn
         $scope.selectedCustomersUpdate = $scope.listKhachHang.filter(kh => kh.selectedUpdate);
         $('#UpdateForm').modal('show');
     };
@@ -237,7 +236,7 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
             .then(response => response.json())
             .then(data => {
                 $scope.$apply(() => {
-                    $scope.selectedCustomersUpdate = data; // Gán danh sách khách hàng vào scope
+                        $scope.selectedCustomersUpdate = data; // Gán danh sách khách hàng vào scope
 
                     if ($scope.selectedCustomersUpdate.length > 0) {
                         $scope.selectedCustomerUpdate = $scope.selectedCustomersUpdate[0].id;
@@ -277,14 +276,6 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
         } else if (isNaN($scope.soLuong)|| $scope.soLuong <= 1) {
             $scope.validationErrors.soLuong = 'Số lượng phải là số và lớn hơn1.';
         }
-
-        // // const giamGia = parseFloat($scope.giamGia);
-        // const giamMin = parseFloat($scope.giamMin);
-        // const giamMax = parseFloat($scope.giamMax);
-        // if (!isNaN(giamMin) && !isNaN(giamMax) && giamMin >= giamMax) {
-        //     $scope.validationErrors.giamMin = 'Giảm min phải nhỏ hơn giảm max.';
-        //     $scope.validationErrors.giamMax = 'Giảm max phải lớn hơn giảm min.';
-        // }
         if ($scope.ngayKetThuc) {
             const today = new Date();
             const selectedDate = new Date($scope.ngayKetThuc);
@@ -307,7 +298,7 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
     };
 
     $scope.addVoucher = function () {
-        event.preventDefault();
+        // event.preventDefault();
         $scope.isSubmitted = true;
         $scope.validateDiscounts();
         const newVoucher = {
@@ -324,24 +315,22 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
         };
 
         console.log("Dữ liệu mới:", newVoucher);
-
-
         // Kiểm tra nếu form hợp lệ trước khi gửi request
-        if ($scope.voucherForm.$valid) {
+        // if ($scope.voucherForm.$valid) {
             $http.post('http://localhost:8083/voucher/add', newVoucher)
                 .then(function (response) {
                     $('#productModal').modal('hide');
                     showSuccessAlert('Thêm thành công!');
-                    // $scope.loadPage($scope.currentPage);
+                    $scope.loadPage($scope.currentPage);
                 })
                 .catch(function (error) {
                     $scope.errorMessage = "Thêm thất bại";
                 });
-        } else {
-            $scope.errorMessage = "Vui lòng điền đầy đủ thông tin!";
-        }
+        // } else {
+        //     $scope.errorMessage = "Vui lòng điền đầy đủ thông tin!";
+        // }
 
-        resetForm();
+        // resetForm();
     };
     $scope.clearErrors = function () {
         // if ($event) $event.preventDefault();
@@ -453,7 +442,7 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
                 .then(function (response) {
                     // Kiểm tra phản hồi server
                     console.log(response.data);
-                    location.reload()
+                    $scope.loadPage($scope.currentPage)
                     const index = $scope.listVoucher.findIndex(vc => vc.id === id);
                     if (index !== -1) {
                         $scope.listVoucher.splice(index, 1);

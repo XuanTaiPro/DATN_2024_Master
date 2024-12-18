@@ -36,12 +36,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" ng-click="clearForm()" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form name="giamGiaForm"  ng-submit="addGiamGia(giamGia)" novalidate>
+                <form name="giamGiaForm"  ng-submit="addGiamGia(giamGia)" ng-hide="isSubmitted" novalidate>
                     <div class="form-group">
                         <label for="ten">Tên Giảm Giá</label>
                         <input type="text" id="ten" name="ten" ng-model="giamGia.ten" class="form-control"
-                               ng-class="{'invalid-class': isTenValid(giamGia.ten) && (giamGiaForm.ten.$touched || formSubmitted)}" />
-                        <div ng-show="formSubmitted || isTenValid(giamGia.ten) && (giamGiaForm.ten.$touched || formSubmitted)" class="text-danger">
+                               ng-class="{'invalid-class': !isTenValid(giamGia.ten) && (giamGiaForm.ten.$touched || formSubmitted)}" />
+                        <div ng-show=" isTenValid(giamGia.ten) && (giamGiaForm.ten.$touched || formSubmitted)" class="text-danger">
                             Tên là bắt buộc.
                         </div>
                     </div>
@@ -227,31 +227,37 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Tên:</label>
-                                    <input type="text" name="ten" class="form-control" ng-model="giamGiaDetail.ten" >
-<!--                                    <div ng-show="formSubmitted && !isTenValid(giamGiaDetail.ten) && (giamGiaFormUD.ten.$touched|| formSubmitted)" class=" text-danger">-->
-<!--                                        Tên là bắt buộc.-->
-<!--                                    </div>-->
+                                    <input type="text" name="ten" class="form-control" ng-model="giamGiaDetail.ten"
+                                           ng-class="{ 'is-invalid': !isTenValidUD() && (giamGiaFormUD.ten.$touched || formSubmitted)}">
+                                    <div ng-show="!isTenValidUD() && (giamGiaFormUD.ten.$touched || formSubmitted)" class="error text-danger">
+                                        <span ng-if="!giamGiaDetail.ten || giamGiaDetail.ten.trim() === ''">Tên không được để trống.</span>
+                                        <span ng-if="giamGiaDetail.ten && giamGiaDetail.ten.trim().length > 255">Tên không được vượt quá 255 ký tự.</span>
+                                    </div>
                                 </div>
+
                                 <div class="mb-3">
                                     <label class="form-label">Ngày bắt đầu:</label>
                                     <input type="datetime-local" name="ngayBatDau" class="form-control" ng-model="giamGiaDetail.ngayBatDau">
-<!--                                    <div ng-show="formSubmitted && !isNgayBatDauValid(giamGiaDetail.ngayBatDau) && (giamGiaFormUD.ngayBatDau.$touched|| formSubmitted)" class="error text-danger">-->
-<!--                                        Ngày bắt đầu phải là hôm nay hoặc tương lai.-->
-<!--                                    </div>-->
+                                    <div ng-show="formSubmitted && !isNgayBatDauValid(giamGiaDetail.ngayBatDau) &&
+                                         (giamGiaFormUD.ngayBatDau.$touched || formSubmitted)" class="error text-danger">
+                                        Ngày bắt đầu phải là hôm nay hoặc tương lai.
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Ngày kết thúc:</label>
                                     <input type="datetime-local" name="NgayKetThuc" class="form-control" ng-model="giamGiaDetail.ngayKetThuc" >
-<!--                                    <div ng-show="formSubmitted && !isNgayKetThucValid(giamGiaDetail.ngayKetThuc, giamGiaDetail.ngayBatDau) && (giamGiaFormUD.ngayKetThuc.$touched || formSubmitted)" class="error text-danger">-->
-<!--                                        Ngày kết thúc phải sau ngày bắt đầu.-->
-<!--                                    </div>-->
+                                    <div ng-show="formSubmitted && !isNgayKetThucValid(giamGiaDetail.ngayKetThuc, giamGiaDetail.ngayBatDau) &&
+                                     (giamGiaFormUD.ngayKetThuc.$touched || formSubmitted)" class="error text-danger">
+                                        Ngày kết thúc phải sau ngày bắt đầu.
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Phần trăm giảm giá:</label>
-                                    <input type="number" name="giaGiam" class="form-control" ng-model="giamGiaDetail.giaGiam">
-<!--                                    <div ng-show="formSubmitted && !isGiaGiamValid(giamGiaDetail.giaGiam) && (giamGiaFormUD.giaGiam.$touched|| formSubmitted)" class="error text-danger">-->
-<!--                                        Giá giảm phải từ 1% đến 100%.-->
-<!--                                    </div>-->
+                                    <input type="number" name="giaGiam" class="form-control" ng-model="giamGiaDetail.giaGiam"
+                                           ng-class="{'invalid-class': isGiaGiamValid(giamGiaDetail.giaGiam) && (giamGiaFormUD.giaGiam.$touched || formSubmitted)}" min="1" max="100" />
+                                    <div ng-show="formSubmitted && !isGiaGiamValid(giamGiaDetail.giaGiam) && (giamGiaFormUD.giaGiam.$touched || formSubmitted)" class="error text-danger">
+                                        Giá giảm phải từ 1% đến 100%.
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Chọn sản phẩm áp dụng giảm giá:</label>
@@ -264,7 +270,6 @@
                                         <label for="selectProductsUpdate">Chọn sản phẩm</label>
                                     </div>
                                 </div>
-                                <!-- Hiển thị khi người dùng chọn "Chọn sản phẩm" -->
                                 <div ng-show="giamGiaDetail.selectedProductsType === 'selected'">
                                     <label class="form-label">Chọn danh mục:</label>
                                     <select class="form-control" ng-model="idDanhMuc" ng-change="getSanPhamByDanhMuc(idDanhMuc)">
@@ -272,7 +277,6 @@
                                         <option ng-repeat="dm in listDanhMuc" value="{{dm.id}}">{{dm.ten}}</option>
                                     </select>
 
-                                    <!-- Sản phẩm trong danh mục đã chọn -->
                                     <label class="form-label mt-3">Chọn sản phẩm:</label>
                                     <select class="form-control" ng-model="giamGiaDetail.selectedProduct" ng-options="sp as sp.tenSP for sp in listSanPham" ng-change="addProduct()">
                                         <option value="">-- Chọn sản phẩm --</option>

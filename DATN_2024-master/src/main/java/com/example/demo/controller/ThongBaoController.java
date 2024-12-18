@@ -2,7 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.thongbao.ThongBaoRequest;
 import com.example.demo.dto.thongbao.ThongBaoResponse;
+import com.example.demo.entity.ChiTietThongBao;
+import com.example.demo.entity.KhachHang;
 import com.example.demo.entity.ThongBao;
+import com.example.demo.repository.ChiTietThongBaoRepository;
 import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.repository.ThongBaoRepository;
 import com.example.demo.service.GenerateCodeAll;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +33,9 @@ public class ThongBaoController {
     private KhachHangRepository khRepo;
 
     @Autowired
+    private ChiTietThongBaoRepository cttbRepo;
+
+    @Autowired
     private GenerateCodeAll generateCodeAll;
 
     @GetMapping()
@@ -42,7 +49,7 @@ public class ThongBaoController {
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
         Page<ThongBao> voucherPage = tbRepo.findAll(pageable);
 
         List<ThongBaoResponse> list = new ArrayList<>();
@@ -70,27 +77,46 @@ public class ThongBaoController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<?> add(@Valid @RequestBody ThongBaoRequest thongBaoRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            System.out.println(mess.toString());
-            return ResponseEntity.badRequest().body(mess.toString());
-        }
+    public ResponseEntity<?> add(@RequestBody ThongBaoRequest thongBaoRequest) {
+        // Tự động tạo ID nếu không có
         if (thongBaoRequest.getId() == null || thongBaoRequest.getId().isEmpty()) {
             thongBaoRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
-        if (thongBaoRequest.getMa() == null || thongBaoRequest.getMa().isEmpty()) {// nếu mã chưa đc điền thì tự động
-            // thêm mã
+
+        // Tự động tạo mã thông báo nếu không có
+        if (thongBaoRequest.getMa() == null || thongBaoRequest.getMa().isEmpty()) {
             thongBaoRequest.setMa(generateCodeAll.generateMaThongBao());
         }
         ThongBao thongBao = thongBaoRequest.toEntity();
-        thongBao.setKhachHang(khRepo.getById(thongBaoRequest.getIdKH()));
+
+        List<KhachHang> khachHangs = khRepo.findAllById(thongBaoRequest.getIdKHs());
+        if (khachHangs.isEmpty()) {
+            return ResponseEntity.badRequest().body("Danh sách khách hàng không hợp lệ");
+        }
+        thongBao.setKhachHangs(khachHangs);
         thongBao.setNgayGui(LocalDateTime.now());
         thongBao.setNgayDoc(LocalDateTime.now());
+
+        // Lưu vào cơ sở dữ liệu
         tbRepo.save(thongBao);
-        return ResponseEntity.ok("thêm thành công");
+
+        if (thongBaoRequest.getIdKHs() != null && !thongBaoRequest.getIdKHs().isEmpty()) {
+            for (String customerID : thongBaoRequest.getIdKHs()) {
+                Optional<KhachHang> optionalKhachHang = khRepo.findById(customerID);
+                if (optionalKhachHang.isPresent()) {
+                    ChiTietThongBao chiTietThongBao = new ChiTietThongBao();
+                    chiTietThongBao.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+                    chiTietThongBao.setThongBao(thongBao);
+                    chiTietThongBao.setKhachHang(optionalKhachHang.get());
+                    cttbRepo.save(chiTietThongBao);
+                } else {
+                    return ResponseEntity.badRequest().body("không tồn tại id khách hàng với id" + customerID);
+                }
+            }
+        }
+        return ResponseEntity.ok(Map.of("message", "Thêm thành công"));
     }
+
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody ThongBaoRequest thongBaoRequest,
@@ -100,21 +126,54 @@ public class ThongBaoController {
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
             return ResponseEntity.badRequest().body(mess.toString());
         }
+
         Optional<ThongBao> optionalThongBao = tbRepo.findById(id);
         if (optionalThongBao.isPresent()) {
-
             ThongBao thongBaoUpdate = thongBaoRequest.toEntity();
-            thongBaoRequest.setId(id);
-            thongBaoUpdate.setKhachHang(khRepo.getById(thongBaoRequest.getIdKH()));
+            thongBaoUpdate.setId(id);
+            List<KhachHang> khachHangs = khRepo.findAllById(thongBaoRequest.getIdKHs());
+            if (khachHangs.isEmpty()) {
+                return ResponseEntity.badRequest().body("Danh sách khách hàng không hợp lệ");
+            }
+            thongBaoUpdate.setKhachHangs(khachHangs);
             thongBaoUpdate.setMa(optionalThongBao.get().getMa());
-            thongBaoUpdate.setNgayGui(optionalThongBao.get().getNgayGui());
-            thongBaoUpdate.setNgayDoc(optionalThongBao.get().getNgayDoc());
-            ThongBao savedThongBao = tbRepo.save(thongBaoUpdate); // Lưu thay đổi và lấy đối tượng đã lưu
-            return ResponseEntity.ok(savedThongBao); // Trả về đối tượng đã cập nhật
+            thongBaoUpdate.setNgayGui(
+                    thongBaoRequest.getNgayGui() != null ? thongBaoRequest.getNgayGui() : optionalThongBao.get().getNgayGui()
+            );
+            thongBaoUpdate.setNgayDoc(
+                    thongBaoRequest.getNgayDoc() != null ? thongBaoRequest.getNgayDoc() : optionalThongBao.get().getNgayDoc()
+            );
+            ThongBao savedThongBao = tbRepo.save(thongBaoUpdate);
+
+            if (!cttbRepo.getCTTB(id).isEmpty()) {
+                cttbRepo.deleteByThongBaoID(id);
+            }
+            // Đảm bảo `idKHs` không bị null hoặc trống trước khi cập nhật
+            if (thongBaoRequest.getIdKHs() != null && !thongBaoRequest.getIdKHs().isEmpty()) {
+                thongBaoRequest.getIdKHs().forEach(idKH -> {
+                    Optional<KhachHang> optionalKhachHang = khRepo.findById(idKH);
+                    if (optionalKhachHang.isPresent()) {
+                        ChiTietThongBao chiTietThongBao = new ChiTietThongBao();
+                        chiTietThongBao.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+                        chiTietThongBao.setKhachHang(optionalKhachHang.get());
+                        chiTietThongBao.setThongBao(thongBaoUpdate);
+                        cttbRepo.save(chiTietThongBao);
+                    }
+                });
+            }
+            return ResponseEntity.ok(savedThongBao);
         } else {
-            return ResponseEntity.badRequest().body("Không tìm thấy id cần update");
+            return ResponseEntity.badRequest().body("Không tìm thấy thông báo cần cập nhật");
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getKHByIdThongBao(@PathVariable("id") String thongBaoID) {
+        List<String> idKH = cttbRepo.findKHBythongBaoId(thongBaoID);
+        List<KhachHang> khachHangList = khRepo.findAllById(idKH);
+        return ResponseEntity.ok(khachHangList);
+    }
+
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
@@ -127,5 +186,30 @@ public class ThongBaoController {
             response.put("message", "Không tìm thấy id cần xóa");
             return ResponseEntity.badRequest().body(response); // Trả về phản hồi JSON khi lỗi
         }
+    }
+
+    @GetMapping("searchTB")
+    public ResponseEntity<?> searchTB(
+            @RequestParam(required = false) String noiDung,
+            @RequestParam(required = false) Integer trangThai,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "5") Integer size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongBao> thongBaos = tbRepo.searchTB(noiDung, trangThai, pageable);
+        if (thongBaos.isEmpty()) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "Không tìm thấy nhân viên",
+                    "thongBaos", Collections.emptyList(),
+                    "currentPage", page,
+                    "totalPages", 0
+            ));
+        }
+        List<ThongBaoResponse> thongBaoResponses = thongBaos.stream().map(ThongBao::toResponse).toList();
+        return ResponseEntity.ok(Map.of(
+                "thongBaos", thongBaoResponses,
+                "currentPage", page,
+                "totalPages", thongBaos.getTotalPages()
+        ));
     }
 }

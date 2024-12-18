@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin("*")
@@ -21,21 +21,37 @@ public class ChiTietVoucherController {
     @Autowired
     private ChiTietVoucherRepository ctvcRepo;
 
-    @GetMapping("getByIdKhach/{id}")
-    public ResponseEntity<?> findAllByKhachHang(@PathVariable String id) {
-        if (id.trim().isEmpty()) {
+    @GetMapping("getByIdKhach")
+    public ResponseEntity<?> findAllByKhachHang(@RequestParam String idKh, @RequestParam(required = false) String gia) {
+        if (idKh.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy id khách hàng");
         }
+        Integer giaInt = null;
+        if (gia != null && !gia.trim().isEmpty()) {
+            try {
+                giaInt = Integer.parseInt(gia);
+            } catch (NumberFormatException e) {
+                return ResponseEntity.badRequest().body("Giá phải là số");
+            }
+        }
 
-        List<String> list = ctvcRepo.getByIdKhach(id);
+        List<String> list = ctvcRepo.getByIdKhach(idKh);
 
         List<Voucher> voucherList = new ArrayList<>();
 
         for (String idVC : list) {
-            voucherList.add(ctvcRepo.findById(idVC).get().getVoucher());
+            Voucher vc = ctvcRepo.findById(idVC).get().getVoucher();
+
+            if (giaInt != null) {
+                Integer giaMin = Integer.parseInt(vc.getGiamMin());
+                if (giaInt >= giaMin) {
+                    voucherList.add(vc);
+                }
+            } else {
+                voucherList.add(vc);
+            }
         }
 
         return ResponseEntity.ok().body(voucherList);
     }
-
 }

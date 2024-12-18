@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class NhanVienController {
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
         Page<NhanVien> nhanVienPage = nvRepo.findAll(pageable);
 
         List<NhanVienResponse> list = new ArrayList<>();
@@ -104,7 +105,7 @@ public class NhanVienController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<?> add(@Valid @RequestBody NhanVienRequest nhanVienRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> add(@RequestBody NhanVienRequest nhanVienRequest) {
 //        if (LoginController.tenQuyen == null ||
 //                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
 //            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ Admin mới có quyền Thêm!"));
@@ -112,12 +113,6 @@ public class NhanVienController {
         if (nvRepo.existsByEmail(nhanVienRequest.getEmail())) {
             return ResponseEntity.badRequest().body(Map.of("email", "Email đã tồn tại"));
         }
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(errors);
-        }
-
         if (nhanVienRequest.getMa() == null || nhanVienRequest.getMa().isEmpty()) {
             nhanVienRequest.setMa(generateCodeAll.generateMaNhanVien());
         }
@@ -142,19 +137,13 @@ public class NhanVienController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody NhanVienRequest nhanVienRequest,
-                                    BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable String id,@RequestBody NhanVienRequest nhanVienRequest) {
 
 //        if (LoginController.tenQuyen == null ||
 //                !LoginController.tenQuyen.equalsIgnoreCase("Admin")) {
 //            return ResponseEntity.status(403).body(Map.of("success", false, "message", "Chỉ Admin mới có quyền cập nhật!"));
 //        }
 
-        if (bindingResult.hasErrors()) {
-            StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            return ResponseEntity.badRequest().body(mess.toString());
-        }
         Optional<NhanVien> optionalNhanVien = nvRepo.findById(id);
 
         if (optionalNhanVien.isPresent()) {

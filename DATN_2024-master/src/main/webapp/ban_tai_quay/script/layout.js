@@ -61,13 +61,16 @@ app.config(function ($routeProvider) {
 
 app.controller('myCtrl', function ($scope, $http) {
     const login = sessionStorage.getItem('loginOk')
-    // if (!login) {
-    //     window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
-    //     return
-    // }
-    //
-    // const idNV = sessionStorage.getItem('idNV');
-    const idNV='909918DD'
+
+
+    if (!login) {
+        window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
+        return
+    }
+
+    const idNV = sessionStorage.getItem('idNV');
+    // const idNV='909918DD'
+
     if (!idNV) {
         console.error('Không tìm thấy ID nhân viên trong sessionStorage');
         return;
@@ -196,7 +199,7 @@ function showSuccessAlert(message) {
     setTimeout(() => {
         alertElement.classList.remove('show'); // Ẩn hiệu ứng
         setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
-    }, 3000);
+    }, 1500);
 }
 
 
@@ -212,7 +215,7 @@ function showDangerAlert(message) {
     setTimeout(() => {
         alertElement.classList.remove('show'); // Ẩn hiệu ứng
         setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
-    }, 3000);
+    }, 1500);
 }
 
 function showWarningAlert(message) {
@@ -222,11 +225,11 @@ function showWarningAlert(message) {
 
     alertElement.style.display = 'block';
 
-    setTimeout(() => alertElement.classList.add('show'), 10); // Thêm hiệu ứng
+    setTimeout(() => alertElement.classList.add('show'), 10);
     setTimeout(() => {
-        alertElement.classList.remove('show'); // Ẩn hiệu ứng
-        setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
-    }, 3000);
+        alertElement.classList.remove('show');
+        setTimeout(() => (alertElement.style.display = 'none'), 500);
+    }, 1500);
 }
 
 function showConfirm(message, onConfirm, onCancel) {

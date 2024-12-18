@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Entity
 @AllArgsConstructor
@@ -37,13 +40,18 @@ public class ThongBao {
     @Column(name = "TRANGTHAI")
     private Integer trangThai;
 
-    @ManyToOne
-    @JoinColumn(name = "IDKH")
+    @ManyToMany
+    @JoinTable(
+            name = "KH_TB",
+            joinColumns = @JoinColumn(name = "IDTHONGBAO"),
+            inverseJoinColumns = @JoinColumn(name = "IDKHACHHANG")
+    )
     @JsonIgnore
-    private KhachHang khachHang;
+    private List<KhachHang> khachHangs;
 
     public ThongBaoResponse toResponse() {
-        return new ThongBaoResponse(id, ma, noiDung, ngayGui, ngayDoc, trangThai, khachHang.getTen(),
-                khachHang.getEmail());
+        return new ThongBaoResponse(id, ma, noiDung, ngayGui, ngayDoc, trangThai, khachHangs.stream()
+                .map(KhachHang::getTen).collect(Collectors.joining(", ")),
+                khachHangs.stream().map(KhachHang::getEmail).collect(Collectors.joining(", ")));
     }
 }

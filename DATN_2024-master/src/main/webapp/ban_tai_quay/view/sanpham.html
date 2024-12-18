@@ -1,362 +1,394 @@
-<div class="text-center">
-    <h2>Quản Lý Sản Phẩm</h2>
-</div>
-<div class="filters">
-    <!-- Tìm kiếm sản phẩm -->
-    <input type="text"
-           ng-model="filters.searchText"
-           ng-change="getAllProducts(0)"
-           placeholder="Tìm kiếm sản phẩm..." />
+<section class="p-3">
+    <div class="text-center">
+        <h2>Quản Lý Sản Phẩm</h2>
+    </div>
+    <div class="filters">
+        <!-- Tìm kiếm sản phẩm -->
+        <input type="text"
+               ng-model="filters.searchText"
+               ng-change="getAllProducts(0)"
+               placeholder="Tìm kiếm sản phẩm..." />
 
-    <!-- Lọc theo danh mục -->
-    <select ng-model="filters.tenDanhMuc"
-            ng-change="getAllProducts(0)"
-            ng-options="danhMuc.ten as danhMuc.ten for danhMuc in listDanhMuc">
-        <option value="">--Chọn danh mục--</option>
-    </select>
+        <!-- Lọc theo danh mục -->
+        <select ng-model="filters.tenDanhMuc"
+                ng-change="getAllProducts(0)"
+                ng-options="danhMuc.ten as danhMuc.ten for danhMuc in listDanhMuc">
+            <option value="">--Chọn danh mục--</option>
+        </select>
 
-    <!-- Lọc theo trạng thái -->
-    <select ng-model="filters.trangThai"
-            ng-change="getAllProducts(0)">
-        <option value="">--Trạng thái--</option>
-        <option value="1">Hoạt động</option>
-        <option value="0">Không hoạt động</option>
-    </select>
+        <!-- Lọc theo trạng thái -->
+        <select ng-model="filters.trangThai"
+                ng-change="getAllProducts(0)">
+            <option value="">--Trạng thái--</option>
+            <option value="1">Hoạt động</option>
+            <option value="0">Không hoạt động</option>
+        </select>
 
-    <!-- Lọc theo tuổi -->
-    <select ng-model="filters.tuoiRange"
-            ng-change="getAllProducts(0)"
-            ng-options="range as range.label for range in ageRanges">
-        <option value="">--Chọn khoảng tuổi--</option>
-    </select>
-</div>
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
-    Thêm Sản Phẩm
-</button>
+        <!-- Lọc theo tuổi -->
+        <select ng-model="filters.tuoiRange"
+                ng-change="getAllProducts(0)"
+                ng-options="range as range.label for range in ageRanges">
+            <option value="">--Chọn khoảng tuổi--</option>
+        </select>
+    </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+        Thêm Sản Phẩm
+    </button>
 
-<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="productModalLabel">Thêm Sản Phẩm</h5>
-<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-            </div>
-            <div class="modal-body">
-                <form name="myForm" ng-submit="addProduct(product)"  novalidate>
-                    <div class="mb-3">
-                        <label for="tenSP" class="form-label">Tên sản phẩm:</label>
-                        <input type="text" id="tenSP" name="tenSP" ng-model="product.tenSP" class="form-control"
-                               ng-class="{ 'is-invalid': (!isTenValid() || isDuplicateName) && (myForm.tenSP.$touched || formSubmitted)}"
-                               ng-blur="checkDuplicateName()" />
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">Thêm Sản Phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form name="myForm" ng-submit="addProduct(product)" novalidate >
+                        <div class="mb-3">
+                            <label for="tenSP" class="form-label">Tên sản phẩm:</label>
+                            <input type="text" id="tenSP" name="tenSP" ng-model="product.tenSP" class="form-control"
+                                   ng-class="{ 'is-invalid': (!isTenValid() || isDuplicateName) && (myForm.tenSP.$touched || formSubmitted)}"
+                                   ng-blur="checkDuplicateName()" />
 
-                        <div ng-show="!isTenValid() && (myForm.tenSP.$touched|| formSubmitted)" class="error text-danger">
-                            Tên sản phảm không đc để trống hoặc chứa các ký tự đặc biệt
-                        </div>
-                        <div ng-show="isDuplicateName && (myForm.tenSP.$touched || formSubmitted)" class="error text-danger">
-                            Tên sản phẩm đã tồn tại.
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Thành phần:</label>
-                        <input type="text" name="thanhPhan" class="form-control" ng-model="product.thanhPhan"
-                               ng-class="{'is-invalid': !isTPValid() && (myForm.thanhPhan.$touched || formSubmitted)}" />
-
-                        <div ng-show="!isTPValid() && (myForm.thanhPhan.$touched || formSubmitted)" class="error text-danger">
-                            Cần phải điền thành phần
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Công dụng:</label>
-                        <input type="text" name="congDung" class="form-control" ng-model="product.congDung"
-                               ng-class="{'is-invalid': !isCDValid() && (myForm.congDung.$touched || formSubmitted)}" />
-
-                        <div ng-show="!isCDValid() && (myForm.congDung.$touched || formSubmitted)" class="error text-danger">
-                            Cần phải điền công dụng
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Hướng dẫn sử dụng:</label>
-                        <input type="text" name="hdsd" class="form-control" ng-model="product.hdsd"
-                               ng-class="{'is-invalid': !ishdsdValid() && (myForm.hdsd.$touched || formSubmitted)}" />
-
-                        <div ng-show="!ishdsdValid() && (myForm.hdsd.$touched || formSubmitted)" class="error text-danger">
-                            Cần phải điền hướng dẫn sử dụng
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="form-group">
-                            <label for="minAge">Tuổi tối thiểu:</label>
-                            <input type="number" id="minAge" name="tuoiMin" ng-model="product.tuoiMin" class="form-control" required />
-                            <div ng-show="(myForm.tuoiMin.$touched || formSubmitted)&& myForm.tuoiMin.$invalid " class=" text-danger">
-                                Tuổi tối thiểu không được để trống
+                            <div ng-show="!isTenValid() && (myForm.tenSP.$touched|| formSubmitted)" class="error text-danger">
+                                Tên sản phảm không đc để trống hoặc chứa các ký tự đặc biệt .
                             </div>
-                            <div ng-show=" formSubmitted || myForm.tuoiMin.$touched" ng-if="isAgeGreaterThan1001()" class=" text-danger">
-                                Tuổi tối thiểu không được  nhỏ hơn 1.
+                            <div ng-show="isDuplicateName && (myForm.tenSP.$touched || formSubmitted)" class="error text-danger">
+                                Tên sản phẩm đã tồn tại.
+                            </div>
+                            <div ng-show="isTenKyTu() && (myForm.tenSP.$touched|| formSubmitted)" class="error text-danger">
+                                Tên không được ít hơn 3 ký tự và vượt quá 255 ký tự .
                             </div>
                         </div>
 
-                        <div class="form-group" >
-                            <label for="maxAge">Tuổi tối đa:</label>
-                            <input type="number" id="maxAge" name="tuoiMax" ng-model="product.tuoiMax" class="form-control" required />
-                            <div  ng-show="(myForm.tuoiMax.$touched|| formSubmitted) && myForm.tuoiMax.$invalid  " class=" text-danger">
-                                Tuổi tối đa không được để trống.
+                        <div class="mb-3">
+                            <label class="form-label">Thành phần:</label>
+                            <input type="text" name="thanhPhan" class="form-control" ng-model="product.thanhPhan"
+                                   ng-class="{'is-invalid': !isTPValid() && (myForm.thanhPhan.$touched || formSubmitted)}" />
+
+                            <div ng-show="!isTPValid() && (myForm.thanhPhan.$touched || formSubmitted)" class="error text-danger">
+                                Cần phải điền thành phần
+                            </div>
+                            <div ng-show="isTPKyTu() && (myForm.thanhPhan.$touched|| formSubmitted)" class="error text-danger">
+                                Thành phần không được ít hơn 3 ký tự và vượt quá 255 ký tự .
                             </div>
                         </div>
 
-                        <div id="tMError"  style="display: none"  class="error text-danger">
-                            Tuổi tối thiểu phải nhỏ hơn tuổi tối đa.
-                        </div>
-                        <div ng-show="myForm.$submitted || myForm.tuoiMax.$touched" ng-if="isAgeGreaterThan100()" class="error text-danger">
-                            Tuổi tối đa không được nhỏ hơn 1.
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Danh mục:</label>
-                        <select class="form-control" ng-model="product.idDanhMuc" required> >
-                            <option value="" disabled selected>Vui lòng chọn danh mục</option>
-                            <option ng-repeat="danhMuc in listDanhMuc" value="{{danhMuc.id}}">{{danhMuc.ten}}</option>
-                        </select>
-                        <div style="color: red;" ng-show="isSubmitted && !(product.idDanhMuc)">
-                            Phải chọn 1 danh mục.
+                        <div class="mb-3">
+                            <label class="form-label">Công dụng:</label>
+                            <input type="text" name="congDung" class="form-control" ng-model="product.congDung"
+                                   ng-class="{'is-invalid': !isCDValid() && (myForm.congDung.$touched || formSubmitted)}" />
+
+                            <div ng-show="!isCDValid() && (myForm.congDung.$touched || formSubmitted)" class="error text-danger">
+                                Cần phải điền công dụng
+                            </div>
+                            <div ng-show="isCDKyTu() && (myForm.congDung.$touched|| formSubmitted)" class="error text-danger">
+                                Công dụng không được ít hơn 3 ký tự và vượt quá 255 ký tự .
+                            </div>
                         </div>
 
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả:</label>
-                        <textarea type="tel" class="form-control" ng-model="product.moTa" ></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-outline-success">Thêm</button>
-                </form>
+                        <div class="mb-3">
+                            <label class="form-label">Hướng dẫn sử dụng:</label>
+                            <input type="text" name="hdsd" class="form-control" ng-model="product.hdsd"
+                                   ng-class="{'is-invalid': !ishdsdValid() && (myForm.hdsd.$touched || formSubmitted)}" />
+
+                            <div ng-show="!ishdsdValid() && (myForm.hdsd.$touched || formSubmitted)" class="error text-danger">
+                                Cần phải điền hướng dẫn sử dụng
+                            </div>
+                            <div ng-show="isHDSDKyTu() && (myForm.hdsd.$touched|| formSubmitted)" class="error text-danger">
+                                Hướng dẫn sử dụng không được ít hơn 3 ký tự và vượt quá 255 ký tự .
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-group">
+                                <label for="minAge">Tuổi tối thiểu:</label>
+                                <input type="number" id="minAge" name="tuoiMin" ng-model="product.tuoiMin" class="form-control" required />
+                                    <div ng-show="(myForm.tuoiMin.$touched || formSubmitted)&& myForm.tuoiMin.$invalid " class=" text-danger">
+                                        Tuổi tối thiểu không được để trống
+                                    </div>
+                                    <div ng-show=" formSubmitted || myForm.tuoiMin.$touched" ng-if="isAgeGreaterThan1001()" class=" text-danger">
+                                        Tuổi tối thiểu không được  nhỏ hơn 1.
+                                    </div>
+                                </div>
+
+                                <div class="form-group" >
+                                    <label for="maxAge">Tuổi tối đa:</label>
+                                    <input type="number" id="maxAge" name="tuoiMax" ng-model="product.tuoiMax" class="form-control" required />
+                                    <div  ng-show="(myForm.tuoiMax.$touched|| formSubmitted) && myForm.tuoiMax.$invalid  " class=" text-danger">
+                                        Tuổi tối đa không được để trống.
+                                    </div>
+                                </div>
+
+                                <div id="tMError"  style="display: none"  class="error text-danger">
+                                    Tuổi tối thiểu phải nhỏ hơn tuổi tối đa.
+                                </div>
+                                <div ng-show="myForm.$submitted || myForm.tuoiMax.$touched" ng-if="isAgeGreaterThan100()" class="error text-danger">
+                                    Tuổi tối đa không được nhỏ hơn 1.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Danh mục:</label>
+                                <select class="form-control" ng-model="product.idDanhMuc" required> >
+                                    <option value="" disabled selected>Vui lòng chọn danh mục</option>
+                                    <option ng-repeat="danhMuc in listDanhMuc" value="{{danhMuc.id}}">{{danhMuc.ten}}</option>
+                                </select>
+                                <div style="color: red;" ng-show="isSubmitted && !(product.idDanhMuc)">
+                                    Phải chọn 1 danh mục.
+                                </div>
+
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mô tả:</label>
+                                <textarea type="tel" class="form-control" ng-model="product.moTa" ></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-outline-success">Thêm</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
-<table class="table table-hover mt-4">
-    <thead>
-    <tr>
-        <th>STT</th>
-        <th>ID</th>
-        <th>Mã</th>
-        <th>Tên</th>
-        <th>Thành phần</th>
-        <th>Công dụng</th>
-        <th>Hướng dẫn sử dụng</th>
-        <th>Tuổi tối thiểu</th>
-        <th>Tuổi tối đa</th>
-        <th>Tổng số lượng</th>
-        <th>Mô tả</th>
-        <th>Danh mục</th>
-        <th>Thương hiệu</th>
-        <th>Trạng thái</th>
-        <th>Ngày tạo</th>
-        <th>Ngày sửa</th>
-        <th colspan="2">Hành động</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="sp in products">
-        <td>{{$index + 1 + (currentPage * itemsPerPage)}}</td> <!-- Đánh số thứ tự sản phẩm trên trang -->
-        <td>{{sp.id}}</td>
-        <td>{{sp.maSP}}</td>
-        <td>{{sp.tenSP}}</td>
-        <td>{{sp.thanhPhan}}</td>
-        <td>{{sp.congDung}}</td>
-        <td>{{sp.hdsd}}</td>
-        <td>{{sp.tuoiMin}} tuổi</td>
-        <td>{{sp.tuoiMax}} tuổi</td>
-        <td>{{sp.tongSoLuong}}</td>
-        <td>{{sp.moTa}}</td>
-        <td>{{sp.tenDanhMuc}}</td>
-        <td>{{sp.tenThuongHieu}}</td>
-        <td>{{sp.trangThai === 1 ? 'Đang hoạt động' : (sp.trangThai === 0 ? 'Không hoạt động' : (sp.trangThai === 2 ?
-            'Sắp hết hàng' : 'Trạng thái không xác định')) }}
-        </td>
-        <td>{{sp.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-        <td>{{sp.ngaySua | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+    <table class="table table-hover mt-4">
+        <thead>
+        <tr>
+            <th>STT</th>
+            <th>ID</th>
+            <th>Mã</th>
+            <th>Tên</th>
+            <th>Thành phần</th>
+            <th>Công dụng</th>
+            <th>Hướng dẫn sử dụng</th>
+            <th>Tuổi tối thiểu</th>
+            <th>Tuổi tối đa</th>
+            <th>Tổng số lượng</th>
+            <th>Mô tả</th>
+            <th>Danh mục</th>
+            <th>Thương hiệu</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Ngày sửa</th>
+            <th colspan="2">Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="sp in products">
+            <td>{{$index + 1 + (currentPage * itemsPerPage)}}</td> <!-- Đánh số thứ tự sản phẩm trên trang -->
+            <td>{{sp.id}}</td>
+            <td>{{sp.maSP}}</td>
+            <td>{{sp.tenSP}}</td>
+            <td>{{sp.thanhPhan}}</td>
+            <td>{{sp.congDung}}</td>
+            <td>{{sp.hdsd}}</td>
+            <td>{{sp.tuoiMin}} tuổi</td>
+            <td>{{sp.tuoiMax}} tuổi</td>
+            <td>{{sp.tongSoLuong}}</td>
+            <td>{{sp.moTa}}</td>
+            <td>{{sp.tenDanhMuc}}</td>
+            <td>{{sp.tenThuongHieu}}</td>
+            <td>{{sp.trangThai === 1 ? 'Đang hoạt động' : (sp.trangThai === 0 ? 'Không hoạt động' : (sp.trangThai === 2 ?
+                'Sắp hết hàng' : 'Trạng thái không xác định')) }}
+            </td>
+            <td>{{sp.ngayTao | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+            <td>{{sp.ngaySua | date:'yyyy-MM-dd HH:mm:ss'}}</td>
 
-        <td>
-            <a ng-href="#!/chitietsanpham/{{sp.id}}" class="btn" style="background-color: #3498db; color: white;">
-                <i class="fa fa-list"></i>
-            </a>
-            <button class="btn btn-success" ng-click="viewDetail(sp.id)" data-bs-toggle="modal"
-                    data-bs-target="#readData">
-                <i class="bi bi-eye"></i>
-            </button>
-            <div class="modal fade" id="readData" tabindex="-1" aria-labelledby="readDataLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="readDataLabel">Chi tiết sản phẩm</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <!-- Cột cho thông tin chi tiết sản phẩm -->
-                                <div class="col-md-6">
-                                    <p><strong>Mã:</strong> {{ productDetail.maSP}} </p>
-                                    <p><strong>Tên:</strong> {{ productDetail.tenSP }} </p>
-                                    <p><strong>Thành phần:</strong> {{ productDetail.thanhPhan }}</p>
-                                    <p><strong>Công dụng:</strong> {{ productDetail.congDung }}</p>
-                                    <p><strong>Hướng dẫn sử dụng:</strong> {{ productDetail.hdsd }}</p>
-                                    <p><strong>Tuổi tối thiểu:</strong> {{ productDetail.tuoiMin }} tuổi</p>
-                                    <p><strong>Tuôi tối đa:</strong> {{ productDetail.tuoiMax }} tuổi</p>
-                                    <p><strong>Số lượng:</strong> {{ productDetail.tongSoLuong }}</p>
-                                    <p><strong>Trạng thái:</strong>
-                                        {{ productDetail.trangThai == 1 ? 'Đang hoạt động' :
-                                        (productDetail.trangThai === 0 ? 'Không hoạt động' :
-                                        (productDetail.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định'))
-                                        }}
-                                    </p>
-                                    <p><strong>Ngày tạo:</strong> {{ productDetail.ngayTao | date:'yyyy-MM-dd HH:mm:ss'
-                                        }}</p>
-                                    <p><strong>Ngày sửa:</strong> {{ productDetail.ngaySua | date:'yyyy-MM-dd HH:mm:ss'
-                                        }}</p>
-                                </div>
-                                <!-- Cột cho hình ảnh sản phẩm -->
-                                <div class="col-md-6">
-                                    <div ng-if="productDetail.linkAnhList.length > 0">
-                                        <strong>Hình ảnh:</strong>
-                                        <div class="d-flex flex-wrap">
-                                            <div ng-repeat="link in productDetail.linkAnhList" class="me-2 mb-2">
-                                                <img ng-src="{{ link }}" alt="Ảnh sản phẩm" class="img-fluid"
-                                                     width="150" height="150"/>
+            <td>
+                <a ng-href="#!/chitietsanpham/{{sp.id}}" class="btn" style="background-color: #3498db; color: white;">
+                    <i class="fa fa-list"></i>
+                </a>
+                <button class="btn btn-success" ng-click="viewDetail(sp.id)" data-bs-toggle="modal"
+                        data-bs-target="#readData">
+                    <i class="bi bi-eye"></i>
+                </button>
+                <div class="modal fade" id="readData" tabindex="-1" aria-labelledby="readDataLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="readDataLabel">Chi tiết sản phẩm</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <!-- Cột cho thông tin chi tiết sản phẩm -->
+                                    <div class="col-md-6">
+                                        <p><strong>Mã:</strong> {{ productDetail.maSP}} </p>
+                                        <p><strong>Tên:</strong> {{ productDetail.tenSP }} </p>
+                                        <p><strong>Thành phần:</strong> {{ productDetail.thanhPhan }}</p>
+                                        <p><strong>Công dụng:</strong> {{ productDetail.congDung }}</p>
+                                        <p><strong>Hướng dẫn sử dụng:</strong> {{ productDetail.hdsd }}</p>
+                                        <p><strong>Tuổi tối thiểu:</strong> {{ productDetail.tuoiMin }} tuổi</p>
+                                        <p><strong>Tuôi tối đa:</strong> {{ productDetail.tuoiMax }} tuổi</p>
+                                        <p><strong>Số lượng:</strong> {{ productDetail.tongSoLuong }}</p>
+                                        <p><strong>Trạng thái:</strong>
+                                            {{ productDetail.trangThai == 1 ? 'Đang hoạt động' :
+                                            (productDetail.trangThai === 0 ? 'Không hoạt động' :
+                                            (productDetail.trangThai === 2 ? 'Sắp hết hàng' : 'Trạng thái không xác định'))
+                                            }}
+                                        </p>
+                                        <p><strong>Ngày tạo:</strong> {{ productDetail.ngayTao | date:'yyyy-MM-dd HH:mm:ss'
+                                            }}</p>
+                                        <p><strong>Ngày sửa:</strong> {{ productDetail.ngaySua | date:'yyyy-MM-dd HH:mm:ss'
+                                            }}</p>
+                                    </div>
+                                    <!-- Cột cho hình ảnh sản phẩm -->
+                                    <div class="col-md-6">
+                                        <div ng-if="productDetail.linkAnhList.length > 0">
+                                            <strong>Hình ảnh:</strong>
+                                            <div class="d-flex flex-wrap">
+                                                <div ng-repeat="link in productDetail.linkAnhList" class="me-2 mb-2">
+                                                    <img ng-src="{{ link }}" alt="Ảnh sản phẩm" class="img-fluid"
+                                                         width="150" height="150"/>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" ng-click="viewDetail(sp.id)" data-bs-toggle="modal"
-                    data-bs-target="#userForm">
-                <i class="bi bi-pencil-square">
-                </i></button>
-            <div class="modal fade" id="userForm" tabindex="-1" aria-labelledby="userFormLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="userFormLabel">Cập nhật sản phẩm</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form ng-submit="updateProduct()" name="FormUpdate" novalidate>
-                                <input type="hidden" ng-model="productDetail.id" required>
-                                <div class="mb-3">
-                                    <label class="form-label">Tên sản phẩm:</label>
-                                    <input type="text" name="tenSP" id="name" class="form-control" ng-model="productDetail.tenSP"
-                                           ng-class="{ 'is-invalid': (!isTenValidUD() || isDuplicateName ) && (FormUpdate.tenSP.$touched || formSubmitted)}"
-                                           ng-blur="checkDuplicateName()" />
-                                    <div ng-show="!isTenValidUD() && (FormUpdate.tenSP.$touched|| formSubmitted)" class="error text-danger">
-                                        Tên sản phảm không đc để trống hoặc chứa các ký tự đặc biệt
-                                    </div>
-                                    <div ng-show="isDuplicateName  && (FormUpdate.tenSP.$touched || formSubmitted)" class="error text-danger">
-                                        Tên sản phẩm đã tồn tại.
-                                    </div>
-
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Thành phần:</label>
-                                    <input type="text" class="form-control" ng-model="productDetail.thanhPhan"
-                                           ng-class="{ 'is-invalid': !isTPValidUD() && (FormUpdate.thanhPhan.$touched || formSubmitted)}">
-                                    <div ng-show="!isTPValidUD() && (FormUpdate.thanhPhan.$touched || formSubmitted)" class="error text-danger">
-                                        Thành phần không được để trống
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Công dụng:</label>
-                                    <input type="text" class="form-control" ng-model="productDetail.congDung"
-                                           ng-class="{ 'is-invalid': !isCDValidUD() && (FormUpdate.congDung.$touched || formSubmitted)}">
-                                    <div ng-show="!isCDValidUD() && (FormUpdate.congDung.$touched || formSubmitted)" class="error text-danger">
-                                        Công dụng không được để trống
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Hướng dẫn sử dụng:</label>
-                                    <input type="text" class="form-control" ng-model="productDetail.hdsd"
-                                           ng-class="{ 'is-invalid': !ishdsdValidUD() && (FormUpdate.hdsd.$touched || formSubmitted)}">
-                                    <div ng-show="!ishdsdValidUD() && (FormUpdate.hdsd.$touched || formSubmitted)" class="error text-danger">
-                                        Hướng dẫn sử dụng không được để trống
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Tuổi tối thiểu:</label>
-                                    <input type="text" id="tuoiMinUD" class="form-control" ng-model="productDetail.tuoiMin" required />
-
-                                    <label class="form-label">Tuổi tối đa:</label>
-                                    <input type="text" id="tuoiMaxUD" class="form-control" ng-model="productDetail.tuoiMax" required />
-
-                                    <div id="ErrorTuoiUD"  style="display: none"  class="error text-danger">
-                                        Tuổi tối thiểu phải nhỏ hơn tuổi tối đa.
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Danh mục:</label>
-                                    <select class="form-control" ng-model="productDetail.idDanhMuc" >
-                                        <option value="" disabled selected>Vui lòng chọn danh mục</option>
-                                        <option ng-repeat="danhMuc in listDanhMuc" value="{{danhMuc.id}}" ng-selected="danhMuc.id === productDetail.idDanhMuc">
-                                            {{danhMuc.ten}}
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Mô tả:</label>
-                                    <input type="tel" class="form-control" ng-model="productDetail.moTa" >
-                                </div>
-                                <button type="submit" class="btn btn-outline-success">Cập Nhật</button>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div>
-                <!-- Nút xóa hiển thị khi trạng thái = 1 -->
-                <button class="btn btn-danger" ng-click="deleteProduct(sp.id)" ng-if="sp.trangThai === 1">
-                    <i class="bi bi-trash"></i>
-                </button>
+                <button class="btn btn-primary" ng-click="viewDetail(sp.id)" data-bs-toggle="modal"
+                        data-bs-target="#userForm">
+                    <i class="bi bi-pencil-square">
+                    </i></button>
+                <div class="modal fade" id="userForm" tabindex="-1" aria-labelledby="userFormLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="userFormLabel">Cập nhật sản phẩm</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form ng-submit="updateProduct()" name="FormUpdate" novalidate>
+                                    <input type="hidden" ng-model="productDetail.id" required>
+                                    <div class="mb-3">
+                                        <label class="form-label">Tên sản phẩm:</label>
+                                        <input type="text" name="tenSP" id="name" class="form-control" ng-model="productDetail.tenSP"
+                                               ng-class="{ 'is-invalid': (!isTenValidUD() || isDuplicateName ) && (FormUpdate.tenSP.$touched || formSubmitted)}"
+                                               ng-blur="checkDuplicateName()" />
+                                        <div ng-show="!isTenValidUD() && (FormUpdate.tenSP.$touched|| formSubmitted)" class="error text-danger">
+                                            Tên sản phảm không đc để trống hoặc chứa các ký tự đặc biệt
+                                        </div>
+                                        <div ng-show="isDuplicateName  && (FormUpdate.tenSP.$touched || formSubmitted)" class="error text-danger">
+                                            Tên sản phẩm đã tồn tại.
+                                        </div>
+                                        <div ng-show="isTenKyTuUD() && (FormUpdate.tenSP.$touched|| formSubmitted)" class="error text-danger">
+                                            Tên không được ít hơn 3 ký tự và vượt quá 255 ký tự .
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Thành phần:</label>
+                                        <input type="text" class="form-control" ng-model="productDetail.thanhPhan"
+                                               ng-class="{ 'is-invalid': !isTPValidUD() && (FormUpdate.thanhPhan.$touched || formSubmitted)}">
+                                        <div ng-show="!isTPValidUD() && (FormUpdate.thanhPhan.$touched || formSubmitted)" class="error text-danger">
+                                            Thành phần không được để trống
+                                        </div>
+                                        <div ng-show="isTPKyTuUD() && (FormUpdate.thanhPhan.$touched|| formSubmitted)" class="error text-danger">
+                                            Thành phần không được ít hơn 3 ký tự và vượt quá 255 ký tự .
+                                        </div>
+                                    </div>
 
-                <!-- Nút kích hoạt hiển thị khi trạng thái khác 1 -->
-                <button class="btn btn-success" ng-click="activateProduct(sp.id)" ng-if="sp.trangThai !== 1">
-                    <i class="bi bi-check-circle"></i>
-                </button>
-            </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Công dụng:</label>
+                                        <input type="text" class="form-control" ng-model="productDetail.congDung"
+                                               ng-class="{ 'is-invalid': !isCDValidUD() && (FormUpdate.congDung.$touched || formSubmitted)}">
+                                        <div ng-show="!isCDValidUD() && (FormUpdate.congDung.$touched || formSubmitted)" class="error text-danger">
+                                            Công dụng không được để trống
+                                        </div>
+                                        <div ng-show="isCDKyTuUD() && (FormUpdate.congDung.$touched|| formSubmitted)" class="error text-danger">
+                                            Tên không được ít hơn 3 ký tự và vượt quá 255 ký tự .
+                                        </div>
+                                    </div>
 
-        </td>
-    </tr>
-    </tbody>
-</table>
-<div class="text-center">
-    <ul class="pagination">
-        <li ng-class="{ 'disabled': currentPage === 0 }">
-            <a href="" ng-click="previousPage()">Previous</a>
-        </li>
-        <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
-            <a href="" ng-click="getAllProducts(page)">{{ page + 1 }}</a>
-        </li>
-        <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
-            <a href="" ng-click="nextPage()">Next</a>
-        </li>
-    </ul>
-</div>
-</div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Hướng dẫn sử dụng:</label>
+                                        <input type="text" class="form-control" ng-model="productDetail.hdsd"
+                                               ng-class="{ 'is-invalid': !ishdsdValidUD() && (FormUpdate.hdsd.$touched || formSubmitted)}">
+                                        <div ng-show="!ishdsdValidUD() && (FormUpdate.hdsd.$touched || formSubmitted)" class="error text-danger">
+                                            Hướng dẫn sử dụng không được để trống
+                                        </div>
+                                        <div ng-show="isHDSDKyTuUD() && (FormUpdate.hdsd.$touched|| formSubmitted)" class="error text-danger">
+                                            Tên không được ít hơn 3 ký tự và vượt quá 255 ký tự .
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Tuổi tối thiểu:</label>
+                                        <input type="text" id="tuoiMinUD" class="form-control" ng-model="productDetail.tuoiMin" required />
+
+                                        <label class="form-label">Tuổi tối đa:</label>
+                                        <input type="text" id="tuoiMaxUD" class="form-control" ng-model="productDetail.tuoiMax" required />
+
+                                        <div id="ErrorTuoiUD"  style="display: none"  class="error text-danger">
+                                            Tuổi tối thiểu phải nhỏ hơn tuổi tối đa.
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Danh mục:</label>
+                                        <select class="form-control" ng-model="productDetail.idDanhMuc" >
+                                            <option value="" disabled selected>Vui lòng chọn danh mục</option>
+                                            <option ng-repeat="danhMuc in listDanhMuc" value="{{danhMuc.id}}" ng-selected="danhMuc.id === productDetail.idDanhMuc">
+                                                {{danhMuc.ten}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Mô tả:</label>
+                                        <input type="tel" class="form-control" ng-model="productDetail.moTa" >
+                                    </div>
+                                    <button type="submit" class="btn btn-outline-success">Cập Nhật</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <!-- Nút xóa hiển thị khi trạng thái = 1 -->
+                    <button class="btn btn-danger" ng-click="deleteProduct(sp.id)" ng-if="sp.trangThai === 1">
+                        <i class="bi bi-trash"></i>
+                    </button>
+
+                    <!-- Nút kích hoạt hiển thị khi trạng thái khác 1 -->
+                    <button class="btn btn-success" ng-click="activateProduct(sp.id)" ng-if="sp.trangThai !== 1">
+                        <i class="bi bi-check-circle"></i>
+                    </button>
+                </div>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="text-center">
+        <ul class="pagination">
+            <li ng-class="{ 'disabled': currentPage === 0 }">
+                <a href="" ng-click="previousPage()">Previous</a>
+            </li>
+            <li ng-repeat="page in pages" ng-class="{ 'active': currentPage === page }">
+                <a href="" ng-click="getAllProducts(page)">{{ page + 1 }}</a>
+            </li>
+            <li ng-class="{ 'disabled': currentPage === totalPages - 1 }">
+                <a href="" ng-click="nextPage()">Next</a>
+            </li>
+        </ul>
+    </div>
+    </div>
+</section>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-
+<style>
+    .table td {
+        /*max-width: 100px; !* Giới hạn chiều rộng cột *!*/
+        /*white-space: nowrap; !* Không cho phép xuống dòng *!*/
+        overflow: hidden; /* Ẩn phần nội dung tràn */
+        /*text-overflow: ellipsis; !* Hiển thị dấu ba chấm *!*/
+    }
+</style>

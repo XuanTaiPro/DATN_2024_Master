@@ -51,6 +51,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, String> {
 
     KhachHang getKhachHangByTen(String ten);
 
+
     @Query("SELECT kh FROM KhachHang kh WHERE kh.email = :email AND kh.passw = :passw ")
     KhachHang loginKH(@Param("email") String email, @Param("passw") String passw);
 

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -87,7 +88,7 @@ public class VoucherController {
     public ResponseEntity<?> applyVoucher(@RequestBody Map<String, String> data) {
         String voucherId = data.get("id");
         if (voucherId == null || voucherId.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID của voucher không được bỏ trống.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "ID của voucher không được bỏ trống."));
         }
         Voucher voucher = vcRepo.findById(voucherId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Voucher không tồn tại"));
@@ -100,11 +101,12 @@ public class VoucherController {
                 voucher.setTrangThai(1);
             }
             vcRepo.save(voucher);
-            return ResponseEntity.ok("Voucher đã được áp dụng thành công.");
+            return ResponseEntity.ok(Map.of("message", "Voucher đã được áp dụng thành công."));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Voucher này đã hết số lượng.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Voucher này đã hết số lượng."));
         }
     }
+
 
     @GetMapping("/{id}/customers")
     public ResponseEntity<List<KhachHang>> getCustomersByVoucherId(@PathVariable("id") String voucherId) {
@@ -120,7 +122,7 @@ public class VoucherController {
     public ResponseEntity<?> page(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,"ngayTao"));
         Page<Voucher> voucherPage = vcRepo.findAll(pageable);
         LocalDate dateNow = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -152,18 +154,11 @@ public class VoucherController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<?> add(@Valid @RequestBody VoucherRequest voucherRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            System.out.println(mess.toString());
-            return ResponseEntity.badRequest().body(mess.toString());
-        }
+    public ResponseEntity<?> add(@RequestBody VoucherRequest voucherRequest) {
         if (voucherRequest.getId() == null || voucherRequest.getId().isEmpty()) {
             voucherRequest.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
-        if (voucherRequest.getMa() == null || voucherRequest.getMa().isEmpty()) {// nếu mã chưa đc điền thì tự động thêm
-            // mã
+        if (voucherRequest.getMa() == null || voucherRequest.getMa().isEmpty()) {
             voucherRequest.setMa(generateCodeAll.generateMaVoucher());
         }
         Voucher voucher = voucherRequest.toEntity();
@@ -179,7 +174,7 @@ public class VoucherController {
                     chiTietVoucher.setId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
                     chiTietVoucher.setKhachHang(khachHang.get());
                     chiTietVoucher.setVoucher(voucher);
-                    ctvcRepo.save(chiTietVoucher); // Lưu chi tiết voucher cho từng khách hàng
+                    ctvcRepo.save(chiTietVoucher);
                 } else {
                     return ResponseEntity.badRequest().body("Khách hàng với ID " + customerId + " không tồn tại");
                 }
@@ -189,13 +184,7 @@ public class VoucherController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody VoucherRequest voucherRequest,
-                                    BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            return ResponseEntity.badRequest().body(mess.toString());
-        }
+    public ResponseEntity<?> update(@PathVariable String id,@RequestBody VoucherRequest voucherRequest) {
         Optional<Voucher> optionalVoucher = vcRepo.findById(id);
         if (optionalVoucher.isPresent()) {
 

@@ -117,8 +117,10 @@
                                 <span> | Giá bán: {{ ctsp.gia }}</span>
                                 <div class="form-group">
                                     <label>Số lượng:</label>
+                                    <div>
                                     <input type="number" class="form-control" ng-model="ctsp.soLuongCTHD" min="1" max="{{ ctsp.soLuong }}"  ng-change="validateSoLuong(ctsp)"  ng-pattern="/^\d+$/" required />
                                     <span ng-show="soLuongError" class="text-danger">Số lượng không hợp lệ hoặc quá lớn</span>
+                                    </div>
                                     <button ng-click="confirmAddInvoiceDetail(ctsp)">Thêm</button> <!-- Truyền ctsp vào hàm -->
                                 </div>
                             </div>
@@ -193,8 +195,12 @@
             <!-- Tiêu đề và Nút -->
             <div class="d-flex flex-column align-items-center me-3">
                 <h3>{{ tab.title }}</h3>
-                <button class="btn btn-primary btn-lg" style="border-radius: 5px; padding: 10px 20px;">
-                    <a ng-href="#!/thanhtoan/{{tab.idHD}}" style="text-decoration: none; color: white;">Thanh toán</a>
+                <button class="btn btn-primary btn-lg"
+                        style="border-radius: 5px; padding: 10px 20px;"
+                        ng-disabled="!hasProducts(tab.idHD)"
+                        ng-click="validateThanhToan(tab.idHD)">
+                    <a ng-href="#!/thanhtoan/{{tab.idHD}}"
+                       style="text-decoration: none; color: white;">Thanh toán</a>
                 </button>
             </div>
             <div style="padding-right:30px;padding-top: 5px">
@@ -231,9 +237,13 @@
                 </td>
                 <td>
                     <input type="hidden" ng-model="cthd.id">
-                    <input type="number" class="form-control" ng-model="cthd.soLuong" min="1"
-                            ng-change="updateTotal(cthd)" style="width: 90px"/>
-
+                    <input type="number"
+                           class="form-control"
+                           ng-model="cthd.soLuong"
+                           min="1"
+                           ng-focus="cthd.originalSoLuong = cthd.soLuong"
+                    ng-change="updateTotal(cthd)"
+                    style="width: 90px" />
                 </td>
                 <td>{{ calculateTotalAmount(cthd)  }} VND
                 </td>

@@ -113,7 +113,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="#!/voucher" id="myForm" ng-submit="addVoucher($event)" novalidate>
+                <form action="#!/voucher" id="myForm" ng-submit="addVoucher()" novalidate>
                     <div class="inputField">
                         <div>
                             <label>Tên Voucher:</label>
@@ -135,7 +135,7 @@
 
                         <div>
                             <!-- Giảm min -->
-                            <label>Giảm min:</label>
+                            <label>Đơn tối thiểu</label>
                             <input type="text" ng-model="giamMin" ng-change="validateDiscounts()" />
 
                             <div style="color: #ff0000;" ng-show="validationErrors.giamMin">
@@ -145,7 +145,7 @@
 
                         <div>
                             <!-- Giảm max -->
-                            <label>Giảm max:</label>
+                            <label>Giảm tối đa</label>
                             <input type="text" ng-model="giamMax" ng-change="validateDiscounts()" />
                             <div style="color: red;" ng-show="validationErrors.giamMax">
                                 {{ validationErrors.giamMax }}
@@ -326,7 +326,7 @@
                             </div>
                         </div>
                         <div>
-                            <label>Giảm min:</label>
+                            <label>Đơn tối thiểu</label>
                             <input type="text" ng-model="selectedVoucher.giamMin"ng-change="validateDiscountsud()" >
                             <div style="color: red;" ng-show="isSubmitted && !giamMin">
                                 Phải điền giá min.
@@ -337,7 +337,7 @@
 <!--                            <input type="text" ng-model="selectedVoucher.giamMin">-->
                         </div>
                         <div>
-                            <label>Giảm max:</label>
+                            <label>Giảm tối đa</label>
                             <input type="text" ng-model="selectedVoucher.giamMax"ng-change="validateDiscountsud()" >
                             <div style="color: red;" ng-show="isSubmitted && !giamMax">
                                 Phải điền giá max.
@@ -509,11 +509,11 @@
                             <input type="email" id="Showemail" ng-model="selectedVoucher.giamGia" readonly>
                         </div>
                         <div>
-                            <label>Giảm min:</label>
+                            <label>Đơn tối thiểu</label>
                             <input type="text" id="ShowpassWord" ng-model="selectedVoucher.giamMin" readonly>
                         </div>
                         <div>
-                            <label>Giảm max:</label>
+                            <label>Giảm tối đa</label>
                             <input type="text" id="ShowgioiTinh" ng-model="selectedVoucher.giamMax" readonly>
                         </div>
                         <div>
@@ -535,7 +535,7 @@
                         <div>
                             <label>Khách hàng sở hữu</label>
                         </div>
-                        <div class="mt-3">
+                        <div class="mt-3" style="max-height: 550px; overflow-y: auto; width: 750px">
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>

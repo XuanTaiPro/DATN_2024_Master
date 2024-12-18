@@ -1,5 +1,23 @@
 <section class="p-3">
     <h1>Quản lý Thông báo</h1>
+    <div class="row mb-2">
+        <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="searchParams.noiDung"
+                   ng-change="searchAndFilter()">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" ng-model="searchParams.trangThai" ng-change="searchAndFilter()">
+                <option value="">-- Trạng thái --</option>
+                <option value="1">Hoạt động</option>
+                <option value="0">Ngưng hoạt động</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12 text-start">
+            <button class="btn btn-secondary" ng-click="resetFilters()" >Xóa lọc</button>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
@@ -18,8 +36,6 @@
                     <th>Ngày gửi</th>
                     <th>Ngày đọc</th>
                     <th>Trạng Thái</th>
-                    <th>Tên khách hàng</th>
-                    <th>Email khách hàng</th>
                     <th>Thao tác</th>
                 </tr>
                 </thead>
@@ -33,8 +49,6 @@
                     <td>
                         {{ thongBao.trangThai == 1 ? 'Hoạt động' : 'Ngưng hoạt động' }}
                     </td>
-                    <td>{{ thongBao.tenKH }}</td>
-                    <td>{{ thongBao.emailKH }}</td>
                     <td class="actions">
                         <button class="btn btn-success" ng-click="viewDetail(thongBao)" data-bs-toggle="modal"
                                 data-bs-target="#DetailForm"><i class="bi bi-eye"></i></button>
@@ -42,7 +56,7 @@
                                 data-bs-target="#UpdateForm"><i class="bi bi-pencil-square"></i></button>
                         <button class="btn btn-danger" ng-click="delete(thongBao.id)"><i class="bi bi-trash"></i>
                         </button>
-                        <button class="btn btn-warning" ng-click="sendEmail(thongBao)">
+                        <button class="btn btn-warning" ng-click="sendEmailsToAll(thongBao)" ng-disabled="thongBao.trangThai == 0">
                             <i class="bi bi-envelope"></i> Gửi Email
                         </button>
                     </td>
@@ -67,8 +81,6 @@
 </section>
 
 <!--add thông báo-->
-
-
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -99,14 +111,17 @@
                         </div>
                         <div>
                             <label>Khách hàng:</label>
-                            <select ng-model="idKH" class="short-select" required>
-                                <option value="" disabled selected>Chọn Khách hàng</option>
-                                <option ng-repeat="kh in listKH" value="{{kh.id}}">{{kh.ten}}</option>
+                            <select ng-model="selectedCustomer" class="short-select">
+                                <option value="" disabled selected>Khách hàng đã chọn</option>
+                                <option ng-repeat="customer in selectedCustomers" value="{{customer.id}}">
+                                    {{customer.ten}}
+                                </option>
                             </select>
                             <div class="error text-danger" ng-show="isSubmitted && !idKH">
                                 Phải chọn khách hàng.
                             </div>
                         </div>
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#customerModal">Chọn Khách Hàng</button>
                     </div>
                 </form>
             </div>
@@ -117,6 +132,84 @@
         </div>
     </div>
 </div>
+<!-- Modal chọn khách hàng -->
+<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerModalLabel">Chọn Khách Hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label>Chọn khách hàng:</label>
+                <div class="search mb-3">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten" ng-change="searchKH()">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                                <select class="form-select" ng-model="search.gioiTinh" ng-change="searchKH()">
+                                    <option value="">-- Giới tính --</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" class="form-control" placeholder="Số điện thoại" ng-model="search.sdt" ng-change="searchKH()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <button ng-click="selectAllCustomers()" class="btn btn-outline-primary">Chọn Tất Cả</button>
+                    <button ng-click="deselectAllCustomers()" class="btn btn-outline-danger">Bỏ Chọn Tất Cả</button>
+                </div>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tên Khách Hàng</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Chọn</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="kh in listKH">
+                            <td>{{$index + 1}}</td>
+                            <td>{{kh.ten}}</td>
+                            <td>{{kh.sdt}}</td>
+                            <td>
+                                <input type="checkbox" ng-model="kh.selected" ng-change="updateSelectedCustomers(kh)">
+                            </td>
+                        </tr>
+                        <tr ng-if="listKH.length === 0">
+                            <td colspan="5" class="text-center text-muted">
+                                <i class="fas fa-exclamation-circle"></i> Danh sách trống
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- Nút xác nhận -->
+                <button type="button" class="btn btn-primary" ng-click="confirmSelection()">Xác Nhận</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
 <div class="modal fade" id="UpdateForm" tabindex="-1" aria-labelledby="userFormLabel" aria-hidden="true">
@@ -150,21 +243,92 @@
                         </div>
                         <div>
                             <label>Khách hàng:</label>
-                            <select ng-model="idKH" class="short-select" required>
-                                <option value="" disabled selected>Chọn Khách hàng</option>
-                                <option ng-repeat="kh in listKH" value="{{kh.id}}">{{kh.ten}}</option>
+                            <select ng-model="selectedThongBao.selectedCustomers" class="short-select">
+                                <option value="" disabled selected>Khách hàng đã chọn</option>
+                                <option ng-repeat="customer in selectedCustomersForUpdate" value="{{customer.id}}">
+                                    {{customer.ten}}
+                                </option>
                             </select>
-                            <div class="error text-danger" ng-show="isSubmitted && !idKH">
-                                Phải chọn khách hàng.
-                            </div>
-
                         </div>
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#customerUpdateModal">Chọn Khách Hàng</button>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 <button type="submit" form="updateThongBao" class="btn btn-primary">Cập Nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chọn khách hàng của update -->
+<div class="modal fade" id="customerUpdateModal" tabindex="-1" aria-labelledby="customerUpdateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerUpdateModalLabel">Chọn Khách Hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label>Chọn khách hàng:</label>
+                <div class="search mb-3">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Tìm theo tên" ng-model="search.ten" ng-change="searchKH()">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                                <select class="form-select" ng-model="search.gioiTinh" ng-change="searchKH()">
+                                    <option value="">-- Giới tính --</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" class="form-control" placeholder="Số điện thoại" ng-model="search.sdt" ng-change="searchKH()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <button ng-click="selectAllCustomersForUpdate()" class="btn btn-outline-primary">Chọn Tất Cả</button>
+                    <button ng-click="deselectAllCustomersForUpdate()" class="btn btn-outline-danger">Bỏ Chọn Tất Cả</button>
+                </div>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tên Khách Hàng</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Chọn</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="kh in listKH">
+                            <td>{{$index + 1}}</td>
+                            <td>{{kh.ten}}</td>
+                            <td>{{kh.sdt}}</td>
+                            <td>
+                                <input type="checkbox" ng-model="kh.selectedForUpdate"
+                                       ng-change="updateSelectedCustomersForUpdate(kh)">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="confirmSelectionForUpdate()">Xác Nhận</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
@@ -193,13 +357,34 @@
                             <label>Ngày đọc:</label>
                             <input type="date" ng-model="formattedNgayDoc" readonly>
                         </div>
+<!--                        <div>-->
+<!--                            <label>Tên khách hàng:</label>-->
+<!--                            <input type="text" ng-model="selectedThongBao.tenKH" readonly>-->
+<!--                        </div>-->
+<!--                        <div>-->
+<!--                            <label>Email khách hàng:</label>-->
+<!--                            <input type="text" ng-model="selectedThongBao.emailKH" readonly>-->
+<!--                        </div>-->
                         <div>
-                            <label>Tên khách hàng:</label>
-                            <input type="text" ng-model="selectedThongBao.tenKH" readonly>
+                            <label>Khách hàng sở hữu</label>
                         </div>
-                        <div>
-                            <label>Email khách hàng:</label>
-                            <input type="text" ng-model="selectedThongBao.emailKH" readonly>
+                        <div class="mt-3" style="max-height: 550px; overflow-y: auto; width: 750px">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <td>Tên khách hàng</td>
+                                        <td>Email</td>
+                                        <td>Số điện thoại</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="customer in listCustomer">
+                                        <td>{{customer.ten}}</td>
+                                        <td>{{customer.email}}</td>
+                                        <td>{{customer.sdt}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <div>
                             <label for="trangThai">Trạng thái:</label>

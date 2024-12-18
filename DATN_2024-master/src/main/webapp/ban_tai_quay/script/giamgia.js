@@ -181,10 +181,6 @@ window.giamGiaCtrl = function ($scope, $http) {
     $scope.addGiamGia = function (giamGia) {
 
         $scope.formSubmitted = true;
-        // if(!$scope.isTenValid()||!$scope.isNgayBatDauValid()||!$scope.isNgayKetThucValid()||
-        //     !$scope.isGiaGiamValid()||!!$scope.giamGia.selectedProductsType){
-        //     // $scope.showDangerAlert = "Cần điền đầy đủ thông tin";
-        // }else {
             const formData = new FormData();
             // Thêm thông tin sản phẩm vào FormData
             formData.append('ten', giamGia.ten || '');
@@ -213,6 +209,7 @@ window.giamGiaCtrl = function ($scope, $http) {
                     $('#addModal').modal('hide');
                     $scope.giamGia = {};
                     $scope.getAllGiamGias();
+                    $scope.clearForm();
                     showSuccessAlert("Thêm giảm giá thành công!");
                 })
                 .catch(function (error) {
@@ -225,7 +222,7 @@ window.giamGiaCtrl = function ($scope, $http) {
                         $scope.errorMessage = 'Lỗi không xác định: ' + JSON.stringify(error);
                     }
                 });
-        // }
+
     };
 
     $scope.deleteGiamGia = function (ggId) {
@@ -249,9 +246,19 @@ window.giamGiaCtrl = function ($scope, $http) {
         }
     };
 
+    $scope.isTenValidUD = function() {
+        if (!$scope.giamGiaDetail.ten || $scope.giamGiaDetail.ten.trim() === '') {
+            return false;
+        }
+        if ($scope.giamGiaDetail.ten.trim().length > 255) {
+            return false;
+        }
+        return true;
+    };
+
+
     $scope.updateGiamGia = function (giamGiaDetail) {
         $scope.formSubmitted = true;
-
             const formData = new FormData();
             formData.append('id', giamGiaDetail.id);
             formData.append('ten', giamGiaDetail.ten || '');
@@ -261,22 +268,17 @@ window.giamGiaCtrl = function ($scope, $http) {
             formData.append('giaGiam', giamGiaDetail.giaGiam || 0);
             formData.append('trangThai', 1);
             formData.append('moTa', giamGiaDetail.moTa || '');
-
-            // Determine selected products based on type
             if ($scope.giamGiaDetail.selectedProductsType === 'all') {
                 $scope.giamGiaDetail.selectedProducts = angular.copy($scope.listAllSanPham);
             }
             if ($scope.giamGiaDetail.selectedProductsType === 'selected') {
                 $scope.giamGiaDetail.selectedProducts = $scope.giamGiaDetail.listSanPham; // Sử dụng listSanPham
             }
-
-            // Map selected products' IDs and add them to FormData
             giamGiaDetail.selectedProductsIds = $scope.giamGiaDetail.selectedProducts.map(sp => sp.id);
             console.log($scope.giamGiaDetail.listSanPham);
             giamGiaDetail.selectedProductsIds.forEach(function (productId) {
                 formData.append('selectedProducts', productId);
             });
-
             $http.put('http://localhost:8083/giam-gia/update', formData, {
                 transformRequest: angular.identity,
                 headers: {
@@ -286,6 +288,8 @@ window.giamGiaCtrl = function ($scope, $http) {
                 .then(function (response) {
                     $scope.getAllGiamGias(0);
                     $('#userForm').modal('hide');
+                    $scope.clearForm();
+                    $scope.ErrorForm();
                     showSuccessAlert("Cập nhật giảm giá thành công!");
                 })
                 .catch(function (error) {
@@ -295,23 +299,30 @@ window.giamGiaCtrl = function ($scope, $http) {
                         ? 'Lỗi khi cập nhật: ' + error.data.message
                         : 'Lỗi không xác định: ' + JSON.stringify(error);
                 });
-
     };
-
     $('#addModal').on('hidden.bs.modal', function () {
         $scope.clearForm();
     });
+    $scope.isSubmitted = false;
 
+    $scope.ErrorForm = function () {
+        // $scope.isTenValid= true;
+        // $scope.isNgayKetThucValid= true;
+        // $scope.isNgayBatDauValid= true;
+        // $scope.isGiaGiamValid= true;
+        $scope.formSubmitted = false;
+        $scope.addGiamGia = true;
+    };
     $scope.clearForm = function () {
         $scope.giamGiaDetail = {};
         $scope.giamGia = {};
-        $scope.isTenValid= true;
-        $scope.isNgayKetThucValid= true;
-        $scope.isNgayBatDauValid= true;
-        $scope.isGiaGiamValid= true;
-        $scope.formSubmitted = false;
+        // $scope.isTenValid= true;
+        // $scope.isNgayKetThucValid= true;
+        // $scope.isNgayBatDauValid= true;
+        // $scope.isGiaGiamValid= true;
+        // $scope.formSubmitted = false;
         // $scope.addGiamGia=false;
-
+        $scope.addGiamGia = true;
         $('#userForm').modal('hide'); // Đóng modal
         // $('#addModal').modal('hide'); // Đóng modal
     };

@@ -80,6 +80,7 @@ public class ChiTietHoaDon {
                                 soLuong,
                                 giaBan,
                                 String.valueOf(tienGiam),
+                                hoaDon!=null?hoaDon.getLoaiHD():null,
                                 trangThai,
                                 ngayTao,
                                 ngaySua,

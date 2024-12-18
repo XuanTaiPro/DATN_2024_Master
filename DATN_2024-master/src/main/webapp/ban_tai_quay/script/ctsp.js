@@ -188,13 +188,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
         $scope.formSubmitted = true;
         $scope.usageDaysError = true;
 
-        // if (!$scope.isImgValid()||!$scope.isImgValid()||!$scope.isGiaValid()||!$scope.isNsxValid()||
-        //     !$scope.isNgaynhapTrongValid()||!$scope.isHsdValid()||!$scope.isNgayNhapValid() ||$scope.ishsdTrongValid()||
-        //     !$scope.isnsxTrongValid()||!$scope.isGiaValidTrong()
-        // ) {
-        //     return;
-        //
-        // }
+
         const productData = {
             gia: product.gia,
             soNgaySuDung: product.soNgaySuDung != null ? product.soNgaySuDung : product.soNgaySuDungInput,
@@ -216,6 +210,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
             .then(function (response) {
                 $('#productModal').modal('hide');
                 $scope.product = {};
+                $scope.getUniqueSoNgaySuDung();
                 $scope.getAllProducts();
                 showSuccessAlert("Thêm thành công!");
             })
@@ -289,17 +284,13 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
         };
 
     }
+
+    $scope.isGiaValidUD = function() {
+        return $scope.productDetail.gia && $scope.productDetail.gia.trim() !== '';
+    };
     $scope.updateProduct = function () {
         $scope.formSubmitted = true;
-        $scope.usageDaysError = true;
 
-        if (!$scope.isImgValid()||!$scope.isGiaValid()||!$scope.isNsxValid()||
-            !$scope.isNgaynhapTrongValid()||!$scope.isHsdValid()||!$scope.isNgayNhapValid() ||$scope.ishsdTrongValid()||
-            !$scope.isnsxTrongValid()||!$scope.isGiaValidTrong()
-        ) {
-            return;
-
-        }
         const formData = new FormData();
         // Thêm thông tin sản phẩm vào FormData
         formData.append('id', $scope.productDetail.id);
@@ -432,14 +423,14 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
                         // Thêm URL tạm thời vào selectedImages của product
                         $scope.product.selectedImages.push(e.target.result);
                         // Thêm đường dẫn vào linkAnhList của product
-                        $scope.product.linkAnhList.push('img/' + file.name);
+                        $scope.product.linkAnhList.push('img/SanPham/' + file.name);
 
                         // Nếu cần, bạn có thể thêm URL tạm thời vào imagePreviews của productDetail
                         $scope.productDetail.imagePreviews.push(e.target.result);
                         // Thêm vào selectedImages của productDetail nếu cần
                         $scope.productDetail.selectedImages.push(e.target.result);
                         // Thêm đường dẫn vào linkAnhList của productDetail
-                        $scope.productDetail.linkAnhList.push('img/' + file.name);
+                        $scope.productDetail.linkAnhList.push('img/SanPham/' + file.name);
                     });
                 };
                 reader.readAsDataURL(file);
