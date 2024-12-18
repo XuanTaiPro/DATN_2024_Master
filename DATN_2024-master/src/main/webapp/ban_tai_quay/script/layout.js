@@ -196,7 +196,7 @@ function showSuccessAlert(message) {
     setTimeout(() => {
         alertElement.classList.remove('show'); // Ẩn hiệu ứng
         setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
-    }, 3000);
+    }, 1500);
 }
 
 
@@ -212,7 +212,7 @@ function showDangerAlert(message) {
     setTimeout(() => {
         alertElement.classList.remove('show'); // Ẩn hiệu ứng
         setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
-    }, 3000);
+    }, 1500);
 }
 
 function showWarningAlert(message) {
@@ -222,11 +222,11 @@ function showWarningAlert(message) {
 
     alertElement.style.display = 'block';
 
-    setTimeout(() => alertElement.classList.add('show'), 10); // Thêm hiệu ứng
+    setTimeout(() => alertElement.classList.add('show'), 10);
     setTimeout(() => {
-        alertElement.classList.remove('show'); // Ẩn hiệu ứng
-        setTimeout(() => (alertElement.style.display = 'none'), 500); // Ẩn hoàn toàn
-    }, 3000);
+        alertElement.classList.remove('show');
+        setTimeout(() => (alertElement.style.display = 'none'), 500);
+    }, 1500);
 }
 
 function showConfirm(message, onConfirm, onCancel) {

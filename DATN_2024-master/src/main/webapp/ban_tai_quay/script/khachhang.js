@@ -54,11 +54,10 @@ window.khachhangCtrl = function ($scope, $http) {
                 $scope.currentPage = response.data.currentPage;
                 $scope.totalPages = response.data.totalPages;
 
-                // Kiểm tra nếu danh sách trống và hiển thị thông báo
                 if ($scope.listKhachHang.length === 0) {
                     $scope.emptyMessage = response.data.message || "Danh sách trống!";
                 } else {
-                    $scope.emptyMessage = ""; // Reset lại thông báo nếu có dữ liệu
+                    $scope.emptyMessage = "";
                 }
             })
             .catch(function (error) {
@@ -101,17 +100,8 @@ window.khachhangCtrl = function ($scope, $http) {
         }
         return arr;
     };
-
-    // Load initial page
     $scope.loadPage(0);
 
-
-    // $http.get('http://localhost:8080/khachhang').then(function (response) {
-    //     $scope.listKhachHang = response.data;
-    //     console.log("Lấy dữ liệu thành công");
-    // }).catch((error) => {
-    //     console.error('Lỗi:', error);
-    // });
 
     $scope.viewDetail = function (khachHang) {
         $scope.selectedKhachHang = angular.copy(khachHang);
@@ -287,7 +277,7 @@ window.khachhangCtrl = function ($scope, $http) {
 
     $scope.delete = function (id) {
         console.log("Xóa");
-        // showConfirm('Bạn có chắc chắn muốn xóa khách hàng này?', () => {
+        showConfirm('Bạn có chắc chắn muốn ngưng hoạt động khách hàng này?', () => {
             $http.delete('http://localhost:8083/khachhang/delete/' + id)
                 .then(function (response) {
                    showWarningAlert("Đã cho tạm ngưng hoạt động khách hàng này !!")
@@ -297,22 +287,22 @@ window.khachhangCtrl = function ($scope, $http) {
                     console.error("Lỗi khi xóa :", error);
                    showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
                 });
-        // })
+        })
     };
 
     $scope.deleteback = function (id) {
         console.log("Xóa");
-        // showConfirm('Bạn có chắc chắn muốn xóa khách hàng này?', () => {
+        showConfirm('Bạn có chắc chắn muốn cấp lại hoạt động cho khách hàng này?', () => {
         $http.delete('http://localhost:8083/khachhang/deleteback/' + id)
             .then(function (response) {
-                showSuccessAlert("Đã khôi phục hoạt động cho khách hàng.")
+                showSuccessAlert("Đã khôi phục hoạt động cho khách hàng")
                 $scope.loadPage($scope.currentPage);
             })
             .catch(function (error) {
                 console.error("Lỗi khi xóa :", error);
                 showDangerAlert("Xóa thất bại , vui lòng thử lại sau!!")
             });
-        // })
+        })
     };
 
 //     // Reset form

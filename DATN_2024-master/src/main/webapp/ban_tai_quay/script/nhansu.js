@@ -273,7 +273,7 @@ window.nhansuCtrl = function ($scope, $http) {
         showConfirm('Bạn có chắc chắn muốn ngưng hoạt động nhân viên này?', () => {
             $http.delete('http://localhost:8083/nhanvien/delete/' + id)
                 .then(function (response) {
-                    showSuccessAlert("cập nhật thành công")
+                    showWarningAlert("Đã cho tạm ngưng hoạt động nhân viên này !!")
                     $scope.loadPage($scope.currentPage);
                 })
                 .catch(function (error) {
@@ -293,7 +293,7 @@ window.nhansuCtrl = function ($scope, $http) {
         showConfirm('Bạn có chắc chắn muốn cấp lại hoạt động nhân viên  này?', () => {
         $http.delete('http://localhost:8083/nhanvien/deleteback/' + id)
             .then(function (response) {
-                showSuccessAlert("cập nhật thành công")
+                showSuccessAlert("Đã khôi phục hoạt động cho nhân viên")
                 $scope.loadPage($scope.currentPage);
             })
             .catch(function (error) {

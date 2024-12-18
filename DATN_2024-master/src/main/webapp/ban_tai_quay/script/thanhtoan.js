@@ -12,10 +12,11 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     $scope.tongTien = 0;
     $scope.previousTotal = 0;
 
+    //loading
     const overlayLoad = document.querySelector('.overlay-load')
     const loader = document.querySelector('.loader')
 
-
+    //search KH
     $scope.search = {
         ten: '',
         gioiTinh: '',
@@ -54,7 +55,6 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         $scope.selectedCustomerId = "";
         $scope.selectedCustomerEmailVL = "";
 
-
         // Xóa danh sách voucher
         $scope.vouchers = [];
         $scope.appliedVoucherId = null;
@@ -66,8 +66,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         }
     };
 
-
-
+    //chọn và chọn lại kh
     $scope.selectCustomer = function (ten, sdt, id, email) {
         $scope.selectedCustomerName = ten;
         $scope.selectedCustomerPhone = sdt;
@@ -88,6 +87,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         $scope.loadPageVC(0);
     };
 
+    //load voucher của kh
     $scope.currentPageVC = 0;
     $scope.pageSizeVC = 2;
     $scope.loadPageVC = function (page) {
@@ -98,11 +98,9 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         }
         $http.get(`http://localhost:8083/voucher/VCkhachHang/${$scope.selectedCustomerId}?page=${$scope.currentPageVC}&size=${$scope.pageSizeVC}`)
             .then(function (response) {
-                // Cập nhật dữ liệu voucher và thông tin phân trang
                 $scope.vouchers = response.data.vouchers;
                 $scope.totalPagesVC = response.data.totalPagesVC;
                 $scope.totalItemsVC = response.data.totalItemsVC;
-
                 if ($scope.appliedVoucherId == null) {
                     $scope.showSuggestedVoucher();
                 }
@@ -116,28 +114,24 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     $scope.range = function (totalPagesVC) {
         return Array.from({length: totalPagesVC}, (_, i) => i);
     };
-
 // Gọi lần đầu để tải trang đầu tiên (nếu có khách hàng được chọn)
     $scope.$watch('selectedCustomerId', function (newVal, oldVal) {
         if (newVal) {
             $scope.loadPageVC(0); // Tải trang đầu tiên khi khách hàng được chọn
         }
     });
-
 // Hàm chuyển đến trang trước
     $scope.prevPageVC = function () {
         if ($scope.currentPageVC > 0) {
             $scope.loadPageVC($scope.currentPageVC - 1);
         }
     };
-
 // Hàm chuyển đến trang tiếp theo
     $scope.nextPageVC = function () {
         if ($scope.currentPageVC < $scope.totalPagesVC - 1) {
             $scope.loadPageVC($scope.currentPageVC + 1);
         }
     };
-
 // Hàm chuyển đến một trang cụ thể
     $scope.setPageVC = function (page) {
         $scope.loadPageVC(page);
@@ -158,13 +152,12 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
                 let minAmount = parseInt(voucher.giamMin);
                 let maxDiscount = parseInt(voucher.giamMax);
 
-                if (totalAmount >= minAmount) { // Tổng tiền đủ điều kiện để áp dụng voucher
+                if (totalAmount >= minAmount) {
                     let discountAmount = totalAmount * discountRate;
                     if (discountAmount > maxDiscount) {
-                        discountAmount = maxDiscount; // Áp dụng giảm giá tối đa
+                        discountAmount = maxDiscount;
                     }
-
-                    if (discountAmount > maxDiscountAmount) { // Cập nhật voucher tốt nhất
+                    if (discountAmount > maxDiscountAmount) {
                         maxDiscountAmount = discountAmount;
                         bestVoucher = voucher;
                     }
@@ -174,7 +167,8 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         return bestVoucher;
     }
 
-    $scope.showSuggestedVoucher = function () {//show form gợi ý voucher
+    //show form gợi ý voucher
+    $scope.showSuggestedVoucher = function () {
         if (!$scope.vouchers || $scope.vouchers.length === 0) {
             $scope.suggestedVoucher = null; // Không có voucher nào
         } else {
@@ -185,7 +179,8 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         modalInstance.show();
     };
 
-    $scope.applySuggestedVoucher = function () {// áp dụng voucher gợi ý
+    // áp dụng voucher gợi ý
+    $scope.applySuggestedVoucher = function () {
         if ($scope.suggestedVoucher) {
             $scope.applyVoucher($scope.suggestedVoucher);
         }
@@ -196,12 +191,11 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     };
 
 
-//phân trang cthd
+    //phân trang cthd
     $scope.currentPage = 0;
     $scope.range = function (totalPages) {
         return Array.from({length: totalPages}, (_, i) => i);
     };
-
     $scope.loadPage = function (page) {
         $http.get(`http://localhost:8083/chitiethoadon/getCTHD?idHD=${$scope.idHD}&page=0`)
             .then(function (response) {
@@ -217,7 +211,6 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
                 } else {
                     $scope.emptyMessage = ""; // Reset lại thông báo nếu có dữ liệu
                 }
-
                 // Tính tổng tiền
                 let tt = 0;
                 data.cthds.forEach(item => {
@@ -232,26 +225,22 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
 
 // Gọi lần đầu để tải trang đầu tiên
     $scope.loadPage($scope.currentPage);
-
 // Chuyển đến trang trước
     $scope.prevPage = function () {
         if ($scope.currentPage > 0) {
             $scope.loadPage($scope.currentPage - 1);
         }
     };
-
 // Chuyển đến trang tiếp theo
     $scope.nextPage = function () {
         if ($scope.currentPage < $scope.totalPages - 1) {
             $scope.loadPage($scope.currentPage + 1);
         }
     };
-
 // Chuyển đến một trang cụ thể
     $scope.setPage = function (page) {
         $scope.loadPage(page);
     };
-
 
 //cập nhật lại tổng tiền về ban đầu khi đổi khách hàng
     $scope.calculateTotalAmount = function () {
@@ -303,11 +292,10 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     $scope.showConfirmation = function () {
         // Đánh dấu form đã submit
         $scope.isSubmitted = true;
-
         // Kiểm tra nếu tên hoặc số điện thoại bị trống
         if (!$scope.selectedCustomerName || !$scope.selectedCustomerPhone) {
             showWarningAlert("Vui lòng điền đầy đủ Tên khách hàng và Số điện thoại.")
-            return; // Chặn không cho chuyển modal
+            return;
         }
 
         const amountPattern = /^[0-9]+$/;
@@ -318,7 +306,6 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         } else {
             $scope.invalidAmount = false;
         }
-
         // Kiểm tra số tiền có đủ để thanh toán không
         if ($scope.amountPaid < $scope.tongTien) {
             $scope.showError = true; // Hiển thị lỗi tiền không đủ
@@ -334,7 +321,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     };
 
 
-//Gửi mail
+//Gửi mail cho khách
     $scope.generateAndSendInvoice = function (checkCK) {
         if (!$scope.selectedCustomerEmailVL || $scope.selectedCustomerEmailVL === '') {
             showDangerAlert("Khách hàng vãng lai không có Email để gửi hóa đơn");
@@ -395,6 +382,7 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
     $scope.completePaymentSendM = function (){
         $scope.completePayment(false)
     }
+
     $scope.cancelVoucher = function () {
         if ($scope.appliedVoucher) {
             $scope.tongTien = $scope.previousTotal; // Khôi phục tổng tiền gốc
@@ -404,18 +392,15 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
         }
     };
 
+    //áp voucher
     $scope.applyVoucher = function (voucher) {
-
-
         // Kiểm tra trạng thái voucher
         if (voucher.soLuong <= 0 || voucher.trangThai === 0) {
             showDangerAlert("Voucher này đã hết số lượng hoặc không còn hoạt động.")
             return;
         }
-
         // Kiểm tra nếu voucher đã được áp dụng trước đó
         if ($scope.appliedVoucherId && $scope.appliedVoucherId === voucher.id) {
-
             const alertBox = document.getElementById('success-alert2');
             alertBox.innerHTML =
                 `<strong>Mỗi hóa đơn chỉ được áp dụng duy nhất 1 voucher!</strong>
@@ -429,10 +414,8 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
                 alertBox.classList.remove('show'); // Ẩn hiệu ứng
                 setTimeout(() => (alertBox.style.display = 'none'), 500); // Ẩn hoàn toàn
             }, 3000);
-
             return;
         }
-
         // Kiểm tra tổng tiền và điều kiện áp dụng voucher
         let totalAmount = $scope.tongTien;
         let discountRate = parseFloat(voucher.giamGia.replace('%', '')) / 100;
@@ -443,12 +426,10 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
             showWarningAlert("Hóa đơn phải có giá trị ít nhất " + minAmount + " VNĐ để áp dụng voucher.");
             return;
         }
-
         let discountAmount = totalAmount * discountRate;
         if (discountAmount > maxDiscount) {
             discountAmount = maxDiscount;
         }
-
         if ($scope.appliedVoucherId == null || $scope.appliedVoucherId == '') {
             if (voucher) {
                 $scope.appliedVoucher = voucher; // Lưu voucher đang áp dụng
@@ -474,14 +455,11 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
                 setTimeout(() => (alertBox.style.display = 'none'), 500); // Ẩn hoàn toàn
             }, 3000);
         }
-
-
         // Lưu ID của voucher đã áp dụng để ngăn việc áp dụng lại
         $scope.appliedVoucherId = voucher.id;
-
     };
 
-
+//Hoàn tất thanh toán
     $scope.completePayment = function (checkThanhToan) {
         if ($scope.amountPaid < $scope.tongTien && checkThanhToan) {
             showDangerAlert("Không thể hoàn tất thanh toán vì số tiền không đủ.");
