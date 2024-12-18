@@ -769,11 +769,17 @@ public class HoaDonController {
             infoTable.addCell(createCellWithoutBorder(formatCurrency(tongTien - totalAmount), normalFont));
             infoTable.addCell(createCellWithoutBorder("Tiền cần thanh toán:", boldFont));
             infoTable.addCell(createCellWithoutBorder(formatCurrency(totalAmount), normalFont));
-            infoTable.addCell(createCellWithoutBorder("Tiền khách đưa:", boldFont));
-            infoTable.addCell(createCellWithoutBorder(formatCurrency(amountPaid), normalFont));
-            infoTable.addCell(createCellWithoutBorder("Tiền thừa:", boldFont));
-            infoTable.addCell(createCellWithoutBorder(formatCurrency(amountPaid - totalAmount), normalFont));
-
+            if(amountPaid > 0 && amountPaid >= totalAmount) {
+                infoTable.addCell(createCellWithoutBorder("Tiền khách đưa:", boldFont));
+                infoTable.addCell(createCellWithoutBorder(formatCurrency(amountPaid), normalFont));
+                infoTable.addCell(createCellWithoutBorder("Tiền thừa:", boldFont));
+                infoTable.addCell(createCellWithoutBorder(formatCurrency(amountPaid - totalAmount), normalFont));
+            }else {
+                infoTable.addCell(createCellWithoutBorder("Tiền khách đưa:", boldFont));
+                infoTable.addCell(createCellWithoutBorder("Khách thanh toán Online", normalFont));
+                infoTable.addCell(createCellWithoutBorder("Tiền thừa:", boldFont));
+                infoTable.addCell(createCellWithoutBorder("khách chuyển khoản đủ", normalFont));
+            }
             // Thêm bảng thông tin hóa đơn vào cuối trang
             document.add(infoTable);
             // Lời cảm ơn
@@ -824,13 +830,13 @@ public class HoaDonController {
             emailService.sendEmailWithAttachment(
                     invoiceRequest.getEmail(),
                     "Hóa đơn thanh toán",
-                    "Xin chào " + invoiceRequest.getCustomerName() +
-                            ". Cảm ơn bạn đã tin tưởng và lựa chọn chúng tôi làm nơi mua sắm. Sự hài lòng của bạn là động lực lớn nhất để chúng tôi không ngừng cải thiện.\n\n"
+                    "Xin chào " + invoiceRequest.getCustomerName() + "\n" +
+                            "Cảm ơn bạn đã tin tưởng và lựa chọn chúng tôi làm nơi mua sắm. Sự hài lòng của bạn là động lực lớn nhất để chúng tôi không ngừng cải thiện.\n\n"
                             +
                             "Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua email hoặc số hotline. Chúng tôi luôn sẵn lòng hỗ trợ.\n\n"
                             +
                             "Trân trọng,\n" +
-                            "[Thực Phẩm Chức Năng Loopy]"
+                            "Thực Phẩm Chức Năng Loopy"
                             + ",\n\nĐính kèm là hóa đơn thanh toán của bạn.",
                     pdfData,
                     "hoadon.pdf");
