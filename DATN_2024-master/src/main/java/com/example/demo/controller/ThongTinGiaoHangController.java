@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.thongtingiaohang.ThongTinGiaoHangRequest;
 import com.example.demo.dto.thongtingiaohang.ThongTinGiaoHangResponse;
+import com.example.demo.entity.KhachHang;
 import com.example.demo.entity.ThongTinGiaoHang;
 import com.example.demo.repository.KhachHangRepository;
 import com.example.demo.repository.ThongTinGiaoHangRepository;
@@ -73,30 +74,24 @@ public class ThongTinGiaoHangController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<?> add(@Valid @RequestBody ThongTinGiaoHangRequest thongTinGiaoHangRequest,
-                                 BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder mess = new StringBuilder();
-            bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
-            return ResponseEntity.badRequest().body(mess.toString());
-        }
+    public ResponseEntity<?> add(@RequestParam String idKH, @RequestBody List<String> ttghRequest) {
+        KhachHang kh = khRepo.getById(idKH);
 
-        // khách hàng này đã có địa chỉ này rồi k thêm được
-        if (ttghRepo.existsByKhachHang_IdAndDcNguoiNhan(thongTinGiaoHangRequest.getIdKH(),
-                thongTinGiaoHangRequest.getDcNguoiNhan())) {
-            return ResponseEntity.badRequest().body("Địa chỉ nhận hàng đã tồn tại cho khách hàng này.");
-        }
-        ThongTinGiaoHang thongTinGiaoHang = thongTinGiaoHangRequest.toEntity();
-        thongTinGiaoHang.setKhachHang(khRepo.getById(thongTinGiaoHangRequest.getIdKH()));
-        thongTinGiaoHang.setNgayTao(LocalDateTime.now());
-        thongTinGiaoHang.setTrangThai(1);
-        ttghRepo.save(thongTinGiaoHang);
-        return ResponseEntity.ok().body(ttghRepo.fHangs(thongTinGiaoHangRequest.getIdKH()));
+        String ten = ttghRequest.get(0);
+        String phone = ttghRequest.get(1);
+        String diaChi = ttghRequest.get(2);
+
+        LocalDateTime ngayTao = LocalDateTime.now();
+        LocalDateTime ngaySua = LocalDateTime.now();
+
+        ThongTinGiaoHang ttgh = new ThongTinGiaoHang(null, phone, ten, diaChi, ngayTao, ngaySua, 1, kh);
+        ttghRepo.save(ttgh);
+        return ResponseEntity.ok().body(ttgh);
     }
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> update(@PathVariable String id,
-                                    @Valid @RequestBody ThongTinGiaoHangRequest thongTinGiaoHangRequest, BindingResult bindingResult) {
+            @Valid @RequestBody ThongTinGiaoHangRequest thongTinGiaoHangRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder mess = new StringBuilder();
             bindingResult.getAllErrors().forEach(error -> mess.append(error.getDefaultMessage()).append("\n"));
@@ -136,16 +131,17 @@ public class ThongTinGiaoHangController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
-//        ThongTinGiaoHang ttgh = ttghRepo.getTTGHById(id);
-//        if (ttgh != null) {
-//            ThongTinGiaoHang newTTGH = ttghRepo.getTTGHById(id);
-//            newTTGH.setTrangThai(0);
-//            ttghRepo.save(newTTGH);
-//            String idKH = ttghRepo.getCustomerIdByTTGHId(id);
-//            return ResponseEntity.ok(ttghRepo.fHangs(idKH).stream().map(ThongTinGiaoHang::toResponse));
-//        } else {
-//            return ResponseEntity.badRequest().body("Không tìm thấy id cần xóa");
-//        }
+        // ThongTinGiaoHang ttgh = ttghRepo.getTTGHById(id);
+        // if (ttgh != null) {
+        // ThongTinGiaoHang newTTGH = ttghRepo.getTTGHById(id);
+        // newTTGH.setTrangThai(0);
+        // ttghRepo.save(newTTGH);
+        // String idKH = ttghRepo.getCustomerIdByTTGHId(id);
+        // return
+        // ResponseEntity.ok(ttghRepo.fHangs(idKH).stream().map(ThongTinGiaoHang::toResponse));
+        // } else {
+        // return ResponseEntity.badRequest().body("Không tìm thấy id cần xóa");
+        // }
         if (ttghRepo.findById(id).isPresent()) {
             ttghRepo.deleteById(id);
             Map<String, String> response = new HashMap<>();
