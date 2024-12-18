@@ -160,9 +160,11 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
 
     $scope.openCustomerModal = function () {
         $('#customerModal').modal('show');
+        $('#productModal').modal('hide');
     };
     $scope.openCustomerModalUpdate = function () {
         $('#customerModalUpdate').modal('show');
+        $('#UpdateForm').modal('hide');
     };
 
     $scope.confirmSelection = function () {

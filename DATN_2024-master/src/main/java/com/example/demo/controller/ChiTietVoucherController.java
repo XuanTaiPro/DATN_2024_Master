@@ -26,9 +26,7 @@ public class ChiTietVoucherController {
         if (idKh.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Không tìm thấy id khách hàng");
         }
-
         Integer giaInt = null;
-
         if (gia != null && !gia.trim().isEmpty()) {
             try {
                 giaInt = Integer.parseInt(gia);

@@ -407,13 +407,13 @@ window.thanhtoanCtrl = function ($scope, $http, $routeParams) {
             <p>Bạn có thể thử sử dụng một voucher khác.</p>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
 
-            alertBox.style.display = 'block'; // Hiện alert
-            setTimeout(() => alertBox.classList.add('show'), 10); // Thêm hiệu ứng
+            alertBox.style.display = 'block';
+            setTimeout(() => alertBox.classList.add('show'), 10)
 
             setTimeout(() => {
                 alertBox.classList.remove('show'); // Ẩn hiệu ứng
-                setTimeout(() => (alertBox.style.display = 'none'), 500); // Ẩn hoàn toàn
-            }, 3000);
+                setTimeout(() => (alertBox.style.display = 'none'), 500)
+            }, 1500);
             return;
         }
         // Kiểm tra tổng tiền và điều kiện áp dụng voucher
