@@ -195,9 +195,9 @@ window.giamGiaCtrl = function ($scope, $http) {
 
     $scope.addGiamGia = function (giamGia) {
         $scope.formSubmitted = true;
-        if(!$scope.isTenValid()||!$scope.isNgayBatDauValid()||!$scope.isNgayKetThucValid()||!$scope.isGiaGiamValid()){
-            $scope.showDangerAlert = "Cần điền đầy đủ thông tin";
-        }else {
+        // if(!$scope.isTenValid()||!$scope.isNgayBatDauValid()||!$scope.isNgayKetThucValid()||!$scope.isGiaGiamValid()){
+        //     $scope.showDangerAlert = "Cần điền đầy đủ thông tin";
+        // }else {
             const formData = new FormData();
             // Thêm thông tin sản phẩm vào FormData
             formData.append('ten', giamGia.ten || '');
@@ -256,7 +256,7 @@ window.giamGiaCtrl = function ($scope, $http) {
                         $scope.errorMessage = 'Lỗi không xác định: ' + JSON.stringify(error);
                     }
                 });
-        }
+
     };
 
     $scope.deleteGiamGia = function (ggId) {

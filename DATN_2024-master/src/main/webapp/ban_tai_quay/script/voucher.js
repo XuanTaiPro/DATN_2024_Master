@@ -314,7 +314,6 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
 
         console.log("Dữ liệu mới:", newVoucher);
         // Kiểm tra nếu form hợp lệ trước khi gửi request
-        if ($scope.voucherForm.$valid) {
             $http.post('http://localhost:8083/voucher/add', newVoucher)
                 .then(function (response) {
                     $('#productModal').modal('hide');
@@ -324,9 +323,6 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
                 .catch(function (error) {
                     $scope.errorMessage = "Thêm thất bại";
                 });
-        } else {
-            $scope.errorMessage = "Vui lòng điền đầy đủ thông tin!";
-        }
 
         resetForm();
     };
@@ -394,6 +390,7 @@ window.voucherCtrl = function ($scope, $http,$timeout) {
         $http.put('http://localhost:8083/voucher/update/' + $scope.selectedVoucher.id, updatedVoucher)
             .then(function (response) {
                 $('#UpdateForm').modal('hide');
+
 
                 // Hiển thị alert với hiệu ứng slide down
                 const alertBox = document.getElementById('success-alert');

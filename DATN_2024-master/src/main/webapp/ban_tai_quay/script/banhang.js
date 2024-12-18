@@ -561,7 +561,6 @@ window.banhangCtrl = function ($scope, $http, $document) {
     $scope.deleteCTHD = function (idCTHD) {
         const selectedTab = $scope.tabs[$scope.selectedTab];
         const selectedIdHD = selectedTab.idHD;
-        showConfirm("Bạn có muốn xóa sản phẩm này không?",()=>{
 
             $http({
             method: 'DELETE',
@@ -579,7 +578,7 @@ window.banhangCtrl = function ($scope, $http, $document) {
             $scope.getCTSPByIdHD(selectedIdHD, selectedTab.currentPage); // Truyền vào trang hiện tại của tab
 
             // alert(response.data); // Hiển thị thông báo thành công
-        });})
+        });
 
     }
     $scope.selectedTabIndex = 0; // Chỉ số tab hiện tại
