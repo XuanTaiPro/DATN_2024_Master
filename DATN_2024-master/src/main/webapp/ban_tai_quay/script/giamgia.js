@@ -13,18 +13,38 @@ window.giamGiaCtrl = function ($scope, $http) {
     $scope.itemsPerPage = 10; // Số sản phẩm trên mỗi trang
     $scope.totalPages = 0;
     $scope.idDanhMuc = "";
+    $scope.filters = {
+        searchText: '',
+        trangThai: '',
+        ngayBatDau: '',
+        ngayKetThuc: ''
+    };
     // Lấy tất cả chi tiết sản phẩm
     $scope.getAllGiamGias = function (page) {
         $scope.currentPage = page || 0; // Nếu không có page được truyền vào, dùng trang 0
-        $http.get('http://localhost:8083/giam-gia/phanTrang?page=' + $scope.currentPage)
+
+        let params = {
+            page: $scope.currentPage,
+            searchText: $scope.filters.searchText || '', // Mặc định là chuỗi rỗng nếu không có giá trị
+            trangThai: $scope.filters.trangThai || '', // Mặc định là chuỗi rỗng nếu không có giá trị
+            ngayBatDau: $scope.filters.ngayBatDau ? new Date($scope.filters.ngayBatDau).toISOString() : '', // Convert sang ISO format
+            ngayKetThuc: $scope.filters.ngayKetThuc ? new Date($scope.filters.ngayKetThuc).toISOString() : '' // Convert sang ISO format
+        };
+
+        $http.get('http://localhost:8083/giam-gia/phanTrang', { params: params })
             .then(function (response) {
-                $scope.giamGias = response.data.giamGias; // Gán dữ liệu sản phẩm
-                $scope.totalPages = response.data.totalPages; // Lưu tổng số trang
-                $scope.pages = Array.from({length: $scope.totalPages}, (v, i) => i); // Tạo danh sách các số trang
+                if (response.data.giamGias && response.data.giamGias.length > 0) {
+                    $scope.giamGias = response.data.giamGias;
+                    $scope.totalPages = response.data.totalPages;
+                    $scope.pages = Array.from({ length: $scope.totalPages }, (v, i) => i);
+                } else {
+                    $scope.giamGias = [];
+                    $scope.errorMessage = 'Không có dữ liệu giảm giá!';
+                }
             })
             .catch(function (error) {
                 $scope.errorMessage = 'Lỗi khi lấy giảm giá: ' + error.data;
-                console.error($scope.errorMessage);
+                console.error(error);
             });
     };
     $scope.getAllDanhMuc = function () {
@@ -240,7 +260,7 @@ window.giamGiaCtrl = function ($scope, $http) {
     };
 
     $scope.deleteGiamGia = function (ggId) {
-        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
+        showConfirm("Bạn có muốn ngưng giảm giá này không?",()=>{
             $http({
                 method: 'DELETE',
                 url: 'http://localhost:8083/giam-gia/delete', // Đường dẫn đến API
@@ -249,17 +269,36 @@ window.giamGiaCtrl = function ($scope, $http) {
             }).then(function (response) {
                 showSuccessAlert(response.data); // Hiển thị thông báo thành công
                 // Cập nhật lại danh sách sản phẩm
-                $scope.getAllGiamGias();
+                $scope.getAllGiamGias($scope.currentPage);
 
 
             }, function (error) {
-                $scope.getAllGiamGias();
+                $scope.getAllGiamGias($scope.currentPage);
                 showDangerAlert("Cập nhật trạng thái thất bại!");
                 // alert(response.data); // Hiển thị thông báo thành công
             });
-        }
+        });
     };
+    $scope.activateGiamGia = function (ggId) {
+        showConfirm("Bạn có muốn kích hoạt lại giảm giá này không?",()=>{
+            $http({
+                method: 'DELETE',
+                url: 'http://localhost:8083/giam-gia/active', // Đường dẫn đến API
+                data: {id: ggId}, // Gửi id sản phẩm qua request body
+                headers: {"Content-Type": "application/json;charset=utf-8"}
+            }).then(function (response) {
+                showSuccessAlert(response.data); // Hiển thị thông báo thành công
+                // Cập nhật lại danh sách sản phẩm
+                $scope.getAllGiamGias($scope.currentPage);
 
+
+            }, function (error) {
+                $scope.getAllGiamGias($scope.currentPage);
+                showDangerAlert("Cập nhật trạng thái thất bại!");
+                // alert(response.data); // Hiển thị thông báo thành công
+            });
+        });
+    };
     $scope.updateGiamGia = function (giamGiaDetail) {
         const formData = new FormData();
         formData.append('id', giamGiaDetail.id);

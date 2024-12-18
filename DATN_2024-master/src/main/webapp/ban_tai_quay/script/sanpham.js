@@ -5,7 +5,7 @@ window.sanPhamCtrl = function ($scope, $http) {
     $scope.successMessage = "";
     $scope.errorMessage = "";
     $scope.currentPage = 0;
-    $scope.itemsPerPage = 10; // Số sản phẩm trên mỗi trang
+    $scope.itemsPerPage = 5; // Số sản phẩm trên mỗi trang
     $scope.totalPages = 0;
     $scope.ageRanges = [
         { label: "Dưới 18", min: null, max: 18 },

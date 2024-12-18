@@ -135,6 +135,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
                 $scope.getUniqueSoNgaySuDung();
                 $scope.getAllProducts();
                 showSuccessAlert("Thêm thành công!");
+                $scope.clearForm();
             })
             .catch(function (error) {
                 $scope.getAllProducts($scope.currentPage); // Gọi lại hàm với trang hiện tại
@@ -152,6 +153,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
 
     // Cập nhật chi tiết sản phẩm
     $scope.deleteProduct = function (productId) {
+        showConfirm("Bạn có muốn ngưng sản phẩm này không?",()=>{
             $http({
                 method: 'DELETE',
                 url: 'http://localhost:8083/chi-tiet-san-pham/delete', // Đường dẫn đến API
@@ -164,12 +166,13 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
             }, function (error) {
                 $scope.getAllProducts();
                 showDangerAlert("Cập nhật trạng thái thất bại!");
-            });
+            });})
 
     };
 
     $scope.activateProduct = function (productId) {
-        $http({
+        showConfirm("Bạn có muốn kích hoạt sản phẩm này không?",()=>{
+            $http({
             method: 'PUT',
             url: 'http://localhost:8083/chi-tiet-san-pham/activateProduct', // Đường dẫn đến API
             data: {id: productId}, // Gửi id sản phẩm qua request body
@@ -181,7 +184,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
         }, function (error) {
             $scope.getAllProducts();
             showDangerAlert("Cập nhật trạng thái thất bại!");
-        });
+        });})
 
     };
     $scope.updateProduct = function () {
