@@ -113,7 +113,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="#!/voucher" id="myForm" ng-submit="addVoucher()" novalidate>
+                <form action="#!/voucher" id="myForm" ng-submit="addVoucher($event)" novalidate>
                     <div class="inputField">
                         <div>
                             <label>Tên Voucher:</label>
@@ -121,17 +121,13 @@
                             <div style="color: red;" ng-show="isSubmitted && !ten">
                                 Tên  không được để trống.
                             </div>
-                            <div style="color: red;" ng-show="validationErrors.ten">
+                            <div style="color: red;" ng-show="!isSubmitted && validationErrors.ten">
                                 {{ validationErrors.ten }}
                             </div>
                         </div>
                         <div>
-                            <!-- Giá giảm -->
                             <label>Giá giảm:</label>
                             <input type="text" ng-model="giamGia" ng-change="validateDiscounts()" />
-                            <div style="color: red;" ng-show="isSubmitted && !giamGia">
-                                Giá giảm không được để trống.
-                            </div>
                             <div style="color: red;" ng-show="validationErrors.giamGia">
                                 {{ validationErrors.giamGia }}
                             </div>
@@ -141,9 +137,7 @@
                             <!-- Giảm min -->
                             <label>Giảm min:</label>
                             <input type="text" ng-model="giamMin" ng-change="validateDiscounts()" />
-                            <div style="color: red;" ng-show="isSubmitted && !giamMin">
-                                Gía min không được để trống.
-                            </div>
+
                             <div style="color: #ff0000;" ng-show="validationErrors.giamMin">
                                 {{ validationErrors.giamMin }}
                             </div>
@@ -153,9 +147,6 @@
                             <!-- Giảm max -->
                             <label>Giảm max:</label>
                             <input type="text" ng-model="giamMax" ng-change="validateDiscounts()" />
-                            <div style="color: red;" ng-show="isSubmitted && !giamMax">
-                                Gía max không được để trống.
-                            </div>
                             <div style="color: red;" ng-show="validationErrors.giamMax">
                                 {{ validationErrors.giamMax }}
                             </div>
@@ -180,12 +171,9 @@
 
                         <div>
                             <label>Số lượng:</label>
-                            <input type="number" ng-model="soLuong"  min="1">
-                            <div style="color: red;" ng-show="isSubmitted && !soLuong">
-                                Số lượng không được để trống.
-                            </div>
-                            <div style="color: red;" ng-show="isSubmitted && (!soLuong || soLuong < 1)">
-                                Số lượng phải lớn hơn hoặc bằng 1.
+                            <input type="number" ng-model="soLuong"  min="1" ng-change="validateDiscounts()" />
+                            <div style="color: red;" ng-show="validationErrors.soLuong">
+                                {{ validationErrors.soLuong }}
                             </div>
                         </div>
                         <div>
@@ -211,6 +199,9 @@
                                     {{customer.ten}}
                                 </option>
                             </select>
+                            <div style="color: red;" ng-show="validationErrors.customer">
+                                {{ validationErrors.customer }}
+                            </div>
                         </div>
                         <div>
                             <label for="trangThai">Trạng thái:</label>
@@ -227,7 +218,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ng-click="clearErrors()">Close</button>
                 <button type="submit" form="myForm" class="btn btn-primary submit">Submit</button>
             </div>
         </div>
@@ -320,7 +311,7 @@
                             <div style="color: red;" ng-show="isSubmitted && !ten">
                                 Tên  không được để trống.
                             </div>
-                            <div style="color: red;" ng-show="validationErrors.ten">
+                            <div style="color: red;" ng-show="validationUDErrors.ten">
                                 {{ validationErrors.ten }}
                             </div>
                         </div>
@@ -330,7 +321,7 @@
                             <div style="color: red;" ng-show="isSubmitted && !giamGia">
                                 Giá giảm không được để trống.
                             </div>
-                            <div style="color: red;" ng-show="validationErrors.giamGia">
+                            <div style="color: red;" ng-show="validationUDErrors.giamGia">
                                 {{ validationErrors.giamGia }}
                             </div>
                         </div>
@@ -340,10 +331,10 @@
                             <div style="color: red;" ng-show="isSubmitted && !giamMin">
                                 Phải điền giá min.
                             </div>
-                            <div style="color: red;" ng-show="validationErrors.giamMin">
+                            <div style="color: red;" ng-show="validationUDErrors.giamMin">
                                 {{ validationErrors.giamMin }}
                             </div>
-                            <input type="text" ng-model="selectedVoucher.giamMin">
+<!--                            <input type="text" ng-model="selectedVoucher.giamMin">-->
                         </div>
                         <div>
                             <label>Giảm max:</label>
@@ -351,7 +342,7 @@
                             <div style="color: red;" ng-show="isSubmitted && !giamMax">
                                 Phải điền giá max.
                             </div>
-                            <div style="color: red;" ng-show="validationErrors.giamMax">
+                            <div style="color: red;" ng-show="validationUDErrors.giamMax">
                                 {{ validationErrors.giamMax }}
                             </div>
                         </div>
@@ -399,7 +390,7 @@
                                     {{customer.ten}}
                                 </option>
                             </select>
-                            <div style="color: red;" ng-show="validationErrors.customer">
+                            <div style="color: red;" ng-show="validationUDErrors.customer">
                                 {{ validationErrors.customer }}
                             </div>
                         </div>
@@ -420,7 +411,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ng-click="clearErrors($event)">Đóng</button>
                 <button type="submit" form="updateVoucher" class="btn btn-primary">Cập Nhật</button>
             </div>
         </div>

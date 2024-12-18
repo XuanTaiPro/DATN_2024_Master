@@ -90,27 +90,111 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
     };
 
 
+
+    $scope.usageDaysError = false;
+
+    $scope.validateUsageDays = function () {
+        if (($scope.product.soNgaySuDung && $scope.product.soNgaySuDungInput) ||
+            (!$scope.product.soNgaySuDung && !$scope.product.soNgaySuDungInput)) {
+            $scope.usageDaysError = true;
+        } else {
+            $scope.usageDaysError = false;
+        }
+    };
+
+    $scope.isNsxValid = function(nsx, hsd, ngayNhap) {
+        if (!nsx || !hsd || !ngayNhap) return true; // Không kiểm tra nếu thiếu dữ liệu
+        const nsxDate = new Date(nsx);
+        const hsdDate = new Date(hsd);
+        const ngayNhapDate = new Date(ngayNhap);
+        const currentDate = new Date();
+
+        return (
+            nsxDate <= ngayNhapDate && // NSX phải là ngày trong quá khứ hoặc ngày hiện tại, và trước ngày nhập
+            nsxDate <= hsdDate && // NSX không được sau HSD
+            nsxDate <= currentDate && // NSX không được sau ngày hiện tại
+            nsx !== undefined
+        );
+    };
+
+    $scope.isNgayNhapValid = function(ngayNhap, nsx, hsd) {
+        if (!ngayNhap || !nsx || !hsd) return true; // Không kiểm tra nếu thiếu dữ liệu
+
+        const currentDate = new Date();
+        const ngayNhapDate = new Date(ngayNhap);
+        const nsxDate = new Date(nsx);
+
+        // Ngày nhập phải là ngày hiện tại hoặc trong quá khứ
+        const isNgayNhapValid = ngayNhapDate <= currentDate;
+
+        // Ngày nhập phải là ngày sau ngày sản xuất
+        const isNgayNhapAfterNsx = ngayNhapDate >= nsxDate;
+
+        return isNgayNhapValid && isNgayNhapAfterNsx;
+    };
+
+    $scope.isHsdValid = function(hsd, nsx, ngayNhap) {
+        if (!hsd || !nsx || !ngayNhap) return true; // Không kiểm tra nếu thiếu dữ liệu
+
+        const nsxDate = new Date(nsx);
+        const hsdDate = new Date(hsd);
+        const ngayNhapDate = new Date(ngayNhap);
+        const isHsdAfterNsx = hsdDate > nsxDate;
+
+        return  isHsdAfterNsx;
+    };
+
+
+
+    $scope.isNgaynhapTrongValid = function(ngayNhap) {
+        return ngayNhap !=undefined;
+    };
+    $scope.ishsdTrongValid = function(hsd) {
+        return hsd !=undefined;
+    };
+    $scope.isnsxTrongValid = function(nsx) {
+        return nsx !=undefined;
+    };
+
+    $scope.isHsdValid = function(hsd, nsx) {
+        if (!hsd || !nsx) return true; // Không kiểm tra nếu thiếu dữ liệu
+        return new Date(hsd) > new Date(nsx)&&  hsd !== undefined; // HSD phải sau NSX
+    };
+
+
+    $scope.isGiaValidTrong = function(gia) {
+        return gia !== undefined ;
+    };
     $scope.isGiaValid = function(gia) {
         return gia !== undefined && gia >= 1 ;
     };
     $scope.isImgValid = function(img) {
         return img !== undefined  ;
     };
+    $scope.isSoLuongTrongValid = function(soLuong) {
+        return soLuong !=undefined;
+    };
     $scope.isSoLuongValid = function(soLuong) {
         return !isNaN(soLuong) && Number(soLuong) >= 1;
     };
-    $scope.isImageListValid = function() {
-        return product.imagePreviews && product.imagePreviews.length > 0;
+    $scope.isImgValid = function(imagePreviews) {
+        return imagePreviews && imagePreviews.length > 0;
     };
+
+
     $scope.formSubmitted = false;
     $scope.addProduct = function (product) {
 
         $scope.formSubmitted = true;
+        $scope.usageDaysError = true;
 
-        if (!$scope.isImageListValid()||!$scope.isImgValid()||!$scope.isGiaValid()) {
-            return;
-
-        }
+        // if (!$scope.isImgValid()||!$scope.isImgValid()||!$scope.isGiaValid()||!$scope.isNsxValid()||
+        //     !$scope.isNgaynhapTrongValid()||!$scope.isHsdValid()||!$scope.isNgayNhapValid() ||$scope.ishsdTrongValid()||
+        //     !$scope.isnsxTrongValid()||!$scope.isGiaValidTrong()
+        // ) {
+        //     return;
+        //
+        // }
         const productData = {
             gia: product.gia,
             soNgaySuDung: product.soNgaySuDung != null ? product.soNgaySuDung : product.soNgaySuDungInput,
@@ -183,7 +267,39 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
         });
 
     };
+    $scope.usageDaysError = false;
+
+    $scope.validateUsageDays = function () {
+        if (($scope.product.soNgaySuDung && $scope.product.soNgaySuDungInput) ||
+            (!$scope.product.soNgaySuDung && !$scope.product.soNgaySuDungInput)) {
+            $scope.usageDaysError = true;
+        } else {
+            $scope.usageDaysError = false;
+        }
+    };
+
+    $scope.clearErrors=function (){
+        $scope.formSubmitted = true;
+        $scope.usageDaysError = true;
+        $scope.newLoHangErrors = {
+            nsx: null,
+            ngayNhap: null,
+            hsd: null,
+            soLuong: null
+        };
+
+    }
     $scope.updateProduct = function () {
+        $scope.formSubmitted = true;
+        $scope.usageDaysError = true;
+
+        if (!$scope.isImgValid()||!$scope.isGiaValid()||!$scope.isNsxValid()||
+            !$scope.isNgaynhapTrongValid()||!$scope.isHsdValid()||!$scope.isNgayNhapValid() ||$scope.ishsdTrongValid()||
+            !$scope.isnsxTrongValid()||!$scope.isGiaValidTrong()
+        ) {
+            return;
+
+        }
         const formData = new FormData();
         // Thêm thông tin sản phẩm vào FormData
         formData.append('id', $scope.productDetail.id);
@@ -234,6 +350,8 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
                 }
             });
     };
+
+
     $scope.clearForm = function () {
         // Xóa mọi dữ liệu trong product
         $scope.productDetail = {}; // Xóa dữ liệu chi tiết sản phẩm
@@ -360,10 +478,14 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
 // Toggle hiển thị form thêm lô hàng
     $scope.toggleAddLoHangForm = function () {
         $scope.showAddLoHangForm = !$scope.showAddLoHangForm;
+        if ($scope.showAddLoHangForm) {
+            $scope.clearErrors();
+        }
     };
 
 
     $scope.newLoHangErrors = {};
+    $scope.newLoHang = {};
 
     $scope.validateNgayNhap = function(ngayNhap, nsx, hsd) {
         const now = new Date();
@@ -429,7 +551,7 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
         if (nsxDate > hsdDate) {
             $scope.newLoHangErrors.nsxHsd = "Ngày sản xuất không được sau hạn sử dụng.";
         } else {
-            $scope.newLoHangErrors.nsxHsd = null; // Không có lỗi
+            $scope.newLoHangErrors.nsxHsd = null;
         }
     };
     $scope.$watch('newLoHang.nsx', function(newValue) {
@@ -447,10 +569,10 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
     });
 
     $scope.validateSoLuong = function(soLuong) {
-        if (!soLuong || isNaN(soLuong) || soLuong <= 1 || !Number.isInteger(+soLuong)) {
-            $scope.newLoHangErrors.soLuong = "Số lượng phải là một số nguyên lớn hơn 1.";
+        if (!soLuong || isNaN(soLuong) || soLuong <= 0 || !Number.isInteger(+soLuong)) {
+            $scope.newLoHangErrors.soLuong = "Số lượng phải là một số nguyên lớn hơn hoặc bằng  1.";
         } else {
-            $scope.newLoHangErrors.soLuong = null; // Không có lỗi
+            $scope.newLoHangErrors.soLuong = null;
         }
     };
     $scope.$watch('newLoHang.soLuong', function(newValue) {
@@ -467,16 +589,14 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
 
 
 
-    $scope.showAddLoHangForm = false; // Ẩn form thêm lô hàng mặc định
-    $scope.newLoHang = {}; // Biến chứa thông tin lô hàng mới
+
+    $scope.showAddLoHangForm = false;
+
     $scope.addLoHang = function () {
         $scope.formSubmitted = true;
-        if (!$scope.newLoHang.ngayNhap || !$scope.newLoHang.nsx || !$scope.newLoHang.hsd || !$scope.newLoHang.soLuong) {
-            alert("Vui lòng nhập đầy đủ thông tin lô hàng!");
-            return;
-        }
 
-        // Tạo đối tượng để gửi lên server
+        validateLoHang={};
+
         var loHangRequest = {
             idCTSP: $scope.productDetail.id, // Giả sử productDetail có idCTSP
             ngayNhap: $scope.newLoHang.ngayNhap,
@@ -519,16 +639,18 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
             });
     };
     $scope.updateLoHang = function (loHang) {
+        $scope.formSubmitted = true;
+
+        validateLoHang={};
         // Kiểm tra thông tin lô hàng trước khi gửi
         if (!loHang.ngayNhap || !loHang.nsx || !loHang.hsd || !loHang.soLuong) {
-            alert("Vui lòng nhập đầy đủ thông tin lô hàng!");
+            // alert("Vui lòng nhập đầy đủ thông tin lô hàng!");
             return;
         }
 
-        // Tạo đối tượng yêu cầu để gửi đến server
         var loHangRequest = {
-            id: loHang.id, // ID của lô hàng cần cập nhật
-            idCTSP: $scope.productDetail.id, // ID sản phẩm chi tiết
+            id: loHang.id,
+            idCTSP: $scope.productDetail.id,
             ngayNhap: loHang.ngayNhap,
             nsx: loHang.nsx,
             hsd: loHang.hsd,
@@ -538,7 +660,6 @@ window.chiTietSanPhamCtrl = function ($scope, $routeParams, $http) {
         // Gửi yêu cầu PUT đến API
         $http.put('http://localhost:8083/chi-tiet-san-pham/update-loHang', loHangRequest)
             .then(function (response) {
-                    // Xử lý thành công
                     showSuccessAlert("Cập nhật lô hàng thành công!"); // Hiển thị thông báo từ server
                     $scope.viewDetail($scope.productDetail.id); // Tải lại chi tiết sản phẩm
                 let setOff = document.querySelector(".modal-backdrop")

@@ -132,9 +132,9 @@ public class NhanVienController {
         nvRepo.save(nhanVien);
 
         try {
-            nvRepo.save(nhanVien); // Lưu nhân viên vào cơ sở dữ liệu
+            nvRepo.save(nhanVien);
         } catch (Exception e) {
-            e.printStackTrace();  // In lỗi chi tiết vào console để dễ dàng kiểm tra
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseMessage("Lỗi khi thêm nhân viên: " + e.getMessage()));
         }
 

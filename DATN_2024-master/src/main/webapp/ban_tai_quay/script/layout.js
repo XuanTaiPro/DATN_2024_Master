@@ -61,13 +61,13 @@ app.config(function ($routeProvider) {
 
 app.controller('myCtrl', function ($scope, $http) {
     const login = sessionStorage.getItem('loginOk')
-    if (!login) {
-        window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
-        return
-    }
-
-    const idNV = sessionStorage.getItem('idNV');
-    // const idNV='CEC76A2E'
+    // if (!login) {
+    //     window.location.href = 'http://localhost:63342/demo/src/main/webapp/ban_tai_quay/view/login.html'
+    //     return
+    // }
+    //
+    // const idNV = sessionStorage.getItem('idNV');
+    const idNV='909918DD'
     if (!idNV) {
         console.error('Không tìm thấy ID nhân viên trong sessionStorage');
         return;
